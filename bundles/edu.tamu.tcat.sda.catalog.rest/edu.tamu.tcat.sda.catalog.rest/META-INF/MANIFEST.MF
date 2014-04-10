@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SDA Catalog REST API
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.rest
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: edu.tamu.tcat.sda.catalog.rest.internal.Activator
+Bundle-Vendor: Texas A&M Engineering Experiment Station
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Import-Package: javax.ws.rs;version="2.0.0",
+ javax.ws.rs.core;version="2.0.0"
+Service-Component: OSGI-INF/works.xml
