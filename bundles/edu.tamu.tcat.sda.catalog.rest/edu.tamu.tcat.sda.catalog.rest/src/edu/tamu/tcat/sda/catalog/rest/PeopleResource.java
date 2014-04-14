@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -19,4 +20,11 @@ public class PeopleResource
       return Arrays.asList("Neal", "Jesse", "Paul", "That Other Guy");
    }
 
+   @GET
+   @Path("{personId}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public String getPerson(@PathParam(value="personId") int personId)
+   {
+	   return null;
+   }
 }

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -21,7 +23,7 @@ public class EditionsResource
    }
    
    @GET
-   @Path("editionId")
+   @Path("{editionId}")
    @Produces(MediaType.APPLICATION_JSON)
    Collection<String> getEdition(@PathParam(value = "workId") String workId,
                                  @PathParam(value = "editionId") String editionId)
@@ -29,4 +31,17 @@ public class EditionsResource
       return Collections.emptySet();
    }
    
+   @PUT
+   @Path("{editionId}")
+   public String updateEdition(@PathParam(value = "workId") String workId,
+                               @PathParam(value = "editionId") String editionId)
+   {
+	   return null;
+   }
+   
+   @POST
+   public String createEdition()
+   {
+	   return null;
+   }
 }

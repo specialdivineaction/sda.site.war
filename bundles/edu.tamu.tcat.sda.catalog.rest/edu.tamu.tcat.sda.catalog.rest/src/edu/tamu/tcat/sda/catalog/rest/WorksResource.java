@@ -21,7 +21,7 @@ public class WorksResource
    {
       // TODO Auto-generated constructor stub
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    public Collection<String> listWorks()
@@ -30,18 +30,33 @@ public class WorksResource
    }
    
    @GET
-   @Path("{id}.html")
+   @Path("{workid}")
    @Produces(MediaType.TEXT_HTML)
-   public String getWorkHtml(@PathParam(value = "id") int id)
+   public String getWork(@PathParam(value = "workid") int id)
    {
       StringBuilder sb = new StringBuilder();
       sb.append("<html><head><title>").append("Document: ").append(id).append("</title></head>")
-        .append("<h1>").append(id).append("</h1>")
+        .append("<h1> Work ").append(id).append("</h1>")
         .append("</html>");
       
       return sb.toString();
    }
    
+   @GET
+   @Path("{workid}/authors/{authid}")
+   @Produces(MediaType.TEXT_HTML)
+   public String getAuthorsWorks(@PathParam(value = "workid") int workId,
+		                         @PathParam(value = "authid") int authId)
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("<html><head><title>").append("Document: ").append(workId).append("</title></head>")
+        .append("<h1> Work ").append(workId).append("</h1>")
+        .append("<h1> Author ").append(authId).append("</h1>") 
+        .append("</html>");
+      
+      return sb.toString();
+   }
+        
    @GET
    @Path("{id}.json")
    @Produces(MediaType.APPLICATION_JSON)
@@ -65,6 +80,4 @@ public class WorksResource
       return null;
    }
    
-   
-
 }
