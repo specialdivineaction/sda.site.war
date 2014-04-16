@@ -13,13 +13,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+
 @Path("/works")
 public class WorksResource
 {
 
    public WorksResource()
    {
-      // TODO Auto-generated constructor stub
    }
 
    @GET
@@ -29,6 +30,13 @@ public class WorksResource
       return Arrays.asList("Thing 1", "Thing 2", "Red Fish", "Blue Fish");
    }
    
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   public WorkDV createWork()
+   {
+      return null;
+   }
+
    @GET
    @Path("{workid}")
    @Produces(MediaType.TEXT_HTML)
@@ -65,12 +73,6 @@ public class WorksResource
       Map<String, Integer> result = new HashMap<>();
       result.put("id", id);
       return result;
-   }
-   
-   @POST
-   public String createWork()
-   {
-      return null;
    }
    
    @PUT
