@@ -4,5 +4,5 @@ public class PublicationInfoDV
 {
    public String publisher;
    public String place;
-   public UserDateDV date;
+   public DateDescriptionDV date;
 }
