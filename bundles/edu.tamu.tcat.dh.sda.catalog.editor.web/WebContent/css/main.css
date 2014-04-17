@@ -82,6 +82,10 @@ textarea {
     resize: vertical;
 }
 
+a {
+	color:inherit;
+	font-variant: none;
+}
 /* ==========================================================================
    Browse Happy prompt
    ========================================================================== */
@@ -97,7 +101,173 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+/* TODO need to break this into meaningful component files */
+    
+    div { 
+    	box-sizing: border-box; 
+    	ms-box-sizing: border-box; 
+    	webkit-box-sizing: border-box; 
+    	moz-box-sizing: border-box; 
+    }
+    
+    /* =============
+       Setup the main page layout
+       ============= */ 
+    html { 
+       position:absolute; height:100%; width:100%
+    }
+    
+    body { 
+       position: absolute; top:0px; bottom:0px; left: 0px; right:0px; 
+       font-family:TrebuchetMS;
+       font-size:1em;
+    }
+    
+    #header, #footer, #main { 
+       position: absolute; 
+    }
+    #header { 
+       top:0px; left:0px; right:0px; height:75px; 
+    }
+    #footer { 
+       bottom:0px; left:0px; right:0px; height:75px; 
+    }
+    #main { 
+       top:75px; bottom:75px; left:0px; right:0px; 
+    }
+    
 
+    #master, #details, #sidebar { float:left; }
+    
+    #sidebar { 
+    	top:0px; bottom:0px; 
+    	background-color:lightgray; 
+    	width: 20%; height:100%; 
+    	overflow:hidden; 
+    	scroll-y:auto; 
+   	}
+   	
+    #md { height:100%; }
+    #master { 
+	    top:0px; 
+	    width: 40%; height:100%; 
+	    scroll-y:auto; 
+	    padding:10px; 
+    }
+    
+    #details { top:0px; background-color:brown; width: 40%; height:100%; overflow-y:auto; padding:10px; }
+
+    /* =============
+       Format the main bibliography entries
+       ============= */
+	article.work {
+		
+	}
+	
+	.work > section > header {
+		font-size:0.8em;
+		font-weight:bold;
+		text-transform:uppercase;
+	}
+	
+	.work section {
+		margin-left:15px;
+		margin-top:10px;
+	}
+	
+	article.work > section.citation  {
+		font-size:1.2em;
+	}
+	
+	
+	
+	.work section.citation {
+		margin-left:0px;
+	}
+	
+	section.collapsed > div.content {
+		display: none;
+	}
+	section.collapsed header span.icon {
+		content:">"		/* TODO add background image */
+	}
+	
+	section.citation span.authors {
+		color:#666;
+	}
+	
+	a.author {
+		font-variant: small-caps;
+		font-weight:bold;
+		text-decoration:none;
+		color:#666;
+	}
+	a.author:hover {
+		border-bottom:1px dashed #666;
+	}
+	
+	span.titleinfo {
+		text-decoration: underline; 
+	}
+	
+	span.titleinfo .title {}
+	span.titleinfo .subtitle {}
+	
+	
+	section.summary p:first-of-type {
+		margin-top:0px;
+	}
+	
+	section.summary p {
+		padding-left:20px;
+	}
+	
+	.work .item .publishedIn {
+		display:none;
+	}
+	
+	
+/* .textInput { */
+/* width:200px; */
+/* } */
+/* .left{  */
+/* width:10%;  */
+/* line-height:26px;  */
+/* float:left;  */
+/* text-align:right; */
+/* } */
+/* .right{  */
+/* width:85%;  */
+/* float:left;  */
+/* margin-left: 10px; */
+/* } */
+/* .author, .date { */
+/*    font: 14px/16px sans-serif; */
+/* } */
+/* .date { */
+/*    font: 14px/16px sans-serif; */
+/* } */
+/* /* .title { */ */
+/* /*    font: italic 14px/16px courier; */ */
+/* /* } */ */
+/* .pubCity{ */
+/*    font: 14px/16px sans-serif; */
+/* } */
+/* .publisher{ */
+/*    font: 14px/16px sans-serif; */
+/* } */
+
+
+/* textarea{ */
+/* 	width: 97%; */
+/* 	height: 175px; */
+/* 	border: 3px solid #cccccc; */
+/* 	padding: 5px; */
+/* 	font-family: Tahoma, sans-serif; */
+/* 	background-position: bottom right; */
+/* 	background-repeat: no-repeat; */
+/* 	resize: none; */
+/* } */
 
 
 

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Catalog API
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Texas A&M Engineering Experiment Station
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: edu.tamu.tcat.sda.catalog.works,
+ edu.tamu.tcat.sda.catalog.works.dv
