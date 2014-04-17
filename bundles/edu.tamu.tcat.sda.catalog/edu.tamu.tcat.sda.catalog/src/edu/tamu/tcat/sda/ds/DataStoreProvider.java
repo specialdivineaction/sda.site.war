@@ -5,7 +5,7 @@ package edu.tamu.tcat.sda.ds;
  * configured to work with the application
  *
  */
-public interface DataStoreService
+public interface DataStoreProvider
 {
    /**
     * @param type the type of data store to return. 
