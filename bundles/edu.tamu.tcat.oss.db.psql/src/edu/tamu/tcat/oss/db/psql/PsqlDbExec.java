@@ -1,8 +1,6 @@
 package edu.tamu.tcat.oss.db.psql;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -46,30 +44,6 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
          DB_LOGGER.log(Level.SEVERE, "DBExecutor failed to complete all tasks.");
          executor.shutdownNow();
       }
-   }
-   
-   private Connection getConnection()
-   {
-      // FIXME make this configurable
-      Connection con = null;
-
-      String url = "jdbc:postgresql://localhost:5433/SDA";
-      String user = "postgres";
-      String password = "";
-
-      try
-      {
-
-         Class.forName("org.postgresql.Driver");
-         con = DriverManager.getConnection(url, user, password);
-
-      }
-      catch (SQLException | ClassNotFoundException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      return con;
    }
 
    @Override
