@@ -1,6 +1,7 @@
 package edu.tamu.tcat.oss.db.psql;
 
 import java.sql.Connection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -47,39 +48,37 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
    }
 
    @Override
-   @SuppressWarnings("unchecked")            // FIXME this seems bad.
-   public Future<?> submit(DbExecTask task)
+   public <T> Future<T> submit(DbExecTask<T> task)
    {
-      ExecutionTaskRunner runner = new ExecutionTaskRunner(provider, task);
+      ExecutionTaskRunner<T> runner = new ExecutionTaskRunner<T>(provider, task);
 
       // TODO to allow cancellation, timeouts, etc, should grab returned future.
       return executor.submit(runner);
    }
 
  
-   private static class ExecutionTaskRunner implements Runnable
+   private static class ExecutionTaskRunner<T> implements Callable<T>
    {
-      private final DbExecTask task;
+      private final DbExecTask<T> task;
       private final DataSource provider;
 
-      ExecutionTaskRunner(DataSource provider, DbExecTask task)
+      ExecutionTaskRunner(DataSource provider, DbExecTask<T> task)
       {
          this.provider = provider;
          this.task = task;
       }
 
       @Override
-      public void run()
+      public T call() throws Exception
       {
          try (Connection conn = provider.getConnection())
          {
-            task.setConnection(conn);
-            task.run();
+            return task.execute(conn);
          }
-         catch (Exception ex)
-         {
-            DB_LOGGER.log(Level.SEVERE, "Database task execution failed.", ex);
-         }
+//         catch (Exception ex)
+//         {
+//            DB_LOGGER.log(Level.SEVERE, "Database task execution failed.", ex);
+//         }
       }
    }
 

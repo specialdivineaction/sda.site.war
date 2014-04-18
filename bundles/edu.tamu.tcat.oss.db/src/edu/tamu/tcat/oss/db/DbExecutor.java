@@ -14,5 +14,5 @@ public interface DbExecutor
     * @param task The task to run.
     * @return A {@link Future}
     */
-   public <X> Future<X> submit(DbExecTask task);
+   public <X> Future<X> submit(DbExecTask<X> task);
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
@@ -51,7 +52,7 @@ public class PsqlWorkRepo implements WorkRepository
       }
 
       final String sql = "INSERT INTO works (id, work) VALUES(?,?)";
-      DbTaskCallable<Work> task = new DbTaskCallable<Work>()
+      DbExecTask<Work> task = new DbExecTask<Work>()
       {
          @Override
          public Work execute(Connection conn) throws SQLException

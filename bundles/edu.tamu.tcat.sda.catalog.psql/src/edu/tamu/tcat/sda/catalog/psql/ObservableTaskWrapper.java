@@ -6,20 +6,19 @@ import java.sql.Connection;
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.sda.ds.DataUpdateObserver;
 
-public class ObservableTaskWrapper<R> implements DbExecTask 
+public class ObservableTaskWrapper<R> implements DbExecTask<R> 
 {
-   private Connection conn;
    private final DataUpdateObserver<R> observer;
-   private final DbTaskCallable<R> task;
+   private final DbExecTask<R> task;
    
-   public ObservableTaskWrapper(DbTaskCallable<R> task, DataUpdateObserver<R> observer)
+   public ObservableTaskWrapper(DbExecTask<R> task, DataUpdateObserver<R> observer)
    {
       this.task = task;
       this.observer = observer;
    }
 
    @Override
-   public void run()
+   public R execute(Connection conn)
    {
       if (conn == null)
       {
@@ -30,7 +29,7 @@ public class ObservableTaskWrapper<R> implements DbExecTask
       if (observer.isCanceled())
       {
          observer.onAborted();
-         return;
+         return null;
       }
 
       observer.onStart(); // notify observer that we are about to start
@@ -38,16 +37,13 @@ public class ObservableTaskWrapper<R> implements DbExecTask
       {
          R result = task.execute(conn);
          observer.onFinish(result);
+         return result;
       }
       catch (Exception e)
       {
          observer.onError(e.getMessage(), e);
       }
-   }
-
-   @Override
-   public void setConnection(Connection conn)
-   {
-      this.conn = conn;
+      
+      return null;
    }
 }

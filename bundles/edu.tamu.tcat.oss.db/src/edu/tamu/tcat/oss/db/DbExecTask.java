@@ -10,13 +10,15 @@ import java.sql.Connection;
  * 
  * @param <T> The type of result returned from the {@link #call()} method.
  */
-public interface DbExecTask extends Runnable
+public interface DbExecTask<T>
 {
+   
    // TODO might add Query vs Update
-   /**
-    * Called by the DB framework to supply a DB connection for use.
-    * 
-    * @param conn
-    */
-   void setConnection(Connection conn);
+   public T execute(Connection conn) throws Exception;
+//   /**
+//    * Called by the DB framework to supply a DB connection for use.
+//    * 
+//    * @param conn
+//    */
+//   void setConnection(Connection conn);
 }
