@@ -22,7 +22,7 @@ import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 
 public class TestCreateWork 
 {
@@ -65,9 +65,9 @@ public class TestCreateWork
 		works.id = UUID.randomUUID().toString();
 		works.authors = authorList;
 		
+		// FIXME this is async, meaning test will exit prior to conclusion.
 		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, new SimpleJacksonMapper());
-		DataUpdateObserver<Work> observer = null;
-      workRepo.create(works, observer);
+      workRepo.create(works, new DataUpdateObserverAdapter<Work>());
 		
 		
 		fail("Not yet implemented");
