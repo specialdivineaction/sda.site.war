@@ -2,11 +2,11 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.postgresql.util.PGobject;
 
-import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
@@ -38,13 +38,11 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public void create(final WorkDV work, final DataUpdateObserver<WorkDV, Work> observer)
+   public void create(final WorkDV work, DataUpdateObserver<Work> observer)
    {
-//      ObjectMapper workMap = new ObjectMapper();
       final String workString;
       try
       {
-         // TODO use a supplied object mapper
          workString = jsonMapper.asString(work);
       }
       catch (JsonException jpe)
@@ -53,20 +51,11 @@ public class PsqlWorkRepo implements WorkRepository
       }
 
       final String sql = "INSERT INTO works (id, work) VALUES(?,?)";
-      exec.submit(new DbExecTask()
+      DbTaskCallable<Work> task = new DbTaskCallable<Work>()
       {
-         private Connection conn;
-
          @Override
-         public void run()
+         public Work execute(Connection conn) throws SQLException
          {
-            if (observer.isCanceled())
-            {
-               observer.onAborted();
-               return;
-            }
-
-            observer.onStart(); // notify observer that we are about to start
             try (PreparedStatement ps = conn.prepareStatement(sql))
             {
                PGobject jsonObject = new PGobject();
@@ -80,28 +69,16 @@ public class PsqlWorkRepo implements WorkRepository
                if (ct != 1)
                   throw new IllegalStateException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
 
-               Work w = new WorkRef(Long.parseLong(work.id));
-               observer.onFinish(w);
+               return new WorkRef(Long.parseLong(work.id));
             }
-            catch (Exception e)
-            {
-               observer.onError("Failed to save work: " + work, e);
-            }
-
-            return;
          }
-
-         @Override
-         public void setConnection(Connection conn)
-         {
-            this.conn = conn;
-         }
-
-      });
+      };
+      
+      exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
 
    @Override
-   public void update(WorkDV work, DataUpdateObserver<WorkDV, Work> observer)
+   public void update(WorkDV work, DataUpdateObserver<Work> observer)
    {
       // TODO Auto-generated method stub
 

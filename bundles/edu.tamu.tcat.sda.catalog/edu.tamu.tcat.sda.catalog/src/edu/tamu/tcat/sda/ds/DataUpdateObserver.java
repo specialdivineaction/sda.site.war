@@ -21,10 +21,9 @@ package edu.tamu.tcat.sda.ds;
  * <p>
  * Implementations should be thread-safe.
  *  
- * @param <IN> The type of object that is supplied to the store  
  * @param <R>
  */
-public interface DataUpdateObserver<IN, R>
+public interface DataUpdateObserver<R>
 {
 
    enum State {

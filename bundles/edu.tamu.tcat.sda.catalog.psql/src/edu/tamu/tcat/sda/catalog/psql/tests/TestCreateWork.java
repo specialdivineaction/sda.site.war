@@ -66,7 +66,7 @@ public class TestCreateWork
 		works.authors = authorList;
 		
 		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, new SimpleJacksonMapper());
-		DataUpdateObserver<WorkDV, Work> observer = null;
+		DataUpdateObserver<Work> observer = null;
       workRepo.create(works, observer);
 		
 		
