@@ -1,9 +1,9 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
 import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.WorkException;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+import edu.tamu.tcat.sda.ds.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
@@ -17,14 +17,14 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public void create(WorkDV work) throws WorkException
+   public void create(WorkDV work, DataUpdateObserver<WorkDV, Work> observer)
    {
       // TODO Auto-generated method stub
       
    }
 
    @Override
-   public void update(WorkDV work) throws WorkException
+   public void update(WorkDV work, DataUpdateObserver<WorkDV, Work> observer)
    {
       // TODO Auto-generated method stub
       
