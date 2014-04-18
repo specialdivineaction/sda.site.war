@@ -7,7 +7,7 @@ import java.util.Set;
  * Represents a historical figure described in the collection. This is typically used to represent 
  * a person.
  */
-public interface Person
+public interface HistoricalFigure
 {
    /**
     * @return A unique, persistent identifier for this person. 
@@ -18,7 +18,7 @@ public interface Person
     * @return The canonical name associated with this person. Many people are commonly referenced
     *       by multiple names, for example pen names or titles of nobility. This form of the 
     *       represents an editorially determined 'canonical' representation of this person.
-    * @see Person#getAlternativeNames()       
+    * @see HistoricalFigure#getAlternativeNames()       
     */
    PersonName getCanonicalName();
    
