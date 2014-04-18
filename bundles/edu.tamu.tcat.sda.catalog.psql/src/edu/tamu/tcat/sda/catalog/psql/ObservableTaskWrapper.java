@@ -23,25 +23,25 @@ public class ObservableTaskWrapper<R> implements DbExecTask<R>
       if (conn == null)
       {
          String msg = "Cannot execute database task. No connection supplied.";
-         observer.onError(msg, new IllegalSelectorException());
+         observer.error(msg, new IllegalSelectorException());
       }
       
       if (observer.isCanceled())
       {
-         observer.onAborted();
+         observer.aborted();
          return null;
       }
 
-      observer.onStart(); // notify observer that we are about to start
+      observer.start(); // notify observer that we are about to start
       try 
       {
          R result = task.execute(conn);
-         observer.onFinish(result);
+         observer.finish(result);
          return result;
       }
       catch (Exception e)
       {
-         observer.onError(e.getMessage(), e);
+         observer.error(e.getMessage(), e);
       }
       
       return null;
