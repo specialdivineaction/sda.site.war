@@ -59,10 +59,8 @@ public class PsqlWorkRepo implements WorkRepository
             // TODO Auto-generated catch block
             e.printStackTrace();
          }
-
-	   	
 	}
-	
+
 	@Override
 	public void update(WorkDV work, DataUpdateObserver<WorkDV, Work> observer) {
 		// TODO Auto-generated method stub
@@ -92,4 +90,5 @@ public class PsqlWorkRepo implements WorkRepository
 		}
         return con;
 	}
+
 }
