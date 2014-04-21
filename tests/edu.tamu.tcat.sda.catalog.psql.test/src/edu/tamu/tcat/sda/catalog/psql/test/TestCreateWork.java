@@ -1,11 +1,14 @@
-package edu.tamu.tcat.sda.catalog.psql.tests;
+package edu.tamu.tcat.sda.catalog.psql.test;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -24,12 +27,13 @@ import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 
+
 public class TestCreateWork 
 {
-   private PsqlDbExec dbExec;
+   private static PsqlDbExec dbExec;
 
    @BeforeClass
-   public void initDbConnection()
+   public static void initDbConnection()
    {
       // TODO make configurable
       // FIXME at the moment, we have no way to clean up after tests!!
@@ -43,7 +47,7 @@ public class TestCreateWork
    }
    
    @AfterClass
-   public void tearDown() 
+   public static void tearDown() 
    {
       if (dbExec != null)
          dbExec.close();
@@ -66,11 +70,37 @@ public class TestCreateWork
 		works.authors = authorList;
 		
 		// FIXME this is async, meaning test will exit prior to conclusion.
+		final CountDownLatch latch = new CountDownLatch(1);
+		
 		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, new SimpleJacksonMapper());
-      workRepo.create(works, new DataUpdateObserverAdapter<Work>());
+      workRepo.create(works, new DataUpdateObserverAdapter<Work>()
+      {
+         @Override
+         protected void onFinish(Work result)
+         {
+            System.out.println("Sucess!");
+            latch.countDown();
+         }
+         
+         @Override
+         protected void onError(String message, Exception ex)
+         {
+            assertFalse(message, true);
+            latch.countDown();
+         }
+      });
+
+      try
+      {
+         boolean success = latch.await(10, TimeUnit.SECONDS);
+         assertTrue("Failed to notify observer", success);
+      }
+      catch (InterruptedException e)
+      {
+         assertFalse(e.getMessage(), true);
+      }
 		
-		
-		fail("Not yet implemented");
+//		 fail("Not yet implemented");
 	}
 
 	private static class SimpleJacksonMapper implements JsonMapper

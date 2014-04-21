@@ -68,14 +68,27 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
          this.task = task;
       }
 
+      private Connection getConnection() throws Exception
+      {
+         try 
+         {
+            return provider.getConnection();
+         } 
+         catch (Exception ex)
+         {
+            DB_LOGGER.log(Level.SEVERE, "Failed to obtain database connection", ex);
+            throw ex;
+            
+         }
+      }
+      
       @Override
       public T call() throws Exception
       {
-         try (Connection conn = provider.getConnection())
+         try (Connection conn = getConnection())
          {
             return task.execute(conn);
          }
       }
    }
-
 }
