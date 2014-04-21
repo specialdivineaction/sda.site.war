@@ -10,15 +10,17 @@ import java.sql.Connection;
  * 
  * @param <T> The type of result returned from the {@link #call()} method.
  */
+// TODO might add Query vs Update
 public interface DbExecTask<T>
 {
-   
-   // TODO might add Query vs Update
+
+   /**
+    * Executes a specific data persistence task.
+    * 
+    * @param conn The data base connection to be used to run this task. 
+    * @return The result of the task. This may be {@code null}.
+    * @throws Exception If problems are encountered while running this task.
+    */
    public T execute(Connection conn) throws Exception;
-//   /**
-//    * Called by the DB framework to supply a DB connection for use.
-//    * 
-//    * @param conn
-//    */
-//   void setConnection(Connection conn);
+
 }
