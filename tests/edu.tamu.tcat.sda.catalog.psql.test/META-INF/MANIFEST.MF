@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PSQL Impl Unit Tests
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.psql.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Texas A&M Engineering Experiment Station
+Fragment-Host: edu.tamu.tcat.sda.catalog.psql;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.junit
