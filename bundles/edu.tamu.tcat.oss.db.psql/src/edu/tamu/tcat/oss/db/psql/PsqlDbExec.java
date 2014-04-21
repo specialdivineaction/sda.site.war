@@ -3,6 +3,7 @@ package edu.tamu.tcat.oss.db.psql;
 import java.sql.Connection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
    public PsqlDbExec(DataSource provider)
    {
       this.provider = provider;
+      executor = Executors.newSingleThreadExecutor();
    }
 
    @Override
@@ -50,13 +52,11 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
    @Override
    public <T> Future<T> submit(DbExecTask<T> task)
    {
-      ExecutionTaskRunner<T> runner = new ExecutionTaskRunner<T>(provider, task);
-
       // TODO to allow cancellation, timeouts, etc, should grab returned future.
+      ExecutionTaskRunner<T> runner = new ExecutionTaskRunner<T>(provider, task);
       return executor.submit(runner);
    }
 
- 
    private static class ExecutionTaskRunner<T> implements Callable<T>
    {
       private final DbExecTask<T> task;
@@ -75,10 +75,6 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
          {
             return task.execute(conn);
          }
-//         catch (Exception ex)
-//         {
-//            DB_LOGGER.log(Level.SEVERE, "Database task execution failed.", ex);
-//         }
       }
    }
 
