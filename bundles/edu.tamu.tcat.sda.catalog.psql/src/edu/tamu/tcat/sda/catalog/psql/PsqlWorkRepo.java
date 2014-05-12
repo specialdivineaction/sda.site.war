@@ -120,14 +120,6 @@ public class PsqlWorkRepo implements WorkRepository
          // TODO Auto-generated method stub
          return null;
       }
-
-      @Override
-      public List<String> getNotes()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
    }
 
 //   private Connection getPostgresConn()
