@@ -21,10 +21,9 @@ package edu.tamu.tcat.sda.ds;
  * <p>
  * Implementations should be thread-safe.
  *  
- * @param <IN> The type of object that is supplied to the store  
  * @param <R>
  */
-public interface DataUpdateObserver<IN, R>
+public interface DataUpdateObserver<R>
 {
 
    enum State {
@@ -45,7 +44,7 @@ public interface DataUpdateObserver<IN, R>
     * 
     * @return {@code false} if the request should be aborted.
     */
-   boolean onStart();
+   boolean start();
    
    /**
     * Called upon successful completion of the update task. This allows the caller to 
@@ -58,7 +57,7 @@ public interface DataUpdateObserver<IN, R>
     * 
     * @param result An object that represents the updated data.
     */
-   void onFinish(R result);
+   void finish(R result);
    
    /**
     * Called by the store when a cancelled update task has been terminated. 
@@ -67,7 +66,7 @@ public interface DataUpdateObserver<IN, R>
     * After a call to this method {@link #isCompleted()} will return true and no
     * further calls to state change methods will be allowed. 
     */
-   void onAborted();
+   void aborted();
    
    /**
     * Called in the event of an error handling the update. 
@@ -80,7 +79,7 @@ public interface DataUpdateObserver<IN, R>
     * @param ex The exception resulting from the error. May be {@code null} if no
     *       exception was thrown.
     */
-   void onError(String message, Exception ex);
+   void error(String message, Exception ex);
    
    // TODO add monitor method that can be called with progress updates
    // TODO add timeout
@@ -99,7 +98,7 @@ public interface DataUpdateObserver<IN, R>
 
    /**
     * Indicates whether the action being observed has been completed. This should return 
-    * true if and only if {@link #onFinish(Object)}, {@link #onAborted(Object)} or 
+    * true if and only if {@link #finish(Object)}, {@link #onAborted(Object)} or 
     * {@link #onError(Object, String, Exception)} have been called.
     * 
     * @return {@code true} once one of the three terminal methods have been invoked.
