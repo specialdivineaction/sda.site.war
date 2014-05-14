@@ -6,4 +6,5 @@ public interface Title
    
    String getSubTitle();
    
+   String toString();
 }
