@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 
 /**
  * Links the author of a work to a biographical record of the person. This allows the 
@@ -15,7 +15,7 @@ public interface AuthorReference
     *    For authors for whom no biographical record is available this should return a special
     *    person instance representing an unknown or unavailable person.
     */
-   Person getAuthor();     // TODO need to flesh out how to reference unavailable people.
+   HistoricalFigure getAuthor();     // TODO need to flesh out how to reference unavailable people.
    
    /**
     * @return The name of the author as it appears on the work.
