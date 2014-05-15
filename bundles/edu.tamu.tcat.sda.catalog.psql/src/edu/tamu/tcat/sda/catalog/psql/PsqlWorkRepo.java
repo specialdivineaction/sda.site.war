@@ -3,7 +3,6 @@ package edu.tamu.tcat.sda.catalog.psql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.postgresql.util.PGobject;
 
@@ -11,8 +10,9 @@ import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.Title;
+import edu.tamu.tcat.sda.catalog.works.AuthorList;
+import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
+import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -94,14 +94,28 @@ public class PsqlWorkRepo implements WorkRepository
       }
 
       @Override
-      public List<AuthorReference> getAuthors()
+      public AuthorList getAuthors()
       {
          // TODO Auto-generated method stub
          return null;
       }
 
       @Override
-      public Title getTitle()
+      public TitleDefinition getTitle()
+      {
+         // TODO Auto-generated method stub
+         return null;
+      }
+      
+      @Override
+      public AuthorList getOtherAuthors()
+      {
+         // TODO Auto-generated method stub
+         return null;
+      }
+      
+      @Override
+      public PublicationInfo getPublicationInfo()
       {
          // TODO Auto-generated method stub
          return null;
@@ -120,14 +134,6 @@ public class PsqlWorkRepo implements WorkRepository
          // TODO Auto-generated method stub
          return null;
       }
-
-      @Override
-      public List<String> getNotes()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
    }
 
 //   private Connection getPostgresConn()
