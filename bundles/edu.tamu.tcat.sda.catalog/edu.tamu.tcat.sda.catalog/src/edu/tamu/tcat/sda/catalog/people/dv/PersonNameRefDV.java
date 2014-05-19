@@ -6,7 +6,7 @@ public class PersonNameRefDV
    public String name;
    public String givenName;
    public String middleName;
-   public String FamilyName;
+   public String familyName;
    public String suffix;
    public String displayName;
 }
