@@ -1,8 +1,13 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -22,7 +27,7 @@ import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalEventDV;
+import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
 import edu.tamu.tcat.sda.catalog.psql.PsqlHistoricalFigureRepo;
@@ -32,12 +37,64 @@ import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 @Path("/people")
 public class PeopleResource
 {
+   DbExecutor exec;
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<String> listPeople()
+   public Iterable<HistoricalFigureDV> listPeople()
    {
-      return Arrays.asList("Neal", "Jesse", "Paul", "That Other Guy");
+      Iterable<HistoricalFigureDV> iterablehfDV = null;
+      Iterable<HistoricalFigure> listFigures = null;
+      List<HistoricalFigureDV> listHfDV = new ArrayList<HistoricalFigureDV>();
+      HistoricalFigureDV hfDV = null;
+      PersonNameRefDV pnDV = new PersonNameRefDV();
+//      CountDownLatch latch = new CountDownLatch(1);
+      PsqlHistoricalFigureRepo repo = new PsqlHistoricalFigureRepo(getExecutor(), new SimpleJacksonMapper());
+      try 
+      {
+         listFigures = repo.listHistoricalFigures();
+         for (HistoricalFigure figure : listFigures)
+         {
+            hfDV = new HistoricalFigureDV();
+            hfDV.id = figure.getId();
+            hfDV.birth = figure.getBirth();
+            hfDV.death = figure.getDeath();
+            
+            Set<PersonName> alternativeNames = figure.getAlternativeNames();
+            Set<PersonNameRefDV> pnDvSet = new HashSet<PersonNameRefDV>();
+            for (PersonName name : alternativeNames)
+            {
+               pnDV.title = name.getTitle();
+               pnDV.displayName = name.getDisplayName();
+               pnDV.givenName = name.getGivenName();
+               pnDV.middleName = name.getMiddleName();
+               pnDV.familyName = name.getFamilyName();
+               pnDV.suffix = name.getSuffix();
+               
+               pnDvSet.add(pnDV);
+            }
+            
+            hfDV.people = pnDvSet;
+            listHfDV.add(hfDV);
+         }
+         
+         iterablehfDV = listHfDV;
+         
+      }
+      catch (Exception e)
+      {
+         System.out.println("Error" + e);
+      }
+//      try
+//      {
+//         latch.await();
+//      }
+//      catch (InterruptedException e)
+//      {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//      }
+      return iterablehfDV;
    }
 
    @GET
@@ -52,6 +109,7 @@ public class PeopleResource
    @Consumes(MediaType.APPLICATION_JSON)
    public Response createPerson(HistoricalFigureDV author)
    {
+      
       PsqlHistoricalFigureRepo repo = new PsqlHistoricalFigureRepo(getExecutor(), new SimpleJacksonMapper());
       repo.create(author, new DataUpdateObserverAdapter<HistoricalFigure>()
       {
@@ -67,7 +125,8 @@ public class PeopleResource
             System.out.println("Error!");
          }
       });
-      return Response.accepted().build();
+
+      return Response.serverError().build();
    }
 
    
@@ -77,10 +136,10 @@ public class PeopleResource
       String user = "postgres";
       String pass = "";
       DataSourceFactory factory = new DataSourceFactory();
-      final DbExecutor exec = new PsqlDbExec(factory.getDataSource(url, user, pass));
+      exec = new PsqlDbExec(factory.getDataSource(url, user, pass));
       return exec;
    }
-   
+
    private static class SimpleJacksonMapper implements JsonMapper
    {
       ObjectMapper mapper = new ObjectMapper();
@@ -109,6 +168,13 @@ public class PeopleResource
          {
             throw new JsonException(e);
          }
+      }
+
+      @Override
+      public <T> T parse(InputStream is, Class<T> type) throws JsonException
+      {
+         // TODO Auto-generated method stub
+         return null;
       }
       
    }

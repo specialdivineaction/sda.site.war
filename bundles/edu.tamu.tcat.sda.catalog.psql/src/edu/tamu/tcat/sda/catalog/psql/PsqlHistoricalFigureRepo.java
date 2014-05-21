@@ -5,7 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.postgresql.util.PGobject;
 
@@ -17,7 +25,11 @@ import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
+import edu.tamu.tcat.sda.catalog.people.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.PersonNameImpl;
 import edu.tamu.tcat.sda.ds.DataUpdateObserver;
 
 public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
@@ -35,8 +47,72 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
    @Override
    public Iterable<HistoricalFigure> listHistoricalFigures()
    {
+      
+      // FIXME this is async, meaning test will exit prior to conclusion.
       // TODO Auto-generated method stub
-      return null;
+      final String querySql = "SELECT historical_figure FROM people";
+      
+      DbExecTask<Iterable<HistoricalFigure>> query = new DbExecTask<Iterable<HistoricalFigure>>()
+      {
+
+         @Override
+         public Iterable<HistoricalFigure> execute(Connection conn) throws Exception
+         {
+            List<HistoricalFigure> events = new ArrayList<HistoricalFigure>();
+            Iterable<HistoricalFigure> eIterable = new ArrayList<HistoricalFigure>();
+            try (PreparedStatement ps = conn.prepareStatement(querySql);
+                 ResultSet rs = ps.executeQuery())
+            {
+               PGobject pgo = new PGobject();
+               
+               while(rs.next())
+               {
+                  Object object = rs.getObject("historical_figure");
+                  if (object instanceof PGobject)
+                     pgo = (PGobject)object;
+                  else 
+                     System.out.println("Error!");
+                  
+                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
+                  HistoricalFigureImpl figureRef = new HistoricalFigureImpl(parse);
+                  try
+                  {
+                     events.add(figureRef);
+                  }
+                  catch(Exception e)
+                  {
+                     System.out.println();
+                  }
+               }
+            }
+            catch (Exception e)
+            {
+               System.out.println("Error" + e);
+            }
+//            latch.countDown();
+            eIterable = events;
+            return eIterable;
+         }
+         
+      };
+      
+      Future<Iterable<HistoricalFigure>> submit = exec.submit(query);
+      Iterable<HistoricalFigure> iterable = null;
+      try
+      {
+         iterable = submit.get();
+      }
+      catch (InterruptedException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      catch (ExecutionException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      return  iterable;
    }
 
    @Override
@@ -86,7 +162,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             {
                throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureRef(Long.parseLong(histFigure.id));
+            return new HistoricalFigureImpl(histFigure);
          }
       };
       
@@ -123,7 +199,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             {
                throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureRef(Long.parseLong(histFigure.id));
+            return new HistoricalFigureImpl(histFigure);
          }
       };
       
@@ -131,47 +207,4 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
       
    }
 
-   private static class HistoricalFigureRef implements HistoricalFigure
-   {
-      public HistoricalFigureRef(long id)
-      {
-         
-      }
-
-      @Override
-      public String getId()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public PersonName getCanonicalName()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public Set<PersonName> getAlternativeNames()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public HistoricalEvent getBirth()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public HistoricalEvent getDeath()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-      
-   }
 }

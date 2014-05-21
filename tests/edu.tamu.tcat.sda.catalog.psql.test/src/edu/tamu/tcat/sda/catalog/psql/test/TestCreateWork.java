@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -131,6 +132,13 @@ public class TestCreateWork
          {
             throw new JsonException(e);
          }
+      }
+
+      @Override
+      public <T> T parse(InputStream is, Class<T> type) throws JsonException
+      {
+         // TODO Auto-generated method stub
+         return null;
       }
 	   
 	}
