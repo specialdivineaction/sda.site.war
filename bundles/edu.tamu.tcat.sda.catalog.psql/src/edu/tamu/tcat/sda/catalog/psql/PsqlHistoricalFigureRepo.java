@@ -6,14 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.postgresql.util.PGobject;
 
@@ -21,15 +16,10 @@ import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.PersonName;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
-import edu.tamu.tcat.sda.catalog.psql.impl.PersonNameImpl;
 import edu.tamu.tcat.sda.ds.DataUpdateObserver;
 
 public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
@@ -114,6 +104,58 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
       }
       return  iterable;
    }
+
+   @Override
+   public HistoricalFigure getPerson(long personId)
+   {      
+      final String querySql = "SELECT historical_figure FROM people WHERE id=?";
+      final long id = personId;
+      DbExecTask<HistoricalFigure> query = new DbExecTask<HistoricalFigure>()
+      {
+         HistoricalFigureImpl figureRef;
+         @Override
+         public HistoricalFigure execute(Connection conn) throws Exception
+         {
+            try (PreparedStatement ps = conn.prepareStatement(querySql))
+            {
+               ps.setLong(1, id);
+               ResultSet rs = ps.executeQuery();
+               PGobject pgo = new PGobject();
+               
+               while(rs.next())
+               {
+                  Object object = rs.getObject("historical_figure");
+                  if (object instanceof PGobject)
+                     pgo = (PGobject)object;
+                  else 
+                     System.out.println("Error!");
+                  
+                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
+                  figureRef = new HistoricalFigureImpl(parse);
+               }
+            }
+            catch (Exception e)
+            {
+               System.out.println("Error" + e);
+            }
+            return figureRef;
+         }
+         
+      };
+      
+      HistoricalFigure submit = null;
+      try
+      {
+         return exec.submit(query).get();
+      }
+      catch (InterruptedException | ExecutionException e)
+      {
+         System.out.println("Error");
+      }
+
+      return submit;
+   }
+
 
    @Override
    public void create(final HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer)
@@ -206,5 +248,4 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
       
    }
-
 }

@@ -7,6 +7,8 @@ public interface HistoricalFigureRepository
 {
    Iterable<HistoricalFigure> listHistoricalFigures();
    
+   HistoricalFigure getPerson(long personId);
+   
    void create(HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer);
    
    void update(HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer);
