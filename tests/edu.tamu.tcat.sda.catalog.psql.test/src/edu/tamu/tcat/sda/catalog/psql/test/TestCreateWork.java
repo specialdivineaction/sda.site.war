@@ -22,6 +22,7 @@ import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
 import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
@@ -136,6 +137,13 @@ public class TestCreateWork
 
       @Override
       public <T> T parse(InputStream is, Class<T> type) throws JsonException
+      {
+         // TODO Auto-generated method stub
+         return null;
+      }
+
+      @Override
+      public <T> T fromJSON(JsonTypeReference<T> type, String jsonPacket) throws JsonException
       {
          // TODO Auto-generated method stub
          return null;

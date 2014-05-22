@@ -11,5 +11,7 @@ public interface JsonMapper
    <T> T parse(String json, Class<T> type) throws JsonException;
    
    <T> T parse(InputStream is, Class<T> type) throws JsonException;
+   
+   <T> T fromJSON(final JsonTypeReference<T> type, final String jsonPacket) throws JsonException;
 
 }

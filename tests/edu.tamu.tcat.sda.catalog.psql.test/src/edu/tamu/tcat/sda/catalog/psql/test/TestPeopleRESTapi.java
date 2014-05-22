@@ -4,15 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -30,8 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalEventDV;
+import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
 
@@ -56,51 +51,51 @@ public class TestPeopleRESTapi
       get.setHeader("Content-type", "application/json");
    }
 
-//   @Test
-//   public void testPost()
-//   {
-//      HistoricalFigureDV histFig = new HistoricalFigureDV();
-//      
-//      PersonNameRefDV author = new PersonNameRefDV();
-//      author.displayName = "George Albert Smith";
-//      author.familyName = "Smith";
-//      author.givenName = "George";
-//      author.middleName = "Albert";
-//      author.name = "";
-//      author.suffix = "Sir";
-//      author.title = "Author";
-//      
-//      Set<PersonNameRefDV> authNames = new HashSet<PersonNameRefDV>();
-//      
-//      authNames.add(author);
-//      
-//      histFig.id = "1234abcd";
-//      histFig.birth = new Date();
-//      histFig.death = new Date();
-//      histFig.people = authNames;
-//      
-//      SimpleJacksonMapper map = new SimpleJacksonMapper();
-//      
-//      try
-//      {
-//         String json = map.asString(histFig);
-//   
-//         post.setEntity(new StringEntity(json));
-//         
-//         HttpResponse response = client.execute(post);
-//         int statusCode = response.getStatusLine().getStatusCode();
-//         if (statusCode > 299)
-//         {
-//            System.out.println("Error");
-//         }
-//      }
-//      catch (Exception e)
-//      {
-//         // TODO Auto-generated catch block
-//         e.printStackTrace();
-//      }
-//
-//   }
+   @Test
+   public void testPost()
+   {
+      HistoricalFigureDV histFig = new HistoricalFigureDV();
+      
+      PersonNameRefDV author = new PersonNameRefDV();
+      author.displayName = "George Albert Smith";
+      author.familyName = "Smith";
+      author.givenName = "George";
+      author.middleName = "Albert";
+      author.name = "";
+      author.suffix = "Sir";
+      author.title = "Author";
+      
+      Set<PersonNameRefDV> authNames = new HashSet<PersonNameRefDV>();
+      
+      authNames.add(author);
+      
+      histFig.id = "1234abcd";
+      histFig.birth = new Date();
+      histFig.death = new Date();
+      histFig.people = authNames;
+      
+      SimpleJacksonMapper map = new SimpleJacksonMapper();
+      
+      try
+      {
+         String json = map.asString(histFig);
+   
+         post.setEntity(new StringEntity(json));
+         
+         HttpResponse response = client.execute(post);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode > 299)
+         {
+            System.out.println("Error");
+         }
+      }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+
+   }
 
    @Test
    public void testGet()
@@ -125,9 +120,8 @@ public class TestPeopleRESTapi
             SimpleJacksonMapper mapper = new SimpleJacksonMapper();
             try
             {
-               HistoricalFigureDV hfdv = mapper.parse(out.toString(), HistoricalFigureDV.class) ;
+               List<HistoricalFigureDV> hfdv = mapper.fromJSON(new JsonTypeReference<List<HistoricalFigureDV>>() {}, out.toString()) ;
                content.close();
-               
             }
             catch (JsonException e)
             {
@@ -194,6 +188,19 @@ public class TestPeopleRESTapi
          {
             throw new JsonException(e);
          }
+      }
+
+      @Override
+      public <T> T fromJSON(JsonTypeReference<T> type, String jsonPacket) throws JsonException
+      {
+         T data = null;
+
+         try {
+            data = mapper.readValue(jsonPacket, type);
+         } catch (Exception e) {
+            // Handle the problem
+         }
+         return data;
       }
       
    }
