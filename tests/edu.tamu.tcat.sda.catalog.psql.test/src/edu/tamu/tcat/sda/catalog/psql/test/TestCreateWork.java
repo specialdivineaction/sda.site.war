@@ -3,8 +3,6 @@ package edu.tamu.tcat.sda.catalog.psql.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,14 +13,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
 import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
 import edu.tamu.tcat.sda.catalog.works.Work;
