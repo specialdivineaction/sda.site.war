@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
+import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
 
@@ -35,18 +37,21 @@ public class TestPeopleRESTapi
    private static HttpPost post;
    private static HttpGet  get;
    private static CloseableHttpClient client;
+   private static URI uri;
+   private static JacksonJsonMapper mapper = new JacksonJsonMapper();
    
    @BeforeClass
    public static void initHTTPConnection()
    {
-      
+
+      uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
       
-      post = new HttpPost("http://localhost:9999/catalog/services/people");
+      post = new HttpPost(uri);
       post.setHeader("User-Agent", "Mozilla/5.0");
       post.setHeader("Content-type", "application/json");
       
-      get = new HttpGet("http://localhost:9999/catalog/services/people");
+      get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
    }
@@ -74,11 +79,10 @@ public class TestPeopleRESTapi
       histFig.death = new Date();
       histFig.people = authNames;
       
-      SimpleJacksonMapper map = new SimpleJacksonMapper();
       
       try
       {
-         String json = map.asString(histFig);
+         String json = mapper.asString(histFig);
    
          post.setEntity(new StringEntity(json));
          
@@ -98,7 +102,7 @@ public class TestPeopleRESTapi
    }
 
    @Test
-   public void testGet()
+   public void testGetIterable()
    {
       try
       {
@@ -117,10 +121,9 @@ public class TestPeopleRESTapi
          
          if (statusLine.getStatusCode() < 300)
          {
-            SimpleJacksonMapper mapper = new SimpleJacksonMapper();
             try
             {
-               List<HistoricalFigureDV> hfdv = mapper.fromJSON(new JsonTypeReference<List<HistoricalFigureDV>>() {}, out.toString()) ;
+               List<HistoricalFigureDV> hfdv = mapper.fromJSON(content, new JsonTypeReference<List<HistoricalFigureDV>>(){});
                content.close();
             }
             catch (JsonException e)
@@ -146,62 +149,46 @@ public class TestPeopleRESTapi
       }
    }
    
-   
-   private static class SimpleJacksonMapper implements JsonMapper
+   @Test
+   public void testGetPerson()
    {
-      ObjectMapper mapper = new ObjectMapper();
-      
-      @Override
-      public String asString(Object o) throws JsonException
+      try
       {
-         try
+         URI personUri = uri.resolve("people/16");
+         get.setURI(personUri);
+         CloseableHttpResponse response = client.execute(get);
+         InputStream content = response.getEntity().getContent();
+         StatusLine statusLine = response.getStatusLine();
+         
+         if (statusLine.getStatusCode() < 300)
          {
-            return mapper.writeValueAsString(o);
+            try
+            {
+               HistoricalFigureDV hfdv = mapper.parse(content, HistoricalFigureDV.class);
+               content.close();
+            }
+            catch (JsonException e)
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
          }
-         catch (JsonProcessingException e)
+         else
          {
-            throw new JsonException(e);
+            System.out.println(statusLine.getStatusCode());
          }
       }
-      
-      @Override
-      public <T> T parse(String json, Class<T> type) throws JsonException
+      catch (ClientProtocolException e)
       {
-         try
-         {
-            return mapper.readValue(json, type);
-         }
-         catch (IOException e)
-         {
-            throw new JsonException(e);
-         }
+         // TODO Auto-generated catch block
+         e.printStackTrace();
       }
-
-      @Override
-      public <T> T parse(InputStream is, Class<T> type) throws JsonException
+      catch (IOException e)
       {
-         try
-         {
-            return mapper.readValue(is, type);
-         }
-         catch (IOException e)
-         {
-            throw new JsonException(e);
-         }
+         // TODO Auto-generated catch block
+         e.printStackTrace();
       }
-
-      @Override
-      public <T> T fromJSON(JsonTypeReference<T> type, String jsonPacket) throws JsonException
-      {
-         T data = null;
-
-         try {
-            data = mapper.readValue(jsonPacket, type);
-         } catch (Exception e) {
-            // Handle the problem
-         }
-         return data;
-      }
-      
    }
+   
+
 }
