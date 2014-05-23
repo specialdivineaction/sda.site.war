@@ -6,8 +6,10 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: edu.tamu.tcat.oss.db,
+ edu.tamu.tcat.oss.osgi.config,
  org.apache.commons.dbcp
 Bundle-ClassPath: lib/postgresql-9.3-1101.jdbc3.jar,
  .
 Export-Package: edu.tamu.tcat.oss.db.psql,
+ edu.tamu.tcat.oss.db.psql.internal;x-internal:=true,
  org.postgresql.util
