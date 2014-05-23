@@ -80,7 +80,7 @@ public class PeopleResource
          }
       });
 
-      return Response.serverError().build();
+      return Response.accepted().build();
    }
 
    private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)

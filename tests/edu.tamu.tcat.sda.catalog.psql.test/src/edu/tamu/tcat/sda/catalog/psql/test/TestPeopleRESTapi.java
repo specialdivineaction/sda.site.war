@@ -1,9 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql.test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,14 +17,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
@@ -88,10 +83,16 @@ public class TestPeopleRESTapi
          
          HttpResponse response = client.execute(post);
          int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode > 299)
-         {
-            System.out.println("Error");
-         }
+         if (statusCode >=200 && statusCode < 300)
+            Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
+         else if (statusCode >= 300 && statusCode < 400)
+            Assert.fail("Redirection: " + statusCode);
+         else if (statusCode >= 400 && statusCode < 500)
+            Assert.fail("Client Error: " + statusCode);
+         else
+            Assert.fail("Server Error: " + statusCode);
+            
+            
       }
       catch (Exception e)
       {
@@ -109,15 +110,6 @@ public class TestPeopleRESTapi
          CloseableHttpResponse response = client.execute(get);
          InputStream content = response.getEntity().getContent();
          StatusLine statusLine = response.getStatusLine();
-
-         BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-         StringBuilder out = new StringBuilder();
-         String line;
-         while ((line = reader.readLine()) != null) {
-             out.append(line);
-         }
-         System.out.println(out.toString());   //Prints the string content read from input stream
-         reader.close();
          
          if (statusLine.getStatusCode() < 300)
          {
@@ -128,7 +120,6 @@ public class TestPeopleRESTapi
             }
             catch (JsonException e)
             {
-               // TODO Auto-generated catch block
                e.printStackTrace();
             }
          }
