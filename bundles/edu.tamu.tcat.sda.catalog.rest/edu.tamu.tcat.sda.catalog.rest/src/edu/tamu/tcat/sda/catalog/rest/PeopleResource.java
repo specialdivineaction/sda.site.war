@@ -14,24 +14,44 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import edu.tamu.tcat.oss.db.DbExecutor;
-import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
-import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
-import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
+import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
-import edu.tamu.tcat.sda.catalog.psql.PsqlHistoricalFigureRepo;
 import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 
 
 @Path("/people")
 public class PeopleResource
 {
-   // TODO: Figure out how to configure this correctly.
-   private JacksonJsonMapper mapper = new JacksonJsonMapper();
-   private PsqlHistoricalFigureRepo repo = new PsqlHistoricalFigureRepo(getExecutor(), mapper);
+   private ConfigurationProperties properties;
+   private HistoricalFigureRepository repo;
+
+   // called by DS
+   public void setConfigurationProperties(ConfigurationProperties properties)
+   {
+      this.properties = properties;
+   }
+   
+   // called by DS
+   public void setRepository(HistoricalFigureRepository repo)
+   {
+      this.repo = repo;
+   }
+   
+   // called by DS
+   public void activate()
+   {
+      
+   }
+   
+   // called by DS
+   public void dispose()
+   {
+      
+   }
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -108,15 +128,5 @@ public class PeopleResource
       hfDV.people = pnDvSet;
       
       return hfDV;
-   }
-   
-   // TODO: Figure out where to get this from
-   private DbExecutor getExecutor()
-   {
-      String url = "jdbc:postgresql://localhost:5433/SDA";
-      String user = "postgres";
-      String pass = "";
-      DataSourceFactory factory = new DataSourceFactory();
-      return new PsqlDbExec(factory.getDataSource(url, user, pass));
    }
 }
