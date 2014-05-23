@@ -9,4 +9,5 @@ Import-Package: edu.tamu.tcat.oss.db,
  org.apache.commons.dbcp
 Bundle-ClassPath: lib/postgresql-9.3-1101.jdbc3.jar,
  .
-Export-Package: edu.tamu.tcat.oss.db.psql
+Export-Package: edu.tamu.tcat.oss.db.psql,
+ org.postgresql.util

@@ -3,7 +3,6 @@ package edu.tamu.tcat.sda.catalog.psql.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,13 +13,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
 import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
@@ -31,6 +26,7 @@ import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 public class TestCreateWork 
 {
    private static PsqlDbExec dbExec;
+   private JacksonJsonMapper mapper = new JacksonJsonMapper();
 
    @BeforeClass
    public static void initDbConnection()
@@ -72,7 +68,7 @@ public class TestCreateWork
 		// FIXME this is async, meaning test will exit prior to conclusion.
 		final CountDownLatch latch = new CountDownLatch(1);
 		
-		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, new SimpleJacksonMapper());
+		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, mapper);
       workRepo.create(works, new DataUpdateObserverAdapter<Work>()
       {
          @Override
@@ -103,35 +99,4 @@ public class TestCreateWork
 //		 fail("Not yet implemented");
 	}
 
-	private static class SimpleJacksonMapper implements JsonMapper
-	{
-	   ObjectMapper mapper = new ObjectMapper();
-	   
-      @Override
-      public String asString(Object o) throws JsonException
-      {
-         try
-         {
-            return mapper.writeValueAsString(o);
-         }
-         catch (JsonProcessingException e)
-         {
-            throw new JsonException(e);
-         }
-      }
-      
-      @Override
-      public <T> T parse(String json, Class<T> type) throws JsonException
-      {
-         try
-         {
-            return mapper.readValue(json, type);
-         }
-         catch (IOException e)
-         {
-            throw new JsonException(e);
-         }
-      }
-	   
-	}
 }
