@@ -9,14 +9,15 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
-import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
-import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.oss.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
+import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -25,28 +26,24 @@ import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
 
 public class TestCreateWork 
 {
-   private static PsqlDbExec dbExec;
-   private JacksonJsonMapper mapper = new JacksonJsonMapper();
+   private static DbExecutor dbExec;
+   private JsonMapper mapper;
+   
+   private ServiceHelper helper;
 
-   @BeforeClass
-   public static void initDbConnection()
+   @Before
+   public void initDbConnection()
    {
-      // TODO make configurable
-      // FIXME at the moment, we have no way to clean up after tests!!
-      String url = "jdbc:postgresql://localhost:5433/SDA";
-      String user = "postgres";
-      String pass = "";
+      helper = new ServiceHelper(Activator.getDefault().getContext());
       
-      
-      DataSourceFactory factory = new DataSourceFactory();
-      dbExec = new PsqlDbExec(factory.getDataSource(url, user, pass));
+      dbExec = helper.waitForService(DbExecutor.class, 10_000);
+      mapper = helper.waitForService(JsonMapper.class, 10_000);
    }
    
-   @AfterClass
-   public static void tearDown() 
+   @After
+   public void tearDown() 
    {
-      if (dbExec != null)
-         dbExec.close();
+      helper.close();
    }
    
 	@Test
@@ -95,8 +92,5 @@ public class TestCreateWork
       {
          assertFalse(e.getMessage(), true);
       }
-		
-//		 fail("Not yet implemented");
 	}
-
 }
