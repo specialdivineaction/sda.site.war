@@ -12,4 +12,5 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  edu.tamu.tcat.oss.json.jackson,
  edu.tamu.tcat.oss.osgi.services.util,
  org.apache.commons.logging
-Service-Component: OSGI-INF/props.xml,OSGI-INF/dbexec.xml, OSGI-INF/historicalFigureRepo.xml
+Service-Component: OSGI-INF/props.xml,OSGI-INF/dbexec.xml, OSGI-INF/historicalFigureRepo.xml,
+  OSGI-INF/json.xml

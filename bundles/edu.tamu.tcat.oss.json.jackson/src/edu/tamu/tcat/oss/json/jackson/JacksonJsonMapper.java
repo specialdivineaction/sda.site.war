@@ -15,23 +15,25 @@ import edu.tamu.tcat.oss.json.JsonTypeReference;
 public class JacksonJsonMapper implements JsonMapper
 {
 
-   private final class TypeRefAdapter<T> extends TypeReference<T>
+   private ObjectMapper mapper;
+   
+   public JacksonJsonMapper()
    {
-      private final JsonTypeReference<T> type;
-
-      private TypeRefAdapter(JsonTypeReference<T> type)
-      {
-         this.type = type;
-      }
-
-      @Override
-      public Type getType()
-      {
-         return type.getType();
-      }
+      
    }
-
-   private final ObjectMapper mapper = new ObjectMapper();
+   
+   // called by DS
+   public void activate() 
+   {
+      mapper = new ObjectMapper();
+      // TODO load modules from plugins
+   }
+   
+   // called by DS
+   public void dispose()
+   {
+      mapper = null;
+   }
 
    @Override
    public String asString(Object o) throws JsonException
@@ -95,6 +97,22 @@ public class JacksonJsonMapper implements JsonMapper
       catch (IOException e)
       {
          throw new JsonException(e);
+      }
+   }
+
+   private final class TypeRefAdapter<T> extends TypeReference<T>
+   {
+      private final JsonTypeReference<T> type;
+   
+      private TypeRefAdapter(JsonTypeReference<T> type)
+      {
+         this.type = type;
+      }
+   
+      @Override
+      public Type getType()
+      {
+         return type.getType();
       }
    }
 
