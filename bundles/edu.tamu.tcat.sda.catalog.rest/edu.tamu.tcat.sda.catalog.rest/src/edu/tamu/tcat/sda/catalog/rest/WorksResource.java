@@ -13,11 +13,19 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.db.psql.DataSourceFactory;
+import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
+import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.sda.catalog.psql.PsqlHistoricalFigureRepo;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 @Path("/works")
 public class WorksResource
 {
+
+   private JacksonJsonMapper mapper = new JacksonJsonMapper();
+   private PsqlHistoricalFigureRepo repo = new PsqlHistoricalFigureRepo(getExecutor(), mapper);
 
    public WorksResource()
    {
@@ -80,6 +88,15 @@ public class WorksResource
    public String updateWork()
    {
       return null;
+   }
+   
+   private DbExecutor getExecutor()
+   {
+      String url = "jdbc:postgresql://localhost:5433/SDA";
+      String user = "postgres";
+      String pass = "";
+      DataSourceFactory factory = new DataSourceFactory();
+      return new PsqlDbExec(factory.getDataSource(url, user, pass));
    }
    
 }
