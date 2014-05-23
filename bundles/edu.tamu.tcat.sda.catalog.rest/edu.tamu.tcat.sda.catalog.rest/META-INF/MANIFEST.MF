@@ -22,7 +22,7 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  edu.tamu.tcat.sda.catalog.psql,
  edu.tamu.tcat.sda.catalog.works,
  edu.tamu.tcat.sda.catalog.works.dv,
- edu.tamu.tcat.sda.ds,
+ edu.tamu.tcat.sda.datastore,
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0"
 Service-Component: OSGI-INF/rest/works.xml,OSGI-INF/rest/people.xml,OSGI-INF/props.xml,OSGI-INF/dbexec.xml,

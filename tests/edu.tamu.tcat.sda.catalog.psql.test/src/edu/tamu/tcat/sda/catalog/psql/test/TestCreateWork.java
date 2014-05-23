@@ -21,7 +21,7 @@ import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
-import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
 public class TestCreateWork 

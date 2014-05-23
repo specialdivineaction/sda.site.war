@@ -10,4 +10,4 @@ Export-Package: edu.tamu.tcat.sda.catalog.events,
  edu.tamu.tcat.sda.catalog.people.dv,
  edu.tamu.tcat.sda.catalog.works,
  edu.tamu.tcat.sda.catalog.works.dv,
- edu.tamu.tcat.sda.ds
+ edu.tamu.tcat.sda.datastore

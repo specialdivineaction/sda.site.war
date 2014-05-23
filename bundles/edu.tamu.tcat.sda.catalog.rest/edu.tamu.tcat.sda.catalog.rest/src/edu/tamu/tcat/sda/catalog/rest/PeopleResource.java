@@ -20,7 +20,7 @@ import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
-import edu.tamu.tcat.sda.ds.DataUpdateObserverAdapter;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
 @Path("/people")

@@ -3,7 +3,7 @@ package edu.tamu.tcat.sda.catalog.psql;
 import java.sql.Connection;
 
 import edu.tamu.tcat.oss.db.DbExecTask;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class ObservableTaskWrapper<R> implements DbExecTask<R> 
 {

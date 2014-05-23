@@ -21,7 +21,7 @@ import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 {

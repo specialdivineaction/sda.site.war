@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.people;
 
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public interface HistoricalFigureRepository
 {
