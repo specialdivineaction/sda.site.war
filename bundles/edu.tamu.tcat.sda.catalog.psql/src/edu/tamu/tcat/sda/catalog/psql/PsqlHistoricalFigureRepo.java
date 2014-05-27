@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -20,19 +21,42 @@ import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 {
    
-   private final DbExecutor exec;
-   private final JsonMapper jsonMapper;
-
-   public PsqlHistoricalFigureRepo(DbExecutor exec, JsonMapper jsonMapper)
+   private DbExecutor exec;
+   private JsonMapper jsonMapper;
+   
+   public PsqlHistoricalFigureRepo()
+   {
+   }
+   
+   public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
-      this.jsonMapper = jsonMapper;
    }
+   
+   public void setJsonMapper(JsonMapper mapper)
+   {
+      this.jsonMapper = mapper;
+   }
+   
+   public void activate() 
+   {
+      Objects.requireNonNull(exec);
+      Objects.requireNonNull(jsonMapper);
+   }
+   
+   public void dispose()
+   {
+      // TODO wait on or cancel any pending tasks?
+      
+      this.exec = null;
+      this.jsonMapper = null;
+   }
+
 
    @Override
    public Iterable<HistoricalFigure> listHistoricalFigures()

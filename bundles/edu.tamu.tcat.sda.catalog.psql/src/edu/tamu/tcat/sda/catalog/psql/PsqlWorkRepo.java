@@ -16,7 +16,7 @@ import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
