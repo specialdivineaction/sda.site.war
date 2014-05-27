@@ -15,6 +15,7 @@ import org.postgresql.util.PGobject;
 
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
@@ -182,33 +183,39 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 
 
    @Override
-   public void create(final HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer)
+   public void create(final HistoricalFigureDV histFigure, final DataUpdateObserver<HistoricalFigure> observer)
    {
       final String insertSql = "INSERT INTO people (historical_figure) VALUES(null)";
       final String updateSql = "UPDATE people "
                                + " SET historical_figure = ?"
                                + " WHERE id = ?";
-      DbExecTask<HistoricalFigure> task1 = new DbExecTask<HistoricalFigure>()
+      
+      DbExecTask<HistoricalFigure> createPersonTask = new DbExecTask<HistoricalFigure>()
       {
-         @Override
-         public HistoricalFigure execute(Connection conn) throws SQLException
+         private final String createPersonId(Connection conn) throws InterruptedException, ExecutionFailedException
          {
             try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS))
             {
-
-               int ct = ps.executeUpdate();
-               if (ct != 1)
-                  throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-               else
-               {
-                  ResultSet rs = ps.getGeneratedKeys();
-                  if ( rs.next() )
-                  {
-                      int key = rs.getInt(1);
-                      histFigure.id = new Integer(key).toString();
-                  }
-               }
+               if (observer != null && observer.isCanceled())
+                  throw new InterruptedException();
+               
+               ps.executeUpdate();
+               ResultSet rs = ps.getGeneratedKeys();
+               if (!rs.next())
+                  throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
+               
+               return Integer.toString(rs.getInt(1));
             }
+            catch (SQLException sqle)
+            {
+               throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]", sqle);
+            }
+         }
+         
+         @Override
+         public HistoricalFigure execute(Connection conn) throws InterruptedException, ExecutionFailedException
+         {
+            histFigure.id = createPersonId(conn);
             
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {
@@ -219,21 +226,29 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
 
+               if (observer != null && observer.isCanceled())
+                  throw new InterruptedException();
+               
                int ct = ps.executeUpdate();
                if (ct != 1)
-                  throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
+                  throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
 
+               return new HistoricalFigureImpl(histFigure);
             }
             catch (JsonException e)
             {
-               throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
+               // NOTE this is an internal configuration error. The JsonMapper should be configured to 
+               //      serialize HistoricalFigureDV instances correctly.
+               throw new ExecutionFailedException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureImpl(histFigure);
+            catch (SQLException sqle)
+            {
+               throw new ExecutionFailedException("Failed to save historical figure [" + histFigure + "]", sqle);
+            }
          }
       };
       
-      exec.submit(new ObservableTaskWrapper<>(task1, observer));
-      
+      exec.submit(new ObservableTaskWrapper<>(createPersonTask, observer));
    }
 
    @Override
