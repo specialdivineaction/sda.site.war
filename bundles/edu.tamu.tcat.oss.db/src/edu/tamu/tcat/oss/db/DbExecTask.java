@@ -19,7 +19,10 @@ public interface DbExecTask<T>
     * 
     * @param conn The data base connection to be used to run this task. 
     * @return The result of the task. This may be {@code null}.
-    * @throws Exception If problems are encountered while running this task.
+    * @throws Exception If problems are encountered while running this task. If the task throws
+    *       an exception, the implementing execution environment should attempt to rollback any 
+    *       pending changes to the database. Note that the ability to rollback changes depends 
+    *       on the database-specific implementation details.
     */
    public T execute(Connection conn) throws Exception;
 
