@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,14 +15,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
@@ -84,34 +85,37 @@ public class PeopleResource
    
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public Response createPerson(HistoricalFigureDV author)
+   @Produces(MediaType.APPLICATION_JSON)
+   public HistoricalFigureDV createPerson(HistoricalFigureDV person)
    {
-
-      repo.create(author, new CreatePersonObserver());
-
-      return Response.accepted().build();
+      CreatePersonObserver observer = new CreatePersonObserver();
+      repo.create(person, observer);
+      try 
+      {
+         HistoricalFigure createdPerson = observer.getResult();
+         HistoricalFigureDV dv = getHistoricalFigureDV(createdPerson);
+         return dv;
+      }
+      catch (Exception ex)
+      {
+         ex.printStackTrace();   // HACK: remove this.
+         // TODO handle exception properly.
+         return null;
+      }
    }
 
    private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
    {
-      PersonNameRefDV pnDV = new PersonNameRefDV();
       HistoricalFigureDV hfDV = new HistoricalFigureDV();
       hfDV.id = figure.getId();
       hfDV.birth = figure.getBirth();
       hfDV.death = figure.getDeath();
       
       Set<PersonName> alternativeNames = figure.getAlternativeNames();
-      Set<PersonNameRefDV> pnDvSet = new HashSet<PersonNameRefDV>();
+      Set<PersonNameDV> pnDvSet = new HashSet<PersonNameDV>();
       for (PersonName name : alternativeNames)
       {
-         pnDV.title = name.getTitle();
-         pnDV.displayName = name.getDisplayName();
-         pnDV.givenName = name.getGivenName();
-         pnDV.middleName = name.getMiddleName();
-         pnDV.familyName = name.getFamilyName();
-         pnDV.suffix = name.getSuffix();
-         
-         pnDvSet.add(pnDV);
+         pnDvSet.add(new PersonNameDV(name));
       }
       
       hfDV.people = pnDvSet;
@@ -119,18 +123,57 @@ public class PeopleResource
       return hfDV;
    }
 
-   private final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
+   private static final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
    {
+      private final CountDownLatch latch;
+
+      private volatile HistoricalFigure result;
+      private volatile ResourceCreationException exception = null;
+      
+      CreatePersonObserver()
+      {
+         latch = new CountDownLatch(1);
+      }
+
       @Override
       protected void onFinish(HistoricalFigure result)
       {
-         System.out.println("Sucess!");
+         this.result = result;
+         latch.countDown();
       }
    
       @Override
       protected void onError(String message, Exception ex)
       {
-         System.out.println("Error!");
+         // TODO this should be a 500 error - repo could not create the resource, likely SQL 
+         //      error. We should log. Possibly send message to admin.
+         exception = new ResourceCreationException(message, ex);
+         latch.countDown();
+      }
+      
+      public HistoricalFigure getResult() throws Exception
+      {
+         // TODO need semantic exception
+         
+         try 
+         {
+            // HACK: hard coded timeout
+            latch.await(10, TimeUnit.MINUTES);
+         }
+         catch (InterruptedException ex)
+         {
+            // TODO DB time out. . . . may have succeeded, client should not retry.
+            // FIXME need to be able to cancel execution!
+            this.cancel();
+         }
+         
+         if (exception != null)
+            throw exception;
+         
+         if (result == null)
+            throw new IllegalStateException("Failed to obtain created person.");
+         
+         return result;
       }
    }
 }
