@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.catalog.rest.repo.histfigure">
+   <implementation class="edu.tamu.tcat.sda.catalog.psql.PsqlHistoricalFigureRepo"/>
+   <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
+   <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.oss.db.DbExecutor" name="DbExecutor" policy="static"/>
+   <service>
+      <provide interface="edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository"/>
+   </service>
+</scr:component>

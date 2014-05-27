@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.ds;
+package edu.tamu.tcat.sda.datastore;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.ds;
+package edu.tamu.tcat.sda.datastore;
 
 /**
  * Provides a central point of access for retrieving the data stores that have been 

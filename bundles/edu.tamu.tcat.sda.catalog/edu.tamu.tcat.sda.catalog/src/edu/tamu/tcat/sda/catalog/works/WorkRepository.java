@@ -1,8 +1,8 @@
 package edu.tamu.tcat.sda.catalog.works;
 
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
-import edu.tamu.tcat.sda.ds.DataStore;
-import edu.tamu.tcat.sda.ds.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataStore;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public interface WorkRepository extends DataStore
 {
