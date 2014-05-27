@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 @Path("/people")
 public class PeopleResource
 {
+   @SuppressWarnings("unused")
    private ConfigurationProperties properties;
    private HistoricalFigureRepository repo;
 
@@ -55,21 +57,18 @@ public class PeopleResource
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public Iterable<HistoricalFigureDV> listPeople()
+   public List<HistoricalFigureDV> listPeople()
    {
-      Iterable<HistoricalFigureDV> iterablehfDV = null;
-
-      List<HistoricalFigureDV> listHfDV = new ArrayList<HistoricalFigureDV>();
-      Iterable<HistoricalFigure> listFigures = repo.listHistoricalFigures();
+      // TODO need to add slicing/paging support
+      List<HistoricalFigureDV> results = new ArrayList<HistoricalFigureDV>();
+      Iterable<HistoricalFigure> people = repo.listHistoricalFigures();
       
-      for (HistoricalFigure figure : listFigures)
+      for (HistoricalFigure figure : people)
       {
-         listHfDV.add(getHistoricalFigureDV(figure));
+         results.add(getHistoricalFigureDV(figure));
       }
-      
-      iterablehfDV = listHfDV;
 
-      return iterablehfDV;
+      return Collections.unmodifiableList(results);
    }
 
    @GET
@@ -77,6 +76,8 @@ public class PeopleResource
    @Produces(MediaType.APPLICATION_JSON)
    public HistoricalFigureDV getPerson(@PathParam(value="personId") int personId)
    {
+      // TODO make this a mangled string instead of an ID. Don't want people guessing 
+      //      unique identifiers
       HistoricalFigure figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
@@ -85,20 +86,8 @@ public class PeopleResource
    @Consumes(MediaType.APPLICATION_JSON)
    public Response createPerson(HistoricalFigureDV author)
    {
-      repo.create(author, new DataUpdateObserverAdapter<HistoricalFigure>()
-      {
-         @Override
-         protected void onFinish(HistoricalFigure result)
-         {
-            System.out.println("Sucess!");
-         }
-         
-         @Override
-         protected void onError(String message, Exception ex)
-         {
-            System.out.println("Error!");
-         }
-      });
+
+      repo.create(author, new CreatePersonObserver());
 
       return Response.accepted().build();
    }
@@ -128,5 +117,20 @@ public class PeopleResource
       hfDV.people = pnDvSet;
       
       return hfDV;
+   }
+
+   private final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
+   {
+      @Override
+      protected void onFinish(HistoricalFigure result)
+      {
+         System.out.println("Sucess!");
+      }
+   
+      @Override
+      protected void onError(String message, Exception ex)
+      {
+         System.out.println("Error!");
+      }
    }
 }
