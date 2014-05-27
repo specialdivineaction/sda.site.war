@@ -25,7 +25,7 @@ import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class TestPeopleRESTapi
 {
@@ -39,6 +39,8 @@ public class TestPeopleRESTapi
    public static void initHTTPConnection()
    {
 
+      mapper.activate();      // might ought to load as OSGi service? 
+      
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
       
@@ -52,11 +54,11 @@ public class TestPeopleRESTapi
    }
 
    @Test
-   public void testPost()
+   public void testPost() throws JsonException, ClientProtocolException, IOException
    {
       HistoricalFigureDV histFig = new HistoricalFigureDV();
       
-      PersonNameRefDV author = new PersonNameRefDV();
+      PersonNameDV author = new PersonNameDV();
       author.displayName = "George Albert Smith";
       author.familyName = "Smith";
       author.givenName = "George";
@@ -65,7 +67,7 @@ public class TestPeopleRESTapi
       author.suffix = "Sir";
       author.title = "Author";
       
-      Set<PersonNameRefDV> authNames = new HashSet<PersonNameRefDV>();
+      Set<PersonNameDV> authNames = new HashSet<PersonNameDV>();
       
       authNames.add(author);
       
@@ -74,32 +76,20 @@ public class TestPeopleRESTapi
       histFig.death = new Date();
       histFig.people = authNames;
       
-      
-      try
-      {
-         String json = mapper.asString(histFig);
-   
-         post.setEntity(new StringEntity(json));
-         
-         HttpResponse response = client.execute(post);
-         int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode >=200 && statusCode < 300)
-            Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
-         else if (statusCode >= 300 && statusCode < 400)
-            Assert.fail("Redirection: " + statusCode);
-         else if (statusCode >= 400 && statusCode < 500)
-            Assert.fail("Client Error: " + statusCode);
-         else
-            Assert.fail("Server Error: " + statusCode);
-            
-            
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+      String json = mapper.asString(histFig);
 
+      post.setEntity(new StringEntity(json));
+
+      HttpResponse response = client.execute(post);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode >=200 && statusCode < 300)
+         Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
+      else if (statusCode >= 300 && statusCode < 400)
+         Assert.fail("Redirection: " + statusCode);
+      else if (statusCode >= 400 && statusCode < 500)
+         Assert.fail("Client Error: " + statusCode);
+      else
+         Assert.fail("Server Error: " + statusCode);
    }
 
    @Test
