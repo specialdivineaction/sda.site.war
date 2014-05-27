@@ -9,7 +9,7 @@ import java.util.Set;
 public class HistoricalFigureDV
 {
    public String id;
-   public Set<PersonNameRefDV> people;
+   public Set<PersonNameDV> people;
    public Date birth;
    public Date death;
    

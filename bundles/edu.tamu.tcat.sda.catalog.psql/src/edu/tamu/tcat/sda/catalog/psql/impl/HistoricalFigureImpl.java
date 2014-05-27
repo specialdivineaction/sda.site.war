@@ -8,13 +8,13 @@ import java.util.Set;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class HistoricalFigureImpl implements HistoricalFigure
 {
 
    HistoricalFigureDV figureRef;
-   Set<PersonNameRefDV> people;
+   Set<PersonNameDV> people;
    
    public HistoricalFigureImpl(HistoricalFigureDV figure)
    {
@@ -39,7 +39,7 @@ public class HistoricalFigureImpl implements HistoricalFigure
    {
       Set<PersonName> personSet = new HashSet<PersonName>();
       
-      for (PersonNameRefDV person : people)
+      for (PersonNameDV person : people)
       {
          personSet.add(new PersonNameImpl(person));
       }
