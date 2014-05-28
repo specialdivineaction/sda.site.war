@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-import java.util.List;
 
 /**
  * Represents a work 
@@ -8,9 +7,14 @@ import java.util.List;
 public class WorkDV
 {
    public String id;
-   public List<AuthorRefDv> authors;
-   public List<TitleDV> titles;
-   public List<AuthorRefDv> otherAuthors;
+   public AuthorListDV authors;
+   public TitleDefinitionDV title;
+   public AuthorListDV otherAuthors;
    public PublicationInfoDV pubInfo;
-   public String summary;                    
+   public String series;
+   public String summary; 
+   
+   public WorkDV()
+   {
+   }
 }
