@@ -27,4 +27,7 @@ public interface AuthorReference
     *    translator, editor, director, etc.. This is an application specific value.
     */
    String getRole();
+   
+   String getId();
+   
 }
