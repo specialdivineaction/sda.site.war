@@ -6,38 +6,45 @@ import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
 
 public class AuthorListImpl implements AuthorList
 {
-   private final Iterator<AuthorRefDv> authRefDv;
-   private List<AuthorReference> listHfDV;
-   public AuthorListImpl(Iterator<AuthorRefDv> authRef)
+   private Iterator<AuthorListDV> authListDv;
+   private List<AuthorReference> authRef;
+   private AuthorListDV authList;
+   
+   public AuthorListImpl(Iterator<AuthorListDV> authList)
    {
-      this.authRefDv = authRef;
+      this.authListDv = authList;
+      authRef = new ArrayList<AuthorReference>();
+      while(authListDv.hasNext())
+      {
+         authRef.add(new AuthorReferenceImpl(authListDv.next().authorReference));
+      }
+   }
+   
+   public AuthorListImpl(AuthorListDV authList)
+   {
+      this.authListDv = authListDv;
    }
 
    @Override
    public Iterator<AuthorReference> iterator()
    {
-      listHfDV = new ArrayList<AuthorReference>();
-      while(authRefDv.hasNext())
-      {
-         listHfDV.add(new AuthorReferenceImpl(authRefDv.next()));
-      }
-      return listHfDV.iterator();
+      return authRef.iterator();
    }
 
    @Override
    public AuthorReference get(int ix) throws IndexOutOfBoundsException
    {
-      return listHfDV.get(ix);
+      return authRef.get(ix);
    }
 
    @Override
    public int size()
    {
-      return listHfDV.size();
+      return authRef.size();
    }
 
 }

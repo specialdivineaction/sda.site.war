@@ -1,50 +1,56 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.sda.catalog.works.dv.TitleDefinitionDV;
+
 
 public class TitleDefinitionImpl implements TitleDefinition
 {
 
-   private final TitleDV titleDV;
+   private final TitleDefinitionDV titleDef;
    
-   public TitleDefinitionImpl(TitleDV title)
+   public TitleDefinitionImpl(TitleDefinitionDV title)
    {
-      this.titleDV = title;
-      
-      
+      this.titleDef = title;
    }
    
    @Override
    public Title getCanonicalTitle()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return new TitleImpl(titleDef.canonicalTitle);
    }
 
    @Override
    public Title getShortTitle()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return new TitleImpl(titleDef.shortTitle);
    }
 
    @Override
    public Set<Title> getAlternateTitles()
    {
-      // TODO Auto-generated method stub
-      return null;
+      Set<TitleDV> alternateTitles = titleDef.alternateTitles;
+      Set<Title> titles = new HashSet<Title>();
+      
+      for(TitleDV title : alternateTitles)
+      {
+         titles.add(new TitleImpl(title));
+      }
+      
+      return titles;
    }
 
    @Override
    public Title getTitle(Locale language)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return new TitleImpl(titleDef.localeTitle);
    }
 
 }

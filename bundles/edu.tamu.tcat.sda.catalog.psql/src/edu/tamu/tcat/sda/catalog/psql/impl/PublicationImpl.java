@@ -1,9 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import java.util.Date;
-
+import edu.tamu.tcat.sda.catalog.works.DateDescription;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
-import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 
 public class PublicationImpl implements PublicationInfo
@@ -28,10 +26,9 @@ public class PublicationImpl implements PublicationInfo
    }
 
    @Override
-   public Date getPublicationDate()
+   public DateDescription getPublicationDate()
    {
-      DateDescriptionDV dateDescript = pubInfo.date;
-      return dateDescript.value;
+      return new DateDescriptionImpl(pubInfo.date);
    }
 
 }

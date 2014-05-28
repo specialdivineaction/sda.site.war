@@ -2,13 +2,19 @@ package edu.tamu.tcat.sda.catalog.psql.impl;
 
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 
 public class AuthorReferenceImpl implements AuthorReference
 {
-   private final AuthorRefDv authorRef;
+   private final AuthorRefDV authorRef;
+
+   @Override
+   public String getId()
+   {
+      return authorRef.authorId;
+   }
    
-   public AuthorReferenceImpl(AuthorRefDv authorRef)
+   public AuthorReferenceImpl(AuthorRefDV authorRef)
    {
       this.authorRef = authorRef;
    }

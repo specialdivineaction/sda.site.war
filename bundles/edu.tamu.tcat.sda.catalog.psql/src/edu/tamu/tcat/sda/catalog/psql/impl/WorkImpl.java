@@ -1,14 +1,11 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import java.util.List;
-
 import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class WorkImpl implements Work
@@ -22,20 +19,22 @@ public class WorkImpl implements Work
    @Override
    public AuthorList getAuthors()
    {
-      return new AuthorListImpl(work.authors.iterator());
+      AuthorListDV authors = work.authors;
+      AuthorRefDV authorReference = authors.authorReference;
+
+      return new AuthorListImpl(work.authors);
    }
 
    @Override
    public TitleDefinition getTitle()
    {
-      List<TitleDV> titles = work.titles;
-      return null;
+      return new TitleDefinitionImpl(work.title);
    }
 
    @Override
    public AuthorList getOtherAuthors()
    {
-      return new AuthorListImpl(work.otherAuthors.iterator());
+      return new AuthorListImpl(work.otherAuthors);
    }
 
    @Override
@@ -48,13 +47,19 @@ public class WorkImpl implements Work
    public String getSeries()
    {
       
-      return null;
+      return work.series;
    }
 
    @Override
    public String getSummary()
    {
       return work.summary;
+   }
+
+   @Override
+   public String getId()
+   {
+      return work.id;
    }
 
 }
