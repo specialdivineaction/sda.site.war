@@ -1,96 +1,142 @@
 package edu.tamu.tcat.sda.catalog.psql.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.oss.db.DbExecutor;
-import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.oss.osgi.services.util.ServiceHelper;
-import edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo;
-import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
-import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDv;
+import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.sda.catalog.psql.impl.AuthorListImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.AuthorReferenceImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.PublicationImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.TitleDefinitionImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.TitleImpl;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
+import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
+import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.sda.catalog.works.dv.TitleDefinitionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
 public class TestCreateWork 
 {
-   private static DbExecutor dbExec;
-   private JsonMapper mapper;
+   private static HttpPost post;
+   private static HttpGet  get;
+   private static CloseableHttpClient client;
+   private static URI uri;
+   private static JacksonJsonMapper mapper = new JacksonJsonMapper();
    
-   private ServiceHelper helper;
+   @BeforeClass
+   public static void initHTTPConnection()
+   {
 
-   @Before
-   public void initDbConnection()
-   {
-      helper = new ServiceHelper(Activator.getDefault().getContext());
+      mapper.activate();      // might ought to load as OSGi service? 
       
-      dbExec = helper.waitForService(DbExecutor.class, 10_000);
-      mapper = helper.waitForService(JsonMapper.class, 10_000);
+      uri = URI.create("http://localhost:9999/catalog/services/works");
+      client = HttpClientBuilder.create().build();
+      
+      post = new HttpPost(uri);
+      post.setHeader("User-Agent", "Mozilla/5.0");
+      post.setHeader("Content-type", "application/json");
+      
+      get = new HttpGet(uri);
+      get.setHeader("User-Agent", "Mozilla/5.0");
+      get.setHeader("Content-type", "application/json");
    }
-   
-   @After
-   public void tearDown() 
-   {
-      helper.close();
-   }
+
    
 	@Test
-	public void testCreate() 
+	public void testCreate() throws JsonException, ClientProtocolException, IOException 
 	{
-		AuthorRefDv authorRef = new AuthorRefDv();
+		AuthorRefDV authorRef = new AuthorRefDV();
 		authorRef.authorId = "1234";
 		authorRef.name = "A.C. Dixon";
 		authorRef.role = "";
+
+		AuthorListDV authorList = new AuthorListDV();
+		authorList.authorReference = authorRef;
 		
-		List<AuthorRefDv> authorList = new ArrayList<>();
-		authorList.add(authorRef);
+		List<AuthorListDV> authorListDV = new ArrayList<AuthorListDV>();
+		authorListDV.add(authorList);
 		
+		TitleDV title = new TitleDV();
+		title.title = "";
+		title.subtitle = "";
+		title.lg = "";
+		title.type = "";
+		
+		TitleDefinitionDV titleDef = new TitleDefinitionDV();
+		titleDef.canonicalTitle = title;
+		
+		DateDescriptionDV dateDescript = new DateDescriptionDV();
+		dateDescript.display = "";
+		dateDescript.value = new Date();
+		
+		PublicationInfoDV pubInfo = new PublicationInfoDV();
+		pubInfo.date = dateDescript;
+		pubInfo.place = "";
+		pubInfo.publisher = "";
 		
 		WorkDV works = new WorkDV();
-		works.id = UUID.randomUUID().toString();
 		works.authors = authorList;
+		works.otherAuthors = null;
+		works.title = titleDef;
+		works.pubInfo = pubInfo;
+		works.series = "Series 1";
+		works.summary = "Summary of the work";
 		
-		// FIXME this is async, meaning test will exit prior to conclusion.
-		final CountDownLatch latch = new CountDownLatch(1);
+		String json = mapper.asString(works);
+		StringEntity stringEntity = new StringEntity(json);
+//		stringEntity.setContentType("application/json");
+		post.setEntity(stringEntity);
+//		post.setHeader("Content-Type", "application/json");
+		HttpResponse response = client.execute(post);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode >=200 && statusCode < 300)
+         Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
+      else if (statusCode >= 300 && statusCode < 400)
+         Assert.fail("Redirection: " + statusCode);
+      else if (statusCode >= 400 && statusCode < 500)
+         Assert.fail("Client Error: " + statusCode);
+      else
+         Assert.fail("Server Error: " + statusCode);
 		
-		PsqlWorkRepo workRepo = new PsqlWorkRepo(dbExec, mapper);
-      workRepo.create(works, new DataUpdateObserverAdapter<Work>()
-      {
-         @Override
-         protected void onFinish(Work result)
-         {
-            System.out.println("Sucess!");
-            latch.countDown();
-         }
-         
-         @Override
-         protected void onError(String message, Exception ex)
-         {
-            assertFalse(message, true);
-            latch.countDown();
-         }
-      });
-
-      try
-      {
-         boolean success = latch.await(10, TimeUnit.SECONDS);
-         assertTrue("Failed to notify observer", success);
-      }
-      catch (InterruptedException e)
-      {
-         assertFalse(e.getMessage(), true);
-      }
+		
 	}
+	
+//	@Test
+//	public void testGet() throws ClientProtocolException, IOException
+//	{
+//	   CloseableHttpResponse response = client.execute(get);
+//      InputStream content = response.getEntity().getContent();
+//      StatusLine statusLine = response.getStatusLine();
+//	} 
+//	
+//   @Test
+//   public void testWork() throws ClientProtocolException, IOException
+//   {
+//      URI personUri = uri.resolve("works/16");
+//      get.setURI(personUri);
+//      CloseableHttpResponse response = client.execute(get);
+//      InputStream content = response.getEntity().getContent();
+//      StatusLine statusLine = response.getStatusLine();
+//   }
 }
