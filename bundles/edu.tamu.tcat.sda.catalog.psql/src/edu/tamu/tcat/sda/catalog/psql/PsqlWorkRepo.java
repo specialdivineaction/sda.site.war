@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.catalog.psql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.postgresql.util.PGobject;
 
@@ -10,9 +11,7 @@ import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.works.AuthorList;
-import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
-import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
+import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -20,15 +19,33 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
-   // TODO should we use something like the data source executor service?
+   private DbExecutor exec;
+   private JsonMapper jsonMapper;
 
-   private final DbExecutor exec;
-   private final JsonMapper jsonMapper;
-
-   public PsqlWorkRepo(DbExecutor exec, JsonMapper jsonMapper)
+   public PsqlWorkRepo()
+   {
+   }
+   
+   public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
-      this.jsonMapper = jsonMapper;
+   }
+   
+   public void setJsonMapper(JsonMapper mapper)
+   {
+      this.jsonMapper = mapper;
+   }
+   
+   public void activate()
+   {
+      Objects.requireNonNull(exec);
+      Objects.requireNonNull(jsonMapper);
+   }
+   
+   public void dispose()
+   {
+      this.exec = null;
+      this.jsonMapper = null;
    }
 
    @Override
@@ -70,7 +87,7 @@ public class PsqlWorkRepo implements WorkRepository
                if (ct != 1)
                   throw new IllegalStateException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
 
-               return new WorkRef(Long.parseLong(work.id));
+               return new WorkImpl(work);
             }
          }
       };
@@ -84,77 +101,5 @@ public class PsqlWorkRepo implements WorkRepository
       // TODO Auto-generated method stub
 
    }
-
-   private static class WorkRef implements Work
-   {
-      public WorkRef(long id)
-      {
-         // TODO implement this. Capture the id of the work, use it to query the DB as 
-         //      needed to lazy load data.
-      }
-
-      @Override
-      public AuthorList getAuthors()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public TitleDefinition getTitle()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-      
-      @Override
-      public AuthorList getOtherAuthors()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-      
-      @Override
-      public PublicationInfo getPublicationInfo()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public String getSeries()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-
-      @Override
-      public String getSummary()
-      {
-         // TODO Auto-generated method stub
-         return null;
-      }
-   }
-
-//   private Connection getPostgresConn()
-//   {
-//      Connection con = null;
-//
-//      String url = "jdbc:postgresql://localhost:5433/SDA";
-//      String user = "postgres";
-//      String password = "";
-//
-//      try
-//      {
-//         Class.forName("org.postgresql.Driver");
-//         con = DriverManager.getConnection(url, user, password);
-//      }
-//      catch (SQLException | ClassNotFoundException e)
-//      {
-//         // TODO Auto-generated catch block
-//         e.printStackTrace();
-//      }
-//      return con;
-//   }
 
 }
