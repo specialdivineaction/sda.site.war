@@ -145,7 +145,6 @@ public class PeopleResource
 
       private volatile HistoricalFigure result;
       private volatile ResourceCreationException exception = null;
-
       
       CreatePersonObserver()
       {
@@ -162,8 +161,6 @@ public class PeopleResource
       @Override
       protected void onError(String message, Exception ex)
       {
-         // TODO this should be a 500 error - repo could not create the resource, likely SQL 
-         //      error. We should log. Possibly send message to admin.
          exception = new ResourceCreationException(message, ex);
          latch.countDown();
       }
