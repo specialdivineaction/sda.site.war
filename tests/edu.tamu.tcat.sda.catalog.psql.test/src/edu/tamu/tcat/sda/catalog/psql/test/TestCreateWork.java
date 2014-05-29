@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -77,14 +79,35 @@ public class TestCreateWork
 		List<AuthorListDV> authorListDV = new ArrayList<AuthorListDV>();
 		authorListDV.add(authorList);
 		
-		TitleDV title = new TitleDV();
-		title.title = "";
-		title.subtitle = "";
-		title.lg = "";
-		title.type = "";
+		TitleDV orig = new TitleDV();
+		orig.title = "Orginal Title";
+		orig.subtitle = "";
+		orig.lg = "";
+		orig.type = "";
 		
+
+      // Alternative Titles
+      TitleDV alt1 = new TitleDV();
+      alt1.title = "Alternate Title 1";
+      alt1.subtitle = "";
+      alt1.lg = "";
+      alt1.type = "";
+      
+      TitleDV alt2 = new TitleDV();
+      alt2.title = "Alternate Title 2";
+      alt2.subtitle = "";
+      alt2.lg = "";
+      alt2.type = "";
+		
+      Set<TitleDV> titleSet = new HashSet<TitleDV>();
+      titleSet.add(alt1);
+      titleSet.add(alt2);
+      
 		TitleDefinitionDV titleDef = new TitleDefinitionDV();
-		titleDef.canonicalTitle = title;
+		titleDef.canonicalTitle = orig;
+		titleDef.alternateTitles = titleSet;
+		titleDef.localeTitle = orig;
+		titleDef.shortTitle = orig;
 		
 		DateDescriptionDV dateDescript = new DateDescriptionDV();
 		dateDescript.display = "";
@@ -105,9 +128,7 @@ public class TestCreateWork
 		
 		String json = mapper.asString(works);
 		StringEntity stringEntity = new StringEntity(json);
-//		stringEntity.setContentType("application/json");
 		post.setEntity(stringEntity);
-//		post.setHeader("Content-Type", "application/json");
 		HttpResponse response = client.execute(post);
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode >=200 && statusCode < 300)
