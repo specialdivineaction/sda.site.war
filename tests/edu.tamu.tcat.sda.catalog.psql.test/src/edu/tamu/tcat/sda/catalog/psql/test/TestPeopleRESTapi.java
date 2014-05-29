@@ -24,6 +24,7 @@ import org.junit.Test;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
@@ -72,8 +73,14 @@ public class TestPeopleRESTapi
       authNames.add(author);
       
       histFig.id = "1234abcd";
-      histFig.birth = new Date();
-      histFig.death = new Date();
+      // TODO create a new DateOfDeath/Birth class
+      histFig.birth = new HistoricalEventDV();
+      histFig.birth.title = "Date of birth for " + author.displayName;
+      histFig.birth.eventDate = new Date();
+
+      histFig.death = new HistoricalEventDV();
+      histFig.death.title = "Date of death for " + author.displayName;
+      histFig.death.eventDate = new Date();
       histFig.people = authNames;
       
       String json = mapper.asString(histFig);
