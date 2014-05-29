@@ -212,27 +212,24 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             }
          }
          
-         @Override
-         public HistoricalFigure execute(Connection conn) throws InterruptedException, ExecutionFailedException
+         private HistoricalFigure savePersonDetails(Connection conn) throws InterruptedException, ExecutionFailedException
          {
-            histFigure.id = createPersonId(conn);
-            
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-
+         
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-
+         
                if (observer != null && observer.isCanceled())
                   throw new InterruptedException();
                
                int ct = ps.executeUpdate();
                if (ct != 1)
                   throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-
+         
                return new HistoricalFigureImpl(histFigure);
             }
             catch (JsonException e)
@@ -245,6 +242,15 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             {
                throw new ExecutionFailedException("Failed to save historical figure [" + histFigure + "]", sqle);
             }
+         }
+
+         @Override
+         public HistoricalFigure execute(Connection conn) throws InterruptedException, ExecutionFailedException
+         {
+            histFigure.id = createPersonId(conn);
+            HistoricalFigure result = savePersonDetails(conn);
+            
+            return result;
          }
       };
       
@@ -285,6 +291,5 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
       };
       
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
-      
    }
 }
