@@ -1,11 +1,12 @@
 package edu.tamu.tcat.sda.catalog.people;
 
-import java.util.Date;
 import java.util.Set;
 
+import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
+
 /**
- * Represents a historical figure described in the collection. This is typically used to represent 
- * a person.
+ * Represents a historical figure described in the collection. This is typically used to 
+ * represent a person.
  */
 public interface HistoricalFigure
 {
@@ -33,12 +34,12 @@ public interface HistoricalFigure
     *    either to incorporate the new Java 8 time utilities or to provide more richly structured 
     *    information about the person's birth (e.g., including location, fuzzy dates, etc). 
     */
-   Date getBirth();
+   HistoricalEvent getBirth();
    
    /**
     * @return The date of this person's death. NOTE that this API is provisional and will likely change
     *    either to incorporate the new Java 8 time utilities or to provide more richly structured 
     *    information about the person's death (e.g., including location, fuzzy dates, etc). 
     */
-   Date getDeath();
+   HistoricalEvent getDeath();
 }
