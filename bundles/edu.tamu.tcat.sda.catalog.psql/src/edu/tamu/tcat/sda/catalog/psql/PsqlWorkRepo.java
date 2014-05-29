@@ -2,13 +2,16 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
 
 import org.postgresql.util.PGobject;
 
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
@@ -68,26 +71,36 @@ public class PsqlWorkRepo implements WorkRepository
          throw new IllegalArgumentException("Failed to serialize the supplied work [" + work + "]", jpe);
       }
 
-      final String sql = "INSERT INTO works (id, work) VALUES(?,?)";
+      final String sql = "INSERT INTO works (work) VALUES(?)";
       DbExecTask<Work> task = new DbExecTask<Work>()
       {
          @Override
-         public Work execute(Connection conn) throws SQLException
+         public Work execute(Connection conn) throws SQLException, ExecutionFailedException
          {
-            try (PreparedStatement ps = conn.prepareStatement(sql))
+            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
             {
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(workString);
 
-               ps.setString(1, work.id);
-               ps.setObject(2, jsonObject);
+               ps.setObject(1, jsonObject);
 
                int ct = ps.executeUpdate();
                if (ct != 1)
-                  throw new IllegalStateException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
+                  throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
 
+//               if (ps.isClosed())
+//               {
+                  ResultSet rs = ps.getGeneratedKeys();
+                  if (!rs.next())
+                     throw new ExecutionFailedException("Failed to generate id for a work [" + work + "]");
+                  work.id = Integer.toString(rs.getInt("id"));
+//               }
                return new WorkImpl(work);
+            }
+            catch (SQLException e)
+            {
+               throw new IllegalStateException("Failed to create work: [" + work + "]");
             }
          }
       };
