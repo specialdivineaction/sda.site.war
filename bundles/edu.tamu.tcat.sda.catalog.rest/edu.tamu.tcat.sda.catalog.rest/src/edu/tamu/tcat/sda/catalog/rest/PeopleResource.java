@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -30,14 +31,16 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 public class PeopleResource
 {
    // records internal errors accessing the REST
-   private static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
+   static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
    
    // TODO move to consts package
    
    // The time (in milliseconds) to wait for a response from the repository. Defaults to 1000.
    public static final String PROP_TIMEOUT = "rest.repo.timeout";
+   public static final String PROP_TIMEOUT_UNITS = "rest.repo.timeout.units";
+
+   public static final String PROP_ENABLE_ERR_DETAILS = "rest.err.details.enabled";
    
-   @SuppressWarnings("unused")
    private ConfigurationProperties properties;
    private HistoricalFigureRepository repo;
 
@@ -95,26 +98,42 @@ public class PeopleResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public HistoricalFigureDV createPerson(HistoricalFigureDV person)
+   public HistoricalFigureDV createPerson(HistoricalFigureDV person) throws Exception
    {
-      CreatePersonObserver observer = new CreatePersonObserver(person);
+      // TODO add authentication filter in front of this call
+      int timeout = properties.getPropertyValue(PROP_TIMEOUT, Integer.class, Integer.valueOf(1000)).intValue();
+      String u = properties.getPropertyValue(PROP_TIMEOUT_UNITS, String.class, TimeUnit.MILLISECONDS.toString());
+      TimeUnit units = TimeUnit.valueOf(u);
+      
+      CreatePersonObserver observer = new CreatePersonObserver();
       repo.create(person, observer);
+      
       try 
       {
-         // HACK: hard coded timeout
-         HistoricalFigure createdPerson = observer.getResult(1000, TimeUnit.MILLISECONDS);
+         HistoricalFigure createdPerson = observer.getResult(timeout, units);
          HistoricalFigureDV dv = getHistoricalFigureDV(createdPerson);
          return dv;
       }
+      catch (InterruptedException iex)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, iex, properties, timeout, units);
+         errorLogger.log(Level.SEVERE, error.message, iex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      } 
+      catch (ResourceCreationException rce)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, rce, properties);
+         errorLogger.log(Level.SEVERE, error.message, rce);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      }
       catch (Exception ex)
       {
-         
-         ex.printStackTrace();   // HACK: remove this.
-         // TODO handle exception properly.
-         return null;
+         CreatePersonERD error = CreatePersonERD.create(person, ex, properties);
+         errorLogger.log(Level.SEVERE, error.message, ex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));      
       }
    }
-
+   
    private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
    {
       return new HistoricalFigureDV(figure);
@@ -122,24 +141,22 @@ public class PeopleResource
 
    private static final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
    {
-      private final HistoricalFigureDV person;     // for data logging purposes
       private final CountDownLatch latch;
 
       private volatile HistoricalFigure result;
       private volatile ResourceCreationException exception = null;
 
       
-      CreatePersonObserver(HistoricalFigureDV person)
+      CreatePersonObserver()
       {
-         this.person = person;
-         latch = new CountDownLatch(1);
+         this.latch = new CountDownLatch(1);
       }
 
       @Override
       protected void onFinish(HistoricalFigure result)
       {
          this.result = result;
-         latch.countDown();
+         this.latch.countDown();
       }
    
       @Override
@@ -151,41 +168,67 @@ public class PeopleResource
          latch.countDown();
       }
       
-      public HistoricalFigure getResult(long timeout, TimeUnit units) throws Exception
+      public HistoricalFigure getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
       {
-         // TODO need semantic exception
-         
-         try 
-         {
-            latch.await(timeout, units);
-         }
-         catch (InterruptedException ex)
-         {
-            // FIXME need to be able to cancel execution!
-            try  {
-               this.cancel();          // prevent any further updates to the underlying database.
-            }  catch (Exception e) {
-               ex.addSuppressed(e);
-            }
-            
-            // TODO log details of the user to be created
-            String message = MessageFormat.format("Failed to create user {0} within alloted timeout {1} {2}", person, timeout, units);
-            errorLogger.log(Level.SEVERE, message, ex);
-            
-            Response resp = Response.status(Response.Status.SERVICE_UNAVAILABLE)
-                                    .entity(message)
-                                    .type(MediaType.TEXT_PLAIN)
-                                    .build();
-            throw new WebApplicationException(resp);
-         }
+         latch.await(timeout, units);
          
          if (exception != null)
             throw exception;
          
-         if (result == null)
-            throw new IllegalStateException("Failed to obtain created person.");
-         
+         Objects.requireNonNull(result, "Repository failed to return created person");
          return result;
       }
    }
+   
+   public static class CreatePersonERD extends ErrorResponseData<HistoricalFigureDV>
+   {
+
+      public CreatePersonERD()
+      {
+         super();
+      }
+      
+      private CreatePersonERD(HistoricalFigureDV person, Response.Status status, String message, String detail)
+      {
+         super(person, status, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the request times out waiting 
+       * on the repository.
+       */
+      public static CreatePersonERD create(
+            HistoricalFigureDV person, InterruptedException iex, ConfigurationProperties properties,
+            int timeout, TimeUnit units)
+      {
+         String message = MessageFormat.format("Failed to create person within alloted timeout {1} {2}", timeout, units);
+         
+         String detail = ErrorResponseData.getErrorDetail(iex, properties);
+         return new CreatePersonERD(person, Response.Status.SERVICE_UNAVAILABLE, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the repository throws an 
+       * exception while create the person.
+       */
+      public static CreatePersonERD create(
+            HistoricalFigureDV person, ResourceCreationException ex, ConfigurationProperties properties)
+      {
+         String message = "Failed to create a new person.";
+         String detail = ErrorResponseData.getErrorDetail(ex, properties);
+         return new CreatePersonERD(person, Response.Status.INTERNAL_SERVER_ERROR, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the repository throws an 
+       * exception while create the person.
+       */
+      public static CreatePersonERD create(HistoricalFigureDV person, Exception ex, ConfigurationProperties properties)
+      {
+         String message = "Unexpected error attempting to create a new person.";
+         String detail = ErrorResponseData.getErrorDetail(ex, properties);
+         return new CreatePersonERD(person, Response.Status.INTERNAL_SERVER_ERROR, message, detail);
+      }
+   }
+   
 }
