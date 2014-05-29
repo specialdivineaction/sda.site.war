@@ -1,12 +1,13 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,20 +15,28 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
 @Path("/people")
 public class PeopleResource
 {
+   // records internal errors accessing the REST
+   private static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
+   
+   // TODO move to consts package
+   
+   // The time (in milliseconds) to wait for a response from the repository. Defaults to 1000.
+   public static final String PROP_TIMEOUT = "rest.repo.timeout";
+   
    @SuppressWarnings("unused")
    private ConfigurationProperties properties;
    private HistoricalFigureRepository repo;
@@ -88,16 +97,18 @@ public class PeopleResource
    @Produces(MediaType.APPLICATION_JSON)
    public HistoricalFigureDV createPerson(HistoricalFigureDV person)
    {
-      CreatePersonObserver observer = new CreatePersonObserver();
+      CreatePersonObserver observer = new CreatePersonObserver(person);
       repo.create(person, observer);
       try 
       {
-         HistoricalFigure createdPerson = observer.getResult();
+         // HACK: hard coded timeout
+         HistoricalFigure createdPerson = observer.getResult(1000, TimeUnit.MILLISECONDS);
          HistoricalFigureDV dv = getHistoricalFigureDV(createdPerson);
          return dv;
       }
       catch (Exception ex)
       {
+         
          ex.printStackTrace();   // HACK: remove this.
          // TODO handle exception properly.
          return null;
@@ -106,32 +117,21 @@ public class PeopleResource
 
    private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
    {
-      HistoricalFigureDV hfDV = new HistoricalFigureDV();
-      hfDV.id = figure.getId();
-      hfDV.birth = figure.getBirth();
-      hfDV.death = figure.getDeath();
-      
-      Set<PersonName> alternativeNames = figure.getAlternativeNames();
-      Set<PersonNameDV> pnDvSet = new HashSet<PersonNameDV>();
-      for (PersonName name : alternativeNames)
-      {
-         pnDvSet.add(new PersonNameDV(name));
-      }
-      
-      hfDV.people = pnDvSet;
-      
-      return hfDV;
+      return new HistoricalFigureDV(figure);
    }
 
    private static final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
    {
+      private final HistoricalFigureDV person;     // for data logging purposes
       private final CountDownLatch latch;
 
       private volatile HistoricalFigure result;
       private volatile ResourceCreationException exception = null;
+
       
-      CreatePersonObserver()
+      CreatePersonObserver(HistoricalFigureDV person)
       {
+         this.person = person;
          latch = new CountDownLatch(1);
       }
 
@@ -151,20 +151,32 @@ public class PeopleResource
          latch.countDown();
       }
       
-      public HistoricalFigure getResult() throws Exception
+      public HistoricalFigure getResult(long timeout, TimeUnit units) throws Exception
       {
          // TODO need semantic exception
          
          try 
          {
-            // HACK: hard coded timeout
-            latch.await(10, TimeUnit.MINUTES);
+            latch.await(timeout, units);
          }
          catch (InterruptedException ex)
          {
-            // TODO DB time out. . . . may have succeeded, client should not retry.
             // FIXME need to be able to cancel execution!
-            this.cancel();
+            try  {
+               this.cancel();          // prevent any further updates to the underlying database.
+            }  catch (Exception e) {
+               ex.addSuppressed(e);
+            }
+            
+            // TODO log details of the user to be created
+            String message = MessageFormat.format("Failed to create user {0} within alloted timeout {1} {2}", person, timeout, units);
+            errorLogger.log(Level.SEVERE, message, ex);
+            
+            Response resp = Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                                    .entity(message)
+                                    .type(MediaType.TEXT_PLAIN)
+                                    .build();
+            throw new WebApplicationException(resp);
          }
          
          if (exception != null)
