@@ -26,6 +26,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 @Path("/people")
 public class PeopleResource
 {
+   @SuppressWarnings("unused")      // sets up the OSGi DS dependency if needed.
    private ConfigurationProperties properties;
    private HistoricalFigureRepository repo;
 
@@ -34,25 +35,25 @@ public class PeopleResource
    {
       this.properties = properties;
    }
-   
+
    // called by DS
    public void setRepository(HistoricalFigureRepository repo)
    {
       this.repo = repo;
    }
-   
+
    // called by DS
    public void activate()
    {
-      
+
    }
-   
+
    // called by DS
    public void dispose()
    {
-      
+
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    public Iterable<HistoricalFigureDV> listPeople()
@@ -61,12 +62,12 @@ public class PeopleResource
 
       List<HistoricalFigureDV> listHfDV = new ArrayList<HistoricalFigureDV>();
       Iterable<HistoricalFigure> listFigures = repo.listHistoricalFigures();
-      
+
       for (HistoricalFigure figure : listFigures)
       {
          listHfDV.add(getHistoricalFigureDV(figure));
       }
-      
+
       iterablehfDV = listHfDV;
 
       return iterablehfDV;
@@ -80,7 +81,7 @@ public class PeopleResource
       HistoricalFigure figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    public Response createPerson(HistoricalFigureDV author)
@@ -92,7 +93,7 @@ public class PeopleResource
          {
             System.out.println("Sucess!");
          }
-         
+
          @Override
          protected void onError(String message, Exception ex)
          {
@@ -110,7 +111,7 @@ public class PeopleResource
       hfDV.id = figure.getId();
       hfDV.birth = figure.getBirth();
       hfDV.death = figure.getDeath();
-      
+
       Set<PersonName> alternativeNames = figure.getAlternativeNames();
       Set<PersonNameRefDV> pnDvSet = new HashSet<PersonNameRefDV>();
       for (PersonName name : alternativeNames)
@@ -121,12 +122,12 @@ public class PeopleResource
          pnDV.middleName = name.getMiddleName();
          pnDV.familyName = name.getFamilyName();
          pnDV.suffix = name.getSuffix();
-         
+
          pnDvSet.add(pnDV);
       }
-      
+
       hfDV.people = pnDvSet;
-      
+
       return hfDV;
    }
 }

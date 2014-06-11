@@ -2,7 +2,6 @@ package edu.tamu.tcat.sda.catalog.psql.impl;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
@@ -15,7 +14,7 @@ public class HistoricalFigureImpl implements HistoricalFigure
 
    HistoricalFigureDV figureRef;
    Set<PersonNameRefDV> people;
-   
+
    public HistoricalFigureImpl(HistoricalFigureDV figure)
    {
       this.figureRef = figure;
@@ -38,12 +37,12 @@ public class HistoricalFigureImpl implements HistoricalFigure
    public Set<PersonName> getAlternativeNames()
    {
       Set<PersonName> personSet = new HashSet<PersonName>();
-      
+
       for (PersonNameRefDV person : people)
       {
          personSet.add(new PersonNameImpl(person));
       }
-      
+
       return personSet;
    }
 

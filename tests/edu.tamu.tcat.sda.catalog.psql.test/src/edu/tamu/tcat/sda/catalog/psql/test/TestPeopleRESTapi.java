@@ -22,11 +22,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
@@ -39,28 +35,28 @@ public class TestPeopleRESTapi
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
-   
+
    @BeforeClass
    public static void initHTTPConnection()
    {
 
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
-      
+
       post = new HttpPost(uri);
       post.setHeader("User-Agent", "Mozilla/5.0");
       post.setHeader("Content-type", "application/json");
-      
+
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
    }
 
    @Test
-   public void testPost()
+   public void testPost() throws JsonException, ClientProtocolException, IOException
    {
       HistoricalFigureDV histFig = new HistoricalFigureDV();
-      
+
       PersonNameRefDV author = new PersonNameRefDV();
       author.displayName = "George Albert Smith";
       author.familyName = "Smith";
@@ -69,48 +65,38 @@ public class TestPeopleRESTapi
       author.name = "";
       author.suffix = "Sir";
       author.title = "Author";
-      
+
       Set<PersonNameRefDV> authNames = new HashSet<PersonNameRefDV>();
-      
+
       authNames.add(author);
-      
+
       histFig.id = "1234abcd";
       histFig.birth = new Date();
       histFig.death = new Date();
       histFig.people = authNames;
-      
-      
-      try
-      {
-         String json = mapper.asString(histFig);
-   
-         post.setEntity(new StringEntity(json));
-         
-         HttpResponse response = client.execute(post);
-         int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode > 299)
-         {
-            System.out.println("Error");
-         }
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
 
+
+      String json = mapper.asString(histFig);
+
+      post.setEntity(new StringEntity(json));
+
+      HttpResponse response = client.execute(post);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode > 299)
+      {
+         System.out.println("Error");
+      }
    }
 
    @Test
-   public void testGetIterable()
+   public void testGetIterable() throws JsonException, ClientProtocolException, IOException
    {
-      try
+      try (CloseableHttpResponse response = client.execute(get);
+           InputStream content = response.getEntity().getContent();
+           BufferedReader reader = new BufferedReader(new InputStreamReader(content)))
       {
-         CloseableHttpResponse response = client.execute(get);
-         InputStream content = response.getEntity().getContent();
          StatusLine statusLine = response.getStatusLine();
 
-         BufferedReader reader = new BufferedReader(new InputStreamReader(content));
          StringBuilder out = new StringBuilder();
          String line;
          while ((line = reader.readLine()) != null) {
@@ -118,52 +104,36 @@ public class TestPeopleRESTapi
          }
          System.out.println(out.toString());   //Prints the string content read from input stream
          reader.close();
-         
+
          if (statusLine.getStatusCode() < 300)
          {
-            try
-            {
-               List<HistoricalFigureDV> hfdv = mapper.fromJSON(content, new JsonTypeReference<List<HistoricalFigureDV>>(){});
-               content.close();
-            }
-            catch (JsonException e)
-            {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-            }
+            @SuppressWarnings("unused")   // validate that we can parse the json.
+            List<HistoricalFigureDV> hfdv = mapper.fromJSON(content, new JsonTypeReference<List<HistoricalFigureDV>>(){});
+            content.close();
          }
          else
          {
             System.out.println(statusLine.getStatusCode());
          }
       }
-      catch (ClientProtocolException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
    }
-   
+
    @Test
    public void testGetPerson()
    {
-      try
+      try (CloseableHttpResponse response = client.execute(get);
+           InputStream content = response.getEntity().getContent())
       {
          URI personUri = uri.resolve("people/16");
          get.setURI(personUri);
-         CloseableHttpResponse response = client.execute(get);
-         InputStream content = response.getEntity().getContent();
+
          StatusLine statusLine = response.getStatusLine();
-         
+
          if (statusLine.getStatusCode() < 300)
          {
             try
             {
+               @SuppressWarnings("unused")  // test json deserialization
                HistoricalFigureDV hfdv = mapper.parse(content, HistoricalFigureDV.class);
                content.close();
             }
@@ -189,6 +159,6 @@ public class TestPeopleRESTapi
          e.printStackTrace();
       }
    }
-   
+
 
 }
