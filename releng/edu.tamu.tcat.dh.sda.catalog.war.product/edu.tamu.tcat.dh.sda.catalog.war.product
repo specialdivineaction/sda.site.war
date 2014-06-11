@@ -19,11 +19,13 @@
    <vm>
    </vm>
 
+
    <plugins>
    </plugins>
 
    <features>
-      <feature id="edu.tamu.tcat.dh.catalog.war.feature" version="1.0.0.qualifier"/>
+      <feature id="edu.tamu.tcat.oss.osgi.sdk.feature" version="1.0.0.20140523-1846"/>
+      <feature id="edu.tamu.tcat.dh.sda.catalog.war.feature" version="1.0.0.qualifier"/>
    </features>
 
    <configurations>
