@@ -1,13 +1,29 @@
+// TODO add license
+// TODO add versioning
+// TODO copy HTML and other static content as needed
+// TODO need to produce debug versions of output
+
+var path = require("path");
+
 module.exports = function (grunt) {
 
+   // staging area for joining files, downloaded third-party tools, etc.'
+   var rootPath = '..';
+   var srcPath = rootPath + '/src';
+   var stagingPath = rootPath + '/build';
+   var vendorPath = stagingPath + '/vendor';
+   
+   // where the final built/deployable artifacts go
+   var buildPath = '../dist'
+   
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-
+        /* dependency management system for front-end scripts (as opposed to npm modules) */
         bower: {
             install: {
                 options: {
-                    targetDir: './vendor',
+                    targetDir: vendorPath,      // temporary dir used during install
                     layout: 'byComponent',
                     cleanup: true
                 }
@@ -15,25 +31,25 @@ module.exports = function (grunt) {
         },
 
         clean: {
-            build: {
-                css: { expand: true, src: 'dist/css/*.build.css' }
-            },
-            clobber: ['build', 'vendor']
+            build: [stagingPath],
+            clobber: [buildPath, stagingPath]
         },
 
+        /* minify the combined CSS files */              
         cssmin: {
             build: {
-                files: {
-                    'dist/css/style.min.css': ['vendor/bootstrap/bootstrap.css', 'dist/css/*.build.css']
-                }
+                files: [{ dest: buildPath + '/css/style.min.css' ,
+                          src: [vendorPath + '/bootstrap/bootstrap.css', 
+                                stagingPath + '/css/*.css'] }
+                ]
             }
         },
 
         requirejs: {
             build: {
                 options: {
-                    baseUrl: 'src',
-                    name: '../vendor/almond/almond',
+                    baseUrl: srcPath,
+                    name: path.relative(srcPath, vendorPath) + '../vendor/almond/almond',     // magically included by Bower (we hope).
                     plugins: {
                         hbs: '../vendor/require-handlebars-plugin/hbs'
                     },
@@ -52,7 +68,7 @@ module.exports = function (grunt) {
                     insertRequire: ['js/main'],
                     stubModules: [],
                     exclude: [],
-                    out: 'dist/js/main.min.js'
+                    out: buildPath + '/js/main.min.js'
                 }
             }
         },
