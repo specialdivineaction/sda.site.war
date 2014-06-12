@@ -1,0 +1,13 @@
+{
+  "name": "sda-form",
+  "version": "0.0.0",
+  "main": "form.html",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "bootstrap": "~3.1.1",
+    "almond": "~0.2.9",
+    "require-handlebars-plugin": "~0.8.1",
+    "jquery-autosize": "~1.18.9"
+  }
+}
