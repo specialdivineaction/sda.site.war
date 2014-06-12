@@ -26,7 +26,7 @@ public class HistoricalFigureImpl implements HistoricalFigure
       {
          names.add(new PersonNameImpl(n));
       }
-      
+
       birth = new HistoricalEventImpl(figure.birth);
       death = new HistoricalEventImpl(figure.death);
    }
@@ -60,41 +60,42 @@ public class HistoricalFigureImpl implements HistoricalFigure
    {
       return death;
    }
-   
+
+   @Override
    public String toString()
    {
       StringBuilder sb = new StringBuilder();
-      
+
       for (PersonName name : names)
       {
          if (name.getDisplayName() != null)
          {
             sb.append(name.getDisplayName());
          }
-         else 
+         else
          {
             String fn = name.getFamilyName();
             String gn = name.getGivenName();
-            if (fn != null && !fn.trim().isEmpty()) 
+            if (fn != null && !fn.trim().isEmpty())
                sb.append(fn.trim());
-            
+
             if (gn != null && !gn.trim().isEmpty())
             {
                if (sb.length() > 0)
                   sb.append(", ");
-               
+
                sb.append(gn.trim());
             }
          }
-         
+
          // TODO append dates
-         
+
          break;
       }
-      
+
       return sb.toString();
    }
-   
+
    // equals and hash code?
 
 }

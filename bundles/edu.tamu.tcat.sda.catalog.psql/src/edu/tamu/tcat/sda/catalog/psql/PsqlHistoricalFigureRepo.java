@@ -26,34 +26,34 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 {
-
+   
    private DbExecutor exec;
    private JsonMapper jsonMapper;
-
+   
    public PsqlHistoricalFigureRepo()
    {
    }
-
+   
    public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
    }
-
+   
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
    }
-
-   public void activate()
+   
+   public void activate() 
    {
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
    }
-
+   
    public void dispose()
    {
       // TODO wait on or cancel any pending tasks?
-
+      
       this.exec = null;
       this.jsonMapper = null;
    }
@@ -62,11 +62,11 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
    @Override
    public Iterable<HistoricalFigure> listHistoricalFigures()
    {
-
+      
       // FIXME this is async, meaning test will exit prior to conclusion.
       // TODO Auto-generated method stub
       final String querySql = "SELECT historical_figure FROM people";
-
+      
       DbExecTask<Iterable<HistoricalFigure>> query = new DbExecTask<Iterable<HistoricalFigure>>()
       {
 
@@ -79,15 +79,15 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                  ResultSet rs = ps.executeQuery())
             {
                PGobject pgo = new PGobject();
-
+               
                while(rs.next())
                {
                   Object object = rs.getObject("historical_figure");
                   if (object instanceof PGobject)
                      pgo = (PGobject)object;
-                  else
+                  else 
                      System.out.println("Error!");
-
+                  
                   HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
                   HistoricalFigureImpl figureRef = new HistoricalFigureImpl(parse);
                   try
@@ -108,9 +108,9 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             eIterable = events;
             return eIterable;
          }
-
+         
       };
-
+      
       Future<Iterable<HistoricalFigure>> submit = exec.submit(query);
       Iterable<HistoricalFigure> iterable = null;
       try
@@ -132,7 +132,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 
    @Override
    public HistoricalFigure getPerson(long personId)
-   {
+   {      
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
       final long id = personId;
       DbExecTask<HistoricalFigure> query = new DbExecTask<HistoricalFigure>()
@@ -144,21 +144,19 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             try (PreparedStatement ps = conn.prepareStatement(querySql))
             {
                ps.setLong(1, id);
-               try (ResultSet rs = ps.executeQuery())
+               ResultSet rs = ps.executeQuery();
+               PGobject pgo = new PGobject();
+               
+               while(rs.next())
                {
-                  PGobject pgo = new PGobject();
-
-                  while(rs.next())
-                  {
-                     Object object = rs.getObject("historical_figure");
-                     if (object instanceof PGobject)
-                        pgo = (PGobject)object;
-                     else
-                        System.out.println("Error!");
-
-                     HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
-                     figureRef = new HistoricalFigureImpl(parse);
-                  }
+                  Object object = rs.getObject("historical_figure");
+                  if (object instanceof PGobject)
+                     pgo = (PGobject)object;
+                  else 
+                     System.out.println("Error!");
+                  
+                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
+                  figureRef = new HistoricalFigureImpl(parse);
                }
             }
             catch (Exception e)
@@ -167,9 +165,9 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             }
             return figureRef;
          }
-
+         
       };
-
+      
       HistoricalFigure submit = null;
       try
       {
@@ -207,7 +205,6 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                   throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
                
                return Integer.toString(rs.getInt(1));
-
             }
             catch (SQLException sqle)
             {
@@ -276,14 +273,14 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-
+               
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-
+               
                int ct = ps.executeUpdate();
                if (ct != 1)
                throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-
+               
             }
             catch (JsonException e)
             {
@@ -292,7 +289,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             return new HistoricalFigureImpl(histFigure);
          }
       };
-
+      
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
    }
 }

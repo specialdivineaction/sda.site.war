@@ -49,25 +49,25 @@ public class PeopleResource
    {
       this.properties = properties;
    }
-
+   
    // called by DS
    public void setRepository(HistoricalFigureRepository repo)
    {
       this.repo = repo;
    }
-
+   
    // called by DS
    public void activate()
    {
-
+      
    }
-
+   
    // called by DS
    public void dispose()
    {
-
+      
    }
-
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    public List<HistoricalFigureDV> listPeople()
@@ -94,7 +94,7 @@ public class PeopleResource
       HistoricalFigure figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
-
+   
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -132,12 +132,10 @@ public class PeopleResource
          errorLogger.log(Level.SEVERE, error.message, ex);
          throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));      
       }
-
    }
    
    private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
    {
-
       return new HistoricalFigureDV(figure);
    }
 
@@ -228,5 +226,6 @@ public class PeopleResource
          String detail = ErrorResponseData.getErrorDetail(ex, properties);
          return new CreatePersonERD(person, Response.Status.INTERNAL_SERVER_ERROR, message, detail);
       }
-   }  
+   }
+   
 }
