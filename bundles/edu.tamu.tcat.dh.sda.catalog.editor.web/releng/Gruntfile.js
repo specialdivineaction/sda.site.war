@@ -12,10 +12,10 @@ module.exports = function (grunt) {
    var srcPath = rootPath + '/src';
    var stagingPath = rootPath + '/build';
    var vendorPath = stagingPath + '/vendor';
-   
+
    // where the final built/deployable artifacts go
    var buildPath = '../dist'
-   
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -31,16 +31,39 @@ module.exports = function (grunt) {
         },
 
         clean: {
+            // options global to all subtasks
+            options: {
+                force: true         // allow cleaning outside CWD
+            },
+
             build: [stagingPath],
             clobber: [buildPath, stagingPath]
         },
 
-        /* minify the combined CSS files */              
+        copy: {
+            build: {
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        dest: buildPath + '/fonts',
+                        src: vendorPath + '/bootstrap/glyphicons-halflings-regular.*'
+                    }
+                ]
+            }
+        },
+
+        /* minify the combined CSS files */
         cssmin: {
             build: {
-                files: [{ dest: buildPath + '/css/style.min.css' ,
-                          src: [vendorPath + '/bootstrap/bootstrap.css', 
-                                stagingPath + '/css/*.css'] }
+                files: [
+                    {
+                        dest: buildPath + '/css/style.min.css' ,
+                        src: [
+                            vendorPath + '/bootstrap/bootstrap.css',
+                            stagingPath + '/css/*.css'
+                        ]
+                    }
                 ]
             }
         },
@@ -49,14 +72,14 @@ module.exports = function (grunt) {
             build: {
                 options: {
                     baseUrl: srcPath,
-                    name: path.relative(srcPath, vendorPath) + '../vendor/almond/almond',     // magically included by Bower (we hope).
+                    name: path.relative(srcPath, vendorPath) + '/almond/almond',     // magically included by Bower (we hope).
                     plugins: {
-                        hbs: '../vendor/require-handlebars-plugin/hbs'
+                        hbs: path.relative(srcPath, vendorPath) + '/require-handlebars-plugin/hbs'
                     },
                     paths: {
-                        bootstrap: '../vendor/bootstrap/bootstrap',
-                        jquery: '../vendor/jquery/jquery',
-                        'jquery.autosize': '../vendor/jquery-autosize/jquery.autosize'
+                        bootstrap: path.relative(srcPath, vendorPath) + '/bootstrap/bootstrap',
+                        jquery: path.relative(srcPath, vendorPath) + '/jquery/jquery',
+                        'jquery.autosize': path.relative(srcPath, vendorPath) + '/jquery-autosize/jquery.autosize'
                     },
                     shim: {
                         backbone: { deps: ['underscore'], exports: 'Backbone' },
@@ -81,18 +104,22 @@ module.exports = function (grunt) {
                     import: ['nib'],
                     'include css': true
                 },
-                files: {
-                    'dist/css/layout.build.css': 'src/stylus/layout.styl'
-                }
+                files: [
+                    {
+                        dest: stagingPath + '/css/layout.css',
+                        src: srcPath + '/stylus/layout.styl',
+                    }
+                ]
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-stylus');
 
-    grunt.registerTask('default', ['bower:install', 'requirejs:build', 'stylus:build', 'cssmin:build', 'clean:build']);
+    grunt.registerTask('default', ['bower:install', 'requirejs:build', 'stylus:build', 'cssmin:build', 'copy:build', 'clean:build']);
 };
