@@ -17,7 +17,7 @@ public class HistoricalFigureImpl implements HistoricalFigure
    private final Set<PersonName> names;
    private final HistoricalEventImpl birth;
    private final HistoricalEventImpl death;
-   
+
    public HistoricalFigureImpl(HistoricalFigureDV figure)
    {
       id = figure.id;

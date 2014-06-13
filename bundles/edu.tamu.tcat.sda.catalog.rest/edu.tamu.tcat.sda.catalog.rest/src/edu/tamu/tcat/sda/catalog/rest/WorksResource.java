@@ -64,7 +64,7 @@ public class WorksResource
    {
       return Arrays.asList("Thing 1", "Thing 2", "Red Fish", "Blue Fish");
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -90,6 +90,7 @@ public class WorksResource
       }
       catch (Exception e)
       {
+      	// TODO handle appropriately
          e.printStackTrace();
          return null;
       }
@@ -104,10 +105,10 @@ public class WorksResource
       sb.append("<html><head><title>").append("Document: ").append(id).append("</title></head>")
         .append("<h1> Work ").append(id).append("</h1>")
         .append("</html>");
-      
+
       return sb.toString();
    }
-   
+
    @GET
    @Path("{workid}/authors/{authid}")
    @Produces(MediaType.TEXT_HTML)
@@ -117,29 +118,28 @@ public class WorksResource
       StringBuilder sb = new StringBuilder();
       sb.append("<html><head><title>").append("Document: ").append(workId).append("</title></head>")
         .append("<h1> Work ").append(workId).append("</h1>")
-        .append("<h1> Author ").append(authId).append("</h1>") 
+        .append("<h1> Author ").append(authId).append("</h1>")
         .append("</html>");
-      
+
       return sb.toString();
    }
-        
+
    @GET
    @Path("{id}.json")
    @Produces(MediaType.APPLICATION_JSON)
    public Map<String, Integer> getWorkAsJson(@PathParam(value = "id") int id)
    {
       Map<String, Integer> result = new HashMap<>();
-      result.put("id", id);
+      result.put("id", Integer.valueOf(id));
       return result;
    }
-   
+
    @PUT
    @Path("{id}")
    public String updateWork()
    {
       return null;
    }
-   
 
    private static final class CreateWorkObserver extends DataUpdateObserverAdapter<Work>
    {
@@ -175,7 +175,7 @@ public class WorksResource
          
          try 
          {
-            // HACK: hard coded timeout
+            // FIXME: hard coded timeout
             latch.await(10, TimeUnit.MINUTES);
          }
          catch (InterruptedException ex)

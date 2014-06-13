@@ -1,7 +1,9 @@
 package edu.tamu.tcat.sda.catalog.psql.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashSet;
@@ -35,20 +37,20 @@ public class TestPeopleRESTapi
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
-   
+
    @BeforeClass
    public static void initHTTPConnection()
    {
 
-      mapper.activate();      // might ought to load as OSGi service? 
-      
+      mapper.activate();      // might ought to load as OSGi service?
+
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
-      
+
       post = new HttpPost(uri);
       post.setHeader("User-Agent", "Mozilla/5.0");
       post.setHeader("Content-type", "application/json");
-      
+
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
@@ -58,8 +60,9 @@ public class TestPeopleRESTapi
    public void testPost() throws JsonException, ClientProtocolException, IOException
    {
       HistoricalFigureDV histFig = new HistoricalFigureDV();
-      
+
       PersonNameDV author = new PersonNameDV();
+
       author.displayName = "George Albert Smith";
       author.familyName = "Smith";
       author.givenName = "George";
@@ -67,11 +70,11 @@ public class TestPeopleRESTapi
       author.name = "";
       author.suffix = "Sir";
       author.title = "Author";
-      
+
       Set<PersonNameDV> authNames = new HashSet<PersonNameDV>();
-      
+
       authNames.add(author);
-      
+
       histFig.id = "1234abcd";
       // TODO create a new DateOfDeath/Birth class
       histFig.birth = new HistoricalEventDV();
@@ -82,7 +85,7 @@ public class TestPeopleRESTapi
       histFig.death.title = "Date of death for " + author.displayName;
       histFig.death.eventDate = new Date();
       histFig.people = authNames;
-      
+
       String json = mapper.asString(histFig);
 
       post.setEntity(new StringEntity(json));
@@ -100,14 +103,13 @@ public class TestPeopleRESTapi
    }
 
    @Test
-   public void testGetIterable()
+   public void testGetIterable() throws JsonException, ClientProtocolException, IOException
    {
-      try
+      try (CloseableHttpResponse response = client.execute(get);
+           InputStream content = response.getEntity().getContent();
+           BufferedReader reader = new BufferedReader(new InputStreamReader(content)))
       {
-         CloseableHttpResponse response = client.execute(get);
-         InputStream content = response.getEntity().getContent();
          StatusLine statusLine = response.getStatusLine();
-         
          if (statusLine.getStatusCode() < 300)
          {
             try
@@ -117,41 +119,34 @@ public class TestPeopleRESTapi
             }
             catch (JsonException e)
             {
+               // TODO Auto-generated catch block
                e.printStackTrace();
             }
          }
          else
          {
+	         // FIXME sysout call
             System.out.println(statusLine.getStatusCode());
          }
       }
-      catch (ClientProtocolException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
    }
-   
+
    @Test
    public void testGetPerson()
    {
-      try
+      try (CloseableHttpResponse response = client.execute(get);
+           InputStream content = response.getEntity().getContent())
       {
          URI personUri = uri.resolve("people/16");
          get.setURI(personUri);
-         CloseableHttpResponse response = client.execute(get);
-         InputStream content = response.getEntity().getContent();
+
          StatusLine statusLine = response.getStatusLine();
-         
+
          if (statusLine.getStatusCode() < 300)
          {
             try
             {
+               @SuppressWarnings("unused")  // test json deserialization
                HistoricalFigureDV hfdv = mapper.parse(content, HistoricalFigureDV.class);
                content.close();
             }
@@ -177,6 +172,4 @@ public class TestPeopleRESTapi
          e.printStackTrace();
       }
    }
-   
-
 }

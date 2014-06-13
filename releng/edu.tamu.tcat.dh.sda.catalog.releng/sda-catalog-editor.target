@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="113">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="114">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="jackson.feature.feature.group" version="2.3.1"/>
@@ -57,6 +57,10 @@
 <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="3.2.0.201312310810"/>
 <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.source.feature.group" version="1.1.0.201312310810"/>
 <repository location="http://build.citd.tamu.edu/hudson/job/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="edu.tamu.tcat.oss.osgi.sdk.feature.feature.group" version="1.0.0.20140523-1846"/>
+<repository location="https://build.citd.tamu.edu/hudson/job/oss.osgi.utilities.dev/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
