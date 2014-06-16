@@ -6,23 +6,23 @@ import java.util.Set;
 
 import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
 import edu.tamu.tcat.sda.catalog.events.psql.HistoricalEventImpl;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
-public class HistoricalFigureImpl implements HistoricalFigure
+public class HistoricalFigureImpl implements Person
 {
    private final String id;
    private final Set<PersonName> names;
    private final HistoricalEventImpl birth;
    private final HistoricalEventImpl death;
 
-   public HistoricalFigureImpl(HistoricalFigureDV figure)
+   public HistoricalFigureImpl(PersonDV figure)
    {
       id = figure.id;
       names = new HashSet<PersonName>();
-      for (PersonNameDV n : figure.people)
+      for (PersonNameDV n : figure.names)
       {
          names.add(new PersonNameImpl(n));
       }

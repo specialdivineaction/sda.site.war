@@ -21,9 +21,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
+import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
@@ -42,7 +42,7 @@ public class PeopleResource
    public static final String PROP_ENABLE_ERR_DETAILS = "rest.err.details.enabled";
    
    private ConfigurationProperties properties;
-   private HistoricalFigureRepository repo;
+   private PeopleRepository repo;
 
    // called by DS
    public void setConfigurationProperties(ConfigurationProperties properties)
@@ -51,7 +51,7 @@ public class PeopleResource
    }
    
    // called by DS
-   public void setRepository(HistoricalFigureRepository repo)
+   public void setRepository(PeopleRepository repo)
    {
       this.repo = repo;
    }
@@ -70,13 +70,13 @@ public class PeopleResource
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<HistoricalFigureDV> listPeople()
+   public List<PersonDV> listPeople()
    {
       // TODO need to add slicing/paging support
-      List<HistoricalFigureDV> results = new ArrayList<HistoricalFigureDV>();
-      Iterable<HistoricalFigure> people = repo.listHistoricalFigures();
+      List<PersonDV> results = new ArrayList<PersonDV>();
+      Iterable<Person> people = repo.listHistoricalFigures();
       
-      for (HistoricalFigure figure : people)
+      for (Person figure : people)
       {
          results.add(getHistoricalFigureDV(figure));
       }
@@ -87,18 +87,18 @@ public class PeopleResource
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public HistoricalFigureDV getPerson(@PathParam(value="personId") int personId)
+   public PersonDV getPerson(@PathParam(value="personId") int personId)
    {
       // TODO make this a mangled string instead of an ID. Don't want people guessing 
       //      unique identifiers
-      HistoricalFigure figure = repo.getPerson(personId);
+      Person figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
    
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public HistoricalFigureDV createPerson(HistoricalFigureDV person) throws Exception
+   public PersonDV createPerson(PersonDV person) throws Exception
    {
       // TODO add authentication filter in front of this call
       int timeout = properties.getPropertyValue(PROP_TIMEOUT, Integer.class, Integer.valueOf(1000)).intValue();
@@ -110,8 +110,8 @@ public class PeopleResource
       
       try 
       {
-         HistoricalFigure createdPerson = observer.getResult(timeout, units);
-         HistoricalFigureDV dv = getHistoricalFigureDV(createdPerson);
+         Person createdPerson = observer.getResult(timeout, units);
+         PersonDV dv = getHistoricalFigureDV(createdPerson);
          return dv;
       }
       catch (InterruptedException iex)
@@ -134,16 +134,16 @@ public class PeopleResource
       }
    }
    
-   private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
+   private PersonDV getHistoricalFigureDV(Person figure)
    {
-      return new HistoricalFigureDV(figure);
+      return new PersonDV(figure);
    }
 
-   private static final class CreatePersonObserver extends DataUpdateObserverAdapter<HistoricalFigure>
+   private static final class CreatePersonObserver extends DataUpdateObserverAdapter<Person>
    {
       private final CountDownLatch latch;
 
-      private volatile HistoricalFigure result;
+      private volatile Person result;
       private volatile ResourceCreationException exception = null;
       
       CreatePersonObserver()
@@ -152,7 +152,7 @@ public class PeopleResource
       }
 
       @Override
-      protected void onFinish(HistoricalFigure result)
+      protected void onFinish(Person result)
       {
          this.result = result;
          this.latch.countDown();
@@ -165,7 +165,7 @@ public class PeopleResource
          latch.countDown();
       }
       
-      public HistoricalFigure getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
+      public Person getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
       {
          latch.await(timeout, units);
          
@@ -177,7 +177,7 @@ public class PeopleResource
       }
    }
    
-   public static class CreatePersonERD extends ErrorResponseData<HistoricalFigureDV>
+   public static class CreatePersonERD extends ErrorResponseData<PersonDV>
    {
 
       public CreatePersonERD()
@@ -185,7 +185,7 @@ public class PeopleResource
          super();
       }
       
-      private CreatePersonERD(HistoricalFigureDV person, Response.Status status, String message, String detail)
+      private CreatePersonERD(PersonDV person, Response.Status status, String message, String detail)
       {
          super(person, status, message, detail);
       }
@@ -195,7 +195,7 @@ public class PeopleResource
        * on the repository.
        */
       public static CreatePersonERD create(
-            HistoricalFigureDV person, InterruptedException iex, ConfigurationProperties properties,
+            PersonDV person, InterruptedException iex, ConfigurationProperties properties,
             int timeout, TimeUnit units)
       {
          String message = MessageFormat.format("Failed to create person within alloted timeout {1} {2}", timeout, units);
@@ -209,7 +209,7 @@ public class PeopleResource
        * exception while create the person.
        */
       public static CreatePersonERD create(
-            HistoricalFigureDV person, ResourceCreationException ex, ConfigurationProperties properties)
+            PersonDV person, ResourceCreationException ex, ConfigurationProperties properties)
       {
          String message = "Failed to create a new person.";
          String detail = ErrorResponseData.getErrorDetail(ex, properties);
@@ -220,7 +220,7 @@ public class PeopleResource
        * Constructs an error response object in the event that the repository throws an 
        * exception while create the person.
        */
-      public static CreatePersonERD create(HistoricalFigureDV person, Exception ex, ConfigurationProperties properties)
+      public static CreatePersonERD create(PersonDV person, Exception ex, ConfigurationProperties properties)
       {
          String message = "Unexpected error attempting to create a new person.";
          String detail = ErrorResponseData.getErrorDetail(ex, properties);

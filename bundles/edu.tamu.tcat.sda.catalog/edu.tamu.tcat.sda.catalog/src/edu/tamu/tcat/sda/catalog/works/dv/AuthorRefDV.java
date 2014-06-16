@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 
 public class AuthorRefDV
@@ -8,7 +8,7 @@ public class AuthorRefDV
    public String authorId;
    public String name;
    public String role;
-   public HistoricalFigure histFigure;
+   public Person histFigure;
    
    public AuthorRefDV(AuthorReference author)
    {

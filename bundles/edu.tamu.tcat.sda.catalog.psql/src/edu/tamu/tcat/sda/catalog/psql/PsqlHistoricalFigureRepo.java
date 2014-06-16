@@ -18,13 +18,13 @@ import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
+import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
-public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
+public class PsqlHistoricalFigureRepo implements PeopleRepository
 {
    
    private DbExecutor exec;
@@ -60,21 +60,21 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 
 
    @Override
-   public Iterable<HistoricalFigure> listHistoricalFigures()
+   public Iterable<Person> listHistoricalFigures()
    {
       
       // FIXME this is async, meaning test will exit prior to conclusion.
       // TODO Auto-generated method stub
       final String querySql = "SELECT historical_figure FROM people";
       
-      DbExecTask<Iterable<HistoricalFigure>> query = new DbExecTask<Iterable<HistoricalFigure>>()
+      DbExecTask<Iterable<Person>> query = new DbExecTask<Iterable<Person>>()
       {
 
          @Override
-         public Iterable<HistoricalFigure> execute(Connection conn) throws Exception
+         public Iterable<Person> execute(Connection conn) throws Exception
          {
-            List<HistoricalFigure> events = new ArrayList<HistoricalFigure>();
-            Iterable<HistoricalFigure> eIterable = new ArrayList<HistoricalFigure>();
+            List<Person> events = new ArrayList<Person>();
+            Iterable<Person> eIterable = new ArrayList<Person>();
             try (PreparedStatement ps = conn.prepareStatement(querySql);
                  ResultSet rs = ps.executeQuery())
             {
@@ -88,7 +88,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                   else 
                      System.out.println("Error!");
                   
-                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
+                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                   HistoricalFigureImpl figureRef = new HistoricalFigureImpl(parse);
                   try
                   {
@@ -111,8 +111,8 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
          
       };
       
-      Future<Iterable<HistoricalFigure>> submit = exec.submit(query);
-      Iterable<HistoricalFigure> iterable = null;
+      Future<Iterable<Person>> submit = exec.submit(query);
+      Iterable<Person> iterable = null;
       try
       {
          iterable = submit.get();
@@ -131,15 +131,15 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
    }
 
    @Override
-   public HistoricalFigure getPerson(long personId)
+   public Person getPerson(long personId)
    {      
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
       final long id = personId;
-      DbExecTask<HistoricalFigure> query = new DbExecTask<HistoricalFigure>()
+      DbExecTask<Person> query = new DbExecTask<Person>()
       {
          HistoricalFigureImpl figureRef;
          @Override
-         public HistoricalFigure execute(Connection conn) throws Exception
+         public Person execute(Connection conn) throws Exception
          {
             try (PreparedStatement ps = conn.prepareStatement(querySql))
             {
@@ -155,7 +155,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
                   else 
                      System.out.println("Error!");
                   
-                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
+                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                   figureRef = new HistoricalFigureImpl(parse);
                }
             }
@@ -168,7 +168,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
          
       };
       
-      HistoricalFigure submit = null;
+      Person submit = null;
       try
       {
          return exec.submit(query).get();
@@ -183,14 +183,14 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 
 
    @Override
-   public void create(final HistoricalFigureDV histFigure, final DataUpdateObserver<HistoricalFigure> observer)
+   public void create(final PersonDV histFigure, final DataUpdateObserver<Person> observer)
    {
       final String insertSql = "INSERT INTO people (historical_figure) VALUES(null)";
       final String updateSql = "UPDATE people "
                                + " SET historical_figure = ?"
                                + " WHERE id = ?";
       
-      DbExecTask<HistoricalFigure> createPersonTask = new DbExecTask<HistoricalFigure>()
+      DbExecTask<Person> createPersonTask = new DbExecTask<Person>()
       {
          private final String createPersonId(Connection conn) throws InterruptedException, ExecutionFailedException
          {
@@ -212,7 +212,7 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             }
          }
          
-         private HistoricalFigure savePersonDetails(Connection conn) throws InterruptedException, ExecutionFailedException
+         private Person savePersonDetails(Connection conn) throws InterruptedException, ExecutionFailedException
          {
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {
@@ -245,10 +245,10 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
          }
 
          @Override
-         public HistoricalFigure execute(Connection conn) throws InterruptedException, ExecutionFailedException
+         public Person execute(Connection conn) throws InterruptedException, ExecutionFailedException
          {
             histFigure.id = createPersonId(conn);
-            HistoricalFigure result = savePersonDetails(conn);
+            Person result = savePersonDetails(conn);
             
             return result;
          }
@@ -258,15 +258,15 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
    }
 
    @Override
-   public void update(final HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer)
+   public void update(final PersonDV histFigure, DataUpdateObserver<Person> observer)
    {
       final String updateSql = "UPDATE people "
             + " SET historical_figure = ?"
             + " WHERE id = ?";
-      DbExecTask<HistoricalFigure> task1 = new DbExecTask<HistoricalFigure>()
+      DbExecTask<Person> task1 = new DbExecTask<Person>()
       {
          @Override
-         public HistoricalFigure execute(Connection conn) throws SQLException
+         public Person execute(Connection conn) throws SQLException
          {
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {

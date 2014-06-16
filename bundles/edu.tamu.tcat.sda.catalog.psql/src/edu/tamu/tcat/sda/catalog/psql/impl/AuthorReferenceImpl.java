@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 
@@ -20,7 +20,7 @@ public class AuthorReferenceImpl implements AuthorReference
    }
    
    @Override
-   public HistoricalFigure getAuthor()
+   public Person getAuthor()
    {
       // TODO Auto-generated method stub
       return authorRef.histFigure;

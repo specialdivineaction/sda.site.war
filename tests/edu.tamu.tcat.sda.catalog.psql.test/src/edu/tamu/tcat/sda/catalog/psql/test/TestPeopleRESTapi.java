@@ -25,7 +25,7 @@ import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class TestPeopleRESTapi
@@ -57,7 +57,7 @@ public class TestPeopleRESTapi
    @Test
    public void testPost() throws JsonException, ClientProtocolException, IOException
    {
-      HistoricalFigureDV histFig = new HistoricalFigureDV();
+      PersonDV histFig = new PersonDV();
       
       PersonNameDV author = new PersonNameDV();
       author.displayName = "George Albert Smith";
@@ -81,7 +81,7 @@ public class TestPeopleRESTapi
       histFig.death = new HistoricalEventDV();
       histFig.death.title = "Date of death for " + author.displayName;
       histFig.death.eventDate = new Date();
-      histFig.people = authNames;
+      histFig.names = authNames;
       
       String json = mapper.asString(histFig);
 
@@ -112,7 +112,7 @@ public class TestPeopleRESTapi
          {
             try
             {
-               List<HistoricalFigureDV> hfdv = mapper.fromJSON(content, new JsonTypeReference<List<HistoricalFigureDV>>(){});
+               List<PersonDV> hfdv = mapper.fromJSON(content, new JsonTypeReference<List<PersonDV>>(){});
                content.close();
             }
             catch (JsonException e)
@@ -152,7 +152,7 @@ public class TestPeopleRESTapi
          {
             try
             {
-               HistoricalFigureDV hfdv = mapper.parse(content, HistoricalFigureDV.class);
+               PersonDV hfdv = mapper.parse(content, PersonDV.class);
                content.close();
             }
             catch (JsonException e)
