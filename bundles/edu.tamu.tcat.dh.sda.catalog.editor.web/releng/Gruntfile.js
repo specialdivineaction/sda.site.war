@@ -17,7 +17,7 @@ module.exports = function (grunt) {
    var modulePath = rootPath + '/releng/node_modules';
 
    // where the final built/deployable artifacts go
-   var buildPath = '../dist'
+   var buildPath = rootPath + '/dist';
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
