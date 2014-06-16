@@ -42,4 +42,9 @@ public interface Person
     *    information about the person's death (e.g., including location, fuzzy dates, etc).
     */
    HistoricalEvent getDeath();
+
+   /**
+    * @return A summary description of this person.
+    */
+   String getSummary();
 }

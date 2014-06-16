@@ -34,6 +34,7 @@ public class PersonDV
 
       birth = new HistoricalEventDV(figure.getBirth());
       death = new HistoricalEventDV(figure.getDeath());
+      summary = figure.getSummary();
    }
 
    @Override

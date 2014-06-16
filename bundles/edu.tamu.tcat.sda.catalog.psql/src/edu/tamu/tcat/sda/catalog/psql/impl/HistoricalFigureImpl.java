@@ -17,6 +17,7 @@ public class HistoricalFigureImpl implements Person
    private final Set<PersonName> names;
    private final HistoricalEventImpl birth;
    private final HistoricalEventImpl death;
+   private final String summary;
 
    public HistoricalFigureImpl(PersonDV figure)
    {
@@ -29,6 +30,7 @@ public class HistoricalFigureImpl implements Person
 
       birth = new HistoricalEventImpl(figure.birth);
       death = new HistoricalEventImpl(figure.death);
+      summary = figure.summary;
    }
 
    @Override
@@ -59,6 +61,12 @@ public class HistoricalFigureImpl implements Person
    public HistoricalEvent getDeath()
    {
       return death;
+   }
+
+   @Override
+   public String getSummary()
+   {
+      return summary;
    }
 
    @Override
