@@ -13,6 +13,9 @@ module.exports = function (grunt) {
    var stagingPath = rootPath + '/build';
    var vendorPath = stagingPath + '/vendor';
 
+   // note, this directory is dependent on where the 'package.json' file is.
+   var modulePath = rootPath + '/releng/node_modules';
+
    // where the final built/deployable artifacts go
    var buildPath = '../dist'
 
@@ -73,14 +76,23 @@ module.exports = function (grunt) {
                 options: {
                     baseUrl: srcPath,
                     name: path.relative(srcPath, vendorPath) + '/almond/almond',     // magically included by Bower (we hope).
-                    plugins: {
-                        hbs: path.relative(srcPath, vendorPath) + '/require-handlebars-plugin/hbs'
-                    },
                     paths: {
                         bootstrap: path.relative(srcPath, vendorPath) + '/bootstrap/bootstrap',
                         jquery: path.relative(srcPath, vendorPath) + '/jquery/jquery',
-                        'jquery.autosize': path.relative(srcPath, vendorPath) + '/jquery-autosize/jquery.autosize'
+                        'jquery.autosize': path.relative(srcPath, vendorPath) + '/jquery-autosize/jquery.autosize',
+
+                        // The r.js optimizer part of requirejs-handlebars depends on NPM's Handlebars package (not Bower's)
+                        'handlebars.runtime': path.relative(srcPath, modulePath) + '/handlebars/dist/amd',
+                        hb: path.relative(srcPath, vendorPath) + '/requirejs-handlebars/hb',
+                        text: path.relative(srcPath, vendorPath) + '/requirejs-text/text'
                     },
+                    packages: [
+                        {
+                            name: 'handlebars',
+                            location: path.relative(srcPath, modulePath) + '/handlebars/dist/amd',
+                            main: './handlebars'
+                        }
+                    ],
                     shim: {
                         backbone: { deps: ['underscore'], exports: 'Backbone' },
                         bootstrap: ['jquery'],

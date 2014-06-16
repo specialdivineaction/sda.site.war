@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'jquery.autosize'], function ($) {
+define(['jquery', 'hb!templates/author_popover.hbs', 'bootstrap', 'jquery.autosize'], function ($, template) {
     $('textarea.autosize').autosize();
 
     $('input#author')
@@ -8,7 +8,16 @@ define(['jquery', 'bootstrap', 'jquery.autosize'], function ($) {
             placement: 'left',
             trigger: 'focus',
             title: 'Author Details',
-            content: '<p><strong>Author:</strong> John Doe (1234-1320)<br/><strong>Display as:</strong> J. Doe<br/><strong>Role:</strong> Author</p><a href="#" class="btn btn-sm btn-block btn-info" data-toggle="modal" data-target="#quickAddForm">Edit</a>'
+            content: template({
+                author: {
+                    first: 'John',
+                    last: 'Doe',
+                    birth: '1234',
+                    death: '1320'
+                },
+                display: 'J. Doe',
+                role: 'Author',
+                editModalTarget: '#quickAddForm'
+            })
         });
-
 });
