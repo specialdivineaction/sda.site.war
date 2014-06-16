@@ -21,16 +21,16 @@ import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
-import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
+import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
-public class PsqlHistoricalFigureRepo implements PeopleRepository
+public class PsqlPeopleRepo implements PeopleRepository
 {
    
    private DbExecutor exec;
    private JsonMapper jsonMapper;
    
-   public PsqlHistoricalFigureRepo()
+   public PsqlPeopleRepo()
    {
    }
    
@@ -89,7 +89,7 @@ public class PsqlHistoricalFigureRepo implements PeopleRepository
                      System.out.println("Error!");
                   
                   PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
-                  HistoricalFigureImpl figureRef = new HistoricalFigureImpl(parse);
+                  PersonImpl figureRef = new PersonImpl(parse);
                   try
                   {
                      events.add(figureRef);
@@ -137,7 +137,7 @@ public class PsqlHistoricalFigureRepo implements PeopleRepository
       final long id = personId;
       DbExecTask<Person> query = new DbExecTask<Person>()
       {
-         HistoricalFigureImpl figureRef;
+         PersonImpl figureRef;
          @Override
          public Person execute(Connection conn) throws Exception
          {
@@ -156,7 +156,7 @@ public class PsqlHistoricalFigureRepo implements PeopleRepository
                      System.out.println("Error!");
                   
                   PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
-                  figureRef = new HistoricalFigureImpl(parse);
+                  figureRef = new PersonImpl(parse);
                }
             }
             catch (Exception e)
@@ -230,7 +230,7 @@ public class PsqlHistoricalFigureRepo implements PeopleRepository
                if (ct != 1)
                   throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
          
-               return new HistoricalFigureImpl(histFigure);
+               return new PersonImpl(histFigure);
             }
             catch (JsonException e)
             {
@@ -286,7 +286,7 @@ public class PsqlHistoricalFigureRepo implements PeopleRepository
             {
                throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureImpl(histFigure);
+            return new PersonImpl(histFigure);
          }
       };
       

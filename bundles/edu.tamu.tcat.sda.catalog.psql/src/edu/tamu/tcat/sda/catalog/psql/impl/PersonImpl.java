@@ -11,7 +11,7 @@ import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
-public class HistoricalFigureImpl implements Person
+public class PersonImpl implements Person
 {
    private final String id;
    private final Set<PersonName> names;
@@ -19,7 +19,7 @@ public class HistoricalFigureImpl implements Person
    private final HistoricalEventImpl death;
    private final String summary;
 
-   public HistoricalFigureImpl(PersonDV figure)
+   public PersonImpl(PersonDV figure)
    {
       id = figure.id;
       names = new HashSet<PersonName>();
