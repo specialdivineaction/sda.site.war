@@ -17,7 +17,7 @@ module.exports = function (grunt) {
    var modulePath = rootPath + '/releng/node_modules';
 
    // where the final built/deployable artifacts go
-   var buildPath = rootPath + '/dist';
+   var buildPath = rootPath + '/web';
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -29,6 +29,12 @@ module.exports = function (grunt) {
                     targetDir: vendorPath,      // temporary dir used during install
                     layout: 'byComponent',
                     cleanup: true
+                }
+            },
+            dev: {
+                options: {
+                    targetDir: buildPath + '/vendor',
+                    layout: 'byComponent'
                 }
             }
         },
@@ -51,6 +57,30 @@ module.exports = function (grunt) {
                         flatten: true,
                         dest: buildPath + '/fonts',
                         src: vendorPath + '/bootstrap/glyphicons-halflings-regular.*'
+                    },
+                    {
+                        dest: buildPath + '/index.html',
+                        src: srcPath + '/index.html'
+                    }
+                ]
+            },
+            dev: {
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        dest: buildPath + '/fonts',
+                        src: buildPath + '/vendor/bootstrap/glyphicons-halflings-regular.*'
+                    },
+                    {
+                        expand: true,
+                        cwd: srcPath,
+                        dest: buildPath,
+                        src: ['js/**/*', 'templates/**/*']
+                    },
+                    {
+                        dest: buildPath + '/index.html',
+                        src: srcPath + '/index_dev.html'
                     }
                 ]
             }
@@ -111,6 +141,18 @@ module.exports = function (grunt) {
         stylus: {
             build: {
                 options: {
+                    import: ['nib'],
+                    'include css': true
+                },
+                files: [
+                    {
+                        dest: stagingPath + '/css/layout.css',
+                        src: srcPath + '/stylus/layout.styl'
+                    }
+                ]
+            },
+            dev: {
+                options: {
                     compress: false,
                     linenos: true,
                     import: ['nib'],
@@ -118,8 +160,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     {
-                        dest: stagingPath + '/css/layout.css',
-                        src: srcPath + '/stylus/layout.styl',
+                        dest: buildPath + '/css/layout.css',
+                        src: srcPath + '/stylus/layout.styl'
                     }
                 ]
             }
@@ -133,5 +175,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-stylus');
 
-    grunt.registerTask('default', ['bower:install', 'requirejs:build', 'stylus:build', 'cssmin:build', 'copy:build', 'clean:build']);
+    grunt.registerTask('prod', ['bower:install', 'requirejs:build', 'stylus:build', 'cssmin:build', 'copy:build', 'clean:build']);
+    grunt.registerTask('dev', ['bower:dev', 'stylus:dev', 'copy:dev']);
+
+    grunt.registerTask('default', ['dev']);
 };
