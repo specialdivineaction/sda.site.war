@@ -1,23 +1,11 @@
-define(['jquery', 'hb!templates/author_popover.hbs', 'bootstrap', 'jquery.autosize'], function ($, template) {
-    $('textarea.autosize').autosize();
+define(['require', 'js/model/person', 'js/view/person_form'], function (require) {
+    var PersonFormView = require('js/view/person_form'),
+        Person = require('js/model/person'),
+        $ = require('jquery');
 
-    $('input#author')
-        .popover({
-            container: 'body',
-            html: true,
-            placement: 'left',
-            trigger: 'focus',
-            title: 'Author Details',
-            content: template({
-                author: {
-                    first: 'John',
-                    last: 'Doe',
-                    birth: '1234',
-                    death: '1320'
-                },
-                display: 'J. Doe',
-                role: 'Author',
-                editModalTarget: '#quickAddForm'
-            })
-        });
+    var form = new PersonFormView({
+        model: new Person()
+    });
+
+    $('.container').html(form.render().el);
 });
