@@ -1,0 +1,73 @@
+<form id="authorForm" role="form">
+    <input type="hidden" value="{{id}}">
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input class="form-control" type="text" name="name" id="name">
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input class="form-control" type="text" name="title" id="title" value="{{title}}">
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="givenName">Given Name</label>
+                        <input class="form-control" type="text" name="givenName" id="givenName" value="{{givenName}}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="middleName">Middle Name</label>
+                        <input class="form-control" type="text" name="middleName" id="middleName" value="{{middleName}}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="familyName">Family Name</label>
+                        <input class="form-control" type="text" name="familyName" id="familyName" value="{{familyName}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="suffix">Suffix</label>
+                <input class="form-control" type="text" name="suffix" id="suffix" value="{{suffix}}">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="displayName">Display Name</label>
+        <input class="form-control" type="text" name="displayName" id="displayName" value="{{displayName}}">
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="birth">Date of Birth</label>
+                <input class="form-control" type="text" name="birth" id="birth" value="{{birth}}">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="death">Date of Death</label>
+                <input class="form-control" type="text" name="death" id="death" value="{{death}}">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="btn-row">
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>
+            Save
+        </button>
+    </div>
+</form>
