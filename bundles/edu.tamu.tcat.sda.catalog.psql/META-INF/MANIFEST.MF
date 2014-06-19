@@ -21,3 +21,5 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  org.osgi.framework;version="1.7.0",
  org.postgresql.util
 Export-Package: edu.tamu.tcat.sda.catalog.psql
+Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
+ .
