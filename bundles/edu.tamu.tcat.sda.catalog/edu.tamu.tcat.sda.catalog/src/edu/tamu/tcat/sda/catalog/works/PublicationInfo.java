@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import java.util.Date;
 
 /**
  * Publication details for a particular work.
@@ -20,5 +19,5 @@ public interface PublicationInfo
    /**
     * @return The date this work was published.
     */
-   Date getPublicationDate();    //  TODO should be HistoricalDate
+   DateDescription getPublicationDate();    //  TODO should be HistoricalDate
 }

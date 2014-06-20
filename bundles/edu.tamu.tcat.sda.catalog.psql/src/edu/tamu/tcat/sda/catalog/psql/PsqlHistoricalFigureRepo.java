@@ -274,6 +274,5 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
       };
 
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
-
    }
 }

@@ -8,6 +8,11 @@ package edu.tamu.tcat.sda.catalog.works;
 public interface Work
 {
    /**
+    * @return A unique, persistent identifier for this work. 
+    */
+   String getId();
+   
+   /**
     * @return The authors of this work. 
     */
    AuthorList getAuthors();   
