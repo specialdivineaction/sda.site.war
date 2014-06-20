@@ -159,7 +159,17 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
       {
          try (Connection conn = getConnection())
          {
-            return task.execute(conn);
+            try  {
+               return task.execute(conn);
+            } catch (Exception ex) {
+               try  {
+                  conn.rollback();
+               } catch (Exception e) {
+                  ex.addSuppressed(e);
+               }
+               
+               throw ex;
+            }
          }
       }
    }

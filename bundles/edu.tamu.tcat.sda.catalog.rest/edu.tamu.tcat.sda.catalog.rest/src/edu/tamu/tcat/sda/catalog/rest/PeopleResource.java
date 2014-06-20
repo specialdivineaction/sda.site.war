@@ -1,9 +1,14 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -11,123 +16,216 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.PersonName;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
 @Path("/people")
 public class PeopleResource
 {
-   @SuppressWarnings("unused")      // sets up the OSGi DS dependency if needed.
+   // records internal errors accessing the REST
+   static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
+   
+   // TODO move to consts package
+   
+   // The time (in milliseconds) to wait for a response from the repository. Defaults to 1000.
+   public static final String PROP_TIMEOUT = "rest.repo.timeout";
+   public static final String PROP_TIMEOUT_UNITS = "rest.repo.timeout.units";
+
+   public static final String PROP_ENABLE_ERR_DETAILS = "rest.err.details.enabled";
+   
    private ConfigurationProperties properties;
-   private HistoricalFigureRepository repo;
+   private PeopleRepository repo;
 
    // called by DS
    public void setConfigurationProperties(ConfigurationProperties properties)
    {
       this.properties = properties;
    }
-
+   
    // called by DS
-   public void setRepository(HistoricalFigureRepository repo)
+   public void setRepository(PeopleRepository repo)
    {
       this.repo = repo;
    }
-
+   
    // called by DS
    public void activate()
    {
-
+      
    }
-
+   
    // called by DS
    public void dispose()
    {
-
+      
    }
-
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public Iterable<HistoricalFigureDV> listPeople()
+   public List<PersonDV> listPeople()
    {
-      Iterable<HistoricalFigureDV> iterablehfDV = null;
-
-      List<HistoricalFigureDV> listHfDV = new ArrayList<HistoricalFigureDV>();
-      Iterable<HistoricalFigure> listFigures = repo.listHistoricalFigures();
-
-      for (HistoricalFigure figure : listFigures)
+      // TODO need to add slicing/paging support
+      List<PersonDV> results = new ArrayList<PersonDV>();
+      Iterable<Person> people = repo.listHistoricalFigures();
+      
+      for (Person figure : people)
       {
-         listHfDV.add(getHistoricalFigureDV(figure));
+         results.add(getHistoricalFigureDV(figure));
       }
 
-      iterablehfDV = listHfDV;
-
-      return iterablehfDV;
+      return Collections.unmodifiableList(results);
    }
 
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public HistoricalFigureDV getPerson(@PathParam(value="personId") int personId)
+   public PersonDV getPerson(@PathParam(value="personId") int personId)
    {
-      HistoricalFigure figure = repo.getPerson(personId);
+      // TODO make this a mangled string instead of an ID. Don't want people guessing 
+      //      unique identifiers
+      Person figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
-
+   
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public Response createPerson(HistoricalFigureDV author)
+   @Produces(MediaType.APPLICATION_JSON)
+   public PersonDV createPerson(PersonDV person) throws Exception
    {
-      repo.create(author, new DataUpdateObserverAdapter<HistoricalFigure>()
+      // TODO add authentication filter in front of this call
+      int timeout = properties.getPropertyValue(PROP_TIMEOUT, Integer.class, Integer.valueOf(1000)).intValue();
+      String u = properties.getPropertyValue(PROP_TIMEOUT_UNITS, String.class, TimeUnit.MILLISECONDS.toString());
+      TimeUnit units = TimeUnit.valueOf(u);
+      
+      CreatePersonObserver observer = new CreatePersonObserver();
+      repo.create(person, observer);
+      
+      try 
       {
-         @Override
-         protected void onFinish(HistoricalFigure result)
-         {
-            System.out.println("Sucess!");
-         }
-
-         @Override
-         protected void onError(String message, Exception ex)
-         {
-            System.out.println("Error!");
-         }
-      });
-
-      return Response.serverError().build();
+         Person createdPerson = observer.getResult(timeout, units);
+         PersonDV dv = getHistoricalFigureDV(createdPerson);
+         return dv;
+      }
+      catch (InterruptedException iex)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, iex, properties, timeout, units);
+         errorLogger.log(Level.SEVERE, error.message, iex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      } 
+      catch (ResourceCreationException rce)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, rce, properties);
+         errorLogger.log(Level.SEVERE, error.message, rce);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      }
+      catch (Exception ex)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, ex, properties);
+         errorLogger.log(Level.SEVERE, error.message, ex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));      
+      }
+   }
+   
+   private PersonDV getHistoricalFigureDV(Person figure)
+   {
+      return new PersonDV(figure);
    }
 
-   private HistoricalFigureDV getHistoricalFigureDV(HistoricalFigure figure)
+   private static final class CreatePersonObserver extends DataUpdateObserverAdapter<Person>
    {
-      PersonNameRefDV pnDV = new PersonNameRefDV();
-      HistoricalFigureDV hfDV = new HistoricalFigureDV();
-      hfDV.id = figure.getId();
-      hfDV.birth = figure.getBirth();
-      hfDV.death = figure.getDeath();
+      private final CountDownLatch latch;
 
-      Set<PersonName> alternativeNames = figure.getAlternativeNames();
-      Set<PersonNameRefDV> pnDvSet = new HashSet<PersonNameRefDV>();
-      for (PersonName name : alternativeNames)
+      private volatile Person result;
+      private volatile ResourceCreationException exception = null;
+      
+      CreatePersonObserver()
       {
-         pnDV.title = name.getTitle();
-         pnDV.displayName = name.getDisplayName();
-         pnDV.givenName = name.getGivenName();
-         pnDV.middleName = name.getMiddleName();
-         pnDV.familyName = name.getFamilyName();
-         pnDV.suffix = name.getSuffix();
-
-         pnDvSet.add(pnDV);
+         this.latch = new CountDownLatch(1);
       }
 
-      hfDV.people = pnDvSet;
-
-      return hfDV;
+      @Override
+      protected void onFinish(Person result)
+      {
+         this.result = result;
+         this.latch.countDown();
+      }
+   
+      @Override
+      protected void onError(String message, Exception ex)
+      {
+         exception = new ResourceCreationException(message, ex);
+         latch.countDown();
+      }
+      
+      public Person getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
+      {
+         latch.await(timeout, units);
+         
+         if (exception != null)
+            throw exception;
+         
+         Objects.requireNonNull(result, "Repository failed to return created person");
+         return result;
+      }
    }
+   
+   public static class CreatePersonERD extends ErrorResponseData<PersonDV>
+   {
+
+      public CreatePersonERD()
+      {
+         super();
+      }
+      
+      private CreatePersonERD(PersonDV person, Response.Status status, String message, String detail)
+      {
+         super(person, status, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the request times out waiting 
+       * on the repository.
+       */
+      public static CreatePersonERD create(
+            PersonDV person, InterruptedException iex, ConfigurationProperties properties,
+            int timeout, TimeUnit units)
+      {
+         String message = MessageFormat.format("Failed to create person within alloted timeout {1} {2}", timeout, units);
+         
+         String detail = ErrorResponseData.getErrorDetail(iex, properties);
+         return new CreatePersonERD(person, Response.Status.SERVICE_UNAVAILABLE, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the repository throws an 
+       * exception while create the person.
+       */
+      public static CreatePersonERD create(
+            PersonDV person, ResourceCreationException ex, ConfigurationProperties properties)
+      {
+         String message = "Failed to create a new person.";
+         String detail = ErrorResponseData.getErrorDetail(ex, properties);
+         return new CreatePersonERD(person, Response.Status.INTERNAL_SERVER_ERROR, message, detail);
+      }
+      
+      /**
+       * Constructs an error response object in the event that the repository throws an 
+       * exception while create the person.
+       */
+      public static CreatePersonERD create(PersonDV person, Exception ex, ConfigurationProperties properties)
+      {
+         String message = "Unexpected error attempting to create a new person.";
+         String detail = ErrorResponseData.getErrorDetail(ex, properties);
+         return new CreatePersonERD(person, Response.Status.INTERNAL_SERVER_ERROR, message, detail);
+      }
+   }
+   
 }

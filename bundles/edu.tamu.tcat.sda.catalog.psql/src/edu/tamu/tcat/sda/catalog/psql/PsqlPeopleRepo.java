@@ -15,80 +15,81 @@ import org.postgresql.util.PGobject;
 
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigure;
-import edu.tamu.tcat.sda.catalog.people.HistoricalFigureRepository;
-import edu.tamu.tcat.sda.catalog.people.dv.HistoricalFigureDV;
-import edu.tamu.tcat.sda.catalog.psql.impl.HistoricalFigureImpl;
+import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
+import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
-public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
+public class PsqlPeopleRepo implements PeopleRepository
 {
-
+   
    private DbExecutor exec;
    private JsonMapper jsonMapper;
-
-   public PsqlHistoricalFigureRepo()
+   
+   public PsqlPeopleRepo()
    {
    }
-
+   
    public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
    }
-
+   
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
    }
-
-   public void activate()
+   
+   public void activate() 
    {
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
    }
-
+   
    public void dispose()
    {
       // TODO wait on or cancel any pending tasks?
-
+      
       this.exec = null;
       this.jsonMapper = null;
    }
 
 
    @Override
-   public Iterable<HistoricalFigure> listHistoricalFigures()
+   public Iterable<Person> listHistoricalFigures()
    {
-
+      
       // FIXME this is async, meaning test will exit prior to conclusion.
       // TODO Auto-generated method stub
       final String querySql = "SELECT historical_figure FROM people";
-
-      DbExecTask<Iterable<HistoricalFigure>> query = new DbExecTask<Iterable<HistoricalFigure>>()
+      
+      DbExecTask<Iterable<Person>> query = new DbExecTask<Iterable<Person>>()
       {
 
          @Override
-         public Iterable<HistoricalFigure> execute(Connection conn) throws Exception
+         public Iterable<Person> execute(Connection conn) throws Exception
          {
-            List<HistoricalFigure> events = new ArrayList<HistoricalFigure>();
-            Iterable<HistoricalFigure> eIterable = new ArrayList<HistoricalFigure>();
+            List<Person> events = new ArrayList<Person>();
+            Iterable<Person> eIterable = new ArrayList<Person>();
             try (PreparedStatement ps = conn.prepareStatement(querySql);
                  ResultSet rs = ps.executeQuery())
             {
                PGobject pgo = new PGobject();
-
+               
                while(rs.next())
                {
                   Object object = rs.getObject("historical_figure");
                   if (object instanceof PGobject)
                      pgo = (PGobject)object;
-                  else
+                  else 
                      System.out.println("Error!");
-
-                  HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
-                  HistoricalFigureImpl figureRef = new HistoricalFigureImpl(parse);
+                  
+                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
+                  PersonImpl figureRef = new PersonImpl(parse);
                   try
                   {
                      events.add(figureRef);
@@ -107,11 +108,11 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             eIterable = events;
             return eIterable;
          }
-
+         
       };
-
-      Future<Iterable<HistoricalFigure>> submit = exec.submit(query);
-      Iterable<HistoricalFigure> iterable = null;
+      
+      Future<Iterable<Person>> submit = exec.submit(query);
+      Iterable<Person> iterable = null;
       try
       {
          iterable = submit.get();
@@ -130,34 +131,32 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
    }
 
    @Override
-   public HistoricalFigure getPerson(long personId)
-   {
+   public Person getPerson(long personId)
+   {      
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
       final long id = personId;
-      DbExecTask<HistoricalFigure> query = new DbExecTask<HistoricalFigure>()
+      DbExecTask<Person> query = new DbExecTask<Person>()
       {
-         HistoricalFigureImpl figureRef;
+         PersonImpl figureRef;
          @Override
-         public HistoricalFigure execute(Connection conn) throws Exception
+         public Person execute(Connection conn) throws Exception
          {
             try (PreparedStatement ps = conn.prepareStatement(querySql))
             {
                ps.setLong(1, id);
-               try (ResultSet rs = ps.executeQuery())
+               ResultSet rs = ps.executeQuery();
+               PGobject pgo = new PGobject();
+               
+               while(rs.next())
                {
-                  PGobject pgo = new PGobject();
-
-                  while(rs.next())
-                  {
-                     Object object = rs.getObject("historical_figure");
-                     if (object instanceof PGobject)
-                        pgo = (PGobject)object;
-                     else
-                        System.out.println("Error!");
-
-                     HistoricalFigureDV parse = jsonMapper.parse(pgo.toString(), HistoricalFigureDV.class);
-                     figureRef = new HistoricalFigureImpl(parse);
-                  }
+                  Object object = rs.getObject("historical_figure");
+                  if (object instanceof PGobject)
+                     pgo = (PGobject)object;
+                  else 
+                     System.out.println("Error!");
+                  
+                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
+                  figureRef = new PersonImpl(parse);
                }
             }
             catch (Exception e)
@@ -166,10 +165,10 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
             }
             return figureRef;
          }
-
+         
       };
-
-      HistoricalFigure submit = null;
+      
+      Person submit = null;
       try
       {
          return exec.submit(query).get();
@@ -184,95 +183,113 @@ public class PsqlHistoricalFigureRepo implements HistoricalFigureRepository
 
 
    @Override
-   public void create(final HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer)
+   public void create(final PersonDV histFigure, final DataUpdateObserver<Person> observer)
    {
       final String insertSql = "INSERT INTO people (historical_figure) VALUES(null)";
       final String updateSql = "UPDATE people "
                                + " SET historical_figure = ?"
                                + " WHERE id = ?";
-      DbExecTask<HistoricalFigure> task1 = new DbExecTask<HistoricalFigure>()
+      
+      DbExecTask<Person> createPersonTask = new DbExecTask<Person>()
       {
-         @Override
-         public HistoricalFigure execute(Connection conn) throws SQLException
+         private final String createPersonId(Connection conn) throws InterruptedException, ExecutionFailedException
          {
             try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS))
             {
-
-               int ct = ps.executeUpdate();
-               if (ct != 1)
-                  throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-               else
-               {
-                  try (ResultSet rs = ps.getGeneratedKeys())
-                  {
-                     if ( rs.next() )
-                     {
-                        int key = rs.getInt(1);
-                        histFigure.id = new Integer(key).toString();
-                     }
-                  }
-               }
+               if (observer != null && observer.isCanceled())
+                  throw new InterruptedException();
+               
+               ps.executeUpdate();
+               ResultSet rs = ps.getGeneratedKeys();
+               if (!rs.next())
+                  throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
+               
+               return Integer.toString(rs.getInt(1));
             }
-
+            catch (SQLException sqle)
+            {
+               throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]", sqle);
+            }
+         }
+         
+         private Person savePersonDetails(Connection conn) throws InterruptedException, ExecutionFailedException
+         {
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-
+         
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-
+         
+               if (observer != null && observer.isCanceled())
+                  throw new InterruptedException();
+               
                int ct = ps.executeUpdate();
                if (ct != 1)
-                  throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-
+                  throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
+         
+               return new PersonImpl(histFigure);
             }
             catch (JsonException e)
             {
-               throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
+               // NOTE this is an internal configuration error. The JsonMapper should be configured to 
+               //      serialize HistoricalFigureDV instances correctly.
+               throw new ExecutionFailedException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureImpl(histFigure);
+            catch (SQLException sqle)
+            {
+               throw new ExecutionFailedException("Failed to save historical figure [" + histFigure + "]", sqle);
+            }
+         }
+
+         @Override
+         public Person execute(Connection conn) throws InterruptedException, ExecutionFailedException
+         {
+            histFigure.id = createPersonId(conn);
+            Person result = savePersonDetails(conn);
+            
+            return result;
          }
       };
-
-      exec.submit(new ObservableTaskWrapper<>(task1, observer));
-
+      
+      exec.submit(new ObservableTaskWrapper<>(createPersonTask, observer));
    }
 
    @Override
-   public void update(final HistoricalFigureDV histFigure, DataUpdateObserver<HistoricalFigure> observer)
+   public void update(final PersonDV histFigure, DataUpdateObserver<Person> observer)
    {
       final String updateSql = "UPDATE people "
             + " SET historical_figure = ?"
             + " WHERE id = ?";
-      DbExecTask<HistoricalFigure> task1 = new DbExecTask<HistoricalFigure>()
+      DbExecTask<Person> task1 = new DbExecTask<Person>()
       {
          @Override
-         public HistoricalFigure execute(Connection conn) throws SQLException
+         public Person execute(Connection conn) throws SQLException
          {
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
             {
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-
+               
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-
+               
                int ct = ps.executeUpdate();
                if (ct != 1)
                throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-
+               
             }
             catch (JsonException e)
             {
                throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
-            return new HistoricalFigureImpl(histFigure);
+            return new PersonImpl(histFigure);
          }
       };
-
+      
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
    }
 }

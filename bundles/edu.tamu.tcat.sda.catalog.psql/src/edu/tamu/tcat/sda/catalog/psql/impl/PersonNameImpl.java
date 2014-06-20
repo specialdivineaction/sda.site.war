@@ -1,12 +1,13 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
 import edu.tamu.tcat.sda.catalog.people.PersonName;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameRefDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class PersonNameImpl implements PersonName
 {
-   PersonNameRefDV personRef;
-   public PersonNameImpl(PersonNameRefDV personDV)
+   // TODO change to local private final fields
+   PersonNameDV personRef;
+   public PersonNameImpl(PersonNameDV personDV)
    {
       this.personRef = personDV;
    }

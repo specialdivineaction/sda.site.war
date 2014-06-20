@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: edu.tamu.tcat.sda.catalog.events,
+ edu.tamu.tcat.sda.catalog.events.dv,
  edu.tamu.tcat.sda.catalog.people,
  edu.tamu.tcat.sda.catalog.people.dv,
  edu.tamu.tcat.sda.catalog.works,

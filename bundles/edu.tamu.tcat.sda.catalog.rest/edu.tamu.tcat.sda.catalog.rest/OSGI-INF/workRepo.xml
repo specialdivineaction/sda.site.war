@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.catalog.rest.repo.person">
-   <implementation class="edu.tamu.tcat.sda.catalog.psql.PsqlPeopleRepo"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="edu.tamu.tcat.sda.catalog.rest.repo.work">
+   <implementation class="edu.tamu.tcat.sda.catalog.psql.PsqlWorkRepo"/>
    <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.oss.db.DbExecutor" name="DbExecutor" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.sda.catalog.people.PeopleRepository"/>
+      <provide interface="edu.tamu.tcat.sda.catalog.works.WorkRepository"/>
    </service>
 </scr:component>

@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * Represents a Person 
+ * Represents a Person
  */
 public class HistoricalFigureDV
 {
    public String id;
-   public Set<PersonNameRefDV> people;
+   public Set<PersonNameDV> people;
    public Date birth;
    public Date death;
-   
+
 }
