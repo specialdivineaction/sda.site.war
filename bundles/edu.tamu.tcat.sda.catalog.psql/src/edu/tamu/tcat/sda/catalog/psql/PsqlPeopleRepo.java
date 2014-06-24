@@ -144,19 +144,21 @@ public class PsqlPeopleRepo implements PeopleRepository
             try (PreparedStatement ps = conn.prepareStatement(querySql))
             {
                ps.setLong(1, id);
-               ResultSet rs = ps.executeQuery();
-               PGobject pgo = new PGobject();
-
-               while(rs.next())
+               try (ResultSet rs = ps.executeQuery())
                {
-                  Object object = rs.getObject("historical_figure");
-                  if (object instanceof PGobject)
-                     pgo = (PGobject)object;
-                  else
-                     System.out.println("Error!");
+                  PGobject pgo = new PGobject();
 
-                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
-                  figureRef = new PersonImpl(parse);
+                  while(rs.next())
+                  {
+                     Object object = rs.getObject("historical_figure");
+                     if (object instanceof PGobject)
+                        pgo = (PGobject)object;
+                     else
+                        System.out.println("Error!");
+
+                     PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
+                     figureRef = new PersonImpl(parse);
+                  }
                }
             }
             catch (Exception e)
@@ -200,11 +202,13 @@ public class PsqlPeopleRepo implements PeopleRepository
                   throw new InterruptedException();
 
                ps.executeUpdate();
-               ResultSet rs = ps.getGeneratedKeys();
-               if (!rs.next())
-                  throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
+               try (ResultSet rs = ps.getGeneratedKeys())
+               {
+                  if (!rs.next())
+                     throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
 
-               return Integer.toString(rs.getInt(1));
+                  return Integer.toString(rs.getInt(1));
+               }
             }
             catch (SQLException sqle)
             {

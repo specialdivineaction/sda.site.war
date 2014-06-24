@@ -32,23 +32,23 @@ public class PsqlWorkRepo implements WorkRepository
    public PsqlWorkRepo()
    {
    }
-   
+
    public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
    }
-   
+
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
    }
-   
+
    public void activate()
    {
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
    }
-   
+
    public void dispose()
    {
       this.exec = null;
@@ -71,15 +71,15 @@ public class PsqlWorkRepo implements WorkRepository
                        ResultSet rs = ps.executeQuery())
                   {
                      PGobject pgo = new PGobject();
-                     
+
                      while(rs.next())
                      {
                         Object object = rs.getObject("work");
                         if (object instanceof PGobject)
                            pgo = (PGobject)object;
-                        else 
+                        else
                            System.out.println("Error!");
-                        
+
                         WorkDV parse = jsonMapper.parse(pgo.toString(), WorkDV.class);
                         WorkImpl figureRef = new WorkImpl(parse);
                         try
@@ -99,9 +99,9 @@ public class PsqlWorkRepo implements WorkRepository
                   eIterable = events;
                   return eIterable;
                }
-               
+
             };
-            
+
             Future<Iterable<Work>> submit = exec.submit(query);
             Iterable<Work> iterable = null;
             try
@@ -152,13 +152,13 @@ public class PsqlWorkRepo implements WorkRepository
                if (ct != 1)
                   throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
 
-//               if (ps.isClosed())
-//               {
-                  ResultSet rs = ps.getGeneratedKeys();
+               try (ResultSet rs = ps.getGeneratedKeys())
+               {
                   if (!rs.next())
                      throw new ExecutionFailedException("Failed to generate id for a work [" + work + "]");
                   work.id = Integer.toString(rs.getInt("id"));
-//               }
+               }
+
                return new WorkImpl(work);
             }
             catch (SQLException e)
@@ -167,7 +167,7 @@ public class PsqlWorkRepo implements WorkRepository
             }
          }
       };
-      
+
       exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
 
