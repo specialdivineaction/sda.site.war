@@ -65,8 +65,8 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
       String pass = props.getPropertyValue(PROP_PASS, String.class);
       
       Objects.requireNonNull(url, "Database connection URL not supplied");
-      Objects.requireNonNull(url, "Database username not supplied");
-      Objects.requireNonNull(url, "Database password not supplied");
+      Objects.requireNonNull(user, "Database username not supplied");
+      Objects.requireNonNull(pass, "Database password not supplied");
 
       int maxActive = getIntValue(props, PROP_MAX_ACTIVE, 30);
       int maxIdle = getIntValue(props, PROP_MAX_IDLE, 3);
