@@ -13,9 +13,6 @@ module.exports = function (grunt) {
    var stagingPath = rootPath + '/build';
    var vendorPath = stagingPath + '/vendor';
 
-   // note, this directory is dependent on where the 'package.json' file is.
-   var modulePath = rootPath + '/releng/node_modules';
-
    // where the final built/deployable artifacts go
    var buildPath = rootPath + '/web';
 
@@ -107,24 +104,18 @@ module.exports = function (grunt) {
                     baseUrl: srcPath,
                     name: path.relative(srcPath, vendorPath) + '/almond/almond',     // magically included by Bower (we hope).
                     paths: {
+                        backbone: path.relative(srcPath, vendorPath) + '/backbone/backbone',
+                        'backbone.epoxy': path.relative(srcPath, vendorPath) + '/backbone.epoxy/backbone.epoxy',
                         bootstrap: path.relative(srcPath, vendorPath) + '/bootstrap/bootstrap',
                         jquery: path.relative(srcPath, vendorPath) + '/jquery/jquery',
                         'jquery.autosize': path.relative(srcPath, vendorPath) + '/jquery-autosize/jquery.autosize',
-
-                        // The r.js optimizer part of requirejs-handlebars depends on NPM's Handlebars package (not Bower's)
-                        'handlebars.runtime': path.relative(srcPath, modulePath) + '/handlebars/dist/amd',
-                        hb: path.relative(srcPath, vendorPath) + '/requirejs-handlebars/hb',
-                        text: path.relative(srcPath, vendorPath) + '/requirejs-text/text'
+                        text: path.relative(srcPath, vendorPath) + '/requirejs-text/text',
+                        tpl: path.relative(srcPath, vendorPath) + '/requirejs-tpl/tpl',
+                        underscore: path.relative(srcPath, vendorPath) + '/underscore/underscore'
                     },
-                    packages: [
-                        {
-                            name: 'handlebars',
-                            location: path.relative(srcPath, modulePath) + '/handlebars/dist/amd',
-                            main: './handlebars'
-                        }
-                    ],
                     shim: {
-                        backbone: { deps: ['underscore'], exports: 'Backbone' },
+                        backbone: { deps: ['jquery', 'underscore'], exports: 'Backbone' },
+                        'backbone.epoxy': ['backbone'],
                         bootstrap: ['jquery'],
                         'jquery.autosize': ['jquery'],
                         underscore: { exports: '_' }

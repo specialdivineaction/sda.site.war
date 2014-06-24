@@ -1,9 +1,7 @@
 define(function (require) {
 
-    var Backbone = require('backbone'),
-        Handlebars = require('handlebars');
-
-    Handlebars.registerHelper('date', require('js/util/date_format'));
+    var Backbone   = require('backbone'),
+        dateFormat = require('js/util/date_format');
 
 
     var modelFormBind = function (cb) {
@@ -24,7 +22,7 @@ define(function (require) {
 
 
     var PersonNameRefFormView = Backbone.View.extend({
-        template: require('hb!templates/name_ref_subform.html.hbs'),
+        template: require('tpl!templates/name_ref_subform.html.ejs'),
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
@@ -41,10 +39,13 @@ define(function (require) {
 
 
     var HistoricalEventFormView = Backbone.View.extend({
-        template: require('hb!templates/historical_event_subform.html.hbs'),
+        template: require('tpl!templates/historical_event_subform.html.ejs'),
 
         render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.html(this.template({
+                model: this.model.toJSON(),
+                date: dateFormat
+            }));
             return this;
         },
 
@@ -60,7 +61,7 @@ define(function (require) {
     var PersonFormView = Backbone.View.extend({
         tagName: 'form',
 
-        template: require('hb!templates/person_form.html.hbs'),
+        template: require('tpl!templates/person_form.html.ejs'),
 
         render: function () {
             this.$el.html(this.template({ model: this.model }));
