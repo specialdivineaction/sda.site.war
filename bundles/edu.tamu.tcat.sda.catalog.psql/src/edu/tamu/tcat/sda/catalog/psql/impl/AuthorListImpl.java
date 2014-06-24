@@ -12,7 +12,6 @@ public class AuthorListImpl implements AuthorList
 {
    private Iterator<AuthorListDV> authListDv;
    private List<AuthorReference> authRef;
-   private AuthorListDV authList;
    
    public AuthorListImpl(Iterator<AuthorListDV> authList)
    {
@@ -26,7 +25,9 @@ public class AuthorListImpl implements AuthorList
    
    public AuthorListImpl(AuthorListDV authList)
    {
-      this.authListDv = authListDv;
+      authRef = new ArrayList<AuthorReference>();
+      if (authList != null)
+         authRef.add(new AuthorReferenceImpl(authList.authorReference));
    }
 
    @Override
@@ -44,6 +45,8 @@ public class AuthorListImpl implements AuthorList
    @Override
    public int size()
    {
+      if (authRef == null)
+         return 0;
       return authRef.size();
    }
 

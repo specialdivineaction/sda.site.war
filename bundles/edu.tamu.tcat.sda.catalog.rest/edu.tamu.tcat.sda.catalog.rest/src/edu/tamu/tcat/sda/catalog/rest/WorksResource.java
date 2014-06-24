@@ -17,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
@@ -83,7 +84,12 @@ public class WorksResource
          workDV.series = result.getSeries();
          workDV.authors = new AuthorListDV(result.getAuthors());
          workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-         workDV.otherAuthors = new AuthorListDV(result.getOtherAuthors());
+         
+         AuthorList otherAuthors = result.getOtherAuthors();
+         if (otherAuthors.size() > 0)
+            workDV.otherAuthors = new AuthorListDV(otherAuthors);
+         else
+            workDV.otherAuthors = null;
          workDV.summary = result.getSummary();
          
          return workDV;
