@@ -18,7 +18,10 @@ import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
+import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -26,8 +29,66 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
+   private final static class PsqlCreateWorkTask implements DbExecTask<Work>
+   {
+      private final static String sql = "INSERT INTO works (work) VALUES(?)";
+
+      private final WorkDV work;
+      private final JsonMapper jsonMapper;
+
+      private PsqlCreateWorkTask(WorkDV work, JsonMapper jsonMapper)
+      {
+         // TODO convert to form where these can be configured using plugins/task provider, etc.
+         this.work = work;
+         this.jsonMapper = jsonMapper;
+      }
+
+      private String getJson()
+      {
+         try
+         {
+            return jsonMapper.asString(work);
+         }
+         catch (JsonException jpe)
+         {
+            throw new IllegalArgumentException("Failed to serialize the supplied work [" + work + "]", jpe);
+         }
+      }
+
+      @Override
+      public Work execute(Connection conn) throws SQLException, ExecutionFailedException
+      {
+         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+         {
+            PGobject jsonObject = new PGobject();
+            jsonObject.setType("json");
+            jsonObject.setValue(getJson());
+
+            ps.setObject(1, jsonObject);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
+
+            try (ResultSet rs = ps.getGeneratedKeys())
+            {
+               if (!rs.next())
+                  throw new ExecutionFailedException("Failed to generate id for a work [" + work + "]");
+               work.id = Integer.toString(rs.getInt("id"));
+            }
+
+            return new WorkImpl(work);
+         }
+         catch (SQLException e)
+         {
+            throw new IllegalStateException("Failed to create work: [" + work + "]");
+         }
+      }
+   }
+
    private DbExecutor exec;
    private JsonMapper jsonMapper;
+   private PeopleRepository peopleRepo;
 
    public PsqlWorkRepo()
    {
@@ -36,6 +97,11 @@ public class PsqlWorkRepo implements WorkRepository
    public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
+   }
+
+   public void setPeopleRepo(PeopleRepository repo)
+   {
+      this.peopleRepo = repo;
    }
 
    public void setJsonMapper(JsonMapper mapper)
@@ -53,6 +119,20 @@ public class PsqlWorkRepo implements WorkRepository
    {
       this.exec = null;
       this.jsonMapper = null;
+   }
+
+   @Override
+   public Person getAuthor(AuthorReference ref)
+   {
+      String id = ref.getId();
+      try {
+         // FIXME repo should accept string identifiers.
+         return peopleRepo.getPerson(Integer.parseInt(id));
+      }
+      catch (Exception ex)
+      {
+         throw new IllegalStateException("Could not retrieve person instance (" + id + ").", ex);
+      }
    }
 
    @Override
@@ -124,50 +204,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public void create(final WorkDV work, DataUpdateObserver<Work> observer)
    {
-      final String workString;
-      try
-      {
-         workString = jsonMapper.asString(work);
-      }
-      catch (JsonException jpe)
-      {
-         throw new IllegalArgumentException("Failed to serialize the supplied work [" + work + "]", jpe);
-      }
-
-      final String sql = "INSERT INTO works (work) VALUES(?)";
-      DbExecTask<Work> task = new DbExecTask<Work>()
-      {
-         @Override
-         public Work execute(Connection conn) throws SQLException, ExecutionFailedException
-         {
-            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
-            {
-               PGobject jsonObject = new PGobject();
-               jsonObject.setType("json");
-               jsonObject.setValue(workString);
-
-               ps.setObject(1, jsonObject);
-
-               int ct = ps.executeUpdate();
-               if (ct != 1)
-                  throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
-
-               try (ResultSet rs = ps.getGeneratedKeys())
-               {
-                  if (!rs.next())
-                     throw new ExecutionFailedException("Failed to generate id for a work [" + work + "]");
-                  work.id = Integer.toString(rs.getInt("id"));
-               }
-
-               return new WorkImpl(work);
-            }
-            catch (SQLException e)
-            {
-               throw new IllegalStateException("Failed to create work: [" + work + "]");
-            }
-         }
-      };
-
+      DbExecTask<Work> task = new PsqlCreateWorkTask(work, jsonMapper);
       exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
 
@@ -177,5 +214,4 @@ public class PsqlWorkRepo implements WorkRepository
       // TODO Auto-generated method stub
 
    }
-
 }
