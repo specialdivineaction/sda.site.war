@@ -1,7 +1,6 @@
-package edu.tamu.tcat.sda.catalog.psql.test;
+package edu.tamu.tcat.sda.catalog.psql.test.restapi;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,9 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -24,11 +21,6 @@ import org.junit.Test;
 
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.impl.AuthorListImpl;
-import edu.tamu.tcat.sda.catalog.psql.impl.AuthorReferenceImpl;
-import edu.tamu.tcat.sda.catalog.psql.impl.PublicationImpl;
-import edu.tamu.tcat.sda.catalog.psql.impl.TitleDefinitionImpl;
-import edu.tamu.tcat.sda.catalog.psql.impl.TitleImpl;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
