@@ -11,7 +11,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <label for="eventDate">Date (mm/dd/yyyy)</label>
-            <input type="date" name="eventDate" id="eventDate"  class="form-control" value="<%= date(model.eventDate, 'm/d/Y') %>">
+            <input type="date" name="eventDate" id="eventDate"  class="form-control" value="<%= model.eventDate ? moment(model.eventDate).format('MM/DD/YYYY') : '' %>">
         </div>
     </div>
     <div class="col-sm-6">

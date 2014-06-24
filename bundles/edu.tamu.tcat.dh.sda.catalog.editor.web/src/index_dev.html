@@ -20,17 +20,17 @@
                     bootstrap: vendorPath + '/bootstrap/bootstrap',
                     jquery: vendorPath + '/jquery/jquery',
                     'jquery.autosize': vendorPath + '/jquery-autosize/jquery.autosize',
-                    'handlebars': vendorPath + '/handlebars/handlebars',
-                    hb: vendorPath + '/requirejs-handlebars/hb',
+                    moment: vendorPath + '/moment/moment',
                     text: vendorPath + '/requirejs-text/text',
+                    tpl: vendorPath + '/requirejs-tpl/tpl',
                     underscore: vendorPath + '/underscore/underscore'
                 },
 
                 shim: {
                     backbone: { deps: ['underscore'], exports: 'Backbone' },
                     bootstrap: ['jquery'],
-                    handlebars: { exports: 'Handlebars' },
                     'jquery.autosize': ['jquery'],
+                    moment: { exports: 'moment' },
                     underscore: { exports: '_'}
                 },
 

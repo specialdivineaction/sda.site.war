@@ -109,6 +109,7 @@ module.exports = function (grunt) {
                         bootstrap: path.relative(srcPath, vendorPath) + '/bootstrap/bootstrap',
                         jquery: path.relative(srcPath, vendorPath) + '/jquery/jquery',
                         'jquery.autosize': path.relative(srcPath, vendorPath) + '/jquery-autosize/jquery.autosize',
+                        moment: path.relative(srcPath, vendorPath) + '/moment/moment',
                         text: path.relative(srcPath, vendorPath) + '/requirejs-text/text',
                         tpl: path.relative(srcPath, vendorPath) + '/requirejs-tpl/tpl',
                         underscore: path.relative(srcPath, vendorPath) + '/underscore/underscore'
@@ -118,6 +119,7 @@ module.exports = function (grunt) {
                         'backbone.epoxy': ['backbone'],
                         bootstrap: ['jquery'],
                         'jquery.autosize': ['jquery'],
+                        moment: { exports: 'moment' },
                         underscore: { exports: '_' }
                     },
                     include: ['js/main'],

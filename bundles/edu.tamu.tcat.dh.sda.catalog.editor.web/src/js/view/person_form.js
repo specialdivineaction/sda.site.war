@@ -1,7 +1,7 @@
 define(function (require) {
 
     var Backbone   = require('backbone'),
-        dateFormat = require('js/util/date_format');
+        Moment = require('moment');
 
 
     var modelFormBind = function (cb) {
@@ -44,7 +44,7 @@ define(function (require) {
         render: function () {
             this.$el.html(this.template({
                 model: this.model.toJSON(),
-                date: dateFormat
+                moment: Moment
             }));
             return this;
         },
