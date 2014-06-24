@@ -5,7 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.postgresql.util.PGobject;
 
@@ -54,8 +58,67 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public Iterable<Work> listWorks()
    {
-      // TODO Auto-generated method stub
-      return null;
+      final String sqlQuery = "SELECT work FROM works";
+      DbExecTask<Iterable<Work>> query = new DbExecTask<Iterable<Work>>()
+            {
+
+               @Override
+               public Iterable<Work> execute(Connection conn) throws Exception
+               {
+                  List<Work> events = new ArrayList<>();
+                  Iterable<Work> eIterable = new ArrayList<>();
+                  try (PreparedStatement ps = conn.prepareStatement(sqlQuery);
+                       ResultSet rs = ps.executeQuery())
+                  {
+                     PGobject pgo = new PGobject();
+                     
+                     while(rs.next())
+                     {
+                        Object object = rs.getObject("work");
+                        if (object instanceof PGobject)
+                           pgo = (PGobject)object;
+                        else 
+                           System.out.println("Error!");
+                        
+                        WorkDV parse = jsonMapper.parse(pgo.toString(), WorkDV.class);
+                        WorkImpl figureRef = new WorkImpl(parse);
+                        try
+                        {
+                           events.add(figureRef);
+                        }
+                        catch(Exception e)
+                        {
+                           System.out.println();
+                        }
+                     }
+                  }
+                  catch (Exception e)
+                  {
+                     System.out.println("Error" + e);
+                  }
+                  eIterable = events;
+                  return eIterable;
+               }
+               
+            };
+            
+            Future<Iterable<Work>> submit = exec.submit(query);
+            Iterable<Work> iterable = null;
+            try
+            {
+               iterable = submit.get();
+            }
+            catch (InterruptedException e)
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            catch (ExecutionException e)
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            return  iterable;
    }
 
    @Override

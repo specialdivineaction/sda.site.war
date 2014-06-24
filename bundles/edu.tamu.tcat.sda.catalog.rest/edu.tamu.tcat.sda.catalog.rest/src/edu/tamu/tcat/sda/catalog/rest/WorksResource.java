@@ -1,8 +1,9 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -61,9 +62,17 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public Collection<String> listWorks()
+   public List<WorkDV> listWorks()
    {
-      return Arrays.asList("Thing 1", "Thing 2", "Red Fish", "Blue Fish");
+      List<WorkDV> results = new ArrayList<>();
+      Iterable<Work> works = repo.listWorks();
+      
+      for (Work work : works)
+      {
+         results.add(new WorkDV(work));
+      }
+      
+      return Collections.unmodifiableList(results);
    }
    
    @POST
