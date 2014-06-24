@@ -5,6 +5,7 @@ import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class PersonNameImpl implements PersonName
 {
+   // TODO change to local private final fields
    PersonNameDV personRef;
    public PersonNameImpl(PersonNameDV personDV)
    {
