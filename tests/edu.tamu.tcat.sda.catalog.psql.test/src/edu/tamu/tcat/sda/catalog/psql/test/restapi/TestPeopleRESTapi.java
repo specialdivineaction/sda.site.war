@@ -1,47 +1,65 @@
-package edu.tamu.tcat.sda.catalog.psql.test;
+package edu.tamu.tcat.sda.catalog.psql.test.restapi;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Date;
-import java.util.HashSet;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.ServiceReference;
 
+import edu.tamu.tcat.oss.db.DbExecTask;
+import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
+import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.oss.osgi.services.util.ServiceHelper;
+import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
+import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
+import edu.tamu.tcat.sda.catalog.psql.test.data.People;
+import edu.tamu.tcat.sda.catalog.rest.ResourceCreationException;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 public class TestPeopleRESTapi
 {
-   private static HttpPost post;
    private static HttpGet  get;
+   private static HttpPost post;
+   private static HttpDelete delete;
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
+   private ConfigurationProperties properties;
+
    
    @BeforeClass
    public static void initHTTPConnection()
    {
-
       mapper.activate();      // might ought to load as OSGi service? 
-      
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
       
@@ -52,42 +70,55 @@ public class TestPeopleRESTapi
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
+      
+      delete = new HttpDelete(uri);
+      delete.setHeader("User-Agent", "Mozilla/5.0");
+      delete.setHeader("Content-type", "application/json");
+   }
+   
+   @AfterClass
+   public static void cleanDB() throws InterruptedException, ExecutionException
+   {
+      final String cleanDB = "DELETE FROM people";
+      DbExecTask<Void> delete = new DbExecTask<Void>()
+      {
+
+         @Override
+         public Void execute(Connection conn) throws Exception
+         {
+            try (PreparedStatement ps = conn.prepareStatement(cleanDB))
+            {
+               ps.executeUpdate();
+            } 
+            catch (SQLException e)
+            {
+               throw new SQLException("No records to delete." + e);
+            }
+            return null;
+         }
+      };
+      
+      try (ServiceHelper helper = new ServiceHelper(Activator.getDefault().getContext()))
+      {
+         DbExecutor executor = helper.waitForService(DbExecutor.class, 10000);
+         Future<Void> future = executor.submit(delete);
+         
+         future.get();
+      }
    }
 
    @Test
-   public void testPost() throws JsonException, ClientProtocolException, IOException
+   public void testPost() throws Exception
    {
-      PersonDV histFig = new PersonDV();
-      
-      PersonNameDV author = new PersonNameDV();
-      author.displayName = "George Albert Smith";
-      author.familyName = "Smith";
-      author.givenName = "George";
-      author.middleName = "Albert";
-      author.name = "";
-      author.suffix = "Sir";
-      author.title = "Author";
-      
-      Set<PersonNameDV> authNames = new HashSet<PersonNameDV>();
-      
-      authNames.add(author);
-      
-      histFig.id = "1234abcd";
-      // TODO create a new DateOfDeath/Birth class
-      histFig.birth = new HistoricalEventDV();
-      histFig.birth.title = "Date of birth for " + author.displayName;
-      histFig.birth.eventDate = new Date();
 
-      histFig.death = new HistoricalEventDV();
-      histFig.death.title = "Date of death for " + author.displayName;
-      histFig.death.eventDate = new Date();
-      histFig.names = authNames;
-      
-      String json = mapper.asString(histFig);
+      People person = new People();
+      PersonDV buildPerson = person.buildPerson();
+      String json = mapper.asString(buildPerson);
 
       post.setEntity(new StringEntity(json));
 
       HttpResponse response = client.execute(post);
+            
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode >=200 && statusCode < 300)
          Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
@@ -97,6 +128,10 @@ public class TestPeopleRESTapi
          Assert.fail("Client Error: " + statusCode);
       else
          Assert.fail("Server Error: " + statusCode);
+      
+      InputStream content = response.getEntity().getContent();
+//      PersonDV person = mapper.fromJSON(content, type)
+
    }
 
    @Test
@@ -142,7 +177,7 @@ public class TestPeopleRESTapi
    {
       try
       {
-         URI personUri = uri.resolve("people/16");
+         URI personUri = uri.resolve("people/1");
          get.setURI(personUri);
          CloseableHttpResponse response = client.execute(get);
          InputStream content = response.getEntity().getContent();
@@ -177,6 +212,44 @@ public class TestPeopleRESTapi
          e.printStackTrace();
       }
    }
+
+
+   private static final class CreatePersonObserver extends DataUpdateObserverAdapter<Person>
+   {
+      private final CountDownLatch latch;
+
+      private volatile Person result;
+      private volatile ResourceCreationException exception = null;
+      
+      CreatePersonObserver()
+      {
+         this.latch = new CountDownLatch(1);
+      }
+
+      @Override
+      protected void onFinish(Person result)
+      {
+         this.result = result;
+         this.latch.countDown();
+      }
    
+      @Override
+      protected void onError(String message, Exception ex)
+      {
+         exception = new ResourceCreationException(message, ex);
+         latch.countDown();
+      }
+      
+      public Person getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
+      {
+         latch.await(timeout, units);
+         
+         if (exception != null)
+            throw exception;
+         
+         Objects.requireNonNull(result, "Repository failed to return created person");
+         return result;
+      }
+   }
 
 }
