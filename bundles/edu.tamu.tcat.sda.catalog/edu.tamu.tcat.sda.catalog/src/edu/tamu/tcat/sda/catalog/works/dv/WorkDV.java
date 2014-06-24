@@ -21,7 +21,9 @@ public class WorkDV
       this.id = work.getId();
       this.authors = new AuthorListDV(work.getAuthors());
       this.title = new TitleDefinitionDV(work.getTitle());
-      this.otherAuthors = new AuthorListDV(work.getOtherAuthors());
+      if (work.getOtherAuthors().size() > 0)
+         this.otherAuthors = new AuthorListDV(work.getOtherAuthors());
+      this.otherAuthors = null;
       this.pubInfo = new PublicationInfoDV(work.getPublicationInfo());
       this.series = work.getSeries();
       this.summary = work.getSummary();
