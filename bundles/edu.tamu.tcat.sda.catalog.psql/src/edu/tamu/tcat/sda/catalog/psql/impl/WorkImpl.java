@@ -4,8 +4,6 @@ import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class WorkImpl implements Work
@@ -15,7 +13,7 @@ public class WorkImpl implements Work
    {
       this.work = workDV;
    }
-   
+
    @Override
    public AuthorList getAuthors()
    {

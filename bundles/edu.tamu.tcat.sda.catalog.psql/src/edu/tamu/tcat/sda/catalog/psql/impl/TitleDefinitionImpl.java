@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -15,12 +14,12 @@ public class TitleDefinitionImpl implements TitleDefinition
 {
 
    private final TitleDefinitionDV titleDef;
-   
+
    public TitleDefinitionImpl(TitleDefinitionDV title)
    {
       this.titleDef = title;
    }
-   
+
    @Override
    public Title getCanonicalTitle()
    {
@@ -38,12 +37,12 @@ public class TitleDefinitionImpl implements TitleDefinition
    {
       Set<TitleDV> alternateTitles = titleDef.alternateTitles;
       Set<Title> titles = new HashSet<Title>();
-      
+
       for(TitleDV title : alternateTitles)
       {
          titles.add(new TitleImpl(title));
       }
-      
+
       return titles;
    }
 

@@ -39,23 +39,23 @@ public class WorksResource
    {
       this.properties = properties;
    }
-   
+
    // called by DS
    public void setRepository(WorkRepository repo)
    {
       this.repo = repo;
    }
-   
+
    // called by DS
    public void activate()
    {
    }
-   
+
    // called by DS
    public void dispose()
    {
    }
-   
+
    public WorksResource()
    {
    }
@@ -66,15 +66,15 @@ public class WorksResource
    {
       List<WorkDV> results = new ArrayList<>();
       Iterable<Work> works = repo.listWorks();
-      
+
       for (Work work : works)
       {
          results.add(new WorkDV(work));
       }
-      
+
       return Collections.unmodifiableList(results);
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -82,25 +82,23 @@ public class WorksResource
    {
       CreateWorkObserver workObserver = new CreateWorkObserver();
       repo.create(work, workObserver);
-      
+
       try
       {
          Work result = workObserver.getResult();
          WorkDV workDV = new WorkDV();
-         
+
          workDV.id = result.getId();
          workDV.title = new TitleDefinitionDV(result.getTitle());
          workDV.series = result.getSeries();
          workDV.authors = new AuthorListDV(result.getAuthors());
          workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-         
+
          AuthorList otherAuthors = result.getOtherAuthors();
-         if (otherAuthors.size() > 0)
-            workDV.otherAuthors = new AuthorListDV(otherAuthors);
-         else
-            workDV.otherAuthors = null;
+         workDV.otherAuthors = new AuthorListDV(otherAuthors);
+
          workDV.summary = result.getSummary();
-         
+
          return workDV;
       }
       catch (Exception e)
@@ -119,10 +117,10 @@ public class WorksResource
       sb.append("<html><head><title>").append("Document: ").append(id).append("</title></head>")
         .append("<h1> Work ").append(id).append("</h1>")
         .append("</html>");
-      
+
       return sb.toString();
    }
-   
+
    @GET
    @Path("{workid}/authors/{authid}")
    @Produces(MediaType.TEXT_HTML)
@@ -132,12 +130,12 @@ public class WorksResource
       StringBuilder sb = new StringBuilder();
       sb.append("<html><head><title>").append("Document: ").append(workId).append("</title></head>")
         .append("<h1> Work ").append(workId).append("</h1>")
-        .append("<h1> Author ").append(authId).append("</h1>") 
+        .append("<h1> Author ").append(authId).append("</h1>")
         .append("</html>");
-      
+
       return sb.toString();
    }
-        
+
    @GET
    @Path("{id}.json")
    @Produces(MediaType.APPLICATION_JSON)
@@ -147,14 +145,14 @@ public class WorksResource
       result.put("id", id);
       return result;
    }
-   
+
    @PUT
    @Path("{id}")
    public String updateWork()
    {
       return null;
    }
-   
+
 
    private static final class CreateWorkObserver extends DataUpdateObserverAdapter<Work>
    {
@@ -162,7 +160,7 @@ public class WorksResource
 
       private volatile Work result;
       private volatile ResourceCreationException exception = null;
-      
+
       CreateWorkObserver()
       {
          latch = new CountDownLatch(1);
@@ -174,21 +172,21 @@ public class WorksResource
          this.result = result;
          latch.countDown();
       }
-   
+
       @Override
       protected void onError(String message, Exception ex)
       {
-         // TODO this should be a 500 error - repo could not create the resource, likely SQL 
+         // TODO this should be a 500 error - repo could not create the resource, likely SQL
          //      error. We should log. Possibly send message to admin.
          exception = new ResourceCreationException(message, ex);
          latch.countDown();
       }
-      
+
       public Work getResult() throws Exception
       {
          // TODO need semantic exception
-         
-         try 
+
+         try
          {
             // HACK: hard coded timeout
             latch.await(10, TimeUnit.MINUTES);
@@ -199,13 +197,13 @@ public class WorksResource
             // FIXME need to be able to cancel execution!
             this.cancel();
          }
-         
+
          if (exception != null)
             throw exception;
-         
+
          if (result == null)
             throw new IllegalStateException("Failed to obtain created person.");
-         
+
          return result;
       }
    }
