@@ -4,62 +4,70 @@ import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class WorkImpl implements Work
 {
-   private final WorkDV work;
+   private final String id;
+   private final AuthorListImpl authors;
+   private final AuthorListImpl otherAuthors;
+   private final TitleDefinitionImpl title;
+   private final PublicationImpl publication;
+   private final String series;
+   private final String summary;
+
    public WorkImpl(WorkDV workDV)
    {
-      this.work = workDV;
-   }
-   
-   @Override
-   public AuthorList getAuthors()
-   {
-      AuthorListDV authors = work.authors;
-      AuthorRefDV authorReference = authors.authorReference;
+      this.id = workDV.id;
 
-      return new AuthorListImpl(work.authors);
-   }
-
-   @Override
-   public TitleDefinition getTitle()
-   {
-      return new TitleDefinitionImpl(work.title);
-   }
-
-   @Override
-   public AuthorList getOtherAuthors()
-   {
-      return new AuthorListImpl(work.otherAuthors);
-   }
-
-   @Override
-   public PublicationInfo getPublicationInfo()
-   {
-      return new PublicationImpl(work.pubInfo);
-   }
-
-   @Override
-   public String getSeries()
-   {
-      
-      return work.series;
-   }
-
-   @Override
-   public String getSummary()
-   {
-      return work.summary;
+      this.authors = new AuthorListImpl(workDV.authors);
+      this.title = new TitleDefinitionImpl(workDV.title);
+      this.otherAuthors = new AuthorListImpl(workDV.otherAuthors);
+      this.publication = new PublicationImpl(workDV.pubInfo);
+      this.series = workDV.series;
+      this.summary = workDV.summary;
    }
 
    @Override
    public String getId()
    {
-      return work.id;
+      return id;
+   }
+
+   @Override
+   public AuthorList getAuthors()
+   {
+      return authors;
+   }
+
+   @Override
+   public TitleDefinition getTitle()
+   {
+      return title;
+   }
+
+   @Override
+   public AuthorList getOtherAuthors()
+   {
+      return otherAuthors;
+   }
+
+   @Override
+   public PublicationInfo getPublicationInfo()
+   {
+      return publication;
+   }
+
+   @Override
+   public String getSeries()
+   {
+      return series;
+   }
+
+   @Override
+   public String getSummary()
+   {
+      return summary;
    }
 
 }

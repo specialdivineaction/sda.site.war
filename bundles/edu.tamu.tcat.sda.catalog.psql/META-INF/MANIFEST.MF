@@ -23,3 +23,5 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
 Export-Package: edu.tamu.tcat.sda.catalog.psql
 Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
  .
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: edu.tamu.tcat.sda.catalog.psql.internal.Activator
