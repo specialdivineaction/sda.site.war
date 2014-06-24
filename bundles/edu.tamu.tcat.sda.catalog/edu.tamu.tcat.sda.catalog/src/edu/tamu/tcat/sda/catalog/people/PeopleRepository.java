@@ -29,4 +29,6 @@ public interface PeopleRepository
    void create(PersonDV histFigure, DataUpdateObserver<Person> observer);
    
    void update(PersonDV histFigure, DataUpdateObserver<Person> observer);
+   
+   void delete(PersonDV histFigure, DataUpdateObserver<Person> observer);
 }

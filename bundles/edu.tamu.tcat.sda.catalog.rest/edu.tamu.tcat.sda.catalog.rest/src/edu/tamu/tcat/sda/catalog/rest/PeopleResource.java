@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -93,6 +94,20 @@ public class PeopleResource
       //      unique identifiers
       Person figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
+   }
+   
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   public String deletePerson(PersonDV person) throws Exception
+   {
+
+//      int timeout = properties.getPropertyValue(PROP_TIMEOUT, Integer.class, Integer.valueOf(1000)).intValue();
+//      String u = properties.getPropertyValue(PROP_TIMEOUT_UNITS, String.class, TimeUnit.MILLISECONDS.toString());
+//      TimeUnit units = TimeUnit.valueOf(u);
+      
+      CreatePersonObserver observer = new CreatePersonObserver();
+      repo.delete(person, observer);
+      return "completed";
    }
    
    @POST

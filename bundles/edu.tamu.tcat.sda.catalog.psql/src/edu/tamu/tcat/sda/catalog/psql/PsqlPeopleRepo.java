@@ -292,4 +292,21 @@ public class PsqlPeopleRepo implements PeopleRepository
       
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
    }
+
+   @Override
+   public void delete(final PersonDV histFigure, DataUpdateObserver<Person> observer)
+   {
+      // TODO: Add another column for active.
+      final String updateSql = "";
+      DbExecTask<Person> task1 = new DbExecTask<Person>()
+      {
+         @Override
+         public Person execute(Connection conn) throws SQLException
+         {
+            return null;
+         }
+      };
+      
+      exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
+   }
 }
