@@ -19,9 +19,6 @@ public class WorkImpl implements Work
    @Override
    public AuthorList getAuthors()
    {
-      AuthorListDV authors = work.authors;
-      AuthorRefDV authorReference = authors.authorReference;
-
       return new AuthorListImpl(work.authors);
    }
 
@@ -46,7 +43,6 @@ public class WorkImpl implements Work
    @Override
    public String getSeries()
    {
-      
       return work.series;
    }
 
