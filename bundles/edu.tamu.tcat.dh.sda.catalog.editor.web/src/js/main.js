@@ -1,11 +1,11 @@
-define(['require', 'js/model/person', 'js/view/person_form'], function (require) {
-    var PersonFormView = require('js/view/person_form'),
-        Person = require('js/model/person'),
-        $ = require('jquery');
+define(function (require) {
 
-    var form = new PersonFormView({
-        model: new Person()
-    });
+    var Backbone = require('backbone'),
+        PeopleRouter = require('js/router/people'),
+        WorksRouter = require('js/router/works');
 
-    $('.container').html(form.render().el);
+    var peopleRouter = new PeopleRouter();
+    var worksRouter = new WorksRouter();
+    Backbone.history.start();
+
 });

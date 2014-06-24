@@ -8,7 +8,7 @@ define(function (require) {
 
 
     var PersonNameRefFormView = Backbone.Epoxy.View.extend({
-        template: require('tpl!templates/name_ref_subform.html.ejs'),
+        template: require('tpl!templates/person/name_ref_subform.html.ejs'),
 
         bindings: {
             'input.name': 'value:name,events:["keyup"]',
@@ -28,7 +28,7 @@ define(function (require) {
 
 
     var HistoricalEventFormView = Backbone.Epoxy.View.extend({
-        template: require('tpl!templates/historical_event_subform.html.ejs'),
+        template: require('tpl!templates/person/historical_event_subform.html.ejs'),
 
         bindings: {
             'input.event-date': 'dateValue:eventDate,events:["blur"]',
@@ -74,11 +74,11 @@ define(function (require) {
     var PersonFormView = Backbone.Epoxy.View.extend({
         tagName: 'form',
 
-        template: require('tpl!templates/person_form.html.ejs'),
+        template: require('tpl!templates/person/form.html.ejs'),
 
         bindings: {
             '.person-id': 'value:id',
-            '.summary': 'text:summary,events:["keyup"]',
+            '.summary': 'value:summary,events:["keyup"]',
         },
 
         events: {
