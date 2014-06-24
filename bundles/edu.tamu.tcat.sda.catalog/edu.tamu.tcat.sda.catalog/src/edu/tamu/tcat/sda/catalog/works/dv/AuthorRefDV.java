@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-public class AuthorRefDv
+public class AuthorRefDV
 {
    public String authorId;
    public String name;
