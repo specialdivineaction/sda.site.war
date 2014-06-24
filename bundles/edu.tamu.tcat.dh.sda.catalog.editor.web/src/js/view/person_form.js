@@ -1,67 +1,93 @@
 define(function (require) {
 
-    var Backbone   = require('backbone'),
-        Moment = require('moment');
+    var Backbone = require('backbone'),
+        Moment   = require('moment');
+
+    // attach epoxy to backbone
+    require('backbone.epoxy');
 
 
-    var modelFormBind = function (cb) {
-        return function (evt) {
-            evt.stopPropagation();
-
-            var target = this.$(evt.target),
-                attribute = target.attr('name'),
-                value = target.val(),
-                attrs = {};
-
-            attrs[attribute] = value;
-            if (cb) attrs = cb(attrs);
-
-            this.model.set(attrs);
-        };
-    };
-
-
-    var PersonNameRefFormView = Backbone.View.extend({
+    var PersonNameRefFormView = Backbone.Epoxy.View.extend({
         template: require('tpl!templates/name_ref_subform.html.ejs'),
+
+        bindings: {
+            'input.name': 'value:name,events:["keyup"]',
+            'input.title': 'value:title,events:["keyup"]',
+            'input.given-name': 'value:givenName,events:["keyup"]',
+            'input.middle-name': 'value:middleName,events:["keyup"]',
+            'input.family-name': 'value:familyName,events:["keyup"]',
+            'input.suffix': 'value:suffix,events:["keyup"]'
+        },
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
+            this.applyBindings();
             return this;
-        },
-
-        events: {
-            'blur input': modelFormBind(function (attrs) {
-                for (attr in attrs) console.log('setting PersonNameRef::' + attr + ' to ' + attrs[attr]);
-                return attrs;
-            })
         }
     });
 
 
-    var HistoricalEventFormView = Backbone.View.extend({
+    var HistoricalEventFormView = Backbone.Epoxy.View.extend({
         template: require('tpl!templates/historical_event_subform.html.ejs'),
+
+        bindings: {
+            'input.event-date': 'dateValue:eventDate,events:["blur"]',
+            'input.location': 'value:location,events:["keyup"]'
+        },
+
+        bindingHandlers: {
+            dateValue: {
+                set: function ($el, modelValue) {
+                    var m = Moment(modelValue);
+                    if (m.isValid()) {
+                        $el.val(m.format('MM/DD/YYYY'));
+                    }
+                },
+                get: function ($el, oldValue, evt) {
+                    $el.parent().removeClass('has-error');
+
+                    var newValue = $el.val();
+                    if (newValue === '') return null;
+
+                    var m = Moment(newValue, 'MM/DD/YYYY');
+                    if (m.isValid()) {
+                        return m.toISOString();
+                    } else {
+                        $el.parent().addClass('has-error');
+                        return null;
+                    }
+                }
+            }
+        },
 
         render: function () {
             this.$el.html(this.template({
                 model: this.model.toJSON(),
                 moment: Moment
             }));
+            this.applyBindings();
             return this;
-        },
-
-        events: {
-            'blur input, textarea': modelFormBind(function (attrs) {
-                for (attr in attrs) console.log('setting HistoricalEvent::' + attr + ' to ' + attrs[attr]);
-                return attrs;
-            })
         }
-    })
+    });
 
 
-    var PersonFormView = Backbone.View.extend({
+    var PersonFormView = Backbone.Epoxy.View.extend({
         tagName: 'form',
 
         template: require('tpl!templates/person_form.html.ejs'),
+
+        bindings: {
+            '.person-id': 'value:id',
+            '.summary': 'text:summary,events:["keyup"]',
+        },
+
+        events: {
+            'submit': function (evt) {
+                evt.preventDefault();
+                this.model.save();
+                return false;
+            }
+        },
 
         render: function () {
             this.$el.html(this.template({ model: this.model }));
@@ -78,25 +104,10 @@ define(function (require) {
             var deathSubForm = new HistoricalEventFormView({ model: this.model.get('death') });
             this.$el.find('#deathForm').html(deathSubForm.render().el)
 
+            this.applyBindings();
+
             return this;
-        },
-
-        events: {
-            'submit': 'submit',
-            'blur input, textarea': modelFormBind(function (attrs) {
-                for (attr in attrs) console.log('setting Person::' + attr + ' to ' + attrs[attr]);
-                return attrs;
-            })
-        },
-
-        submit: function (evt) {
-            evt.preventDefault();
-
-            this.model.save();
-
-            return false;
         }
-
     });
 
     return PersonFormView;

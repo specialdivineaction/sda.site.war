@@ -14,7 +14,8 @@ define(function (require) {
             id: null,
             names: new PersonNameRefCollection([ new PersonNameRef() ]),
             birth: new HistoricalEvent({ title: 'Date of birth' }),
-            death: new HistoricalEvent({ title: 'Date of death' })
+            death: new HistoricalEvent({ title: 'Date of death' }),
+            summary: ''
         },
 
         /**
