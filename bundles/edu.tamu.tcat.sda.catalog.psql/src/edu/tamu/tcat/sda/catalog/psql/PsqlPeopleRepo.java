@@ -18,42 +18,42 @@ import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
+import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
-   
+
    private DbExecutor exec;
    private JsonMapper jsonMapper;
-   
+
    public PsqlPeopleRepo()
    {
    }
-   
+
    public void setDatabaseExecutor(DbExecutor exec)
    {
       this.exec = exec;
    }
-   
+
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
    }
-   
-   public void activate() 
+
+   public void activate()
    {
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
    }
-   
+
    public void dispose()
    {
       // TODO wait on or cancel any pending tasks?
-      
+
       this.exec = null;
       this.jsonMapper = null;
    }
@@ -62,11 +62,11 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Iterable<Person> listHistoricalFigures()
    {
-      
+
       // FIXME this is async, meaning test will exit prior to conclusion.
       // TODO Auto-generated method stub
       final String querySql = "SELECT historical_figure FROM people";
-      
+
       DbExecTask<Iterable<Person>> query = new DbExecTask<Iterable<Person>>()
       {
 
@@ -79,15 +79,15 @@ public class PsqlPeopleRepo implements PeopleRepository
                  ResultSet rs = ps.executeQuery())
             {
                PGobject pgo = new PGobject();
-               
+
                while(rs.next())
                {
                   Object object = rs.getObject("historical_figure");
                   if (object instanceof PGobject)
                      pgo = (PGobject)object;
-                  else 
+                  else
                      System.out.println("Error!");
-                  
+
                   PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                   PersonImpl figureRef = new PersonImpl(parse);
                   try
@@ -108,9 +108,9 @@ public class PsqlPeopleRepo implements PeopleRepository
             eIterable = events;
             return eIterable;
          }
-         
+
       };
-      
+
       Future<Iterable<Person>> submit = exec.submit(query);
       Iterable<Person> iterable = null;
       try
@@ -132,7 +132,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    @Override
    public Person getPerson(long personId)
-   {      
+   {
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
       final long id = personId;
       DbExecTask<Person> query = new DbExecTask<Person>()
@@ -146,15 +146,15 @@ public class PsqlPeopleRepo implements PeopleRepository
                ps.setLong(1, id);
                ResultSet rs = ps.executeQuery();
                PGobject pgo = new PGobject();
-               
+
                while(rs.next())
                {
                   Object object = rs.getObject("historical_figure");
                   if (object instanceof PGobject)
                      pgo = (PGobject)object;
-                  else 
+                  else
                      System.out.println("Error!");
-                  
+
                   PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                   figureRef = new PersonImpl(parse);
                }
@@ -165,9 +165,9 @@ public class PsqlPeopleRepo implements PeopleRepository
             }
             return figureRef;
          }
-         
+
       };
-      
+
       Person submit = null;
       try
       {
@@ -189,7 +189,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       final String updateSql = "UPDATE people "
                                + " SET historical_figure = ?"
                                + " WHERE id = ?";
-      
+
       DbExecTask<Person> createPersonTask = new DbExecTask<Person>()
       {
          private final String createPersonId(Connection conn) throws InterruptedException, ExecutionFailedException
@@ -198,12 +198,12 @@ public class PsqlPeopleRepo implements PeopleRepository
             {
                if (observer != null && observer.isCanceled())
                   throw new InterruptedException();
-               
+
                ps.executeUpdate();
                ResultSet rs = ps.getGeneratedKeys();
                if (!rs.next())
                   throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]");
-               
+
                return Integer.toString(rs.getInt(1));
             }
             catch (SQLException sqle)
@@ -211,7 +211,7 @@ public class PsqlPeopleRepo implements PeopleRepository
                throw new ExecutionFailedException("Failed to generate id for historical figure [" + histFigure + "]", sqle);
             }
          }
-         
+
          private Person savePersonDetails(Connection conn) throws InterruptedException, ExecutionFailedException
          {
             try (PreparedStatement ps = conn.prepareStatement(updateSql))
@@ -219,22 +219,22 @@ public class PsqlPeopleRepo implements PeopleRepository
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-         
+
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-         
+
                if (observer != null && observer.isCanceled())
                   throw new InterruptedException();
-               
+
                int ct = ps.executeUpdate();
                if (ct != 1)
                   throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-         
+
                return new PersonImpl(histFigure);
             }
             catch (JsonException e)
             {
-               // NOTE this is an internal configuration error. The JsonMapper should be configured to 
+               // NOTE this is an internal configuration error. The JsonMapper should be configured to
                //      serialize HistoricalFigureDV instances correctly.
                throw new ExecutionFailedException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
@@ -249,11 +249,11 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             histFigure.id = createPersonId(conn);
             Person result = savePersonDetails(conn);
-            
+
             return result;
          }
       };
-      
+
       exec.submit(new ObservableTaskWrapper<>(createPersonTask, observer));
    }
 
@@ -273,14 +273,14 @@ public class PsqlPeopleRepo implements PeopleRepository
                PGobject jsonObject = new PGobject();
                jsonObject.setType("json");
                jsonObject.setValue(jsonMapper.asString(histFigure));
-               
+
                ps.setObject(1, jsonObject);
                ps.setInt(2, Integer.parseInt(histFigure.id));
-               
+
                int ct = ps.executeUpdate();
                if (ct != 1)
                throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-               
+
             }
             catch (JsonException e)
             {
@@ -289,24 +289,25 @@ public class PsqlPeopleRepo implements PeopleRepository
             return new PersonImpl(histFigure);
          }
       };
-      
+
       exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
    }
 
    @Override
-   public void delete(final PersonDV histFigure, DataUpdateObserver<Person> observer)
+   public void delete(final String psrsonId, final DataUpdateObserver<Void> observer)
    {
       // TODO: Add another column for active.
       final String updateSql = "";
-      DbExecTask<Person> task1 = new DbExecTask<Person>()
+      DbExecTask<Void> deleteTask = new DbExecTask<Void>()
       {
          @Override
-         public Person execute(Connection conn) throws SQLException
+         public Void execute(Connection conn) throws SQLException
          {
+            observer.error("Not Implmented", new UnsupportedOperationException());
             return null;
          }
       };
-      
-      exec.submit(new ObservableTaskWrapper<>(task1, observer));      // TODO Auto-generated method stub
+
+      exec.submit(new ObservableTaskWrapper<>(deleteTask, observer));      // TODO Auto-generated method stub
    }
 }
