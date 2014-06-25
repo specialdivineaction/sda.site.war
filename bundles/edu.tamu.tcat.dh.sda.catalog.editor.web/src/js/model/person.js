@@ -4,7 +4,7 @@ define(function (require) {
 
     var PersonNameRef = require('js/model/person_name_ref'),
         HistoricalEvent = require('js/model/historical_event'),
-        PersonNameRefCollection = require('js/collection/person_name_refs');
+        NameCollection = require('js/collection/person_name_refs');
 
     var Person = Backbone.Model.extend({
 
@@ -12,7 +12,7 @@ define(function (require) {
 
         defaults: {
             id: null,
-            names: new PersonNameRefCollection([ new PersonNameRef() ]),
+            names: new NameCollection([ new PersonNameRef() ]),
             birth: new HistoricalEvent({ title: 'Date of birth' }),
             death: new HistoricalEvent({ title: 'Date of death' }),
             summary: ''
@@ -27,9 +27,8 @@ define(function (require) {
          * @return {Object} modified JSON attributes that will be set on the model
          */
         parse: function (resp) {
-
             // recursively call "parse" on the contained JSON models
-            resp.names = new PersonNameRefCollection(resp.names, {parse: true});
+            resp.names = new NameCollection(resp.names, {parse: true});
             resp.birth = new HistoricalEvent(resp.birth, {parse: true});
             resp.death = new HistoricalEvent(resp.death, {parse: true});
 

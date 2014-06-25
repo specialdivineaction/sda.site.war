@@ -66,7 +66,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: true,
-                        dest: buildPath + '/fonts',
+                        dest: buildPath + '/vendor/fonts',
                         src: buildPath + '/vendor/bootstrap/glyphicons-halflings-regular.*'
                     },
                     {

@@ -8,7 +8,7 @@ define(function (require) {
 
 
     var PersonNameRefFormView = Backbone.Epoxy.View.extend({
-        template: require('tpl!templates/person/name_ref_subform.html.ejs'),
+        template: require('tpl!templates/person/name_subform.html.ejs'),
 
         bindings: {
             'input.name': 'value:name,events:["keyup"]',
@@ -92,10 +92,10 @@ define(function (require) {
         render: function () {
             this.$el.html(this.template({ model: this.model }));
 
-            var $personNameRefForms = this.$el.find('#personNameRefForms').empty();
-            this.model.get('names').each(function (personNameRef) {
-                var subForm = new PersonNameRefFormView({ model: personNameRef });
-                $personNameRefForms.append(subForm.render().el);
+            var $nameForms = this.$el.find('.name-forms').empty();
+            this.model.get('names').each(function (name) {
+                var subForm = new PersonNameRefFormView({ model: name });
+                $nameForms.append(subForm.render().el);
             });
 
             var birthSubForm = new HistoricalEventFormView({ model: this.model.get('birth') });
