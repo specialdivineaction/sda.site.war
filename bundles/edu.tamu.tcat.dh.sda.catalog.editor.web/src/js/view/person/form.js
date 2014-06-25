@@ -1,75 +1,13 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
-        Moment   = require('moment');
+        Moment   = require('moment'),
+
+        NameSubform            = require('js/view/person/name_subform'),
+        HistoricalEventSubform = require('js/view/person/historical_event_subform');
 
     // attach epoxy to backbone
     require('backbone.epoxy');
-
-
-    var PersonNameRefFormView = Backbone.Epoxy.View.extend({
-        template: require('tpl!templates/person/name_subform.html.ejs'),
-
-        bindings: {
-            'input.name': 'value:name,events:["keyup"]',
-            'input.title': 'value:title,events:["keyup"]',
-            'input.given-name': 'value:givenName,events:["keyup"]',
-            'input.middle-name': 'value:middleName,events:["keyup"]',
-            'input.family-name': 'value:familyName,events:["keyup"]',
-            'input.suffix': 'value:suffix,events:["keyup"]'
-        },
-
-        render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
-            this.applyBindings();
-            return this;
-        }
-    });
-
-
-    var HistoricalEventFormView = Backbone.Epoxy.View.extend({
-        template: require('tpl!templates/person/historical_event_subform.html.ejs'),
-
-        bindings: {
-            'input.event-date': 'dateValue:eventDate,events:["blur"]',
-            'input.location': 'value:location,events:["keyup"]'
-        },
-
-        bindingHandlers: {
-            dateValue: {
-                set: function ($el, modelValue) {
-                    var m = Moment(modelValue);
-                    if (m.isValid()) {
-                        $el.val(m.format('MM/DD/YYYY'));
-                    }
-                },
-                get: function ($el, oldValue, evt) {
-                    $el.parent().removeClass('has-error');
-
-                    var newValue = $el.val();
-                    if (newValue === '') return null;
-
-                    var m = Moment(newValue, 'MM/DD/YYYY');
-                    if (m.isValid()) {
-                        return m.toISOString();
-                    } else {
-                        $el.parent().addClass('has-error');
-                        return null;
-                    }
-                }
-            }
-        },
-
-        render: function () {
-            this.$el.html(this.template({
-                model: this.model.toJSON(),
-                moment: Moment
-            }));
-            this.applyBindings();
-            return this;
-        }
-    });
-
 
     var PersonFormView = Backbone.Epoxy.View.extend({
         tagName: 'form',
@@ -94,14 +32,14 @@ define(function (require) {
 
             var $nameForms = this.$el.find('.name-forms').empty();
             this.model.get('names').each(function (name) {
-                var subForm = new PersonNameRefFormView({ model: name });
+                var subForm = new NameSubform({ model: name });
                 $nameForms.append(subForm.render().el);
             });
 
-            var birthSubForm = new HistoricalEventFormView({ model: this.model.get('birth') });
+            var birthSubForm = new HistoricalEventSubform({ model: this.model.get('birth') });
             this.$el.find('#birthForm').html(birthSubForm.render().el);
 
-            var deathSubForm = new HistoricalEventFormView({ model: this.model.get('death') });
+            var deathSubForm = new HistoricalEventSubform({ model: this.model.get('death') });
             this.$el.find('#deathForm').html(deathSubForm.render().el)
 
             this.applyBindings();
