@@ -12,7 +12,6 @@ public class TitleDefinitionDV
    public TitleDV canonicalTitle;
    public TitleDV shortTitle;
    public Set<TitleDV> alternateTitles;
-   public TitleDV localeTitle;
    
    public TitleDefinitionDV(TitleDefinition titleDef)
    {
@@ -28,7 +27,6 @@ public class TitleDefinitionDV
       this.canonicalTitle = new TitleDV(titleDef.getCanonicalTitle());
       this.shortTitle = new TitleDV(titleDef.getShortTitle());
       this.alternateTitles = titles;
-      this.localeTitle = new TitleDV(titleDef.getTitle(Locale.US));
    }
    
    public TitleDefinitionDV()

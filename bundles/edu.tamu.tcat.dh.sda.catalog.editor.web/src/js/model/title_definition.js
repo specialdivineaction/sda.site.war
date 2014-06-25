@@ -9,15 +9,13 @@ define(function (require) {
         defaults: {
             canonicalTitle: new Title({ type: 'default' }),
             shortTitle: new Title({ type: 'short' }),
-            alternateTitles: new TitleCollection(),
-            localeTitle: new Title()
+            alternateTitles: new TitleCollection()
         },
 
         parse: function (resp) {
             resp.canonicalTitle = new Title(resp.canonicalTitle, {parse: true});
             resp.shortTitle = new Title(resp.shortTitle, {parse: true});
             resp.alternateTitles = new TitleCollection(resp.alternateTitles, {parse: true});
-            resp.localeTitle = new Title(resp.localeTitle, {parse: true});
 
             return resp;
         }

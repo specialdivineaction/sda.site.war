@@ -39,9 +39,6 @@ define(function (require) {
                 $altTitles.append(subForm.render().el);
             });
 
-            var localeTitleSubform = new TitleSubform({ model: this.model.get('localeTitle') });
-            this.$el.find('.locale-title-form').html(localeTitleSubform.render().el);
-
             return this;
         }
     });
