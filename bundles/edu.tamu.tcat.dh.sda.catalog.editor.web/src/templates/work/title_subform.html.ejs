@@ -1,0 +1,48 @@
+<%/*
+<div class="form-group">
+    <label class="control-label">Type</label>
+    <select name="type" class="form-control type">
+        <option value="undefined">Undefined</option>
+        <option value="default">Default</option>
+        <option value="short">Short</option>
+    </select>
+</div>
+*/%>
+<div class="row" style="position: relative;">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="control-label">Language</label>
+            <select name="language" class="form-control language">
+                <option value="">Select a language...</option>
+                <% languages.forEach(function (lang) { %>
+                    <option value="<%= lang.code %>"><%= lang.name %></option>
+                <% }); %>
+            </select>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label class="control-label">Title</label>
+            <input type="text" name="title" class="form-control title">
+        </div>
+    </div>
+    <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="control-label">Subtitle</label>
+                <input type="text" name="subtitle" class="form-control subtitle">
+            </div>
+        </div>
+        <button type="button" class="btn btn-danger remove-title" style="position: absolute; bottom: 15px; right: 15px;">
+            <span class="glyphicon glyphicon-trash"></span>
+            <span class="sr-only">Remove title</span>
+        </button>
+    <% } else { %>
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label class="control-label">Subtitle</label>
+                <input type="text" name="subtitle" class="form-control subtitle">
+            </div>
+        </div>
+    <% } %>
+</div>

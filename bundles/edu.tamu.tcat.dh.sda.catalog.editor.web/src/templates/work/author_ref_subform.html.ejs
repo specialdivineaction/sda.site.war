@@ -1,0 +1,27 @@
+<div class="row" style="position: relative;">
+    <div class="col-sm-9">
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" name="name" class="form-control name">
+        </div>
+    </div>
+    <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label class="control-label">Role</label>
+                <input type="text" name="role" class="form-control role">
+            </div>
+        </div>
+        <button type="button" class="btn btn-danger remove-author-ref" style="position: absolute; bottom: 15px; right: 15px;">
+            <span class="glyphicon glyphicon-trash"></span>
+            <span class="sr-only">Remove author</span>
+        </button>
+    <% } else { %>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label class="control-label">Role</label>
+                <input type="text" name="role" class="form-control role">
+            </div>
+        </div>
+    <% } %>
+</div>
