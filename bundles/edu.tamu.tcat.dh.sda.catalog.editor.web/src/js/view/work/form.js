@@ -6,7 +6,6 @@ define(function (require) {
         Title                  = require('js/model/title'),
         TitleSubform           = require('js/view/work/title_subform'),
         AuthorRefSubform       = require('js/view/work/author_ref_subform'),
-        TitleDefinitionSubform = require('js/view/work/title_definition_subform'),
         PublicationInfoSubform = require('js/view/work/publication_info_subform');
 
     require('backbone.epoxy');

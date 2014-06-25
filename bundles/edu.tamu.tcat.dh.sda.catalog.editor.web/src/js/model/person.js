@@ -2,9 +2,9 @@ define(function (require) {
 
     var Backbone = require('backbone');
 
-    var PersonNameRef = require('js/model/person_name_ref'),
+    var Name = require('js/model/name'),
         HistoricalEvent = require('js/model/historical_event'),
-        NameCollection = require('js/collection/person_name_refs');
+        NameCollection = require('js/collection/names');
 
     var Person = Backbone.Model.extend({
 
@@ -12,7 +12,7 @@ define(function (require) {
 
         defaults: {
             id: null,
-            names: new NameCollection([ new PersonNameRef() ]),
+            names: new NameCollection([ new Name() ]),
             birth: new HistoricalEvent({ title: 'Date of birth' }),
             death: new HistoricalEvent({ title: 'Date of death' }),
             summary: ''
