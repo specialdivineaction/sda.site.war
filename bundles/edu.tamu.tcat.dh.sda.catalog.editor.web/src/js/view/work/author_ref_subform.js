@@ -13,6 +13,7 @@ define(function (require) {
 
         bindings: {
             '.name': 'value:name,events:["keyup"]',
+            // TODO: autocomplete on .name field
             '.role': 'value:role,events:["keyup"]'
         },
 

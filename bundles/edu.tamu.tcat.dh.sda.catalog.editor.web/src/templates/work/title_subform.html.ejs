@@ -1,14 +1,5 @@
-<%/*
-<div class="form-group">
-    <label class="control-label">Type</label>
-    <select name="type" class="form-control type">
-        <option value="undefined">Undefined</option>
-        <option value="default">Default</option>
-        <option value="short">Short</option>
-    </select>
-</div>
-*/%>
 <div class="row" style="position: relative;">
+    <!--
     <div class="col-sm-2">
         <div class="form-group">
             <label class="control-label">Language</label>
@@ -20,17 +11,30 @@
             </select>
         </div>
     </div>
+    -->
     <div class="col-sm-5">
         <div class="form-group">
             <label class="control-label">Title</label>
             <input type="text" name="title" class="form-control title">
         </div>
     </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label class="control-label">Subtitle</label>
+            <input type="text" name="subtitle" class="form-control subtitle">
+        </div>
+    </div>
     <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>
-        <div class="col-sm-4">
+        <div class="col-sm-2">
             <div class="form-group">
-                <label class="control-label">Subtitle</label>
-                <input type="text" name="subtitle" class="form-control subtitle">
+                <label class="control-label">Role</label>
+                <select name="role" class="role form-control">
+                    <option value="">Select Role...</option>
+                    <option value="canonical">Canonical</option>
+                    <option value="short">Short</option>
+                    <option value="translation">Translation</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
         </div>
         <button type="button" class="btn btn-danger remove-title" style="position: absolute; bottom: 15px; right: 15px;">
@@ -38,10 +42,16 @@
             <span class="sr-only">Remove title</span>
         </button>
     <% } else { %>
-        <div class="col-sm-5">
+        <div class="col-sm-3">
             <div class="form-group">
-                <label class="control-label">Subtitle</label>
-                <input type="text" name="subtitle" class="form-control subtitle">
+                <label class="control-label">Role</label>
+                <select name="role" class="role form-control">
+                    <option value="">Select Role...</option>
+                    <option value="canonical">Canonical</option>
+                    <option value="short">Short</option>
+                    <option value="translation">Translation</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
         </div>
     <% } %>

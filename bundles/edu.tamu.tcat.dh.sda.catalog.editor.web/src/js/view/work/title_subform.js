@@ -12,9 +12,10 @@ define(function (require) {
         },
 
         bindings: {
-            'select.language': 'value:lg,events:["change"]',
+            // 'select.language': 'value:lg,events:["change"]',
             'input.title': 'value:title,events:["keyup"]',
-            'input.subtitle': 'value:subtitle,events:["keyup"]'
+            'input.subtitle': 'value:subtitle,events:["keyup"]',
+            'select.role': 'value:type,events:["change"]'
         },
 
         events: {
