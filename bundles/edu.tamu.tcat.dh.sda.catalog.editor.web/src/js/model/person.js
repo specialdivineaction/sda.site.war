@@ -1,6 +1,7 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
+        Moment   = require('moment');
 
     var Name = require('js/model/name'),
         HistoricalEvent = require('js/model/historical_event'),
@@ -33,6 +34,14 @@ define(function (require) {
             resp.death = new HistoricalEvent(resp.death, {parse: true});
 
             return resp;
+        },
+
+        getFormattedName: function () {
+            var name  = this.get('names').at(0),
+                birth = Moment(this.get('birth').get('eventDate')),
+                death = Moment(this.get('death').get('eventDate'));
+
+            return name.get('familyName') + ', ' + name.get('givenName') + ' (' + birth.format('YYYY') + '&ndash;' + death.format('YYYY') + ')'
         }
 
     });

@@ -2,7 +2,9 @@
     <div class="col-sm-9">
         <div class="form-group">
             <label class="control-label">Name</label>
-            <input type="text" name="name" class="form-control name">
+            <input type="text" name="name" class="form-control name" autocomplete="off">
+            <div class="autocomplete"></div>
+            <span class="help-block">Linked author: <span class="linked-author"></span></span>
         </div>
     </div>
     <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>

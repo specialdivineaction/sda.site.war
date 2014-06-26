@@ -1,6 +1,9 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
+
+        PeopleCollection       = require('js/collection/people'),
+        AuthorAutocompleteView = require('js/view/work/author_autocomplete');
 
     require('backbone.epoxy');
 
@@ -13,12 +16,65 @@ define(function (require) {
 
         bindings: {
             '.name': 'value:name,events:["keyup"]',
-            // TODO: autocomplete on .name field
             '.role': 'value:role,events:["keyup"]'
         },
 
         events: {
-            'click .remove-author-ref': 'dispose'
+            'click .remove-author-ref': 'dispose',
+            'focus .name': 'initAutocomplete',
+            'keyup .name': 'autocomplete'
+        },
+
+        initAutocomplete: function (evt) {
+            this.people = new PeopleCollection();
+
+            this.destroyAutocomplete();
+            this.acView = new AuthorAutocompleteView({ collection: this.people });
+            this.listenTo(this.acView, 'select', this.setAuthor);
+
+            this.$el.find('.autocomplete').html(this.acView.render().el);
+        },
+
+        destroyAutocomplete: function () {
+            if (!this.acView) return;
+            this.stopListening(this.acView);
+            this.acView.remove();
+        },
+
+        autocomplete: function (evt) {
+            // close on `esc` key
+            if (evt.keyCode === 27) {
+                this.destroyAutocomplete();
+                return;
+            }
+
+            var $target = $(evt.target);
+            var name = $target.val();
+
+            if (name.length < 3) return;
+
+            var _this = this;
+            $.ajax({
+                method: 'get',
+                dataType: 'json',
+                url: '/api/people',
+                data: {
+                    last: name
+                },
+                success: function (data) {
+                    if (data.length == 0) {
+                        _this.destroyAutocomplete();
+                    } else {
+                        _this.people.reset(data, {parse: true});
+                    }
+                }
+            });
+        },
+
+        setAuthor: function (person) {
+            this.model.set('authorId', person.id);
+            this.$el.find('.linked-author').html(person.getFormattedName());
+            this.destroyAutocomplete();
         },
 
         render: function () {
@@ -35,6 +91,7 @@ define(function (require) {
         dispose: function () {
             var _this = this;
             this.$el.slideUp(300, function () {
+                _this.destroyAutocomplete();
                 _this.remove();
                 _this.model.destroy();
             });

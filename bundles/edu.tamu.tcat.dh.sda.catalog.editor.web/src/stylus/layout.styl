@@ -4,3 +4,26 @@
 .btn-row
     margin: 1em 0
     text-align right
+
+.autocomplete
+    position relative
+
+    ul
+        margin 0
+        padding 0
+        list-style none
+        position absolute
+        left 0
+        right 0
+        background #fff
+        box-shadow 0 3px 5px rgba(black, 0.5)
+        border 1px solid #ddd
+        z-index 9999
+
+        li
+            padding 5px
+            cursor default
+
+            &:hover, .hover
+                background #428bca
+                color #fff
