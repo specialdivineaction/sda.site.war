@@ -16,9 +16,12 @@ public class AuthorListImpl implements AuthorList
    public AuthorListImpl(AuthorListDV authList)
    {
       authRef = new ArrayList<AuthorReference>();
-      for (AuthorRefDV ref : authList.refs)
+      if (authList != null)
       {
-         authRef.add(new AuthorReferenceImpl(ref));
+         for (AuthorRefDV ref : authList.refs)
+         {
+            authRef.add(new AuthorReferenceImpl(ref));
+         }
       }
    }
 
