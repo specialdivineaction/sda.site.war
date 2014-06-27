@@ -3,8 +3,11 @@ package edu.tamu.tcat.sda.catalog.rest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -18,12 +21,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.sda.catalog.works.AuthorList;
+import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDefinitionDV;
+import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
@@ -83,20 +87,39 @@ public class WorksResource
       CreateWorkObserver workObserver = new CreateWorkObserver();
       repo.create(work, workObserver);
 
+      List<AuthorRefDV> authRefs = new ArrayList<>();
+      List<AuthorRefDV> otherAuthRefs = new ArrayList<>();
+      Set<TitleDV> titles = new HashSet<>();
       try
       {
          Work result = workObserver.getResult();
          WorkDV workDV = new WorkDV();
 
          workDV.id = result.getId();
-         workDV.title = new TitleDefinitionDV(result.getTitle());
          workDV.series = result.getSeries();
-         workDV.authors = new AuthorListDV(result.getAuthors());
+
+         titles.add(new TitleDV(result.getTitle().getCanonicalTitle()));
+         titles.add(new TitleDV(result.getTitle().getShortTitle()));
+         titles.add(new TitleDV(result.getTitle().getTitle(Locale.US)));
+
+         for (Title title : result.getTitle().getAlternateTitles())
+         {
+            titles.add(new TitleDV(title));
+         }
+
+         for (AuthorReference authRef : result.getAuthors())
+         {
+            authRefs.add(new AuthorRefDV(authRef));
+         }
+
+         for (AuthorReference authRef : result.getOtherAuthors())
+         {
+            otherAuthRefs.add(new AuthorRefDV(authRef));
+         }
+
+         workDV.authors = authRefs;
+         workDV.otherAuthors = otherAuthRefs;
          workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-
-         AuthorList otherAuthors = result.getOtherAuthors();
-         workDV.otherAuthors = new AuthorListDV(otherAuthors);
-
          workDV.summary = result.getSummary();
 
          return workDV;

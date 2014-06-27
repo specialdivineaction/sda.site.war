@@ -7,35 +7,59 @@ import java.util.Set;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDefinitionDV;
 
 
 public class TitleDefinitionImpl implements TitleDefinition
 {
 
-   private final TitleDefinitionDV titleDef;
+   private TitleDV canonicalTitle;
+   private TitleDV shortTitle;
+   private TitleDV localeTitle;
+   private Set<TitleDV> alternateTitles;
 
-   public TitleDefinitionImpl(TitleDefinitionDV title)
+
+   public TitleDefinitionImpl(Set<TitleDV> titles)
    {
-      this.titleDef = title;
+      alternateTitles = new HashSet<>();
+
+      for (TitleDV title : titles)
+      {
+         String titleType = title.type;
+         switch(titleType)
+         {
+            case "canonical":
+               this.canonicalTitle = title;
+               break;
+            case "short":
+               this.shortTitle = title;
+               break;
+            case "locale":
+               this.localeTitle = title;
+               break;
+            case "alt":
+               this.alternateTitles.add(title);
+               break;
+         }
+
+      }
+
    }
 
    @Override
    public Title getCanonicalTitle()
    {
-      return new TitleImpl(titleDef.canonicalTitle);
+      return new TitleImpl(canonicalTitle);
    }
 
    @Override
    public Title getShortTitle()
    {
-      return new TitleImpl(titleDef.shortTitle);
+      return new TitleImpl(shortTitle);
    }
 
    @Override
    public Set<Title> getAlternateTitles()
    {
-      Set<TitleDV> alternateTitles = titleDef.alternateTitles;
       Set<Title> titles = new HashSet<Title>();
 
       for(TitleDV title : alternateTitles)
@@ -49,7 +73,7 @@ public class TitleDefinitionImpl implements TitleDefinition
    @Override
    public Title getTitle(Locale language)
    {
-      return new TitleImpl(titleDef.localeTitle);
+      return new TitleImpl(localeTitle);
    }
 
 }

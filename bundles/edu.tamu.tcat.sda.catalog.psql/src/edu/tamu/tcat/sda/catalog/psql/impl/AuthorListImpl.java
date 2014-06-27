@@ -6,19 +6,18 @@ import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 
 public class AuthorListImpl implements AuthorList
 {
    private List<AuthorReference> authRef;
 
-   public AuthorListImpl(AuthorListDV authList)
+   public AuthorListImpl(List<AuthorRefDV> authList)
    {
       authRef = new ArrayList<AuthorReference>();
       if (authList != null)
       {
-         for (AuthorRefDV ref : authList.refs)
+         for (AuthorRefDV ref : authList)
          {
             authRef.add(new AuthorReferenceImpl(ref));
          }
