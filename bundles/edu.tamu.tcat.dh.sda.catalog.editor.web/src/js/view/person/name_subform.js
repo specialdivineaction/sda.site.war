@@ -9,7 +9,7 @@ define(function (require) {
         template: require('tpl!templates/person/name_subform.html.ejs'),
 
         bindings: {
-            'input.name': 'value:name,events:["keyup"]',
+            'input.display-name': 'value:displayName,events:["keyup"]',
             'input.title': 'value:title,events:["keyup"]',
             'input.given-name': 'value:givenName,events:["keyup"]',
             'input.middle-name': 'value:middleName,events:["keyup"]',

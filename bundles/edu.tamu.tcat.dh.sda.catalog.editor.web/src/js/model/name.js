@@ -5,7 +5,6 @@ define(function (require) {
     var PersonNameRef = Backbone.Model.extend({
         defaults: {
             title: '',
-            name: '',
             givenName: '',
             middleName: '',
             familyName: '',
