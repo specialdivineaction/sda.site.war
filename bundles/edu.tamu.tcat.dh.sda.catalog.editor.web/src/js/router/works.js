@@ -14,7 +14,7 @@ define(function (require) {
                 model: new Work()
             });
 
-            $('.container').html(form.render().el);
+            $('#main').html(form.render().el);
         }
     });
 

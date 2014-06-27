@@ -17,7 +17,7 @@ define(function (require) {
                 model: new Person()
             });
 
-            $('.container').html(form.render().el);
+            $('#main').html(form.render().el);
         }
     });
 
