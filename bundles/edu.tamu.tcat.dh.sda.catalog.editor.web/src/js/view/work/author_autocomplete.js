@@ -7,7 +7,7 @@ define(function (require) {
         tagName: 'li',
 
         events: {
-            'click': function () { this.trigger('click'); }
+            click: function () { this.trigger('click'); }
         },
 
         render: function () {
@@ -24,6 +24,10 @@ define(function (require) {
             this.listenTo(this.collection, 'reset', this.render);
         },
 
+        events: {
+            hover: 'cancelSelection'
+        },
+
         render: function () {
             if (this.collection.length === 0) this.$el.hide();
             this.$el.show();
@@ -38,6 +42,44 @@ define(function (require) {
             });
 
             return this;
+        },
+
+        cancelSelection: function () {
+            if (this.$selected)
+                this.$selected.removeClass('hover');
+
+            this.$selected = null;
+        },
+
+        commitSelection: function () {
+            if (this.$selected)
+                this.$selected.trigger('click');
+        },
+
+        selectNext: function () {
+            if (this.$selected) {
+                var next = this.$selected.next();
+                if (next.length === 0) return;
+
+                this.$selected.removeClass('hover');
+                this.$selected = next;
+            } else {
+                this.$selected = this.$el.children().first();
+            }
+            this.$selected.addClass('hover');
+        },
+
+        selectPrev: function () {
+            if (this.$selected) {
+                var prev = this.$selected.prev();
+                if (prev.length === 0) return;
+
+                this.$selected.removeClass('hover');
+                this.$selected = prev;
+            } else {
+                this.$selected = this.$el.children().last();
+            }
+            this.$selected.addClass('hover');
         }
     });
 

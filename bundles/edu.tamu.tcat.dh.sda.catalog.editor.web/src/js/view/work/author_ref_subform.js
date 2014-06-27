@@ -22,7 +22,7 @@ define(function (require) {
         events: {
             'click .remove-author-ref': 'dispose',
             'focus .name': 'initAutocomplete',
-            'keyup .name': 'autocomplete'
+            'keypress .name': 'autocomplete'
         },
 
         initAutocomplete: function (evt) {
@@ -42,14 +42,25 @@ define(function (require) {
         },
 
         autocomplete: function (evt) {
-            // close on `esc` key
-            if (evt.keyCode === 27) {
-                this.destroyAutocomplete();
-                return;
+            switch (evt.keyCode) {
+                case 13: // commit on enter key
+                    evt.preventDefault();
+                    this.acView.commitSelection()
+                    return false;
+                case 27: // close on `esc` key
+                    this.destroyAutocomplete();
+                    return false;
+                case 38: // up arrow
+                    evt.preventDefault();
+                    if (this.acView) this.acView.selectPrev();
+                    return false;
+                case 40: // down arrow
+                    evt.preventDefault();
+                    if (this.acView) this.acView.selectNext();
+                    return false;
             }
 
-            var $target = $(evt.target);
-            var name = $target.val();
+            var name = $(evt.target).val();
 
             if (name.length < 3) return;
 
