@@ -47,9 +47,10 @@ define(function (require) {
                     evt.preventDefault();
                     this.acView.commitSelection()
                     return false;
-                case 27: // close on `esc` key
+                case 9:
+                case 27: // close on `esc` and `tab` keys
                     this.destroyAutocomplete();
-                    return false;
+                    return;
                 case 38: // up arrow
                     evt.preventDefault();
                     if (this.acView) this.acView.selectPrev();

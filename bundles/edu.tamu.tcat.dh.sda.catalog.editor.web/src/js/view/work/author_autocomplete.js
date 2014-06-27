@@ -29,10 +29,13 @@ define(function (require) {
         },
 
         render: function () {
-            if (this.collection.length === 0) this.$el.hide();
-            this.$el.show();
+            if (this.collection.length === 0) {
+                this.$el.hide();
+                return this;
+            }
 
-            this.$el.empty();
+            this.cancelSelection();
+            this.$el.show().empty();
 
             var _this = this;
             this.collection.each(function (person) {
