@@ -6,7 +6,7 @@ define(function (require) {
 
     var WorksRouter = Backbone.Router.extend({
         routes: {
-            'works/add': 'addWork'
+            'works/new': 'addWork'
         },
 
         addWork: function () {
@@ -14,7 +14,8 @@ define(function (require) {
                 model: new Work()
             });
 
-            $('#main').html(form.render().el);
+            $('#page-title').text('Add Book')
+            $('#content').html(form.render().el);
         }
     });
 

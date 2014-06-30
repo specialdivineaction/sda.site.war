@@ -1,11 +1,135 @@
-body
-    padding-top 20px
+screen-sm-min = 768px
+
+color-light = #e9eaed
+color-dark = #444
+color-dark-accent1 = #555
+color-dark-accent2 = #666
+color-dark-accent3 = #888
+
+
+/** layout **/
+
+html, body
+    height 100%
+    background color-light
+
+
+.wrapper, .column
+    &:after
+        clear both
+
+    &:before, &:after
+        content ''
+        display table
+
+.wrapper, .box > .row
+    margin-left 0
+    margin-right 0
+
+    @media screen and (min-width: screen-sm-min)
+        height 100%
+
+.column
+    height 100%
+    overflow auto
+    *zoom 1
+
+    .padding
+        padding 7px
+
+        @media screen and (min-width: screen-sm-min)
+            padding 20px
+
+.full
+    padding 20px 15px 15px;
+    float left
+    position relative
+    min-height 1px
+    width 100%
+
+    @media screen and (min-width: screen-sm-min)
+        padding-top 70px
+
+.box
+    position absolute
+    top 0
+    bottom 0
+    left 0
+    right 0
+
+.navbar
+    border-width 0
+    top 0
+    position relative
+    width 100%
+
+    @media screen and (min-width: screen-sm-min)
+        position fixed
+        width inherit
+
+    .navbar-brand
+        color #fff !important
+        margin 0
+
+
+#sidebar
+    background color-dark
+    color color-light
+    padding 15px 5px 5px
+
+    #new-button .dropdown-menu
+        width 100%
+        background color-dark-accent1
+        border-color rgba(color-dark, 0.5)
+        box-shadow 0 6px 12px rgba(color-dark, 0.5)
+
+        > li > a
+            color #fff
+            padding 8px 15px
+
+            &:hover
+                background color-dark-accent2
+
+    hr
+        border-color color-dark-accent1
+
+    .nav-tabs
+        border-color color-dark-accent2
+
+    .nav > li
+        > a
+            color color-dark-accent3
+            outline none
+
+            &:hover, &:focus
+                border-color color-dark-accent1 color-dark-accent1 color-dark-accent2
+                background color-dark-accent1
+
+        &.active > a
+            &, &:hover, &:focus
+                color color-light
+                background color-dark
+                border-color color-dark-accent2 color-dark-accent2 transparent
+
+
+    .search-form
+        margin-top 1em
+
+
+#main
+    padding-left 0
+    padding-right 0
+
+
+
+
+/** element styling **/
 
 .form-control
     padding 2px
 
 .btn-row
-    margin: 1em 0
+    margin 1em 0
     text-align right
 
 .autocomplete
@@ -30,3 +154,16 @@ body
             &:hover, &.hover
                 background #428bca
                 color #fff
+
+.form-button-fixed
+    position absolute
+    right 15px
+    z-index 9999
+
+    @media screen and (min-width: screen-sm-min)
+        position fixed
+        top 8px
+
+
+textarea.noresize
+    resize none

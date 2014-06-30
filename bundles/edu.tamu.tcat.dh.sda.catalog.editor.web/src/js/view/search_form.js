@@ -7,6 +7,10 @@ define(function (require) {
 
         template: require('tpl!templates/search_form.html.ejs'),
 
+        initialize: function (options) {
+            this.type = options.type;
+        },
+
         events: {
             'submit': 'search',
         },
@@ -19,7 +23,7 @@ define(function (require) {
 
         render: function () {
             this.$el.attr('role', 'search');
-            this.$el.html(this.template());
+            this.$el.html(this.template({ type: this.type }));
             return this;
         }
     });

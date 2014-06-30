@@ -1,7 +1,7 @@
 <div class="form-group">
-    <label class="control-label sr-only">Search</label>
+    <label class="sr-only control-label">Search</label>
     <div class="input-group">
-        <input type="search" name="search" class="form-control search" placeholder="search">
+        <input type="search" name="search" class="form-control search" placeholder="Search<%= (typeof type !== 'undefined' && type) ? ' ' + type : '' %>&hellip;">
         <span class="input-group-btn">
             <button class="btn btn-primary" type="submit">
                 <span class="glyphicon glyphicon-search"></span>
