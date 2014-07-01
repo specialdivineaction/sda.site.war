@@ -43,7 +43,8 @@ module.exports = function (grunt) {
             },
 
             build: [stagingPath],
-            clobber: [buildPath, stagingPath]
+            clean: [buildPath, stagingPath, 'bower_components'],
+            clobber: [buildPath, stagingPath, 'bower_components', 'node_modules']
         },
 
         copy: {
