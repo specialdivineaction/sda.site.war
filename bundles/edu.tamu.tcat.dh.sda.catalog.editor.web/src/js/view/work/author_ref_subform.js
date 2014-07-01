@@ -12,6 +12,7 @@ define(function (require) {
 
         initialize: function (options) {
             this.allowRemoval = options.allowRemoval;
+            this.acEnableBlur = true;
         },
 
         bindings: {
@@ -22,35 +23,48 @@ define(function (require) {
         events: {
             'click .remove-author-ref': 'dispose',
             'focus .name': 'initAutocomplete',
-            'keypress .name': 'autocomplete'
+            'keypress .name': 'autocomplete',
+            'keydown .name': 'tryCloseAutocomplete',
+
+            // conditional "blur" to allow users to click on autocomplete elements
+            'blur .name': function () {
+                if (this.acView && !this.acView.isFocused)
+                    this.removeAutocomplete();
+            }
         },
 
         initAutocomplete: function (evt) {
             this.people = new PeopleCollection();
 
-            this.destroyAutocomplete();
+            this.removeAutocomplete();
             this.acView = new AuthorAutocompleteView({ collection: this.people });
             this.listenTo(this.acView, 'select', this.setAuthor);
 
             this.$el.find('.autocomplete').html(this.acView.render().el);
         },
 
-        destroyAutocomplete: function () {
+        removeAutocomplete: function () {
             if (!this.acView) return;
             this.stopListening(this.acView);
             this.acView.remove();
+        },
+
+        // Have to listen for tab and esc on keydown instead of keypress
+        tryCloseAutocomplete: function (evt) {
+            switch(evt.keyCode) {
+                case 9:
+                case 27: // close on `esc` and `tab` keys
+                    this.removeAutocomplete();
+                    return;
+            }
         },
 
         autocomplete: function (evt) {
             switch (evt.keyCode) {
                 case 13: // commit on enter key
                     evt.preventDefault();
-                    this.acView.commitSelection()
+                    this.acView.commitSelection();
                     return false;
-                case 9:
-                case 27: // close on `esc` and `tab` keys
-                    this.destroyAutocomplete();
-                    return;
                 case 38: // up arrow
                     evt.preventDefault();
                     if (this.acView) this.acView.selectPrev();
@@ -74,8 +88,8 @@ define(function (require) {
                     last: name
                 },
                 success: function (data) {
-                    if (data.length == 0) {
-                        _this.destroyAutocomplete();
+                    if (data.length === 0) {
+                        _this.removeAutocomplete();
                     } else {
                         _this.people.reset(data, {parse: true});
                     }
@@ -86,7 +100,7 @@ define(function (require) {
         setAuthor: function (person) {
             this.model.set('authorId', person.id);
             this.$el.find('.linked-author').html(person.getFormattedName());
-            this.destroyAutocomplete();
+            this.removeAutocomplete();
         },
 
         render: function () {
@@ -103,7 +117,7 @@ define(function (require) {
         dispose: function () {
             var _this = this;
             this.$el.slideUp(300, function () {
-                _this.destroyAutocomplete();
+                _this.removeAutocomplete();
                 _this.remove();
                 _this.model.destroy();
             });

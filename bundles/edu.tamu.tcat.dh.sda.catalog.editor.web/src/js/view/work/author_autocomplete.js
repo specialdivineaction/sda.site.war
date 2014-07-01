@@ -22,10 +22,15 @@ define(function (require) {
 
         initialize: function () {
             this.listenTo(this.collection, 'reset', this.render);
+            this.isFocused = false;
         },
 
         events: {
-            hover: 'cancelSelection'
+            hover: 'cancelSelection',
+
+            // delegate mouseover and mouseout events
+            mouseover: function (evt) { this.isFocused = true; },
+            mouseout: function (evt) { this.isFocused = false; }
         },
 
         render: function () {

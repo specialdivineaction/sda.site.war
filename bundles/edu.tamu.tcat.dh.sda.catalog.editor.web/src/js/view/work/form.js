@@ -29,7 +29,7 @@ define(function (require) {
 
         addTitleForm: function (evt) {
             var model = new Title();
-            this.model.get('titles').add(model)
+            this.model.get('titles').add(model);
 
             var view = new TitleSubform({ model: model, allowRemoval: true });
             var view$el = view.render().$el;

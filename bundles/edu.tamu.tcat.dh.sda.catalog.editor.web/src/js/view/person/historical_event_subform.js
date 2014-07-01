@@ -19,7 +19,7 @@ define(function (require) {
                 set: function ($el, modelValue) {
                     var m = Moment(modelValue);
                     if (m.isValid()) {
-                        $el.val(m.format('MM/DD/YYYY'));
+                        $el.val(m.format('YYYY-MM-DD'));
                     }
                 },
                 get: function ($el, oldValue, evt) {
@@ -28,13 +28,16 @@ define(function (require) {
                     var newValue = $el.val();
                     if (newValue === '') return null;
 
-                    var m = Moment(newValue, 'MM/DD/YYYY');
+                    var m = Moment(newValue);
+                    $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
+
                     if (m.isValid()) {
                         return m.toISOString();
                     } else {
                         $el.parent().addClass('has-error');
                         return null;
                     }
+
                 }
             }
         },
@@ -44,7 +47,9 @@ define(function (require) {
                 model: this.model.toJSON(),
                 moment: Moment
             }));
+
             this.applyBindings();
+
             return this;
         }
     });
