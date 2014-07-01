@@ -3,16 +3,20 @@ define(function (require) {
     var Backbone = require('backbone'),
         $        = require('jquery'),
 
+        PagesRouter  = require('js/router/pages'),
         PeopleRouter = require('js/router/people'),
         WorksRouter  = require('js/router/works'),
-        SearchForm  = require('js/view/search_form');
+        SearchForm   = require('js/view/search_form');
 
     require('bootstrap');
 
+    // routers
+    var pagesRouter = new PagesRouter();
     var peopleRouter = new PeopleRouter();
     var worksRouter = new WorksRouter();
     Backbone.history.start();
 
+    // global UI elements
     var bookSearchForm = new SearchForm({ type: 'books' });
     bookSearchForm.on('search', function (query) {
         console.log('search for book ' + query);
