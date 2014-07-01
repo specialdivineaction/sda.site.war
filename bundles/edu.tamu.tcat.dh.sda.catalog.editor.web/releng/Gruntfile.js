@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                         dest: buildPath + '/css/style.min.css' ,
                         src: [
                             vendorPath + '/bootstrap/bootstrap.css',
-                            stagingPath + '/css/*.css'
+                            stagingPath + '/css/style.css'
                         ]
                     }
                 ]
@@ -140,8 +140,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     {
-                        dest: stagingPath + '/css/layout.css',
-                        src: srcPath + '/stylus/layout.styl'
+                        dest: stagingPath + '/css/style.css',
+                        src: srcPath + '/stylus/style.styl'
                     }
                 ]
             },
@@ -154,8 +154,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     {
-                        dest: buildPath + '/css/layout.css',
-                        src: srcPath + '/stylus/layout.styl'
+                        dest: buildPath + '/css/style.css',
+                        src: srcPath + '/stylus/style.styl'
                     }
                 ]
             }

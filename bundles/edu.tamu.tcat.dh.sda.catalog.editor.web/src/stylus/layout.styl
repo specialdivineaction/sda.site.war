@@ -1,18 +1,10 @@
-screen-sm-min = 768px
+@import '_vars'
 
-color-light = #e9eaed
-color-dark = #444
-color-dark-accent1 = #555
-color-dark-accent2 = #666
-color-dark-accent3 = #888
-
-
-/** layout **/
 
 html, body
     height 100%
-    background color-light
-
+    background light-bg
+    text-rendering optimizeLegibility
 
 .wrapper, .column
     &:after
@@ -26,19 +18,13 @@ html, body
     margin-left 0
     margin-right 0
 
-    @media screen and (min-width: screen-sm-min)
+    @media screen and (min-width: screen-xs-min)
         height 100%
 
 .column
     height 100%
     overflow auto
     *zoom 1
-
-    .padding
-        padding 7px
-
-        @media screen and (min-width: screen-sm-min)
-            padding 20px
 
 .full
     padding 20px 15px 15px;
@@ -47,7 +33,7 @@ html, body
     min-height 1px
     width 100%
 
-    @media screen and (min-width: screen-sm-min)
+    @media screen and (min-width: screen-xs-min)
         padding-top 70px
 
 .box
@@ -63,7 +49,7 @@ html, body
     position relative
     width 100%
 
-    @media screen and (min-width: screen-sm-min)
+    @media screen and (min-width: screen-xs-min)
         position fixed
         width inherit
 
@@ -71,46 +57,13 @@ html, body
         color #fff !important
         margin 0
 
-
 #sidebar
-    background color-dark
-    color color-light
-    padding 15px 5px 5px
+    background dark-bg
+    color light-bg
+    padding 15px
 
-    #new-button .dropdown-menu
-        width 100%
-        background color-dark-accent1
-        border-color rgba(color-dark, 0.5)
-        box-shadow 0 6px 12px rgba(color-dark, 0.5)
-
-        > li > a
-            color #fff
-            padding 8px 15px
-
-            &:hover
-                background color-dark-accent2
-
-    hr
-        border-color color-dark-accent1
-
-    .nav-tabs
-        border-color color-dark-accent2
-
-    .nav > li
-        > a
-            color color-dark-accent3
-            outline none
-
-            &:hover, &:focus
-                border-color color-dark-accent1 color-dark-accent1 color-dark-accent2
-                background color-dark-accent1
-
-        &.active > a
-            &, &:hover, &:focus
-                color color-light
-                background color-dark
-                border-color color-dark-accent2 color-dark-accent2 transparent
-
+    @media screen and (min-width: screen-xs-min)
+        padding 8px
 
     .search-form
         margin-top 1em
@@ -119,51 +72,3 @@ html, body
 #main
     padding-left 0
     padding-right 0
-
-
-
-
-/** element styling **/
-
-.form-control
-    padding 2px
-
-.btn-row
-    margin 1em 0
-    text-align right
-
-.autocomplete
-    position relative
-
-    ul
-        margin 0
-        padding 0
-        list-style none
-        position absolute
-        left 0
-        right 0
-        background #fff
-        box-shadow 0 3px 5px rgba(black, 0.5)
-        border 1px solid #ddd
-        z-index 9999
-
-        li
-            padding 5px
-            cursor default
-
-            &:hover, &.hover
-                background #428bca
-                color #fff
-
-.form-button-fixed
-    position absolute
-    right 15px
-    z-index 9999
-
-    @media screen and (min-width: screen-sm-min)
-        position fixed
-        top 8px
-
-
-textarea.noresize
-    resize none
