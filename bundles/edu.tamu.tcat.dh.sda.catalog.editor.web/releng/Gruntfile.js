@@ -59,6 +59,10 @@ module.exports = function (grunt) {
                     {
                         dest: buildPath + '/index.html',
                         src: srcPath + '/index.html'
+                    },
+                    {
+                        dest: buildPath + '/login.html',
+                        src: srcPath + '/login.html'
                     }
                 ]
             },
@@ -79,6 +83,10 @@ module.exports = function (grunt) {
                     {
                         dest: buildPath + '/index.html',
                         src: srcPath + '/index_dev.html'
+                    },
+                    {
+                        dest: buildPath + '/login.html',
+                        src: srcPath + '/login.html'
                     }
                 ]
             }
