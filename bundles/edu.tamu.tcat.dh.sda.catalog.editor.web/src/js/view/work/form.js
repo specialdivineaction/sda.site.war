@@ -6,7 +6,9 @@ define(function (require) {
         Title                  = require('js/model/title'),
         TitleSubform           = require('js/view/work/title_subform'),
         AuthorRefSubform       = require('js/view/work/author_ref_subform'),
-        PublicationInfoSubform = require('js/view/work/publication_info_subform');
+        PublicationInfoSubform = require('js/view/work/publication_info_subform'),
+
+        Message = require('js/view/message');
 
     require('backbone.epoxy');
 
@@ -14,6 +16,8 @@ define(function (require) {
         tagName: 'form',
 
         template: require('tpl!templates/work/form.html.ejs'),
+
+        clearAfterSave: false,
 
         bindings: {
             '.series': 'value:series,events:["keyup"]',
@@ -24,7 +28,8 @@ define(function (require) {
             'click .add-primary-author': 'addPrimaryAuthorForm',
             'click .add-other-author': 'addOtherAuthorForm',
             'click .add-title': 'addTitleForm',
-            'submit': 'submit'
+            'submit': 'submit',
+            'click .save-add-button': function (evt) { this.clearAfterSave = true; }
         },
 
         addTitleForm: function (evt) {
@@ -68,7 +73,30 @@ define(function (require) {
         submit: function (evt) {
             evt.preventDefault();
 
-            this.model.save();
+            var _this = this;
+            this.model.save({}, {
+                success: function (model, response, options) {
+                    var alert = new Message({
+                        type: 'success',
+                        ttl: 5000,
+                        message: 'Work saved successfully.'
+                    });
+
+                    alert.render();
+
+                    if (_this.clearAfterSave) {
+                        console.log('save and new');
+                    }
+                },
+                error: function (model, response, options) {
+                    var alert = new Message({
+                        type: 'error',
+                        message: 'Unable to save work.'
+                    });
+
+                    alert.render();
+                }
+            });
 
             return false;
         },

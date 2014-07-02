@@ -12,6 +12,10 @@ define(function (require) {
 
     require('bootstrap');
 
+
+    // set message container
+    Message.setContainer('#messages');
+
     // routers
     var pagesRouter = new PagesRouter();
     var peopleRouter = new PeopleRouter();

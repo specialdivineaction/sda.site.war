@@ -5,6 +5,9 @@ define(function (require) {
         StringUtil = require('js/util/string');
 
     var MessageView = Backbone.View.extend({
+
+        messageContainer: $('#messages'),
+
         initialize: function(options) {
             // type may be anything, but recognized types are:
             // 'success', 'info', 'warning', 'danger', and 'error' (aliased to 'danger')
@@ -13,6 +16,13 @@ define(function (require) {
             this.admonition = (typeof options.admonition === 'undefined') ? StringUtil.capitalize(this.type) : options.admonition;
             this.dismissible = (typeof options.dismissible === 'undefined') ? true : options.dismissible;
             this.ttl = options.ttl || false;
+
+            if (!this.ttl && !this.dismissible) {
+                console.error('Warning: alerts should either be dismissible or set to auto-expire.');
+            }
+
+            // allow container override
+            if (typeof options.container !== 'undefined') this.messageContainer = $(options.container);
         },
 
         render: function () {
@@ -47,11 +57,18 @@ define(function (require) {
                 }, this.ttl);
             }
 
+            $(this.messageContainer).append(this.$el);
+
             this.$el.fadeIn(300);
 
             return this;
-        },
+        }
+
     });
+
+    MessageView.setContainer = function (el) {
+        MessageView.prototype.messageContainer = $(el);
+    };
 
     return MessageView;
 
