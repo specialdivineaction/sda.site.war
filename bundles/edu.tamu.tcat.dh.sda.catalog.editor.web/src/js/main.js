@@ -6,7 +6,9 @@ define(function (require) {
         PagesRouter  = require('js/router/pages'),
         PeopleRouter = require('js/router/people'),
         WorksRouter  = require('js/router/works'),
-        SearchForm   = require('js/view/search_form');
+        SearchForm   = require('js/view/search_form'),
+
+        Message      = require('js/view/message');
 
     require('bootstrap');
 
