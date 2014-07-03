@@ -8,13 +8,13 @@ define(function (require) {
 
     var PeopleRouter = Backbone.Router.extend({
         routes: {
-            'people/new': 'addPerson'
+            'people/new': 'newAction'
         },
 
-
-        addPerson: function () {
+        newAction: function () {
             var form = new PersonFormView({
-                model: new Person()
+                model: new Person(),
+                router: this
             });
 
             $('#page-title').text('Add Person');

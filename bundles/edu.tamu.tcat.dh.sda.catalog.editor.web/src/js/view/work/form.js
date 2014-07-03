@@ -1,6 +1,7 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
+        _        = require('underscore'),
 
         AuthorRef              = require('js/model/author_ref'),
         Title                  = require('js/model/title'),
@@ -17,7 +18,10 @@ define(function (require) {
 
         template: require('tpl!templates/work/form.html.ejs'),
 
-        clearAfterSave: false,
+        initialize: function (options) {
+            this.router = options.router;
+            this.childViews = [];
+        },
 
         bindings: {
             '.series': 'value:series,events:["keyup"]',
@@ -29,7 +33,7 @@ define(function (require) {
             'click .add-other-author': 'addOtherAuthorForm',
             'click .add-title': 'addTitleForm',
             'submit': 'submit',
-            'click .save-add-button': function (evt) { this.clearAfterSave = true; }
+            'click .save-add-button': function (evt) { this.submit(evt, true); }
         },
 
         addTitleForm: function (evt) {
@@ -37,6 +41,7 @@ define(function (require) {
             this.model.get('titles').add(model);
 
             var view = new TitleSubform({ model: model, allowRemoval: true });
+            thsi.childViews.push(view);
             var view$el = view.render().$el;
 
             view$el.hide();
@@ -50,6 +55,7 @@ define(function (require) {
             this.model.get('authors').add(model);
 
             var view = new AuthorRefSubform({ model: model, allowRemoval: true });
+            this.childViews.push(view);
             var view$el = view.render().$el;
 
             view$el.hide();
@@ -63,6 +69,7 @@ define(function (require) {
             this.model.get('otherAuthors').add(model);
 
             var view = new AuthorRefSubform({ model: model, allowRemoval: true });
+            this.childViews.push(view);
             var view$el = view.render().$el;
 
             view$el.hide();
@@ -70,7 +77,7 @@ define(function (require) {
             view$el.slideDown(300);
         },
 
-        submit: function (evt) {
+        submit: function (evt, saveAndNew) {
             evt.preventDefault();
 
             var _this = this;
@@ -84,8 +91,9 @@ define(function (require) {
 
                     alert.render();
 
-                    if (_this.clearAfterSave) {
-                        console.log('save and new');
+                    if (saveAndNew) {
+                        _this.close();
+                        _this.router.newAction();
                     }
                 },
                 error: function (model, response, options) {
@@ -106,30 +114,44 @@ define(function (require) {
                 model: this.model.toJSON()
             }));
 
+            var _this = this;
+
             var $authorForms = this.$el.find('.author-forms').empty();
             this.model.get('authors').each(function (author) {
                 var subForm = new AuthorRefSubform({ model: author, allowRemoval: true });
+                _this.childViews.push(subForm);
                 $authorForms.append(subForm.render().el);
             });
 
             var $titleForms = this.$el.find('.title-forms').empty();
             this.model.get('titles').each(function (title) {
                 var subForm = new TitleSubform({ model: title, allowRemoval: true });
+                _this.childViews.push(subForm);
                 $titleForms.append(subForm.render().el);
             });
 
             var $otherAuthorForms = this.$el.find('.other-author-forms').empty();
             this.model.get('otherAuthors').each(function (otherAuthor) {
                 var subForm = new AuthorRefSubform({ model: otherAuthor });
+                _this.childViews.push(subForm);
                 $otherAuthorForms.append(subForm.render().el);
             });
 
             var pubInfoSubform = new PublicationInfoSubform({ model: this.model.get('pubInfo') });
+            this.childViews.push(pubInfoSubform);
             this.$el.find('.pub-info-form').html(pubInfoSubform.render().el);
 
             this.applyBindings();
 
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
+            _.each(this.childViews, function (v) {
+                if (v.close) v.close();
+            });
         }
     });
 

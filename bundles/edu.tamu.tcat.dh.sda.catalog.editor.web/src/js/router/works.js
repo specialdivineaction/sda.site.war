@@ -6,15 +6,15 @@ define(function (require) {
 
     var WorksRouter = Backbone.Router.extend({
         routes: {
-            'works/new': 'addWork'
+            'works/new': 'newAction'
         },
 
-        addWork: function () {
+        newAction: function () {
             var form = new WorkFormView({
                 model: new Work()
             });
 
-            $('#page-title').text('Add Book')
+            $('#page-title').text('Add Book');
             $('#content').html(form.render().el);
         }
     });

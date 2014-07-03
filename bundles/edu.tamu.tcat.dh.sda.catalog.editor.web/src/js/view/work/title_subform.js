@@ -19,7 +19,7 @@ define(function (require) {
         },
 
         events: {
-            'click .remove-title': 'dispose'
+            'click .remove-title': 'disposeForm'
         },
 
         render: function () {
@@ -34,12 +34,17 @@ define(function (require) {
             return this;
         },
 
-        dispose: function () {
+        disposeForm: function () {
             var _this = this;
             this.$el.slideUp(300, function () {
-                _this.remove();
+                _this.close();
                 _this.model.destroy();
             });
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
         }
     });
 

@@ -6,7 +6,7 @@ define(function (require) {
 
     var MessageView = Backbone.View.extend({
 
-        messageContainer: $('#messages'),
+        messageContainer: $('body'),
 
         initialize: function(options) {
             // type may be anything, but recognized types are:
@@ -45,14 +45,14 @@ define(function (require) {
                 ;
 
                 this.$el.on('closed.bs.alert', function (evt) {
-                    _this.remove();
+                    _this.close();
                 });
             }
 
             if (this.ttl) {
                 this.timeout = setTimeout(function () {
                     _this.$el.fadeOut(1000, function () {
-                        _this.remove();
+                        _this.close();
                     });
                 }, this.ttl);
             }
@@ -62,6 +62,11 @@ define(function (require) {
             this.$el.fadeIn(300);
 
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
         }
 
     });

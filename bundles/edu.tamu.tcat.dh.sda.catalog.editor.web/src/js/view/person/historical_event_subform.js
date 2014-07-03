@@ -51,6 +51,11 @@ define(function (require) {
             this.applyBindings();
 
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
         }
     });
 

@@ -21,7 +21,7 @@ define(function (require) {
         },
 
         events: {
-            'click .remove-author-ref': 'dispose',
+            'click .remove-author-ref': 'disposeForm',
             'focus .name': 'initAutocomplete',
             'keypress .name': 'autocomplete',
             'keydown .name': 'tryCloseAutocomplete',
@@ -29,24 +29,24 @@ define(function (require) {
             // conditional "blur" to allow users to click on autocomplete elements
             'blur .name': function () {
                 if (this.acView && !this.acView.isFocused)
-                    this.removeAutocomplete();
+                    this.closeAutocomplete();
             }
         },
 
         initAutocomplete: function (evt) {
             this.people = new PeopleCollection();
 
-            this.removeAutocomplete();
+            this.closeAutocomplete();
             this.acView = new AuthorAutocompleteView({ collection: this.people });
             this.listenTo(this.acView, 'select', this.setAuthor);
 
             this.$el.find('.autocomplete').html(this.acView.render().el);
         },
 
-        removeAutocomplete: function () {
+        closeAutocomplete: function () {
             if (!this.acView) return;
             this.stopListening(this.acView);
-            this.acView.remove();
+            this.acView.close();
         },
 
         // Have to listen for tab and esc on keydown instead of keypress
@@ -54,7 +54,7 @@ define(function (require) {
             switch(evt.keyCode) {
                 case 9:
                 case 27: // close on `esc` and `tab` keys
-                    this.removeAutocomplete();
+                    this.closeAutocomplete();
                     return;
             }
         },
@@ -89,7 +89,7 @@ define(function (require) {
                 },
                 success: function (data) {
                     if (data.length === 0) {
-                        _this.removeAutocomplete();
+                        _this.closeAutocomplete();
                     } else {
                         _this.people.reset(data, {parse: true});
                     }
@@ -100,7 +100,7 @@ define(function (require) {
         setAuthor: function (person) {
             this.model.set('authorId', person.id);
             this.$el.find('.linked-author').html(person.getFormattedName());
-            this.removeAutocomplete();
+            this.closeAutocomplete();
         },
 
         render: function () {
@@ -114,13 +114,18 @@ define(function (require) {
             return this;
         },
 
-        dispose: function () {
+        disposeForm: function () {
             var _this = this;
             this.$el.slideUp(300, function () {
-                _this.removeAutocomplete();
-                _this.remove();
+                _this.close();
                 _this.model.destroy();
             });
+        },
+
+        close: function () {
+            this.closeAutocomplete();
+            this.remove();
+            this.unbind();
         }
     });
 

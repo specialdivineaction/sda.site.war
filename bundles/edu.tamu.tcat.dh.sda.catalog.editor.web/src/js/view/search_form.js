@@ -25,6 +25,11 @@ define(function (require) {
             this.$el.attr('role', 'search');
             this.$el.html(this.template({ type: this.type }));
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
         }
     });
 

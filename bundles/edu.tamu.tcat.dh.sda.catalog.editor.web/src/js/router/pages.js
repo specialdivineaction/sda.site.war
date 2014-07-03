@@ -5,10 +5,10 @@ define(function (require) {
     var PagesRouter = Backbone.Router.extend({
 
         routes: {
-            '': 'home'
+            '': 'homeAction'
         },
 
-        home: function () {
+        homeAction: function () {
             var template = require('tpl!templates/pages/home.html.ejs');
             $('#content').html(template());
         }

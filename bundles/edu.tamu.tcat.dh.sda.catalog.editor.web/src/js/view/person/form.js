@@ -2,6 +2,7 @@ define(function (require) {
 
     var Backbone = require('backbone'),
         Moment   = require('moment'),
+        _        = require('underscore'),
 
         NameSubform            = require('js/view/person/name_subform'),
         HistoricalEventSubform = require('js/view/person/historical_event_subform'),
@@ -15,7 +16,10 @@ define(function (require) {
 
         template: require('tpl!templates/person/form.html.ejs'),
 
-        clearAfterSave: false,
+        initialize: function (options) {
+            this.router = options.router;
+            this.childViews = [];
+        },
 
         bindings: {
             '.person-id': 'value:id',
@@ -24,10 +28,10 @@ define(function (require) {
 
         events: {
             'submit': 'submit',
-            'click .save-new-button': function (evt) { this.clearAfterSave = true; }
+            'click .save-new-button': function (evt) { this.submit(evt, true); }
         },
 
-        submit: function (evt) {
+        submit: function (evt, saveAndNew) {
             evt.preventDefault();
 
             var _this = this;
@@ -41,8 +45,9 @@ define(function (require) {
 
                     alert.render();
 
-                    if (_this.clearAfterSave) {
-                        console.log('save and new');
+                    if (saveAndNew) {
+                        _this.close();
+                        _this.router.newAction();
                     }
                 },
                 error: function (model, response, options) {
@@ -61,21 +66,34 @@ define(function (require) {
         render: function () {
             this.$el.html(this.template({ model: this.model }));
 
+            var _this = this;
+
             var $nameForms = this.$el.find('.name-forms').empty();
             this.model.get('names').each(function (name) {
                 var subForm = new NameSubform({ model: name });
+                _this.childViews.push(subForm);
                 $nameForms.append(subForm.render().el);
             });
 
             var birthSubForm = new HistoricalEventSubform({ model: this.model.get('birth') });
+            this.childViews.push(birthSubForm);
             this.$el.find('#birthForm').html(birthSubForm.render().el);
 
             var deathSubForm = new HistoricalEventSubform({ model: this.model.get('death') });
+            this.childViews.push(deathSubForm);
             this.$el.find('#deathForm').html(deathSubForm.render().el);
 
             this.applyBindings();
 
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
+            _.each(this.childViews, function (v) {
+                if (v.close) v.close();
+            });
         }
     });
 

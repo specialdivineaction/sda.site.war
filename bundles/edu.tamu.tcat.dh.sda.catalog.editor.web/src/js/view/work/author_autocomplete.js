@@ -13,6 +13,11 @@ define(function (require) {
         render: function () {
             this.$el.html(this.model.getFormattedName());
             return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
         }
     });
 
@@ -23,6 +28,7 @@ define(function (require) {
         initialize: function () {
             this.listenTo(this.collection, 'reset', this.render);
             this.isFocused = false;
+            this.childViews = [];
         },
 
         events: {
@@ -45,6 +51,7 @@ define(function (require) {
             var _this = this;
             this.collection.each(function (person) {
                 var subView = new AutocompleteItemView({ model: person });
+                _this.childViews.push(subView);
                 _this.listenTo(subView, 'click', function () { _this.trigger('select', person); });
                 _this.$el.append(subView.render().el);
             });
@@ -88,6 +95,14 @@ define(function (require) {
                 this.$selected = this.$el.children().last();
             }
             this.$selected.addClass('hover');
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
+            _.each(this.childViews, function (v) {
+                if (v.close) v.close();
+            });
         }
     });
 
