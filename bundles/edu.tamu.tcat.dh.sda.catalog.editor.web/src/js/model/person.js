@@ -43,7 +43,17 @@ define(function (require) {
                 birth = Moment(this.get('birth').get('eventDate')),
                 death = Moment(this.get('death').get('eventDate'));
 
-            return name.get('familyName') + ', ' + name.get('givenName') + ' (' + birth.format('YYYY') + '&ndash;' + death.format('YYYY') + ')'
+            var formattedName = name.get('familyName') + ', ' + name.get('givenName');
+
+            if (birth.isValid() || death.isValid()) {
+                formattedName += ' (';
+                formattedName += birth.isValid() ? birth.format('YYYY') : '?';
+                formattedName += '&ndash;';
+                formattedName += death.isValid() ? death.format('YYYY') : '?';
+                formattedName += ')';
+            }
+
+            return formattedName;
         }
 
     });
