@@ -167,6 +167,17 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+
+        uglify: {
+            build: {
+                files: [
+                    {
+                        dest: buildPath + '/js/promise.polyfill.min.js',
+                        src: vendorPath + '/promise-polyfill/Promise.js'
+                    }
+                ]
+            }
         }
     });
 
@@ -176,8 +187,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-stylus');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('prod', ['bower:install', 'requirejs:build', 'stylus:build', 'cssmin:build', 'copy:build', 'clean:build']);
+    grunt.registerTask('prod', ['bower:install', 'requirejs:build', 'stylus:build', 'uglify:build', 'cssmin:build', 'copy:build', 'clean:build']);
     grunt.registerTask('dev', ['bower:dev', 'stylus:dev', 'copy:dev']);
 
     grunt.registerTask('default', ['dev']);

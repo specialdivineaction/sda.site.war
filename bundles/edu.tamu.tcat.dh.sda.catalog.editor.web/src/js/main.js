@@ -23,9 +23,23 @@ define(function (require) {
     Backbone.history.start();
 
     // global UI elements
-    var bookSearchForm = new SearchForm({ type: 'books' });
-    bookSearchForm.on('search', function (query) {
-        console.log('search for book ' + query);
+    var bookSearchForm = new SearchForm({
+        type: 'books',
+        search: function (query) {
+            return new Promise(function (resolve, reject) {
+                if (query === '') resolve([]);
+
+                // HACK: replace with something a little more ajaxy
+                var results = [];
+                for (var i = 0; i < 10; i++) {
+                    results.push({
+                        content: '<strong>Result ' + i + '</strong><br/>Lorem ipsum dolor sit amet...',
+                    });
+                }
+
+                resolve(results);
+            });
+        }
     });
     $('#sidebar #books .search-form').html(bookSearchForm.render().el);
 
