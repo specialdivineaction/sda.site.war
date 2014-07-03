@@ -1,13 +1,16 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
+        $        = require('jquery'),
 
         PeopleCollection       = require('js/collection/people'),
         AuthorAutocompleteView = require('js/view/work/author_autocomplete');
 
     require('backbone.epoxy');
 
+
     var AuthorRefSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/work/author_ref_subform.html.ejs'),
 
         initialize: function (options) {
@@ -127,6 +130,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return AuthorRefSubform;

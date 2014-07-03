@@ -1,8 +1,9 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
 
-    var Name = require('js/model/name');
+        Name = require('js/model/name');
+
 
     var NameCollection = Backbone.Collection.extend({
 
@@ -11,4 +12,5 @@ define(function (require) {
     });
 
     return NameCollection;
+
 });

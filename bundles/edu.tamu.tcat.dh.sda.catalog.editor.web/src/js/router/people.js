@@ -1,12 +1,14 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
-        $ = require('jquery'),
+        $        = require('jquery'),
 
         PersonFormView = require('js/view/person/form'),
-        Person = require('js/model/person');
+        Person         = require('js/model/person');
+
 
     var PeopleRouter = Backbone.Router.extend({
+
         routes: {
             'people/new': 'newAction'
         },
@@ -20,6 +22,7 @@ define(function (require) {
             $('#page-title').text('Add Person');
             $('#content').html(form.render().el);
         }
+
     });
 
     return PeopleRouter;

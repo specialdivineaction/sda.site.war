@@ -2,11 +2,16 @@ define(function (require) {
 
     var Backbone = require('backbone'),
 
-        Work = require('js/model/work');
+        Config = require('js/config'),
+        Work   = require('js/model/work');
+
 
     var WorkCollection = Backbone.Collection.extend({
-        url: '/api/works',
+
+        url: Config.apiPrefix + '/works',
+
         model: Work
+
     });
 
     return WorkCollection;

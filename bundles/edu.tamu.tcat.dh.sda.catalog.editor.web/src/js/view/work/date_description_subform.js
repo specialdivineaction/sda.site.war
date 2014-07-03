@@ -5,7 +5,9 @@ define(function (require) {
 
     require('backbone.epoxy');
 
+
     var DateDescriptionSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/work/date_description_subform.html.ejs'),
 
         bindings: {
@@ -54,6 +56,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return DateDescriptionSubform;

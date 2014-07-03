@@ -2,7 +2,9 @@ define(function (require) {
 
     var Backbone = require('backbone');
 
+
     var PersonNameRef = Backbone.Model.extend({
+
         defaults: {
             title: '',
             givenName: '',
@@ -11,6 +13,7 @@ define(function (require) {
             suffix: '',
             displayName: ''
         }
+
     });
 
     return PersonNameRef;

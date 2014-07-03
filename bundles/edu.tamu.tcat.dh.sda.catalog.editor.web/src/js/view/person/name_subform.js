@@ -5,7 +5,9 @@ define(function (require) {
     // attach epoxy to backbone
     require('backbone.epoxy');
 
+
     var NameSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/person/name_subform.html.ejs'),
 
         bindings: {
@@ -31,6 +33,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return NameSubform;

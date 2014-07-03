@@ -2,7 +2,9 @@ define(function (require) {
 
     var Backbone   = require('backbone'),
         $          = require('jquery'),
+
         StringUtil = require('js/util/string');
+
 
     var MessageView = Backbone.View.extend({
 

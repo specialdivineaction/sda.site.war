@@ -1,6 +1,8 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
+        $        = require('jquery');
+
 
     var PagesRouter = Backbone.Router.extend({
 
@@ -16,4 +18,5 @@ define(function (require) {
     });
 
     return PagesRouter;
+
 });

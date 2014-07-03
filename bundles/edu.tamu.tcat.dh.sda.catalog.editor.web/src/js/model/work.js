@@ -2,14 +2,17 @@ define(function (require) {
 
     var Backbone = require('backbone'),
 
+        Config              = require('js/config'),
         AuthorRef           = require('js/model/author_ref'),
         Title               = require('js/model/title'),
         TitleCollection     = require('js/collection/titles'),
         PublicationInfo     = require('js/model/publication_info'),
         AuthorRefCollection = require('js/collection/author_refs');
 
+
     var Work = Backbone.Model.extend({
-        urlRoot: '/api/works',
+
+        urlRoot: Config.apiPrefix + '/works',
 
         defaults: function () {
             return {

@@ -2,7 +2,9 @@ define(function (require) {
 
     var Backbone = require('backbone');
 
+
     var SearchForm = Backbone.View.extend({
+
         tagName: 'form',
 
         template: require('tpl!templates/search_form.html.ejs'),
@@ -31,6 +33,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return SearchForm;

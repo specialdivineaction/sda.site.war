@@ -1,9 +1,11 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
+        _        = require('underscore');
 
 
     var AutocompleteItemView = Backbone.View.extend({
+
         tagName: 'li',
 
         events: {
@@ -19,10 +21,12 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
 
     var AuthorAutocompleteView = Backbone.View.extend({
+
         tagName: 'ul',
 
         initialize: function () {
@@ -32,11 +36,11 @@ define(function (require) {
         },
 
         events: {
-            hover: 'cancelSelection',
+            'hover': 'cancelSelection',
 
             // delegate mouseover and mouseout events
-            mouseover: function (evt) { this.isFocused = true; },
-            mouseout: function (evt) { this.isFocused = false; }
+            'mouseover': function (evt) { this.isFocused = true; },
+            'mouseout': function (evt) { this.isFocused = false; }
         },
 
         render: function () {
@@ -104,6 +108,7 @@ define(function (require) {
                 if (v.close) v.close();
             });
         }
+
     });
 
     return AuthorAutocompleteView;

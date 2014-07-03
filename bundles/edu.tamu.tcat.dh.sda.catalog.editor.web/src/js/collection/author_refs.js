@@ -4,8 +4,11 @@ define(function (require) {
 
         AuthorRef = require('js/model/author_ref');
 
+
     var AuthorRefCollection = Backbone.Collection.extend({
+
         model: AuthorRef
+
     });
 
     return AuthorRefCollection;

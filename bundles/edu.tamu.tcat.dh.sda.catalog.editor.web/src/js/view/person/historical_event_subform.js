@@ -6,7 +6,9 @@ define(function (require) {
     // attach epoxy to backbone
     require('backbone.epoxy');
 
+
     var HistoricalEventSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/person/historical_event_subform.html.ejs'),
 
         bindings: {
@@ -57,6 +59,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return HistoricalEventSubform;

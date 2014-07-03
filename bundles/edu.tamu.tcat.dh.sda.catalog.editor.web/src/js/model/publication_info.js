@@ -4,7 +4,9 @@ define(function (require) {
 
         DateDescription = require('js/model/date_description');
 
+
     var PublicationInfo = Backbone.Model.extend({
+
         defaults: function () {
             return {
                 publisher: '',
@@ -18,6 +20,7 @@ define(function (require) {
 
             return resp;
         }
+
     });
 
     return PublicationInfo;

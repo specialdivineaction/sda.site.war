@@ -1,10 +1,14 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
+
+        languages = require('js/data/languages');
 
     require('backbone.epoxy');
 
+
     var TitleSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/work/title_subform.html.ejs'),
 
         initialize: function (options) {
@@ -25,7 +29,7 @@ define(function (require) {
         render: function () {
             this.$el.html(this.template({
                 model: this.model.toJSON(),
-                languages: require('js/data/languages'),
+                languages: languages,
                 showDelete: this.allowRemoval
             }));
 
@@ -46,6 +50,7 @@ define(function (require) {
             this.remove();
             this.unbind();
         }
+
     });
 
     return TitleSubform;

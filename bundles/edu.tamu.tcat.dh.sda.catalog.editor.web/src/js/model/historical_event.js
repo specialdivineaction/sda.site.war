@@ -2,6 +2,7 @@ define(function (require) {
 
     var Backbone = require('backbone');
 
+
     var HistoricalEvent = Backbone.Model.extend({
 
         defaults: {

@@ -13,7 +13,9 @@ define(function (require) {
 
     require('backbone.epoxy');
 
+
     var WorkFormView = Backbone.Epoxy.View.extend({
+
         tagName: 'form',
 
         template: require('tpl!templates/work/form.html.ejs'),
@@ -153,6 +155,7 @@ define(function (require) {
                 if (v.close) v.close();
             });
         }
+
     });
 
     return WorkFormView;

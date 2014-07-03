@@ -1,15 +1,17 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
-        Moment   = require('moment');
+        Moment   = require('moment'),
 
-    var Name = require('js/model/name'),
+        Config          = require('js/config'),
+        Name            = require('js/model/name'),
         HistoricalEvent = require('js/model/historical_event'),
-        NameCollection = require('js/collection/names');
+        NameCollection  = require('js/collection/names');
+
 
     var Person = Backbone.Model.extend({
 
-        urlRoot: '/api/people',
+        urlRoot: Config.apiPrefix + '/people',
 
         defaults: function () {
             return {

@@ -4,8 +4,11 @@ define(function (require) {
 
         Title = require('js/model/title');
 
+
     var TitleCollection = Backbone.Collection.extend({
+
         model: Title
+
     });
 
     return TitleCollection;

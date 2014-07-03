@@ -11,7 +11,9 @@ define(function (require) {
     // attach epoxy to backbone
     require('backbone.epoxy');
 
+
     var PersonFormView = Backbone.Epoxy.View.extend({
+
         tagName: 'form',
 
         template: require('tpl!templates/person/form.html.ejs'),
@@ -95,6 +97,7 @@ define(function (require) {
                 if (v.close) v.close();
             });
         }
+
     });
 
     return PersonFormView;

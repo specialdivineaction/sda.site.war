@@ -1,4 +1,5 @@
 define(function () {
+
     return [
         { code: 'aa', name: 'Afar' },
         { code: 'ab', name: 'Abkhaz' },
@@ -185,4 +186,5 @@ define(function () {
         { code: 'zh', name: 'Chinese' },
         { code: 'zu', name: 'Zulu' }
     ];
+
 });

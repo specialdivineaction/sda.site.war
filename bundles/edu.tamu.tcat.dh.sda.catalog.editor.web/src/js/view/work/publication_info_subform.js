@@ -7,7 +7,9 @@ define(function (require) {
 
     require('backbone.epoxy');
 
+
     var PublicationInfoSubform = Backbone.Epoxy.View.extend({
+
         template: require('tpl!templates/work/publication_info_subform.html.ejs'),
 
         initialize: function () {
@@ -40,6 +42,7 @@ define(function (require) {
                 if (v.close) v.close();
             });
         }
+
     });
 
     return PublicationInfoSubform;

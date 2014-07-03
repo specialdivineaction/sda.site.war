@@ -1,12 +1,14 @@
 define(function (require) {
 
-    var Backbone = require('backbone');
+    var Backbone = require('backbone'),
 
-    var Person = require('js/model/person');
+        Config = require('js/config'),
+        Person = require('js/model/person');
+
 
     var PersonCollection = Backbone.Collection.extend({
 
-        url: '/api/people',
+        url: Config.apiPrefix + '/people',
 
         model: Person
 
