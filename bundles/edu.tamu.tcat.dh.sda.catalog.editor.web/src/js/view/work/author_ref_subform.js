@@ -3,6 +3,7 @@ define(function (require) {
     var Backbone = require('backbone'),
         $        = require('jquery'),
 
+        Config                 = require('js/config'),
         PeopleCollection       = require('js/collection/people'),
         AuthorAutocompleteView = require('js/view/work/author_autocomplete');
 
@@ -86,7 +87,7 @@ define(function (require) {
             $.ajax({
                 method: 'get',
                 dataType: 'json',
-                url: '/api/people',
+                url: Config.apiPrefix + '/people',
                 data: {
                     last: name
                 },
