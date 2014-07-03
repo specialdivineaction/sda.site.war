@@ -5,10 +5,12 @@ define(function (require) {
         DateDescription = require('js/model/date_description');
 
     var PublicationInfo = Backbone.Model.extend({
-        defaults: {
-            publisher: '',
-            place: '',
-            date: new DateDescription()
+        defaults: function () {
+            return {
+                publisher: '',
+                place: '',
+                date: new DateDescription()
+            };
         },
 
         parse: function (resp) {

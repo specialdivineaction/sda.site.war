@@ -11,14 +11,16 @@ define(function (require) {
     var Work = Backbone.Model.extend({
         urlRoot: '/api/works',
 
-        defaults: {
-            id: null,
-            authors: new AuthorRefCollection([new AuthorRef({ role: 'author' })]),
-            titles: new TitleCollection([new Title({ type: 'canonical' })]),
-            otherAuthors: new AuthorRefCollection(),
-            pubInfo: new PublicationInfo(),
-            series: '',
-            summary: ''
+        defaults: function () {
+            return {
+                id: null,
+                authors: new AuthorRefCollection([new AuthorRef({ role: 'author' })]),
+                titles: new TitleCollection([new Title({ type: 'canonical' })]),
+                otherAuthors: new AuthorRefCollection(),
+                pubInfo: new PublicationInfo(),
+                series: '',
+                summary: ''
+            };
         },
 
         parse: function (resp) {

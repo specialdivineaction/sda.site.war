@@ -11,12 +11,14 @@ define(function (require) {
 
         urlRoot: '/api/people',
 
-        defaults: {
-            id: null,
-            names: new NameCollection([ new Name() ]),
-            birth: new HistoricalEvent({ title: 'Date of birth' }),
-            death: new HistoricalEvent({ title: 'Date of death' }),
-            summary: ''
+        defaults: function () {
+            return {
+                id: null,
+                names: new NameCollection([ new Name() ]),
+                birth: new HistoricalEvent({ title: 'Date of birth' }),
+                death: new HistoricalEvent({ title: 'Date of death' }),
+                summary: ''
+            };
         },
 
         /**
