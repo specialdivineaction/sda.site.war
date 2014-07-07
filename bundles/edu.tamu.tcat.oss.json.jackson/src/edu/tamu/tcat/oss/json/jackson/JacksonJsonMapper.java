@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.oss.json.JsonException;
@@ -16,19 +17,20 @@ public class JacksonJsonMapper implements JsonMapper
 {
 
    private ObjectMapper mapper;
-   
+
    public JacksonJsonMapper()
    {
-      
+
    }
-   
+
    // called by DS
-   public void activate() 
+   public void activate()
    {
       mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       // TODO load modules from plugins
    }
-   
+
    // called by DS
    public void dispose()
    {
@@ -103,12 +105,12 @@ public class JacksonJsonMapper implements JsonMapper
    private final class TypeRefAdapter<T> extends TypeReference<T>
    {
       private final JsonTypeReference<T> type;
-   
+
       private TypeRefAdapter(JsonTypeReference<T> type)
       {
          this.type = type;
       }
-   
+
       @Override
       public Type getType()
       {
