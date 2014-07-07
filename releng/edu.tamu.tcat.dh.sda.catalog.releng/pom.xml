@@ -31,7 +31,7 @@
   </prerequisites>
   
   <properties>
-	<pqns>edu.tamu.tcat.dh.sda.catalog</pqns> <!-- Partially Qualified Namespace -->
+	<pqns>edu.tamu.tcat.sda.catalog</pqns> <!-- Partially Qualified Namespace -->
 
     <tycho-groupid>org.eclipse.tycho</tycho-groupid>
     <tycho.showEclipseLog>true</tycho.showEclipseLog>
@@ -53,11 +53,14 @@
   </properties>
   
   <modules>
-    <module>${repo-ed-releng-path}/${pqns}.war.product</module>
-    <module>${repo-ed-path}/${pqns}.feature</module>
+    <module>${repo-ed-releng-path}/edu.tamu.tcat.dh.sda.catalog.war.product</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.dh.sda.catalog.feature</module>
     
     
-    <module>${repo-ed-path}/${pqns}.editor.web</module>
+    <module>${repo-ed-path}/${pqns}</module>
+    <module>${repo-ed-path}/${pqns}.psql</module>
+    <module>${repo-ed-path}/${pqns}.rest</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.dh.sda.catalog.editor.web</module>
     
   </modules>
 
@@ -78,6 +81,16 @@
       <layout>p2</layout>
       <url>${repo-base-url}/Jackson.P2/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
+    <repository>
+      <id>JAX-RS</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+<!--     <repository> -->
+<!--       <id>Auth</id> -->
+<!--       <layout>p2</layout> -->
+<!--       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url> -->
+<!--     </repository> -->
   </repositories>
   
   <build>
