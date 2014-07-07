@@ -35,13 +35,13 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 public class WorksResource
 {
 
-   private ConfigurationProperties properties;
+//   private ConfigurationProperties properties;
    private WorkRepository repo;
 
    // called by DS
    public void setConfigurationProperties(ConfigurationProperties properties)
    {
-      this.properties = properties;
+//      this.properties = properties;
    }
 
    // called by DS
@@ -165,7 +165,7 @@ public class WorksResource
    public Map<String, Integer> getWorkAsJson(@PathParam(value = "id") int id)
    {
       Map<String, Integer> result = new HashMap<>();
-      result.put("id", id);
+      result.put("id", Integer.valueOf(id));
       return result;
    }
 
@@ -190,9 +190,9 @@ public class WorksResource
       }
 
       @Override
-      protected void onFinish(Work result)
+      protected void onFinish(Work work)
       {
-         this.result = result;
+         this.result = work;
          latch.countDown();
       }
 

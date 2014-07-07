@@ -18,12 +18,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
@@ -34,6 +38,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 public class PeopleResource
 {
    // TODO add authentication filter in front of this call
+   // TODO create PersonResource
 
    // records internal errors accessing the REST
    static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
@@ -75,11 +80,26 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> listPeople()
+   public List<PersonDV> listPeople(@Context UriInfo ctx) throws CatalogRepoException
    {
+      MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
+      MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
+
       // TODO need to add slicing/paging support
+      // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
+
+      // HACK: this gets search by last name working, but isn't scalable to additional filter
+      //       criteria
       List<PersonDV> results = new ArrayList<PersonDV>();
-      Iterable<Person> people = repo.listHistoricalFigures();
+      Iterable<Person> people = null;
+      if (queryParams.containsKey("lastName"))
+      {
+         people = repo.findByName(queryParams.getFirst("lastName"));
+      }
+      else
+      {
+         people = repo.findPeople();
+      }
 
       for (Person figure : people)
       {
@@ -89,26 +109,29 @@ public class PeopleResource
       return Collections.unmodifiableList(results);
    }
 
-   /**
-    * <api_endpoint>/people?q=query
-    * @param query
-    * @return
-    */
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> find(@QueryParam(value="q") String query)
-   {
-      throw new UnsupportedOperationException();
-   }
+//   /**
+//    * <api_endpoint>/people?q=query
+//    * @param query
+//    * @return
+//    */
+//   @GET
+//   @Produces(MediaType.APPLICATION_JSON)
+//   public List<PersonDV> find(@QueryParam(value="q") String query)
+//   {
+//      throw new UnsupportedOperationException();
+//   }
 
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public PersonDV getPerson(@PathParam(value="personId") long personId)
+   public PersonDV getPerson(@PathParam(value="personId") long personId) throws CatalogRepoException, NoSuchCatalogRecordException
    {
       // FIXME make this a string based identifier
       // TODO make this a mangled string instead of an ID. Don't want people guessing
       //      unique identifiers
+      // TODO add mappers for exceptions.
+      //       CatalogRepoException should map to internal error.
+      //       NoSuchCatalogRecordException should map to 404
       Person figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }
