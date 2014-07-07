@@ -4,7 +4,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -88,15 +87,19 @@ public class PeopleResource
 
       // TODO need to add slicing/paging support
       // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
+
+      // HACK: this gets search by last name working, but isn't scalable to additional filter
+      //       criteria
       List<PersonDV> results = new ArrayList<PersonDV>();
       Iterable<Person> people = null;
-      for (Entry<String, List<String>> e : queryParams.entrySet())
+      if (queryParams.containsKey("lastName"))
       {
-
-         if (e.getKey().equals("lastName"))
-            people = repo.findByName(e.getValue().get(0));
+         people = repo.findByName(queryParams.getFirst("lastName"));
       }
-
+      else
+      {
+         people = repo.findPeople();
+      }
 
       for (Person figure : people)
       {

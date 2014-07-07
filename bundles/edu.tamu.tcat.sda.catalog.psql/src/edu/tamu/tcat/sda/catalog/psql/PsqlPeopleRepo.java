@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
@@ -23,14 +22,14 @@ import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
-   private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
+   // private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
 
    private DbExecutor exec;
    private JsonMapper jsonMapper;
@@ -106,51 +105,26 @@ public class PsqlPeopleRepo implements PeopleRepository
    }
 
    @Override
-   public Iterable<Person> findByName(final String prefix) throws CatalogRepoException
+   public Iterable<Person> findByName(String prefix) throws CatalogRepoException
    {
-      final String querySql = "SELECT historical_figure FROM people";
+      List<Person> results = new ArrayList<>();
+      prefix = prefix.toLowerCase();
 
-      DbExecTask<List<Person>> query = new DbExecTask<List<Person>>()
+      Iterable<Person> people = findPeople();
+      for (Person p : people)
       {
-
-         @Override
-         public List<Person> execute(Connection conn) throws Exception
+         for (PersonName name : p.getAlternativeNames())
          {
-            List<Person> people = new ArrayList<Person>();
-            try (PreparedStatement ps = conn.prepareStatement(querySql);
-                 ResultSet rs = ps.executeQuery())
+            String fname = name.getFamilyName();
+            if (fname != null && fname.toLowerCase().startsWith(prefix))
             {
-
-               while (rs.next())
-               {
-                  PGobject pgo = (PGobject)rs.getObject("historical_figure");
-
-                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
-                  for (PersonNameDV name : parse.names)
-                  {
-                     if (name.familyName.toLowerCase().startsWith(prefix))
-                     {
-                        PersonImpl figureRef = new PersonImpl(parse);
-                        people.add(figureRef);
-                        continue;
-                     }
-                  }
-               }
+               results.add(p);
+               break;
             }
-
-            return people;
          }
-      };
+      }
 
-      Future<List<Person>> future = exec.submit(query);
-      try
-      {
-         return future.get();
-      }
-      catch (Exception e)
-      {
-         throw new CatalogRepoException("Failed to retrieve people", e);
-      }
+      return results;
    }
 
    @Override
