@@ -26,6 +26,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
@@ -36,6 +38,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 public class PeopleResource
 {
    // TODO add authentication filter in front of this call
+   // TODO create PersonResource
 
    // records internal errors accessing the REST
    static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
@@ -77,12 +80,13 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> listPeople(@Context UriInfo ctx)
+   public List<PersonDV> listPeople(@Context UriInfo ctx) throws CatalogRepoException
    {
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
       MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
 
       // TODO need to add slicing/paging support
+      // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
       List<PersonDV> results = new ArrayList<PersonDV>();
       Iterable<Person> people = repo.findPeople();
 
@@ -109,11 +113,14 @@ public class PeopleResource
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public PersonDV getPerson(@PathParam(value="personId") long personId)
+   public PersonDV getPerson(@PathParam(value="personId") long personId) throws CatalogRepoException, NoSuchCatalogRecordException
    {
       // FIXME make this a string based identifier
       // TODO make this a mangled string instead of an ID. Don't want people guessing
       //      unique identifiers
+      // TODO add mappers for exceptions.
+      //       CatalogRepoException should map to internal error.
+      //       NoSuchCatalogRecordException should map to 404
       Person figure = repo.getPerson(personId);
       return getHistoricalFigureDV(figure);
    }

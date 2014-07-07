@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
@@ -20,6 +19,8 @@ import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.db.ExecutionFailedException;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
@@ -56,25 +57,22 @@ public class PsqlPeopleRepo implements PeopleRepository
    public void dispose()
    {
       // TODO wait on or cancel any pending tasks?
-
       this.exec = null;
       this.jsonMapper = null;
    }
 
 
    @Override
-   public Iterable<Person> findPeople()
+   public Iterable<Person> findPeople() throws CatalogRepoException
    {
 
-      // FIXME this is async, meaning test will exit prior to conclusion.
-      // TODO Auto-generated method stub
       final String querySql = "SELECT historical_figure FROM people";
 
-      DbExecTask<Iterable<Person>> query = new DbExecTask<Iterable<Person>>()
+      DbExecTask<List<Person>> query = new DbExecTask<List<Person>>()
       {
 
          @Override
-         public Iterable<Person> execute(Connection conn) throws Exception
+         public List<Person> execute(Connection conn) throws Exception
          {
             List<Person> people = new ArrayList<Person>();
             try (PreparedStatement ps = conn.prepareStatement(querySql);
@@ -89,40 +87,43 @@ public class PsqlPeopleRepo implements PeopleRepository
                   PersonImpl figureRef = new PersonImpl(parse);
                   people.add(figureRef);
                }
-
-            }
-            catch (Exception e)
-            {
-               // fault barrier
-               DbTaskLogger.log(Level.SEVERE, "", e);
             }
 
             return people;
          }
       };
 
-      Future<Iterable<Person>> submit = exec.submit(query);
-      Iterable<Person> iterable = null;
+      Future<List<Person>> future = exec.submit(query);
       try
       {
-         iterable = submit.get();
+         return future.get();
       }
-      catch (InterruptedException e)
+      catch (Exception e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         throw new CatalogRepoException("Failed to retrieve people", e);
       }
-      catch (ExecutionException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      return  iterable;
    }
 
    @Override
-   public Person getPerson(long personId)
+   public Iterable<Person> findByName(String prefix)
    {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Person getPerson(String personId) throws NoSuchCatalogRecordException
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Person getPerson(long personId) throws NoSuchCatalogRecordException
+   {
+      // TODO Jesse - update to use string-based identifiers. Keep DB autoincremnt long around but add
+      //      additional field. For now, we'll use the supplied DB id as the string id, but this may
+      //      change in the near future.
+      //      THEN, delegate this method to getPerson(String).
+//      return getPerson(Long.toString(personId));
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
       final long id = personId;
       DbExecTask<Person> query = new DbExecTask<Person>()
@@ -157,7 +158,6 @@ public class PsqlPeopleRepo implements PeopleRepository
             }
             return figureRef;
          }
-
       };
 
       Person submit = null;
