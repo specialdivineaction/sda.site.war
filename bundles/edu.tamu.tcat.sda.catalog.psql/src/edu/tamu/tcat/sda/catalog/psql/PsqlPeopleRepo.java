@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
@@ -26,6 +28,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
+   private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
 
    private DbExecutor exec;
    private JsonMapper jsonMapper;
@@ -60,7 +63,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
 
    @Override
-   public Iterable<Person> listHistoricalFigures()
+   public Iterable<Person> findPeople()
    {
 
       // FIXME this is async, meaning test will exit prior to conclusion.
@@ -73,42 +76,29 @@ public class PsqlPeopleRepo implements PeopleRepository
          @Override
          public Iterable<Person> execute(Connection conn) throws Exception
          {
-            List<Person> events = new ArrayList<Person>();
-            Iterable<Person> eIterable = new ArrayList<Person>();
+            List<Person> people = new ArrayList<Person>();
             try (PreparedStatement ps = conn.prepareStatement(querySql);
                  ResultSet rs = ps.executeQuery())
             {
-               PGobject pgo = new PGobject();
 
-               while(rs.next())
+               while (rs.next())
                {
-                  Object object = rs.getObject("historical_figure");
-                  if (object instanceof PGobject)
-                     pgo = (PGobject)object;
-                  else
-                     System.out.println("Error!");
+                  PGobject pgo = (PGobject)rs.getObject("historical_figure");
 
                   PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                   PersonImpl figureRef = new PersonImpl(parse);
-                  try
-                  {
-                     events.add(figureRef);
-                  }
-                  catch(Exception e)
-                  {
-                     System.out.println();
-                  }
+                  people.add(figureRef);
                }
+
             }
             catch (Exception e)
             {
-               System.out.println("Error" + e);
+               // fault barrier
+               DbTaskLogger.log(Level.SEVERE, "", e);
             }
-//            latch.countDown();
-            eIterable = events;
-            return eIterable;
-         }
 
+            return people;
+         }
       };
 
       Future<Iterable<Person>> submit = exec.submit(query);

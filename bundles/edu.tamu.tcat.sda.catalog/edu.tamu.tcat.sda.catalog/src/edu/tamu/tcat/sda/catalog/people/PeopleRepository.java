@@ -9,7 +9,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
  */
 public interface PeopleRepository
 {
-   Iterable<Person> listHistoricalFigures();
+   Iterable<Person> findPeople();
 
    // FIXME change to string
    Person getPerson(long personId);

@@ -18,10 +18,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
@@ -75,11 +77,14 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> listPeople()
+   public List<PersonDV> listPeople(@Context UriInfo ctx)
    {
+      MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
+      MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
+
       // TODO need to add slicing/paging support
       List<PersonDV> results = new ArrayList<PersonDV>();
-      Iterable<Person> people = repo.listHistoricalFigures();
+      Iterable<Person> people = repo.findPeople();
 
       for (Person figure : people)
       {
@@ -89,17 +94,17 @@ public class PeopleResource
       return Collections.unmodifiableList(results);
    }
 
-   /**
-    * <api_endpoint>/people?q=query
-    * @param query
-    * @return
-    */
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> find(@QueryParam(value="q") String query)
-   {
-      throw new UnsupportedOperationException();
-   }
+//   /**
+//    * <api_endpoint>/people?q=query
+//    * @param query
+//    * @return
+//    */
+//   @GET
+//   @Produces(MediaType.APPLICATION_JSON)
+//   public List<PersonDV> find(@QueryParam(value="q") String query)
+//   {
+//      throw new UnsupportedOperationException();
+//   }
 
    @GET
    @Path("{personId}")
