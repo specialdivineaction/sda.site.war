@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +89,14 @@ public class PeopleResource
       // TODO need to add slicing/paging support
       // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
       List<PersonDV> results = new ArrayList<PersonDV>();
-      Iterable<Person> people = repo.findPeople();
+      Iterable<Person> people = null;
+      for (Entry<String, List<String>> e : queryParams.entrySet())
+      {
+
+         if (e.getKey().equals("lastName"))
+            people = repo.findByName(e.getValue().get(0));
+      }
+
 
       for (Person figure : people)
       {

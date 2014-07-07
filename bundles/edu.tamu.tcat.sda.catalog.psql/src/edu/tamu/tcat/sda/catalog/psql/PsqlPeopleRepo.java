@@ -24,6 +24,7 @@ import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
+import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
@@ -105,9 +106,51 @@ public class PsqlPeopleRepo implements PeopleRepository
    }
 
    @Override
-   public Iterable<Person> findByName(String prefix)
+   public Iterable<Person> findByName(final String prefix) throws CatalogRepoException
    {
-      throw new UnsupportedOperationException();
+      final String querySql = "SELECT historical_figure FROM people";
+
+      DbExecTask<List<Person>> query = new DbExecTask<List<Person>>()
+      {
+
+         @Override
+         public List<Person> execute(Connection conn) throws Exception
+         {
+            List<Person> people = new ArrayList<Person>();
+            try (PreparedStatement ps = conn.prepareStatement(querySql);
+                 ResultSet rs = ps.executeQuery())
+            {
+
+               while (rs.next())
+               {
+                  PGobject pgo = (PGobject)rs.getObject("historical_figure");
+
+                  PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
+                  for (PersonNameDV name : parse.names)
+                  {
+                     if (name.familyName.toLowerCase().startsWith(prefix))
+                     {
+                        PersonImpl figureRef = new PersonImpl(parse);
+                        people.add(figureRef);
+                        continue;
+                     }
+                  }
+               }
+            }
+
+            return people;
+         }
+      };
+
+      Future<List<Person>> future = exec.submit(query);
+      try
+      {
+         return future.get();
+      }
+      catch (Exception e)
+      {
+         throw new CatalogRepoException("Failed to retrieve people", e);
+      }
    }
 
    @Override
