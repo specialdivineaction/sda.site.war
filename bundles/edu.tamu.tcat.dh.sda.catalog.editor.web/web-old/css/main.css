@@ -137,7 +137,24 @@ a {
     }
     
 
-    #master, #details, #sidebar { float:left; }
+    #master, #details, #sidebar { 
+	    float:left; 
+		overflow-y:auto
+	}
+	
+		.editAuthor input
+       {
+        display: block;
+        width: 150px;
+        float: left;
+        margin: 2.5px;
+    }
+	
+	#newNamebtn{
+	    display: block;
+        float:right;
+		padding:10px;
+	 }
     
     #sidebar { 
     	top:0px; bottom:0px; 

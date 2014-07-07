@@ -3,7 +3,6 @@ package edu.tamu.tcat.sda.catalog.works.dv;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
@@ -40,11 +39,7 @@ public class WorkDV
       }
 
       titles = new HashSet<>();
-      titles.add(new TitleDV(work.getTitle().getCanonicalTitle()));
-      titles.add(new TitleDV(work.getTitle().getShortTitle()));
-      titles.add(new TitleDV(work.getTitle().getTitle(Locale.US)));
       Set<Title> altTitles = work.getTitle().getAlternateTitles();
-
       for(Title title : altTitles)
       {
          titles.add(new TitleDV(title));

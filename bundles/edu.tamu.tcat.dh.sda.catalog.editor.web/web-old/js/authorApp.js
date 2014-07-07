@@ -25,5 +25,5 @@ define(function(require, exports, module)
          alert("Oooh. Look at Me.");
       } 
    };
-   
+
 });
