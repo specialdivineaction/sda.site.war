@@ -6,7 +6,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 public class TitleImpl implements Title
 {
    private final TitleDV title;
-   
+
    public TitleImpl(TitleDV titleDV)
    {
       this.title = titleDV;
@@ -27,6 +27,16 @@ public class TitleImpl implements Title
    public String getFullTitle()
    {
       return title.title + " " + title.subtitle;
+   }
+   @Override
+   public String getType()
+   {
+      return title.type;
+   }
+   @Override
+   public String getLanuguage()
+   {
+      return title.lg;
    }
 
 }

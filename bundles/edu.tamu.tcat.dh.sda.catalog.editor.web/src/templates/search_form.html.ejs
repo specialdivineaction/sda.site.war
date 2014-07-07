@@ -1,0 +1,15 @@
+<form class="search-form" role="search">
+    <div class="form-group">
+        <label class="sr-only control-label">Search</label>
+        <div class="input-group">
+            <input type="search" name="search" class="form-control search" placeholder="Search<%= (typeof type !== 'undefined' && type) ? ' ' + type : '' %>&hellip;">
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit">
+                    <i class="glyphicon glyphicon-search"></i>
+                    <span class="sr-only">Search</span>
+                </button>
+            </span>
+        </div>
+    </div>
+</form>
+<div class="list-group search-results"></div>

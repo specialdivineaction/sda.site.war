@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-sm-9">
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" name="name" class="form-control name" autocomplete="off">
+            <div class="autocomplete"></div>
+            <span class="help-block">Linked author: <span class="linked-author"></span></span>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label class="control-label">Role</label>
+            <div class="input-group">
+                <input type="text" name="role" class="form-control role">
+                <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-danger remove-author-ref">
+                            <i class="glyphicon glyphicon-trash"></i>
+                            <span class="sr-only">Remove author</span>
+                        </button>
+                    </span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

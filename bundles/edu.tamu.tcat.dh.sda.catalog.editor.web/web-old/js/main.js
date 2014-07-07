@@ -7,7 +7,7 @@ define(function() {
 			//       e.g. //code.jquery.com/jquery-1.11.0.min
 			jquery: ['http://code.jquery.com/jquery-1.11.0.min', 
 			         'vendor/jquery/jquery-1.11.0.min'],
-			modernizr: ['http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min',
+			modernizr: ['//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min',
 			            'vendor/modernizr/modernizr-2.6.2.min'],
 			backbone: ['http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min', 
 			           'vendor/backbone/backbone-1.1.2.min.js'],

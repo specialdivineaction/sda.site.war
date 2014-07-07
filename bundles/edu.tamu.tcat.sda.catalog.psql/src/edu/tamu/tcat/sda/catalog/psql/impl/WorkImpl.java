@@ -21,7 +21,7 @@ public class WorkImpl implements Work
       this.id = workDV.id;
 
       this.authors = new AuthorListImpl(workDV.authors);
-      this.title = new TitleDefinitionImpl(workDV.title);
+      this.title = new TitleDefinitionImpl(workDV.titles);
       this.otherAuthors = new AuthorListImpl(workDV.otherAuthors);
       this.publication = new PublicationImpl(workDV.pubInfo);
       this.series = workDV.series;

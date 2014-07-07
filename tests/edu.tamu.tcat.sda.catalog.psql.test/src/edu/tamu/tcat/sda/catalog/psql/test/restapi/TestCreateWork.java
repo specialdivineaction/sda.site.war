@@ -1,16 +1,18 @@
 package edu.tamu.tcat.sda.catalog.psql.test.restapi;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -22,12 +24,10 @@ import org.junit.Test;
 
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorListDV;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDefinitionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 
@@ -61,46 +61,54 @@ public class TestCreateWork
 	@Test
 	public void testCreate() throws JsonException, ClientProtocolException, IOException
 	{
+	   List<AuthorRefDV> authorList = new ArrayList<>();
+	   List<AuthorRefDV> otherAuthorList = new ArrayList<>();
+
 		AuthorRefDV authorRef = new AuthorRefDV();
 		authorRef.authorId = "1234";
 		authorRef.name = "A.C. Dixon";
-		authorRef.role = "";
+		authorRef.role = "Autor";
 
-		AuthorListDV authorList = new AuthorListDV();
-		authorList.refs = Arrays.asList(authorRef);
+		authorList.add(authorRef);
 
-		List<AuthorListDV> authorListDV = new ArrayList<AuthorListDV>();
-		authorListDV.add(authorList);
+		TitleDV canonical = new TitleDV();
+		canonical.title = "Canonical Full Title Name";
+		canonical.subtitle = "With subtitle";
+		canonical.lg = "EN";
+		canonical.type = "canonical";
 
-		TitleDV orig = new TitleDV();
-		orig.title = "Orginal Title";
-		orig.subtitle = "";
-		orig.lg = "";
-		orig.type = "";
+		TitleDV shortTitle = new TitleDV();
+		shortTitle.title = "Short Title";
+		shortTitle.subtitle = "";
+		shortTitle.lg = "EN";
+		shortTitle.type = "short";
 
+		TitleDV localeTitle = new TitleDV();
+		localeTitle.title = "Locale Nombre completo Titulo";
+		localeTitle.subtitle = "";
+		localeTitle.lg = "ES";
+		localeTitle.type = "locale";
 
       // Alternative Titles
       TitleDV alt1 = new TitleDV();
       alt1.title = "Alternate Title 1";
       alt1.subtitle = "";
-      alt1.lg = "";
-      alt1.type = "";
+      alt1.lg = "EN";
+      alt1.type = "alt";
 
       TitleDV alt2 = new TitleDV();
       alt2.title = "Alternate Title 2";
       alt2.subtitle = "";
-      alt2.lg = "";
-      alt2.type = "";
+      alt2.lg = "EN";
+      alt2.type = "alt";
 
       Set<TitleDV> titleSet = new HashSet<TitleDV>();
+      titleSet.add(canonical);
+      titleSet.add(shortTitle);
+      titleSet.add(localeTitle);
       titleSet.add(alt1);
       titleSet.add(alt2);
 
-		TitleDefinitionDV titleDef = new TitleDefinitionDV();
-		titleDef.canonicalTitle = orig;
-		titleDef.alternateTitles = titleSet;
-		titleDef.localeTitle = orig;
-		titleDef.shortTitle = orig;
 
 		DateDescriptionDV dateDescript = new DateDescriptionDV();
 		dateDescript.display = "";
@@ -113,15 +121,15 @@ public class TestCreateWork
 
 		WorkDV works = new WorkDV();
 		works.authors = authorList;
-		works.otherAuthors = null;
-		works.title = titleDef;
+		works.otherAuthors = otherAuthorList;
+		works.titles = titleSet;
 		works.pubInfo = pubInfo;
 		works.series = "Series 1";
 		works.summary = "Summary of the work";
 
 		String json = mapper.asString(works);
-		StringEntity stringEntity = new StringEntity(json);
-		post.setEntity(stringEntity);
+		post.setEntity( new StringEntity(json));
+
 		HttpResponse response = client.execute(post);
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode >=200 && statusCode < 300)
@@ -136,14 +144,14 @@ public class TestCreateWork
 
 	}
 
-//	@Test
-//	public void testGet() throws ClientProtocolException, IOException
-//	{
-//	   CloseableHttpResponse response = client.execute(get);
-//      InputStream content = response.getEntity().getContent();
-//      StatusLine statusLine = response.getStatusLine();
-//	}
-//
+	@Test
+	public void testGet() throws ClientProtocolException, IOException
+	{
+	   CloseableHttpResponse response = client.execute(get);
+      InputStream content = response.getEntity().getContent();
+      StatusLine statusLine = response.getStatusLine();
+	}
+
 //   @Test
 //   public void testWork() throws ClientProtocolException, IOException
 //   {

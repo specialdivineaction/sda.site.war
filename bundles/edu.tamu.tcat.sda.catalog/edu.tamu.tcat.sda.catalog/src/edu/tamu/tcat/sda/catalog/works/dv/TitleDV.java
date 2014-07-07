@@ -8,16 +8,17 @@ public class TitleDV
    public String lg;
    public String title;
    public String subtitle;
-   
-   public TitleDV(Title title)
-   {
-      this.type = null;
-      this.lg = null;
-      this.title = title.getTitle();
-      this.subtitle = title.getSubTitle();
-   }
-   
+
    public TitleDV()
    {
    }
+
+   public TitleDV(Title title)
+   {
+      this.type = title.getType();
+      this.lg = title.getLanuguage();
+      this.title = title.getTitle();
+      this.subtitle = title.getSubTitle();
+   }
+
 }
