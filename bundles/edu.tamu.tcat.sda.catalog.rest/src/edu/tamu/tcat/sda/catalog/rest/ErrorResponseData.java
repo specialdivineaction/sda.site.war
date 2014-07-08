@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 
 /**
  *

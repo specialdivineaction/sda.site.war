@@ -16,7 +16,7 @@
 
 package edu.tamu.tcat.sda.catalog.rest.internal;
 
-import edu.tamu.tcat.oss.osgi.services.util.ActivatorBase;
+import edu.tamu.tcat.osgi.services.util.ActivatorBase;
 
 public class Activator extends ActivatorBase
 {
