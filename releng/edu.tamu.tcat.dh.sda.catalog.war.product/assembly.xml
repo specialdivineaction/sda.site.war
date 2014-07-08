@@ -1,12 +1,12 @@
 <assembly>
-  <id>edu.tamu.tcat.dh.sda.catalog.war</id>
+  <id>edu.tamu.tcat.sda.catalog.war</id>
   <formats>
     <format>war</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${basedir}/target/products/${artifactId}/linux/gtk/x86_64</directory>
+      <directory>${basedir}/target/products/${artifactId}/linux/gtk/x86</directory>
       <outputDirectory>/WEB-INF</outputDirectory>
       <excludes>
         <exclude>plugins/javax.servlet_*.jar</exclude>

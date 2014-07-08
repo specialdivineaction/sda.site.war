@@ -22,13 +22,13 @@
 
   <parent>
     <relativePath>../../../pom.xml</relativePath>
-    <groupId>edu.tamu.tcat.dh</groupId>
+    <groupId>edu.tamu.tcat</groupId>
     <artifactId>sda.catalog</artifactId>
     <version>1</version>
   </parent>
 
-  <groupId>edu.tamu.tcat.dh</groupId>
-  <artifactId>${pqns}.product.war</artifactId>
+  <groupId>edu.tamu.tcat</groupId>
+  <artifactId>edu.tamu.tcat.sda.catalog.war</artifactId>
   <packaging>eclipse-repository</packaging>
   <version>1.0.0-SNAPSHOT</version>
 

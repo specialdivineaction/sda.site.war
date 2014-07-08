@@ -56,17 +56,12 @@
   
   <modules>
     <module>${repo-ed-releng-path}/edu.tamu.tcat.dh.sda.catalog.war.product</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.dh.sda.catalog.war.feature</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.dh.sda.catalog.feature</module>
     
     
     <module>${repo-ed-path}/${pqns}</module>
     <module>${repo-ed-path}/${pqns}.psql</module>
     <module>${repo-ed-path}/${pqns}.rest</module>
-    
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.json</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.json.jackson</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.db</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.db.psql</module>
     
   </modules>
 
@@ -87,37 +82,16 @@
       <layout>p2</layout>
       <url>${repo-base-url}/Jackson.P2/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
-    
-    <repository>
-      <id>OSGi Utilities</id>
-      <layout>p2</layout>
-      <url>${repo-base-url}/oss.osgi.utilities.dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
-    </repository>
     <repository>
       <id>JAX-RS</id>
       <layout>p2</layout>
-      <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/</url>
+      <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
 <!--     <repository> -->
 <!--       <id>Auth</id> -->
 <!--       <layout>p2</layout> -->
 <!--       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url> -->
 <!--     </repository> -->
-    <repository>
-      <id>Crypto</id>
-      <layout>p2</layout>
-      <url>${repo-base-url}/Crypto/lastSuccessfulBuild/artifact/targetPlatform/</url>
-    </repository>
-    <repository>
-      <id>OSGI.Utils</id>
-      <layout>p2</layout>
-      <url>${repo-base-url}/OSGI.Utilities/lastSuccessfulBuild/artifact/targetPlatform/</url>
-    </repository>
-    <repository>
-      <id>Core Deps</id>
-      <layout>p2</layout>
-      <url>${repo-base-url}/mirror.dependencies/lastSuccessfulBuild/artifact/targetPlatform/</url>
-    </repository>
   </repositories>
   
   <build>
@@ -169,7 +143,6 @@
         </dependencies>
         <configuration>
           <timestampProvider>jgit</timestampProvider>
-          <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
           <format>yyyyMMdd-HHmm</format>
         </configuration>
       </plugin>

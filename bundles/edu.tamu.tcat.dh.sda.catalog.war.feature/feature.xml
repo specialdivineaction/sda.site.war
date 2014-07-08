@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="edu.tamu.tcat.dh.sda.catalog.war.feature"
+      id="edu.tamu.tcat.sda.catalog.war.feature"
       label="Catalog Entries WAR Feature"
       version="1.0.0.qualifier"
       provider-name="Texas A&amp;M Engineering Experiment Station">
