@@ -55,8 +55,8 @@
   </properties>
   
   <modules>
-    <module>${repo-ed-releng-path}/edu.tamu.tcat.dh.sda.catalog.war.product</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.dh.sda.catalog.war.feature</module>
+    <module>${repo-ed-releng-path}/edu.tamu.tcat.sda.catalog.war.product</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.war.feature</module>
     
     
     <module>${repo-ed-path}/${pqns}</module>
@@ -87,17 +87,13 @@
       <layout>p2</layout>
       <url>${repo-base-url}/Jackson.P2/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
-    
-    <repository>
-      <id>OSGi Utilities</id>
-      <layout>p2</layout>
-      <url>${repo-base-url}/oss.osgi.utilities.dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
-    </repository>
+   
     <repository>
       <id>JAX-RS</id>
       <layout>p2</layout>
       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/</url>
     </repository>
+    
 <!--     <repository> -->
 <!--       <id>Auth</id> -->
 <!--       <layout>p2</layout> -->
