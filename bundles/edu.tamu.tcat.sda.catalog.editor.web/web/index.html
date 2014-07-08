@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Special Divine Action</title>
+        <link rel="stylesheet" href="vendor/bootstrap/bootstrap.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="box">
+                <div class="row">
+                    <div class="column col-sm-9 col-sm-push-3" id="main">
+                        <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+                            <div class="container-fluid">
+                                <div class="navbar-header">
+                                    <!--
+                                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                    -->
+                                    <h1 class="navbar-brand" id="page-title">Special Divine Action</h1>
+                                </div>
+
+                                <!--
+                                <div class="collapse navbar-collapse">
+                                    <ul class="nav navbar-nav">
+                                    </ul>
+
+                                    <ul class="nav navbar-nav navbar-right">
+                                    </ul>
+                                </div>
+                                -->
+                            </div>
+                        </nav>
+
+                        <div class="full">
+                            <div id="messages"></div>
+                            <div id="content"></div>
+                        </div>
+                    </div>
+
+                    <div class="column col-sm-3 col-sm-pull-9" id="sidebar">
+                        <div class="btn-group-justified" id="new-button">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-success btn-block dropdown-toggle" data-toggle="dropdown">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                    New
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#people/new"><i class="glyphicon glyphicon-user"></i> Person</a></li>
+                                    <li><a href="#works/new"><i class="glyphicon glyphicon-book"></i> Book</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="active"><a href="#books" role="tab" data-toggle="tab">Books</a></li>
+                            <li><a href="#people" role="tab" data-toggle="tab">People</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="books">
+                                <div class="search-form"></div>
+                                <div class="search-results"></div>
+                            </div>
+                            <div class="tab-pane" id="people">
+                                <div class="search-form"></div>
+                                <div class="search-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var vendorPath = './vendor';
+
+            // RequireJS configuration
+            var require = {
+                baseUrl: '.',
+
+                paths: {
+                    backbone: vendorPath + '/backbone/backbone',
+                    'backbone.epoxy': vendorPath + '/backbone.epoxy/backbone.epoxy',
+                    bootstrap: vendorPath + '/bootstrap/bootstrap',
+                    jquery: vendorPath + '/jquery/jquery',
+                    'jquery.autosize': vendorPath + '/jquery-autosize/jquery.autosize',
+                    moment: vendorPath + '/moment/moment',
+                    text: vendorPath + '/requirejs-text/text',
+                    tpl: vendorPath + '/requirejs-tpl/tpl',
+                    underscore: vendorPath + '/underscore/underscore'
+                },
+
+                shim: {
+                    backbone: { deps: ['underscore'], exports: 'Backbone' },
+                    bootstrap: ['jquery'],
+                    'jquery.autosize': ['jquery'],
+                    moment: { exports: 'moment' },
+                    underscore: { exports: '_'}
+                },
+
+                // cache bust
+                urlArgs: (new Date()).getTime()
+            };
+
+            document.write('<script src="' + vendorPath + '/promise-polyfill/Promise.js"><\/script>');
+            document.write('<script data-main="js/main" src="' + vendorPath + '/requirejs/require.js"><\/script>');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,49 @@
+<div class="row">
+    <!--
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="control-label">Language</label>
+            <select name="language" class="form-control language">
+                <option value="">Select a language...</option>
+                <% languages.forEach(function (lang) { %>
+                    <option value="<%= lang.code %>"><%= lang.name %></option>
+                <% }); %>
+            </select>
+        </div>
+    </div>
+    -->
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label class="control-label">Title</label>
+            <input type="text" name="title" class="form-control title">
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label class="control-label">Subtitle</label>
+            <input type="text" name="subtitle" class="form-control subtitle">
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label class="control-label">Role</label>
+            <div class="input-group">
+                <select name="role" class="role form-control">
+                    <option value="">Select Role...</option>
+                    <option value="canonical">Canonical</option>
+                    <option value="short">Short</option>
+                    <option value="translation">Translation</option>
+                    <option value="other">Other</option>
+                </select>
+                <% if (typeof showDelete !== 'undefined' && showDelete === true) { %>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-danger remove-title">
+                            <i class="glyphicon glyphicon-trash"></i>
+                            <span class="sr-only">Remove title</span>
+                        </button>
+                    </span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

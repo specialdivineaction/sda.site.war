@@ -1,0 +1,24 @@
+<input type="hidden" name="title" id="title"  class="form-control" value="<%= model.title %>">
+
+<%/*
+<div class="form-group">
+    <label for="description">Description</label>
+    <textarea name="description" id="description" class="form-control" ><%= model.description %></textarea>
+</div>
+ */%>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label class="control-label">Date</label>
+            <input type="date" name="event-date" class="form-control event-date">
+            <p class="help-block"></p>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label class="control-label">Location</label>
+            <input type="text" name="location" class="form-control location">
+        </div>
+    </div>
+</div>
