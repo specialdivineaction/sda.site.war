@@ -15,10 +15,10 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.postgresql.Driver;
 
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.db.psql.internal.BasicDataSourceExt;
-import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
 
 public class PsqlDbExec implements DbExecutor, AutoCloseable
 {
@@ -98,7 +98,7 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
    }
 
    @Override
-   public void close() 
+   public void close()
    {
       if (executor != null)
       {
@@ -142,10 +142,10 @@ public class PsqlDbExec implements DbExecutor, AutoCloseable
 
       private Connection getConnection() throws Exception
       {
-         try 
+         try
          {
             return provider.getConnection();
-         } 
+         }
          catch (Exception ex)
          {
             DB_LOGGER.log(Level.SEVERE, "Failed to obtain database connection", ex);

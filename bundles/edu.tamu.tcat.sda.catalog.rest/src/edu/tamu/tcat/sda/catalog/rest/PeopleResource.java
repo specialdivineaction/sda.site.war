@@ -25,7 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;

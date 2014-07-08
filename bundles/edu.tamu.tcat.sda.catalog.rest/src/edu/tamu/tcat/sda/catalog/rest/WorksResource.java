@@ -20,7 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Work;
