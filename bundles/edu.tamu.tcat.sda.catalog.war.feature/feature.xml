@@ -186,20 +186,6 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.oss.osgi.config"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="edu.tamu.tcat.oss.osgi.services.util"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="edu.tamu.tcat.oss.db"
          download-size="0"
          install-size="0"
@@ -425,6 +411,34 @@
 
    <plugin
          id="edu.tamu.tcat.oss.json.jackson"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.runtime.compatibility"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.osgi.config"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.osgi.services.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
          version="0.0.0"
