@@ -91,6 +91,21 @@
 <!--       <layout>p2</layout> -->
 <!--       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url> -->
 <!--     </repository> -->
+    <repository>
+      <id>Crypto</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/Crypto/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+    <repository>
+      <id>OSGI.Utils</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/OSGI.Utilities/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+    <repository>
+      <id>Core Deps</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/mirror.dependencies/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
   </repositories>
   
   <build>
