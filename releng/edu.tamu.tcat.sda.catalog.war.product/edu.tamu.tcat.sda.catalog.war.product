@@ -23,7 +23,7 @@
    </plugins>
 
    <features>
-      <feature id="edu.tamu.tcat.sda.catalog.war.feature" version="1.0.0.qualifier"/>
+      <feature id="edu.tamu.tcat.sda.catalog.war.feature"/>
    </features>
 
    <configurations>
