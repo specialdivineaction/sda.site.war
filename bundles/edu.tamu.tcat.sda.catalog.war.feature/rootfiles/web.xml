@@ -12,12 +12,10 @@
          NOTE: Ports below 1024 will not work in Linux since the tomcat7 process is not
                run as root. The default to use is 2323.
               -->
-      <!-- 
 		<init-param>
 			<param-name>commandline</param-name>
 			<param-value>-console 2323</param-value>			
 		</init-param>
-       -->
 		
 		<!-- Framework Controls could be useful for testing purpose, but
          we disable it per default -->
