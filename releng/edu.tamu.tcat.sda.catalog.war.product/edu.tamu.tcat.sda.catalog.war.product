@@ -19,7 +19,6 @@
    <vm>
    </vm>
 
-
    <plugins>
    </plugins>
 
@@ -28,13 +27,18 @@
    </features>
 
    <configurations>
+      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
+      <plugin id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider" autoStart="true" startLevel="4" />
+      <plugin id="edu.tamu.tcat.sda.catalog.rest" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.http.registry" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.http.servletbridge" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="1" />
+      <plugin id="org.glassfish.jersey.core.jersey-common" autoStart="true" startLevel="3" />
    </configurations>
 
 </product>
