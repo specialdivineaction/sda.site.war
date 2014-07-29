@@ -3,7 +3,10 @@ define(function (require) {
     var Backbone   = require('backbone'),
         $          = require('jquery'),
 
-        StringUtil = require('js/util/string');
+        StringUtil = require('js/util/string'),
+        Timer      = require('js/model/timer'),
+
+        RadialProgressIndicator = require('js/view/radial_progress');
 
 
     var MessageView = Backbone.View.extend({
@@ -17,9 +20,9 @@ define(function (require) {
             this.message = options.message;
             this.admonition = (typeof options.admonition === 'undefined') ? StringUtil.capitalize(this.type) : options.admonition;
             this.dismissible = (typeof options.dismissible === 'undefined') ? true : options.dismissible;
-            this.ttl = options.ttl || false;
+            this.timer = options.ttl ? new Timer({ time: options.ttl }) : false;
 
-            if (!this.ttl && !this.dismissible) {
+            if (!this.timer && !this.dismissible) {
                 console.error('Warning: alerts should either be dismissible or set to auto-expire.');
             }
 
@@ -51,12 +54,24 @@ define(function (require) {
                 });
             }
 
-            if (this.ttl) {
-                this.timeout = setTimeout(function () {
+            if (this.timer) {
+                if (this.showTimer) {
+                    this.progressIndicator = new RadialProgressIndicator({
+                        model: this.timer,
+                        filled: false,
+                        size: 24,
+                        thickness: 0.2
+                    });
+                    this.$el.append(this.progressIndicator.render().$el);
+                }
+
+                this.listenTo(this.timer, 'finish', function () {
                     _this.$el.fadeOut(1000, function () {
                         _this.close();
                     });
-                }, this.ttl);
+                });
+
+                this.timer.start();
             }
 
             $(this.messageContainer).append(this.$el);
@@ -69,6 +84,13 @@ define(function (require) {
         close: function () {
             this.remove();
             this.unbind();
+
+            if (this.timer) {
+                this.timer.destroy();
+
+                if (this.progressIndicator)
+                    this.progressIndicator.close();
+            }
         }
 
     });
