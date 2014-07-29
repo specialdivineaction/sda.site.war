@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -12,35 +13,14 @@ import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 public class TitleDefinitionImpl implements TitleDefinition
 {
 
-   private TitleDV canonicalTitle;
-   private TitleDV shortTitle;
-   private TitleDV localeTitle;
-   private Set<TitleDV> alternateTitles;
+   private Set<Title> titles = new HashSet<>();
 
 
    public TitleDefinitionImpl(Set<TitleDV> titles)
    {
-      alternateTitles = new HashSet<>();
-
       for (TitleDV title : titles)
       {
-         String titleType = title.type;
-         switch(titleType)
-         {
-            case "canonical":
-               this.canonicalTitle = title;
-               break;
-            case "short":
-               this.shortTitle = title;
-               break;
-            case "locale":
-               this.localeTitle = title;
-               break;
-            case "alt":
-               this.alternateTitles.add(title);
-               break;
-         }
-
+         this.titles.add(new TitleImpl(title));
       }
 
    }
@@ -48,32 +28,25 @@ public class TitleDefinitionImpl implements TitleDefinition
    @Override
    public Title getCanonicalTitle()
    {
-      return new TitleImpl(canonicalTitle);
+	   throw new UnsupportedOperationException();
    }
 
    @Override
    public Title getShortTitle()
    {
-      return new TitleImpl(shortTitle);
+	   throw new UnsupportedOperationException();
    }
 
    @Override
    public Set<Title> getAlternateTitles()
    {
-      Set<Title> titles = new HashSet<Title>();
-
-      for(TitleDV title : alternateTitles)
-      {
-         titles.add(new TitleImpl(title));
-      }
-
-      return titles;
+      return Collections.unmodifiableSet(titles); 
    }
 
    @Override
    public Title getTitle(Locale language)
    {
-      return new TitleImpl(localeTitle);
+	   throw new UnsupportedOperationException();
    }
 
 }

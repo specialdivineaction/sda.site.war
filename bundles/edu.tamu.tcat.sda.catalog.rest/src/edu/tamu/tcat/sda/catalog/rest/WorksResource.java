@@ -98,10 +98,6 @@ public class WorksResource
          workDV.id = result.getId();
          workDV.series = result.getSeries();
 
-         titles.add(new TitleDV(result.getTitle().getCanonicalTitle()));
-         titles.add(new TitleDV(result.getTitle().getShortTitle()));
-         titles.add(new TitleDV(result.getTitle().getTitle(Locale.US)));
-
          for (Title title : result.getTitle().getAlternateTitles())
          {
             titles.add(new TitleDV(title));
