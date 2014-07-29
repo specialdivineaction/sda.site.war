@@ -27,17 +27,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.osgi.framework.ServiceReference;
 
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
-import edu.tamu.tcat.oss.db.psql.PsqlDbExec;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.oss.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.oss.osgi.services.util.ServiceHelper;
-import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
@@ -59,7 +56,7 @@ public class TestPeopleRESTapi
    @BeforeClass
    public static void initHTTPConnection()
    {
-      mapper.activate();      // might ought to load as OSGi service? 
+      mapper.activate();      // might ought to load as OSGi service?
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
       
@@ -89,7 +86,7 @@ public class TestPeopleRESTapi
             try (PreparedStatement ps = conn.prepareStatement(cleanDB))
             {
                ps.executeUpdate();
-            } 
+            }
             catch (SQLException e)
             {
                throw new SQLException("No records to delete." + e);

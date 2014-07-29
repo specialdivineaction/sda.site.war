@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="edu.tamu.tcat.dh.sda.catalog.war.feature"
+      id="edu.tamu.tcat.sda.catalog.war.feature"
       label="Catalog Entries WAR Feature"
       version="1.0.0.qualifier"
       provider-name="Texas A&amp;M Engineering Experiment Station">
@@ -186,14 +186,14 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.oss.osgi.config"
+         id="edu.tamu.tcat.osgi.config"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.oss.osgi.services.util"
+         id="edu.tamu.tcat.osgi.services.util"
          download-size="0"
          install-size="0"
          version="0.0.0"
