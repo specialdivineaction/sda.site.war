@@ -47,7 +47,7 @@ define(function (require) {
             var view$el = view.render().$el;
 
             view$el.hide();
-            this.$el.find('.title-forms').append(view$el);
+            this.$('.title-forms').append(view$el);
             view$el.slideDown(300);
         },
 
@@ -61,7 +61,7 @@ define(function (require) {
             var view$el = view.render().$el;
 
             view$el.hide();
-            this.$el.find('.author-forms').append(view$el);
+            this.$('.author-forms').append(view$el);
             view$el.slideDown(300);
         },
 
@@ -75,7 +75,7 @@ define(function (require) {
             var view$el = view.render().$el;
 
             view$el.hide();
-            this.$el.find('.other-author-forms').append(view$el);
+            this.$('.other-author-forms').append(view$el);
             view$el.slideDown(300);
         },
 
@@ -118,21 +118,21 @@ define(function (require) {
 
             var _this = this;
 
-            var $authorForms = this.$el.find('.author-forms').empty();
+            var $authorForms = this.$('.author-forms').empty();
             this.model.get('authors').each(function (author) {
                 var subForm = new AuthorRefSubform({ model: author, allowRemoval: true });
                 _this.childViews.push(subForm);
                 $authorForms.append(subForm.render().el);
             });
 
-            var $titleForms = this.$el.find('.title-forms').empty();
+            var $titleForms = this.$('.title-forms').empty();
             this.model.get('titles').each(function (title) {
                 var subForm = new TitleSubform({ model: title, allowRemoval: true });
                 _this.childViews.push(subForm);
                 $titleForms.append(subForm.render().el);
             });
 
-            var $otherAuthorForms = this.$el.find('.other-author-forms').empty();
+            var $otherAuthorForms = this.$('.other-author-forms').empty();
             this.model.get('otherAuthors').each(function (otherAuthor) {
                 var subForm = new AuthorRefSubform({ model: otherAuthor });
                 _this.childViews.push(subForm);
@@ -141,7 +141,7 @@ define(function (require) {
 
             var pubInfoSubform = new PublicationInfoSubform({ model: this.model.get('pubInfo') });
             this.childViews.push(pubInfoSubform);
-            this.$el.find('.pub-info-form').html(pubInfoSubform.render().el);
+            this.$('.pub-info-form').html(pubInfoSubform.render().el);
 
             this.applyBindings();
 

@@ -44,7 +44,7 @@ define(function (require) {
             this.acView = new AuthorAutocompleteView({ collection: this.people });
             this.listenTo(this.acView, 'select', this.setAuthor);
 
-            this.$el.find('.autocomplete').html(this.acView.render().el);
+            this.$('.autocomplete').html(this.acView.render().el);
         },
 
         closeAutocomplete: function () {
@@ -103,7 +103,7 @@ define(function (require) {
 
         setAuthor: function (person) {
             this.model.set('authorId', person.id);
-            this.$el.find('.linked-author').html(person.getFormattedName());
+            this.$('.linked-author').html(person.getFormattedName());
             this.closeAutocomplete();
         },
 

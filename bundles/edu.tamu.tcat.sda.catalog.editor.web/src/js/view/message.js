@@ -76,7 +76,7 @@ define(function (require) {
                         size: 24,
                         thickness: 0.2
                     });
-                    this.$el.append(this.progressIndicator.render().$el);
+                    this.$el.append(this.progressIndicator.render().el);
                 }
 
                 this.listenTo(this.timer, 'finish', function () {

@@ -70,7 +70,7 @@ define(function (require) {
 
             var _this = this;
 
-            var $nameForms = this.$el.find('.name-forms').empty();
+            var $nameForms = this.$('.name-forms').empty();
             this.model.get('names').each(function (name) {
                 var subForm = new NameSubform({ model: name });
                 _this.childViews.push(subForm);
@@ -79,11 +79,11 @@ define(function (require) {
 
             var birthSubForm = new HistoricalEventSubform({ model: this.model.get('birth') });
             this.childViews.push(birthSubForm);
-            this.$el.find('#birthForm').html(birthSubForm.render().el);
+            this.$('.birth-form').html(birthSubForm.render().el);
 
             var deathSubForm = new HistoricalEventSubform({ model: this.model.get('death') });
             this.childViews.push(deathSubForm);
-            this.$el.find('#deathForm').html(deathSubForm.render().el);
+            this.$('.death-form').html(deathSubForm.render().el);
 
             this.applyBindings();
 

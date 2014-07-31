@@ -36,10 +36,10 @@ define(function (require) {
 
         search: function(evt) {
             evt.preventDefault();
-            var query = this.$el.find('.search').val();
+            var query = this.$('.search').val();
             var resultsPromise = this.searchHandler(query);
 
-            var $resultContainer = this.$el.find('.search-results').empty();
+            var $resultContainer = this.$('.search-results').empty();
 
             resultsPromise.then(function (results) {
                 _.each(results, function (result) {

@@ -16,7 +16,7 @@ define(function (require) {
 
         updateValue: function () {
             var percent = this.model.get('percent'),
-                $slice  = this.$el.find('.slice');
+                $slice  = this.$('.slice');
 
             if (percent > 0.5)
                 $slice.addClass('gt50');
@@ -46,13 +46,13 @@ define(function (require) {
             if (this.options.filled) {
                 this.$el.addClass('filled');
                 if (this.options.color)
-                    this.$el.find('.pie').css('background-color', this.options.color);
+                    this.$('.pie').css('background-color', this.options.color);
             } else {
                 if (this.options.color)
-                    this.$el.find('.pie').css('border-color', this.options.color);
+                    this.$('.pie').css('border-color', this.options.color);
 
                 if (this.options.thickness)
-                    this.$el.find('.pie').css('border-width', this.options.thickness + 'em');
+                    this.$('.pie').css('border-width', this.options.thickness + 'em');
             }
 
             this.updateValue();
