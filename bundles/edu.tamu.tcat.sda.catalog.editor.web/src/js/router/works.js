@@ -36,7 +36,7 @@ define(function (require) {
                         message: 'Unable to load work with ID: <code>' + id + '</code>'
                     });
 
-                    msg.render();
+                    msg.render().open();
                 }
             });
 

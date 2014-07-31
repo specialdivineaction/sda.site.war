@@ -45,7 +45,7 @@ define(function (require) {
                         message: 'Person saved successfully.'
                     });
 
-                    alert.render();
+                    alert.render().open();
 
                     if (saveAndNew) {
                         _this.close();
@@ -58,7 +58,7 @@ define(function (require) {
                         message: 'Unable to save person.'
                     });
 
-                    alert.render();
+                    alert.render().open();
                 }
             });
 

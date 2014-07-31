@@ -91,7 +91,7 @@ define(function (require) {
                         message: 'Work saved successfully.'
                     });
 
-                    alert.render();
+                    alert.render().open();
 
                     if (saveAndNew) {
                         _this.close();
@@ -104,7 +104,7 @@ define(function (require) {
                         message: 'Unable to save work.'
                     });
 
-                    alert.render();
+                    alert.render().open();
                 }
             });
 
