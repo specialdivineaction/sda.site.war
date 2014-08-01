@@ -33,7 +33,8 @@ define(function (require) {
         },
 
         events: {
-            'submit .search-form': 'search'
+            'submit .search-form': 'search',
+            'click .btn-reset': 'clearForm'
         },
 
         search: function(evt) {
@@ -71,6 +72,13 @@ define(function (require) {
                 });
                 message.render().openIn($resultContainer);
             });
+        },
+
+        clearForm: function (evt) {
+            evt.preventDefault();
+
+            this.$('.search-results').empty();
+            this.$('.search').val('').focus();
         },
 
         render: function () {
