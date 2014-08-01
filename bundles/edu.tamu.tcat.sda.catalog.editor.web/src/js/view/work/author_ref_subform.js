@@ -5,7 +5,7 @@ define(function (require) {
 
         Config                 = require('js/config'),
         PeopleCollection       = require('js/collection/people'),
-        AuthorAutocompleteView = require('js/view/work/author_autocomplete');
+        Autocomplete           = require('js/view/autocomplete');
 
     require('backbone.epoxy');
 
@@ -17,6 +17,8 @@ define(function (require) {
         initialize: function (options) {
             this.allowRemoval = options.allowRemoval;
             this.acEnableBlur = true;
+
+            this.people = new PeopleCollection();
         },
 
         bindings: {
@@ -26,63 +28,9 @@ define(function (require) {
 
         events: {
             'click .remove-author-ref': 'disposeForm',
-            'focus .name': 'initAutocomplete',
-            'keypress .name': 'autocomplete',
-            'keydown .name': 'tryCloseAutocomplete',
-
-            // conditional "blur" to allow users to click on autocomplete elements
-            'blur .name': function () {
-                if (this.acView && !this.acView.isFocused)
-                    this.closeAutocomplete();
-            }
         },
 
-        initAutocomplete: function (evt) {
-            this.people = new PeopleCollection();
-
-            this.closeAutocomplete();
-            this.acView = new AuthorAutocompleteView({ collection: this.people });
-            this.listenTo(this.acView, 'select', this.setAuthor);
-
-            this.$('.autocomplete').html(this.acView.render().el);
-        },
-
-        closeAutocomplete: function () {
-            if (!this.acView) return;
-            this.stopListening(this.acView);
-            this.acView.close();
-        },
-
-        // Have to listen for tab and esc on keydown instead of keypress
-        tryCloseAutocomplete: function (evt) {
-            switch(evt.keyCode) {
-                case 9:
-                case 27: // close on `esc` and `tab` keys
-                    this.closeAutocomplete();
-                    return;
-            }
-        },
-
-        autocomplete: function (evt) {
-            switch (evt.keyCode) {
-                case 13: // commit on enter key
-                    evt.preventDefault();
-                    this.acView.commitSelection();
-                    return false;
-                case 38: // up arrow
-                    evt.preventDefault();
-                    if (this.acView) this.acView.selectPrev();
-                    return false;
-                case 40: // down arrow
-                    evt.preventDefault();
-                    if (this.acView) this.acView.selectNext();
-                    return false;
-            }
-
-            var name = $(evt.target).val();
-
-            if (name.length < 3) return;
-
+        autocomplete: function (name) {
             var _this = this;
             $.ajax({
                 method: 'get',
@@ -92,11 +40,7 @@ define(function (require) {
                     last: name
                 },
                 success: function (data) {
-                    if (data.length === 0) {
-                        _this.closeAutocomplete();
-                    } else {
-                        _this.people.reset(data, {parse: true});
-                    }
+                    _this.people.reset(data, {parse: true});
                 }
             });
         },
@@ -104,7 +48,6 @@ define(function (require) {
         setAuthor: function (person) {
             this.model.set('authorId', person.id);
             this.$('.linked-author').html(person.getFormattedName());
-            this.closeAutocomplete();
         },
 
         render: function () {
@@ -112,6 +55,15 @@ define(function (require) {
                 model: this.model.toJSON(),
                 showDelete: this.allowRemoval
             }));
+
+            this.acView = new Autocomplete({
+                el: this.$('.name'),
+                collection: this.people,
+                itemRenderer: function (person) { return person.getFormattedName(); }
+            });
+
+            this.listenTo(this.acView, 'autocomplete', this.autocomplete);
+            this.listenTo(this.acView, 'select', this.setAuthor);
 
             this.applyBindings();
 
@@ -127,7 +79,7 @@ define(function (require) {
         },
 
         close: function () {
-            this.closeAutocomplete();
+            this.acView.close();
             this.remove();
             this.unbind();
         }
