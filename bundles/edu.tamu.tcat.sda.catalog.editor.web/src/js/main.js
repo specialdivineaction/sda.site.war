@@ -8,8 +8,11 @@ define(function (require) {
         WorksRouter  = require('js/router/works'),
         SearchForm   = require('js/view/search_form'),
 
-        Message      = require('js/view/message'),
-        Config       = require('js/config');
+        PersonCollection = require('js/collection/people'),
+        WorkCollection   = require('js/collection/works'),
+
+        Message = require('js/view/message'),
+        Config  = require('js/config');
 
     require('bootstrap');
 
@@ -34,14 +37,13 @@ define(function (require) {
                 }
 
                 $.getJSON(Config.apiPrefix + '/works', { title: query }, function (data) {
-
-                    console.log(data);
+                    var works = new WorkCollection(data, { parse: true });
 
                     // TODO: convert data to result array
-                    resolve(data.map(function (work) {
+                    resolve(works.map(function (work) {
                         return {
-                            html: 'TITLE',
-                            href: '#works/WORK_ID'
+                            html: work.getFormattedTitle(),
+                            href: '#works/' + work.id
                         };
                     }));
                 }).fail(function (jqxhr, status, errorMessage) {
@@ -62,14 +64,13 @@ define(function (require) {
                 }
 
                 $.getJSON(Config.apiPrefix + '/people', { lastName: query }, function (data) {
-
-                    console.log(data);
+                    var people = new PersonCollection(data, { parse: true });
 
                     // TODO: convert data to result array
-                    resolve(data.map(function (person) {
+                    resolve(people.map(function (person) {
                         return {
-                            html: 'NAME',
-                            href: '#people/PERSON_ID'
+                            html: person.getFormattedName(),
+                            href: '#people/' + person.id
                         };
                     }));
                 }).fail(function (jqxhr, status, errorMessage) {

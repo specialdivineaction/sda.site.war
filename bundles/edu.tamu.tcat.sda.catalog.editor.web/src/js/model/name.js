@@ -12,6 +12,10 @@ define(function (require) {
             familyName: '',
             suffix: '',
             displayName: ''
+        },
+
+        getFullName: function () {
+            return this.get('familyName') + ', ' + this.get('givenName') + ' ' + this.get('middleName');
         }
 
     });
