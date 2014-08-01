@@ -49,7 +49,6 @@ define(function (require) {
         },
 
         render: function () {
-            console.log('render ' + this.collection.length);
             if (this.collection.length === 0) {
                 this.$el.hide();
                 return this;

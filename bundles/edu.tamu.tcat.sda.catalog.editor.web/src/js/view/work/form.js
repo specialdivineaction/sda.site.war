@@ -23,6 +23,8 @@ define(function (require) {
         initialize: function (options) {
             this.router = options.router;
             this.childViews = [];
+            
+            this.listenTo(this.model, 'sync', this.render);
         },
 
         bindings: {
