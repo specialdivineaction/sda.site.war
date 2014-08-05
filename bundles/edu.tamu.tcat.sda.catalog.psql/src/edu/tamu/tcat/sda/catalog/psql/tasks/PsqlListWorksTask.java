@@ -5,17 +5,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
+import edu.tamu.tcat.sda.catalog.PGObjectNotSupportedException;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public final class PsqlListWorksTask implements DbExecTask<Iterable<Work>>
 {
+
+   private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.works.db.errors");
    private final static String sql = "SELECT work FROM works";
 
    private final JsonMapper jsonMapper;
@@ -41,7 +47,7 @@ public final class PsqlListWorksTask implements DbExecTask<Iterable<Work>>
             if (object instanceof PGobject)
                pgo = (PGobject)object;
             else
-               System.out.println("Error!");
+               throw new PGObjectNotSupportedException("Work Object is not an instance of PGobject");
 
             WorkDV parse = jsonMapper.parse(pgo.toString(), WorkDV.class);
             WorkImpl figureRef = new WorkImpl(parse);
@@ -51,13 +57,13 @@ public final class PsqlListWorksTask implements DbExecTask<Iterable<Work>>
             }
             catch(Exception e)
             {
-               System.out.println();
+               DbTaskLogger.log(Level.SEVERE, "Work Implementation could not be added to the List of Works");
             }
          }
       }
       catch (Exception e)
       {
-         System.out.println("Error" + e);
+         throw new CatalogRepoException();
       }
       eIterable = events;
       return eIterable;

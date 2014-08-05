@@ -52,27 +52,27 @@ public class TestPeopleRESTapi
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
    private ConfigurationProperties properties;
 
-   
+
    @BeforeClass
    public static void initHTTPConnection()
    {
       mapper.activate();      // might ought to load as OSGi service?
       uri = URI.create("http://localhost:9999/catalog/services/people");
       client = HttpClientBuilder.create().build();
-      
+
       post = new HttpPost(uri);
       post.setHeader("User-Agent", "Mozilla/5.0");
       post.setHeader("Content-type", "application/json");
-      
+
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
-      
+
       delete = new HttpDelete(uri);
       delete.setHeader("User-Agent", "Mozilla/5.0");
       delete.setHeader("Content-type", "application/json");
    }
-   
+
    @AfterClass
    public static void cleanDB() throws InterruptedException, ExecutionException
    {
@@ -94,12 +94,12 @@ public class TestPeopleRESTapi
             return null;
          }
       };
-      
+
       try (ServiceHelper helper = new ServiceHelper(Activator.getDefault().getContext()))
       {
          DbExecutor executor = helper.waitForService(DbExecutor.class, 10000);
          Future<Void> future = executor.submit(delete);
-         
+
          future.get();
       }
    }
@@ -115,7 +115,7 @@ public class TestPeopleRESTapi
       post.setEntity(new StringEntity(json));
 
       HttpResponse response = client.execute(post);
-            
+
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode >=200 && statusCode < 300)
          Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
@@ -125,7 +125,7 @@ public class TestPeopleRESTapi
          Assert.fail("Client Error: " + statusCode);
       else
          Assert.fail("Server Error: " + statusCode);
-      
+
       InputStream content = response.getEntity().getContent();
 //      PersonDV person = mapper.fromJSON(content, type)
 
@@ -139,7 +139,7 @@ public class TestPeopleRESTapi
          CloseableHttpResponse response = client.execute(get);
          InputStream content = response.getEntity().getContent();
          StatusLine statusLine = response.getStatusLine();
-         
+
          if (statusLine.getStatusCode() < 300)
          {
             try
@@ -154,21 +154,19 @@ public class TestPeopleRESTapi
          }
          else
          {
-            System.out.println(statusLine.getStatusCode());
+            Assert.fail("Redirection: " + statusLine.getStatusCode());
          }
       }
       catch (ClientProtocolException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         Assert.fail("Client Error" + e);
       }
       catch (IOException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         Assert.fail("IOException" + e);
       }
    }
-   
+
    @Test
    public void testGetPerson()
    {
@@ -179,7 +177,7 @@ public class TestPeopleRESTapi
          CloseableHttpResponse response = client.execute(get);
          InputStream content = response.getEntity().getContent();
          StatusLine statusLine = response.getStatusLine();
-         
+
          if (statusLine.getStatusCode() < 300)
          {
             try
@@ -195,18 +193,16 @@ public class TestPeopleRESTapi
          }
          else
          {
-            System.out.println(statusLine.getStatusCode());
+            Assert.fail("Redirection: " + statusLine.getStatusCode());
          }
       }
       catch (ClientProtocolException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         Assert.fail("Client Error" + e);
       }
       catch (IOException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         Assert.fail("IOException" + e);
       }
    }
 
@@ -217,7 +213,7 @@ public class TestPeopleRESTapi
 
       private volatile Person result;
       private volatile ResourceCreationException exception = null;
-      
+
       CreatePersonObserver()
       {
          this.latch = new CountDownLatch(1);
@@ -229,21 +225,21 @@ public class TestPeopleRESTapi
          this.result = result;
          this.latch.countDown();
       }
-   
+
       @Override
       protected void onError(String message, Exception ex)
       {
          exception = new ResourceCreationException(message, ex);
          latch.countDown();
       }
-      
+
       public Person getResult(long timeout, TimeUnit units) throws InterruptedException, ResourceCreationException
       {
          latch.await(timeout, units);
-         
+
          if (exception != null)
             throw exception;
-         
+
          Objects.requireNonNull(result, "Repository failed to return created person");
          return result;
       }
