@@ -8,53 +8,46 @@ import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 
-
 public class TitleDefinitionImpl implements TitleDefinition
 {
-
-   private TitleDV canonicalTitle;
-   private TitleDV shortTitle;
-   private TitleDV localeTitle;
-   private Set<TitleDV> alternateTitles;
-
+   private Set<TitleDV> titleDvs;
 
    public TitleDefinitionImpl(Set<TitleDV> titles)
    {
-      alternateTitles = new HashSet<>();
-
-      for (TitleDV title : titles)
-      {
-         String titleType = title.type;
-         switch(titleType)
-         {
-            case "canonical":
-               this.canonicalTitle = title;
-               break;
-            case "short":
-               this.shortTitle = title;
-               break;
-            case "locale":
-               this.localeTitle = title;
-               break;
-            case "alt":
-               this.alternateTitles.add(title);
-               break;
-         }
-
-      }
-
+      this.titleDvs = titles;
    }
 
    @Override
    public Title getCanonicalTitle()
    {
-      return new TitleImpl(canonicalTitle);
+      for(TitleDV title : titleDvs)
+      {
+         if(title.type.equals("canonical"))
+            return new TitleImpl(title);
+      }
+      return null;
    }
 
    @Override
    public Title getShortTitle()
    {
-      return new TitleImpl(shortTitle);
+      for(TitleDV title : titleDvs)
+      {
+         if(title.type.equals("short"))
+            return new TitleImpl(title);
+      }
+      return null;
+   }
+
+   @Override
+   public Title getTitle(Locale language)
+   {
+      for(TitleDV title : titleDvs)
+      {
+         if(title.type.equals("locale"))
+            return new TitleImpl(title);
+      }
+      return null;
    }
 
    @Override
@@ -62,18 +55,11 @@ public class TitleDefinitionImpl implements TitleDefinition
    {
       Set<Title> titles = new HashSet<Title>();
 
-      for(TitleDV title : alternateTitles)
+      for(TitleDV title : titleDvs)
       {
          titles.add(new TitleImpl(title));
       }
 
       return titles;
    }
-
-   @Override
-   public Title getTitle(Locale language)
-   {
-      return new TitleImpl(localeTitle);
-   }
-
 }
