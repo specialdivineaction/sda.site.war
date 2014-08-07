@@ -34,6 +34,13 @@ public class PsqlWorkDbTasksProvider
       return new PsqlCreateWorkTask(work, mapper);
    }
 
+   public PsqlUpdateWorksTask makeUpdateWorksTask(WorkDV work)
+   {
+      Objects.requireNonNull(mapper, "No JSON mapper configured");
+
+      return new PsqlUpdateWorksTask(work, mapper);
+   }
+
    public PsqlListWorksTask makeListWorksTask()
    {
       Objects.requireNonNull(mapper, "No JSON mapper configured");
