@@ -18,9 +18,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Work;
@@ -66,10 +70,22 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkDV> listWorks()
+   public List<WorkDV> listWorks(@Context UriInfo ctx) throws CatalogRepoException
    {
+      MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
+      MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
+
+      // TODO need to add slicing/paging support
+      // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
+
+      // HACK: This allows the title to be searched, filtering will be added.
+
       List<WorkDV> results = new ArrayList<>();
-      Iterable<Work> works = repo.listWorks();
+      Iterable<Work> works = null;
+      if(queryParams.containsKey("title"))
+         works = repo.listWorks(queryParams.getFirst("title"));
+      else
+         works = repo.listWorks();
 
       for (Work work : works)
       {
@@ -95,8 +111,55 @@ public class WorksResource
          Work result = workObserver.getResult();
          WorkDV workDV = new WorkDV();
 
+         for (Title title : result.getTitle().getAlternateTitles())
+         {
+            titles.add(new TitleDV(title));
+         }
+
+         for (AuthorReference authRef : result.getAuthors())
+         {
+            authRefs.add(new AuthorRefDV(authRef));
+         }
+
+         for (AuthorReference authRef : result.getOtherAuthors())
+         {
+            otherAuthRefs.add(new AuthorRefDV(authRef));
+         }
+
          workDV.id = result.getId();
+         workDV.authors = authRefs;
+         workDV.otherAuthors = otherAuthRefs;
+         workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
+         workDV.titles = titles;
          workDV.series = result.getSeries();
+         workDV.summary = result.getSummary();
+
+         return workDV;
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         return null;
+      }
+   }
+
+   @PUT
+   @Path("{workid}")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public WorkDV updateWork(WorkDV work)
+   {
+      CreateWorkObserver workObserver = new CreateWorkObserver();
+      repo.update(work, workObserver);
+
+      List<AuthorRefDV> authRefs = new ArrayList<>();
+      List<AuthorRefDV> otherAuthRefs = new ArrayList<>();
+      Set<TitleDV> titles = new HashSet<>();
+      try
+      {
+         Work result = workObserver.getResult();
+         WorkDV workDV = new WorkDV();
+
 
          for (Title title : result.getTitle().getAlternateTitles())
          {
@@ -113,9 +176,12 @@ public class WorksResource
             otherAuthRefs.add(new AuthorRefDV(authRef));
          }
 
+         workDV.id = result.getId();
          workDV.authors = authRefs;
          workDV.otherAuthors = otherAuthRefs;
          workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
+         workDV.titles = titles;
+         workDV.series = result.getSeries();
          workDV.summary = result.getSummary();
 
          return workDV;
@@ -208,7 +274,7 @@ public class WorksResource
          try
          {
             // HACK: hard coded timeout
-            latch.await(10, TimeUnit.MINUTES);
+            latch.await(20, TimeUnit.MINUTES);
          }
          catch (InterruptedException ex)
          {

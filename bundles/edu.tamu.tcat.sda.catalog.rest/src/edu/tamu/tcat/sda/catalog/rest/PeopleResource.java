@@ -176,9 +176,40 @@ public class PeopleResource
    @PUT
    @Path("{personId}")
    @Consumes(MediaType.APPLICATION_JSON)
-   public String updatePerson(PersonDV person) throws Exception
+   @Produces(MediaType.APPLICATION_JSON)
+   public PersonDV updatePerson(PersonDV person) throws Exception
    {
-      throw new UnsupportedOperationException();
+      int timeout = properties.getPropertyValue(PROP_TIMEOUT, Integer.class, Integer.valueOf(1000)).intValue();
+      String u = properties.getPropertyValue(PROP_TIMEOUT_UNITS, String.class, TimeUnit.SECONDS.toString());
+      TimeUnit units = TimeUnit.valueOf(u);
+
+      CreatePersonObserver observer = new CreatePersonObserver();
+      repo.update(person, observer);
+
+      try
+      {
+         Person updatedPerson = observer.getResult(timeout, units);
+         PersonDV dv = getHistoricalFigureDV(updatedPerson);
+         return dv;
+      }
+      catch (InterruptedException iex)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, iex, properties, timeout, units);
+         errorLogger.log(Level.SEVERE, error.message, iex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      }
+      catch (ResourceCreationException rce)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, rce, properties);
+         errorLogger.log(Level.SEVERE, error.message, rce);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      }
+      catch (Exception ex)
+      {
+         CreatePersonERD error = CreatePersonERD.create(person, ex, properties);
+         errorLogger.log(Level.SEVERE, error.message, ex);
+         throw new WebApplicationException(ErrorResponseData.createJsonResponse(error));
+      }
    }
 
    @POST

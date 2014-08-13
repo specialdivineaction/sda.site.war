@@ -9,12 +9,9 @@ import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 
-
 public class TitleDefinitionImpl implements TitleDefinition
 {
-
    private Set<Title> titles = new HashSet<>();
-
 
    public TitleDefinitionImpl(Set<TitleDV> titles)
    {
@@ -22,12 +19,12 @@ public class TitleDefinitionImpl implements TitleDefinition
       {
          this.titles.add(new TitleImpl(title));
       }
-
    }
 
    @Override
    public Title getCanonicalTitle()
    {
+
 	   throw new UnsupportedOperationException();
    }
 
@@ -40,7 +37,8 @@ public class TitleDefinitionImpl implements TitleDefinition
    @Override
    public Set<Title> getAlternateTitles()
    {
-      return Collections.unmodifiableSet(titles); 
+
+      return Collections.unmodifiableSet(titles);
    }
 
    @Override
@@ -48,5 +46,4 @@ public class TitleDefinitionImpl implements TitleDefinition
    {
 	   throw new UnsupportedOperationException();
    }
-
 }
