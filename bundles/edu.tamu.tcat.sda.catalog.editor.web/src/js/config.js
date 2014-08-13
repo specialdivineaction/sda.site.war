@@ -1,5 +1,5 @@
 define({
 
-    apiPrefix: '/api'
+    apiPrefix: '/sda/api'
 
 });
