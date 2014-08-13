@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="edu.tamu.tcat.sda.catalog.rest.crypto">
+   <implementation class="edu.tamu.tcat.crypto.bouncycastle.BouncyCastleCryptoProvider"/>
+   <service>
+      <provide interface="edu.tamu.tcat.crypto.CryptoProvider"/>
+   </service>
+</scr:component>
