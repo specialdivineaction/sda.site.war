@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
@@ -20,6 +22,7 @@ import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.PGObjectNotSupportedException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
@@ -29,7 +32,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
-   // private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
+   private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
 
    private DbExecutor exec;
    private JsonMapper jsonMapper;
@@ -162,7 +165,7 @@ public class PsqlPeopleRepo implements PeopleRepository
                      if (object instanceof PGobject)
                         pgo = (PGobject)object;
                      else
-                        System.out.println("Error!");
+                        throw new PGObjectNotSupportedException("Peson Object is not an instance of PGobject");
 
                      PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
                      figureRef = new PersonImpl(parse);
@@ -171,23 +174,20 @@ public class PsqlPeopleRepo implements PeopleRepository
             }
             catch (Exception e)
             {
-               System.out.println("Error" + e);
+               DbTaskLogger.log(Level.SEVERE, "Person Implementation could not be added to the List of Works");
             }
             return figureRef;
          }
       };
 
-      Person submit = null;
       try
       {
          return exec.submit(query).get();
       }
-      catch (InterruptedException | ExecutionException e)
+      catch (Exception e)
       {
-         System.out.println("Error");
+         throw new NoSuchCatalogRecordException();
       }
-
-      return submit;
    }
 
 

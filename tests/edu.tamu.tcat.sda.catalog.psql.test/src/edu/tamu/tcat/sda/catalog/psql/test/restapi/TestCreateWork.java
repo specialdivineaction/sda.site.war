@@ -15,6 +15,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -128,7 +129,8 @@ public class TestCreateWork
 		works.summary = "Summary of the work";
 
 		String json = mapper.asString(works);
-		post.setEntity( new StringEntity(json));
+      StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
+      post.setEntity(sEntity);
 
 		HttpResponse response = client.execute(post);
       int statusCode = response.getStatusLine().getStatusCode();
