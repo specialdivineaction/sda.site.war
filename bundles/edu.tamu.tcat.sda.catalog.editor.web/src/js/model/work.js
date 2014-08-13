@@ -33,6 +33,18 @@ define(function (require) {
             resp.pubInfo = new PublicationInfo(resp.pubInfo, {parse: true});
 
             return resp;
+        },
+
+        getFormattedTitle: function () {
+            return this.getFullTitle() + ' by ' + this.get('authors').map(function (a) { return a.get('name'); }).join(', ');
+        },
+
+        getFullTitle: function () {
+            return this.getCanonicalTitle().getFullTitle();
+        },
+
+        getCanonicalTitle: function () {
+            return this.get('titles').findWhere({ type: 'canonical' });
         }
     });
 

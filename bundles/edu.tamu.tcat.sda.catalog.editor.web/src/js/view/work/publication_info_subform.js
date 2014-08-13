@@ -28,7 +28,7 @@ define(function (require) {
 
             var dateSubform = new DateDescriptionSubform({ model: this.model.get('date') });
             this.childViews.push(dateSubform);
-            this.$el.find('.date-form').append(dateSubform.render().el);
+            this.$('.date-form').append(dateSubform.render().el);
 
             this.applyBindings();
 

@@ -1,0 +1,43 @@
+color = #444
+size = 30px
+border-width = 0.2em
+
+.radial-progress
+    position relative
+    font-size size
+    width 1em
+    height 1em
+
+    > .slice
+        position absolute
+        width 1em
+        height 1em
+        clip rect(0px, 1em, 1em, 0.5em)
+
+        &.gt50
+            clip rect(auto, auto, auto, auto)
+
+            > .pie.fill
+                display block
+
+        > .pie
+            box-sizing: border-box
+            border border-width solid color
+            position absolute
+            width 1em
+            height 1em
+            clip rect(0em, 0.5em, 1em, 0em)
+            border-radius 0.5em
+
+            &.fill
+                transform rotate(180deg) !important
+                display none
+
+    &.filled > .slice > .pie
+        border transparent
+        background-color color
+
+
+.alert .radial-progress
+    float right
+    margin-right 0.5em

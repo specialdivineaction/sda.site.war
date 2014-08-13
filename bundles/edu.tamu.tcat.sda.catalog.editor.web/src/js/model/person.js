@@ -41,11 +41,10 @@ define(function (require) {
         },
 
         getFormattedName: function () {
-            var name  = this.get('names').at(0),
-                birth = Moment(this.get('birth').get('eventDate')),
+            var birth = Moment(this.get('birth').get('eventDate')),
                 death = Moment(this.get('death').get('eventDate'));
 
-            var formattedName = name.get('familyName') + ', ' + name.get('givenName');
+            var formattedName = this.getFullName();
 
             if (birth.isValid() || death.isValid()) {
                 formattedName += ' (';
@@ -56,6 +55,14 @@ define(function (require) {
             }
 
             return formattedName;
+        },
+
+        getFullName: function () {
+            return this.getCanonicalName().getFullName();
+        },
+
+        getCanonicalName: function () {
+            return this.get('names').at(0);
         }
 
     });

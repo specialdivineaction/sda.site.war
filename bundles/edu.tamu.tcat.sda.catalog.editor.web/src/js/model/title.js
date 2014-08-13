@@ -10,6 +10,15 @@ define(function (require) {
             lg: 'en',
             title: '',
             subtitle: ''
+        },
+
+        getFullTitle: function () {
+            var title = this.get('title');
+
+            if (this.get('subtitle') !== '')
+                title += ': ' + this.get('subtitle');
+
+            return title;
         }
 
     });

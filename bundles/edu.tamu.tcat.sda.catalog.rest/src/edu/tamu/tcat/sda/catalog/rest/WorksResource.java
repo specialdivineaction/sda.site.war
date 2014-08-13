@@ -161,8 +161,6 @@ public class WorksResource
          WorkDV workDV = new WorkDV();
 
 
-         titles.add(new TitleDV(result.getTitle().getCanonicalTitle()));
-
          for (Title title : result.getTitle().getAlternateTitles())
          {
             titles.add(new TitleDV(title));

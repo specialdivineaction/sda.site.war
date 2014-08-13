@@ -1,5 +1,0 @@
-define({
-
-    apiPrefix: '/api'
-
-});
