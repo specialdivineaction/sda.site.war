@@ -1,5 +1,8 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -10,8 +13,11 @@ import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
+import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.works.Title;
+import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -107,7 +113,59 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public void update(WorkDV work, DataUpdateObserver<Work> observer)
    {
-      // TODO Auto-generated method stub
+      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
+      exec.submit(new ObservableTaskWrapper<>(task, observer));
+   }
+   
+   @Override
+   public Iterable<Work> listWorks(String titleName)
+   {
+      List<Work> workResults = new ArrayList<>();
+      Iterable<Work> listWorks = listWorks();
+      titleName = titleName.toLowerCase();
 
+      for (Work w : listWorks)
+      {
+         TitleDefinition titleDef = w.getTitle();
+         if (hasTitleName(titleDef.getCanonicalTitle(), titleName))
+         {
+            workResults.add(w);
+         }
+         else if (hasTitleName(titleDef.getShortTitle(), titleName))
+         {
+            workResults.add(w);
+         }
+         else if (hasTitleName(titleDef.getTitle(Locale.ENGLISH), titleName))
+         {
+            workResults.add(w);
+         }
+         else
+         {
+            for (Title t : titleDef.getAlternateTitles())
+            {
+               boolean titleFound = false;
+               titleFound = hasTitleName(t, titleName);
+               if (titleFound)
+               {
+                  workResults.add(w);
+                  continue;
+               }
+            }
+         }
+
+      }
+
+      return workResults;
+   }
+
+   private boolean hasTitleName(Title title, String titleName)
+   {
+      boolean foundTitle = false;
+
+      foundTitle = title.getFullTitle().contains(titleName);
+      if (!foundTitle)
+         foundTitle = title.getTitle().contains(titleName);
+
+      return foundTitle;
    }
 }

@@ -9,6 +9,7 @@ public interface WorkRepository extends DataStore
 {
    Iterable<Work> listWorks();      // TODO must create a repeatable, pageable, identifiable result set.
 
+   Iterable<Work> listWorks(String title);
    /**
     * Given an author reference, return the biographical record for the referenced person.
     *

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
@@ -22,7 +21,6 @@ import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.PGObjectNotSupportedException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
@@ -133,50 +131,56 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Person getPerson(String personId) throws NoSuchCatalogRecordException
    {
-      throw new UnsupportedOperationException();
+      try {
+         return getPerson(Long.parseLong(personId));
+      }
+      catch (NumberFormatException nfe)
+      {
+         throw new NoSuchCatalogRecordException("Could not find record for person [" + personId + "]");
+      }
    }
 
    @Override
-   public Person getPerson(long personId) throws NoSuchCatalogRecordException
+   public Person getPerson(final long personId) throws NoSuchCatalogRecordException
    {
-      // TODO Jesse - update to use string-based identifiers. Keep DB autoincremnt long around but add
-      //      additional field. For now, we'll use the supplied DB id as the string id, but this may
-      //      change in the near future.
-      //      THEN, delegate this method to getPerson(String).
-//      return getPerson(Long.toString(personId));
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
-      final long id = personId;
       DbExecTask<Person> query = new DbExecTask<Person>()
       {
-         PersonImpl figureRef;
          @Override
-         public Person execute(Connection conn) throws Exception
+         public Person execute(Connection conn) throws NoSuchCatalogRecordException, InterruptedException
          {
+            if (Thread.interrupted())
+               throw new InterruptedException();
+
             try (PreparedStatement ps = conn.prepareStatement(querySql))
             {
-               ps.setLong(1, id);
+               PersonImpl result;
+               ps.setLong(1, personId);
                try (ResultSet rs = ps.executeQuery())
                {
-                  PGobject pgo = new PGobject();
+                  if (!rs.next())
+                     throw new NoSuchCatalogRecordException("Could not find record for person [" + personId + "]");
 
-                  while(rs.next())
+                  PGobject pgo = (PGobject)rs.getObject("historical_figure");
+                  String json = pgo.toString();
+                  try
                   {
-                     Object object = rs.getObject("historical_figure");
-                     if (object instanceof PGobject)
-                        pgo = (PGobject)object;
-                     else
-                        throw new PGObjectNotSupportedException("Peson Object is not an instance of PGobject");
-
-                     PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
-                     figureRef = new PersonImpl(parse);
+                     PersonDV dv = jsonMapper.parse(json, PersonDV.class);
+                     result = new PersonImpl(dv);
+                  }
+                  catch (JsonException je)
+                  {
+                     // NOTE: possible data leak. If this exception is propagated to someone who isn't authorized to see this record...
+                     throw new IllegalStateException("Cannot parse person from JSON:\n" + json, je);
                   }
                }
+
+               return result;
             }
-            catch (Exception e)
+            catch (SQLException e)
             {
-               DbTaskLogger.log(Level.SEVERE, "Person Implementation could not be added to the List of Works");
+               throw new IllegalStateException("Faield to retrieve person.", e);
             }
-            return figureRef;
          }
       };
 
@@ -184,9 +188,18 @@ public class PsqlPeopleRepo implements PeopleRepository
       {
          return exec.submit(query).get();
       }
-      catch (Exception e)
+      catch (ExecutionException e)
       {
-         throw new NoSuchCatalogRecordException();
+         Throwable cause = e.getCause();
+         if (cause instanceof NoSuchCatalogRecordException)
+            throw (NoSuchCatalogRecordException)cause;
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException)cause;
+
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve biographical record [" + personId + "]", e);
+      }
+      catch (InterruptedException e) {
+         throw new IllegalStateException("Failed to retrieve biographical record [" + personId + "]", e);
       }
    }
 
