@@ -23,7 +23,7 @@ define(function (require) {
         initialize: function (options) {
             this.router = options.router;
             this.childViews = [];
-            
+
             this.listenTo(this.model, 'sync', this.render);
         },
 
@@ -45,7 +45,7 @@ define(function (require) {
             this.model.get('titles').add(model);
 
             var view = new TitleSubform({ model: model, allowRemoval: true });
-            thsi.childViews.push(view);
+            this.childViews.push(view);
             var view$el = view.render().$el;
 
             view$el.hide();

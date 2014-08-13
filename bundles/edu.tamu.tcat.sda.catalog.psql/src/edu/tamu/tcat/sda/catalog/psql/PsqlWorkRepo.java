@@ -2,7 +2,6 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -116,7 +115,7 @@ public class PsqlWorkRepo implements WorkRepository
       PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
       exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
-   
+
    @Override
    public Iterable<Work> listWorks(String titleName)
    {
@@ -127,29 +126,15 @@ public class PsqlWorkRepo implements WorkRepository
       for (Work w : listWorks)
       {
          TitleDefinition titleDef = w.getTitle();
-         if (hasTitleName(titleDef.getCanonicalTitle(), titleName))
+
+         for (Title t : titleDef.getAlternateTitles())
          {
-            workResults.add(w);
-         }
-         else if (hasTitleName(titleDef.getShortTitle(), titleName))
-         {
-            workResults.add(w);
-         }
-         else if (hasTitleName(titleDef.getTitle(Locale.ENGLISH), titleName))
-         {
-            workResults.add(w);
-         }
-         else
-         {
-            for (Title t : titleDef.getAlternateTitles())
+            boolean titleFound = false;
+            titleFound = hasTitleName(t, titleName);
+            if (titleFound)
             {
-               boolean titleFound = false;
-               titleFound = hasTitleName(t, titleName);
-               if (titleFound)
-               {
-                  workResults.add(w);
-                  continue;
-               }
+               workResults.add(w);
+               continue;
             }
          }
 
@@ -160,12 +145,14 @@ public class PsqlWorkRepo implements WorkRepository
 
    private boolean hasTitleName(Title title, String titleName)
    {
-      boolean foundTitle = false;
+      String test = title.getFullTitle();
+      if (test != null && test.toLowerCase().contains(titleName))
+         return true;
 
-      foundTitle = title.getFullTitle().contains(titleName);
-      if (!foundTitle)
-         foundTitle = title.getTitle().contains(titleName);
+      test = title.getTitle();
+      if (test != null && test.toLowerCase().contains(titleName))
+         return true;
 
-      return foundTitle;
+      return false;
    }
 }
