@@ -74,7 +74,7 @@
     <repository>
       <id>Eclipse Platform</id>
       <layout>p2</layout>
-      <url>${repo-base-url}/Eclipse%20Repository%20Mirror/lastSuccessfulBuild/artifact/target/repository/</url>
+      <url>${repo-base-url}/Eclipse.Repository.Mirror.Luna/lastSuccessfulBuild/artifact/target/repository/</url>
     </repository>
     <repository>
       <id>Eclipse Orbit</id>

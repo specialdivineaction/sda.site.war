@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="117">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="118">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="jackson.feature.feature.group" version="2.3.1"/>
 <repository location="https://build.citd.tamu.edu/hudson/job/Jackson.P2/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.birt.feature.group" version="4.2.2.v201301281649-ClBI9nGZcVSofEz-Xuz0n-ruJtUm"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.9.0.v20130604-2047"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.3.0.v20130605-2000"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20130521-0416"/>
-<unit id="org.eclipse.equinox.servletbridge" version="1.2.300.v20130508-1243"/>
+<unit id="org.eclipse.birt.feature.group" version="4.4.0.v201405191524-DPEp7FGixAot6DLz0hXcUqaHoLSX"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140606-1445"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140603-1326"/>
+<unit id="org.eclipse.equinox.servletbridge" version="1.3.0.v20140430-1556"/>
 <unit id="org.eclipse.e4.xwt.feature.feature.group" version="0.9.1.v20091126-1500-17Z2AkF7B98PAL03211"/>
-<repository location="https://build.citd.tamu.edu/hudson/job/Eclipse%20Repository%20Mirror/lastSuccessfulBuild/artifact/target/repository"/>
+<repository location="https://build.citd.tamu.edu/hudson/job/Eclipse.Repository.Mirror.Luna/lastSuccessfulBuild/artifact/target/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="com.google.guava" version="12.0.0.v201212092141"/>
