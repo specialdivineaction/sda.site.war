@@ -3,11 +3,8 @@ package edu.tamu.tcat.sda.catalog.rest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -26,13 +23,8 @@ import javax.ws.rs.core.UriInfo;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
@@ -106,7 +98,7 @@ public class WorksResource
       try
       {
          Work result = workObserver.getResult();
-         return convertWorkResult(result);
+         return new WorkDV(result);
       }
       catch (Exception e)
       {
@@ -126,7 +118,7 @@ public class WorksResource
       try
       {
          Work result = workObserver.getResult();
-         return convertWorkResult(result);
+         return new WorkDV(result);
       }
       catch (Exception e)
       {
@@ -139,17 +131,8 @@ public class WorksResource
    @Produces(MediaType.APPLICATION_JSON)
    public WorkDV getWork(@PathParam(value = "workid") int id) throws NoSuchCatalogRecordException
    {
-      GetWorkObserver workObserver = new GetWorkObserver();
-      repo.getWork(id, workObserver);
-
-      try
-      {
-         return convertWorkResult(workObserver.getResult());
-      }
-      catch (Exception e)
-      {
-         throw new IllegalStateException("Unable to retrieve work using workid:" + id , e);
-      }
+      Work w = repo.getWork(id);
+      return new WorkDV(w);
    }
 
    @GET
@@ -237,92 +220,5 @@ public class WorksResource
 
          return result;
       }
-   }
-
-   private static final class GetWorkObserver extends DataUpdateObserverAdapter<Work>
-   {
-      private final CountDownLatch latch;
-
-      private volatile Work result;
-      private volatile ResourceCreationException exception = null;
-
-      GetWorkObserver()
-      {
-         latch = new CountDownLatch(1);
-      }
-
-      @Override
-      protected void onFinish(Work work)
-      {
-         this.result = work;
-         latch.countDown();
-      }
-
-      @Override
-      protected void onError(String message, Exception ex)
-      {
-         // TODO this should be a 500 error - repo could not create the resource, likely SQL
-         //      error. We should log. Possibly send message to admin.
-         exception = new ResourceCreationException(message, ex);
-         latch.countDown();
-      }
-
-      public Work getResult() throws Exception
-      {
-         // TODO need semantic exception
-
-         try
-         {
-            // HACK: hard coded timeout
-            latch.await(5, TimeUnit.SECONDS);
-         }
-         catch (InterruptedException ex)
-         {
-            // TODO DB time out. . . . may have succeeded, client should not retry.
-            // FIXME need to be able to cancel execution!
-            this.cancel();
-         }
-
-         if (exception != null)
-            throw exception;
-
-         if (result == null)
-            throw new IllegalStateException("Failed to obtain work/works");
-
-         return result;
-      }
-   }
-
-   private WorkDV convertWorkResult(Work result)
-   {
-      List<AuthorRefDV> authRefs = new ArrayList<>();
-      List<AuthorRefDV> otherAuthRefs = new ArrayList<>();
-      Set<TitleDV> titles = new HashSet<>();
-      WorkDV workDV = new WorkDV();
-
-      for (Title title : result.getTitle().getAlternateTitles())
-      {
-         titles.add(new TitleDV(title));
-      }
-
-      for (AuthorReference authRef : result.getAuthors())
-      {
-         authRefs.add(new AuthorRefDV(authRef));
-      }
-
-      for (AuthorReference authRef : result.getOtherAuthors())
-      {
-         otherAuthRefs.add(new AuthorRefDV(authRef));
-      }
-
-      workDV.id = result.getId();
-      workDV.authors = authRefs;
-      workDV.otherAuthors = otherAuthRefs;
-      workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-      workDV.titles = titles;
-      workDV.series = result.getSeries();
-      workDV.summary = result.getSummary();
-
-      return workDV;
    }
 }

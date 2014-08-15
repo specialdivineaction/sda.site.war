@@ -8,11 +8,12 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public interface WorkRepository extends DataStore
 {
-   Iterable<Work> listWorks() throws NoSuchCatalogRecordException;      // TODO must create a repeatable, pageable, identifiable result set.
+   Iterable<Work> listWorks();      // TODO must create a repeatable, pageable, identifiable result set.
 
-   Iterable<Work> listWorks(String title) throws NoSuchCatalogRecordException;
+   Iterable<Work> listWorks(String title);
 
-   Work getWork(int workId, DataUpdateObserver<Work> observer) throws NoSuchCatalogRecordException;
+   Work getWork(int workId) throws NoSuchCatalogRecordException;
+
    /**
     * Given an author reference, return the biographical record for the referenced person.
     *

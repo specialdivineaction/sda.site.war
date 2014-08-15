@@ -6,13 +6,13 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
-import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlGetWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
@@ -80,7 +80,7 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public Iterable<Work> listWorks() throws NoSuchCatalogRecordException
+   public Iterable<Work> listWorks()
    {
       PsqlListWorksTask task = taskProvider.makeListWorksTask();
 
@@ -88,15 +88,16 @@ public class PsqlWorkRepo implements WorkRepository
       Iterable<Work> iterable = null;
       try
       {
+         // HACK: could block forever.
          iterable = submit.get();
       }
       catch (ExecutionException e)
       {
-         Throwable cause = e.getCause();
-         if (cause instanceof NoSuchCatalogRecordException)
-            throw (NoSuchCatalogRecordException)cause;
-         if (cause instanceof RuntimeException)
-            throw (RuntimeException)cause;
+//         Throwable cause = e.getCause();
+//         if (cause instanceof NoSuchCatalogRecordException)
+//            throw (NoSuchCatalogRecordException)cause;
+//         if (cause instanceof RuntimeException)
+//            throw (RuntimeException)cause;
 
          throw new IllegalStateException("Unexpected problems while attempting to retrieve work records " , e);
       }
@@ -122,7 +123,7 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public Iterable<Work> listWorks(String titleName) throws NoSuchCatalogRecordException
+   public Iterable<Work> listWorks(String titleName)
    {
       List<Work> workResults = new ArrayList<>();
       Iterable<Work> listWorks = listWorks();
@@ -143,17 +144,17 @@ public class PsqlWorkRepo implements WorkRepository
             }
          }
       }
+
       return workResults;
    }
 
    @Override
-   public Work getWork(int workId, DataUpdateObserver<Work> observer) throws NoSuchCatalogRecordException
+   public Work getWork(int workId) throws NoSuchCatalogRecordException
    {
-      PsqlGetWorkTask task = taskProvider.makeGetWorkTask(workId);
-      Future<Work> submitedWork = exec.submit(new ObservableTaskWrapper<>(task, observer));
+      DbExecTask<Work> task = taskProvider.makeGetWorkTask(workId);
       try
       {
-         return submitedWork.get();
+         return exec.submit(task).get();
       }
       catch (ExecutionException e)
       {
@@ -163,10 +164,10 @@ public class PsqlWorkRepo implements WorkRepository
          if (cause instanceof RuntimeException)
             throw (RuntimeException)cause;
 
-         throw new IllegalStateException("Unexpected problems while attempting to retrieve work records " , e);
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve bibliographic entry [" + workId +"]" , e);
       }
       catch (InterruptedException e) {
-         throw new IllegalStateException("Failed to retrieve work records", e);
+         throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
       }
    }
 

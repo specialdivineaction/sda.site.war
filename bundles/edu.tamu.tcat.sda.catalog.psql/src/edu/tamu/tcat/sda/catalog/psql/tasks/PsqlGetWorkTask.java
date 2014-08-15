@@ -10,6 +10,7 @@ import org.postgresql.util.PGobject;
 import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -28,14 +29,16 @@ public class PsqlGetWorkTask implements DbExecTask<Work>
    }
 
    @Override
-   public Work execute(Connection conn)// throws Exception
+   public Work execute(Connection conn) throws NoSuchCatalogRecordException
    {
       try (PreparedStatement ps = conn.prepareStatement(sql))
       {
          ps.setLong(1, workId);
-         ResultSet rs = ps.executeQuery();
-         if(rs.next())
+         try (ResultSet rs = ps.executeQuery())
          {
+            if (!rs.next())
+               throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + workId);
+
             PGobject pgo = (PGobject)rs.getObject("work");
             String workJson = pgo.toString();
             try
@@ -48,11 +51,10 @@ public class PsqlGetWorkTask implements DbExecTask<Work>
                throw new IllegalStateException("Failed to parse bibliographic record\n" + workJson, e);
             }
          }
-         return null;
       }
       catch (SQLException e)
       {
-         throw new IllegalStateException("Failed to list bibliographic entry", e);
+         throw new IllegalStateException("Failed to retrieve bibliographic entry [entry id = " + workId + "]", e);
       }
    }
 }
