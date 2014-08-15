@@ -35,7 +35,7 @@
 
     <tycho-groupid>org.eclipse.tycho</tycho-groupid>
     <tycho.showEclipseLog>true</tycho.showEclipseLog>
-    <tycho-version>0.20.0</tycho-version>
+    <tycho-version>0.21.0</tycho-version>
     <tycho-extras-version>${tycho-version}</tycho-extras-version>
     
     <replacer-groupid>com.google.code.maven-replacer-plugin</replacer-groupid>
@@ -65,9 +65,6 @@
     
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json</module>
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json.jackson</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.db</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.db.psql</module>
-    
   </modules>
 
   <repositories>
@@ -94,11 +91,16 @@
       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/</url>
     </repository>
     
-<!--     <repository> -->
-<!--       <id>Auth</id> -->
-<!--       <layout>p2</layout> -->
-<!--       <url>${repo-base-url}/JAX-RS.Mirror/lastSuccessfulBuild/artifact/targetPlatform/</url> -->
-<!--     </repository> -->
+    <repository>
+      <id>DB</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/oss.db.utils-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+    <repository>
+      <id>Auth</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/oss.auth-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
     <repository>
       <id>Crypto</id>
       <layout>p2</layout>
