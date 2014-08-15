@@ -6,8 +6,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import edu.tamu.tcat.oss.db.DbExecTask;
 import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
@@ -86,17 +88,21 @@ public class PsqlWorkRepo implements WorkRepository
       Iterable<Work> iterable = null;
       try
       {
+         // HACK: could block forever.
          iterable = submit.get();
-      }
-      catch (InterruptedException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
       }
       catch (ExecutionException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+//         Throwable cause = e.getCause();
+//         if (cause instanceof NoSuchCatalogRecordException)
+//            throw (NoSuchCatalogRecordException)cause;
+//         if (cause instanceof RuntimeException)
+//            throw (RuntimeException)cause;
+
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve work records " , e);
+      }
+      catch (InterruptedException e) {
+         throw new IllegalStateException("Failed to retrieve work records", e);
       }
 
       return  iterable;
@@ -137,10 +143,32 @@ public class PsqlWorkRepo implements WorkRepository
                continue;
             }
          }
-
       }
 
       return workResults;
+   }
+
+   @Override
+   public Work getWork(int workId) throws NoSuchCatalogRecordException
+   {
+      DbExecTask<Work> task = taskProvider.makeGetWorkTask(workId);
+      try
+      {
+         return exec.submit(task).get();
+      }
+      catch (ExecutionException e)
+      {
+         Throwable cause = e.getCause();
+         if (cause instanceof NoSuchCatalogRecordException)
+            throw (NoSuchCatalogRecordException)cause;
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException)cause;
+
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve bibliographic entry [" + workId +"]" , e);
+      }
+      catch (InterruptedException e) {
+         throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
+      }
    }
 
    private boolean hasTitleName(Title title, String titleName)

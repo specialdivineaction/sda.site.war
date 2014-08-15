@@ -48,6 +48,13 @@ public class PsqlWorkDbTasksProvider
       return new PsqlListWorksTask(mapper);
    }
 
+   public PsqlGetWorkTask makeGetWorkTask(int id)
+   {
+      Objects.requireNonNull(mapper, "No JSON mapper configured");
+
+      return new PsqlGetWorkTask(id, mapper);
+   }
+
    public <X> X getTask(Class<X> type, long timeout)
    {
       // TODO implement this.
