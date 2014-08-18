@@ -2,10 +2,6 @@ package edu.tamu.tcat.sda.catalog.psql.provider;
 
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -31,7 +27,6 @@ public class PsqlDataSourceProvider implements DataSourceProvider
    public static final String PROP_MIN_EVICTION = "db.postgres.eviction.min";
    public static final String PROP_BETWEEN_EVICTION = "db.postgres.eviction.between";
 
-   private ExecutorService executor;
    private DataSource dataSource;
    private ConfigurationProperties props;
    
@@ -82,8 +77,6 @@ public class PsqlDataSourceProvider implements DataSourceProvider
             basic.setMinEvictableIdleTimeMillis(minEviction);
             basic.setTimeBetweenEvictionRunsMillis(betweenEviction);
          }
-
-         this.executor = Executors.newSingleThreadExecutor();
       }
       catch (Exception e)
       {
@@ -93,25 +86,6 @@ public class PsqlDataSourceProvider implements DataSourceProvider
 
    public void dispose()
    {
-      if (executor != null)
-      {
-         boolean terminated = false;
-         try
-         {
-            executor.shutdown();
-            terminated = executor.awaitTermination(30, TimeUnit.SECONDS);
-         }
-         catch (InterruptedException e)
-         {
-            terminated = false;
-         }
-
-         if (!terminated)
-         {
-            DB_LOGGER.log(Level.SEVERE, "DBExecutor failed to complete all tasks.");
-            executor.shutdownNow();
-         }
-      }
    }
    
    @Override
