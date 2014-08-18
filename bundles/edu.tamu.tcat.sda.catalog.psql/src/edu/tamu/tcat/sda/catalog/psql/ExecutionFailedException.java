@@ -1,4 +1,4 @@
-package edu.tamu.tcat.oss.db;
+package edu.tamu.tcat.sda.catalog.psql;
 
 public class ExecutionFailedException extends Exception
 {

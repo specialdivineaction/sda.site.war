@@ -3,11 +3,8 @@ package edu.tamu.tcat.sda.catalog.rest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -25,13 +22,9 @@ import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.Title;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
@@ -70,7 +63,7 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkDV> listWorks(@Context UriInfo ctx) throws CatalogRepoException
+   public List<WorkDV> listWorks(@Context UriInfo ctx) throws CatalogRepoException, NoSuchCatalogRecordException
    {
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
       MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
@@ -102,44 +95,14 @@ public class WorksResource
    {
       CreateWorkObserver workObserver = new CreateWorkObserver();
       repo.create(work, workObserver);
-
-      List<AuthorRefDV> authRefs = new ArrayList<>();
-      List<AuthorRefDV> otherAuthRefs = new ArrayList<>();
-      Set<TitleDV> titles = new HashSet<>();
       try
       {
          Work result = workObserver.getResult();
-         WorkDV workDV = new WorkDV();
-
-         for (Title title : result.getTitle().getAlternateTitles())
-         {
-            titles.add(new TitleDV(title));
-         }
-
-         for (AuthorReference authRef : result.getAuthors())
-         {
-            authRefs.add(new AuthorRefDV(authRef));
-         }
-
-         for (AuthorReference authRef : result.getOtherAuthors())
-         {
-            otherAuthRefs.add(new AuthorRefDV(authRef));
-         }
-
-         workDV.id = result.getId();
-         workDV.authors = authRefs;
-         workDV.otherAuthors = otherAuthRefs;
-         workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-         workDV.titles = titles;
-         workDV.series = result.getSeries();
-         workDV.summary = result.getSummary();
-
-         return workDV;
+         return new WorkDV(result);
       }
       catch (Exception e)
       {
-         e.printStackTrace();
-         return null;
+         throw new IllegalStateException("Unable to create work", e);
       }
    }
 
@@ -152,58 +115,24 @@ public class WorksResource
       CreateWorkObserver workObserver = new CreateWorkObserver();
       repo.update(work, workObserver);
 
-      List<AuthorRefDV> authRefs = new ArrayList<>();
-      List<AuthorRefDV> otherAuthRefs = new ArrayList<>();
-      Set<TitleDV> titles = new HashSet<>();
       try
       {
          Work result = workObserver.getResult();
-         WorkDV workDV = new WorkDV();
-
-
-         for (Title title : result.getTitle().getAlternateTitles())
-         {
-            titles.add(new TitleDV(title));
-         }
-
-         for (AuthorReference authRef : result.getAuthors())
-         {
-            authRefs.add(new AuthorRefDV(authRef));
-         }
-
-         for (AuthorReference authRef : result.getOtherAuthors())
-         {
-            otherAuthRefs.add(new AuthorRefDV(authRef));
-         }
-
-         workDV.id = result.getId();
-         workDV.authors = authRefs;
-         workDV.otherAuthors = otherAuthRefs;
-         workDV.pubInfo = new PublicationInfoDV(result.getPublicationInfo());
-         workDV.titles = titles;
-         workDV.series = result.getSeries();
-         workDV.summary = result.getSummary();
-
-         return workDV;
+         return new WorkDV(result);
       }
       catch (Exception e)
       {
-         e.printStackTrace();
-         return null;
+         throw new IllegalStateException("Unable to update work", e);
       }
    }
 
    @GET
    @Path("{workid}")
-   @Produces(MediaType.TEXT_HTML)
-   public String getWork(@PathParam(value = "workid") int id)
+   @Produces(MediaType.APPLICATION_JSON)
+   public WorkDV getWork(@PathParam(value = "workid") int id) throws NoSuchCatalogRecordException
    {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<html><head><title>").append("Document: ").append(id).append("</title></head>")
-        .append("<h1> Work ").append(id).append("</h1>")
-        .append("</html>");
-
-      return sb.toString();
+      Work w = repo.getWork(id);
+      return new WorkDV(w);
    }
 
    @GET
@@ -274,7 +203,7 @@ public class WorksResource
          try
          {
             // HACK: hard coded timeout
-            latch.await(20, TimeUnit.MINUTES);
+            latch.await(5, TimeUnit.SECONDS);
          }
          catch (InterruptedException ex)
          {
@@ -287,7 +216,7 @@ public class WorksResource
             throw exception;
 
          if (result == null)
-            throw new IllegalStateException("Failed to obtain created person.");
+            throw new IllegalStateException("Failed to obtain created work.");
 
          return result;
       }

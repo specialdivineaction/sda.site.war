@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataStore;
@@ -10,6 +11,9 @@ public interface WorkRepository extends DataStore
    Iterable<Work> listWorks();      // TODO must create a repeatable, pageable, identifiable result set.
 
    Iterable<Work> listWorks(String title);
+
+   Work getWork(int workId) throws NoSuchCatalogRecordException;
+
    /**
     * Given an author reference, return the biographical record for the referenced person.
     *

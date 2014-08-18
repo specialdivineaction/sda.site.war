@@ -8,15 +8,15 @@ import java.sql.Statement;
 
 import org.postgresql.util.PGobject;
 
-import edu.tamu.tcat.oss.db.DbExecTask;
-import edu.tamu.tcat.oss.db.ExecutionFailedException;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
-public final class PsqlCreateWorkTask implements DbExecTask<Work>
+public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<Work>
 {
    private final static String insertSql = "INSERT INTO works (work) VALUES(?)";
    private final static String updateSql = "UPDATE works "

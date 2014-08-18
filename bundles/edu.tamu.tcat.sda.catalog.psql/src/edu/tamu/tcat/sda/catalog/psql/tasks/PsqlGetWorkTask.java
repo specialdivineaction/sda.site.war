@@ -4,57 +4,57 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.postgresql.util.PGobject;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
-public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterable<Work>>
+public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
 {
-
-   private final static String sql = "SELECT work FROM works";
+   private final static String sql = "SELECT work FROM works WHERE id=?";
 
    private final JsonMapper jsonMapper;
+   private final int workId;
 
-   PsqlListWorksTask(JsonMapper jsonMapper)
+   PsqlGetWorkTask(int id, JsonMapper jsonMapper)
    {
       this.jsonMapper = jsonMapper;
+      this.workId = id;
    }
 
    @Override
-   public Iterable<Work> execute(Connection conn)// throws Exception
+   public Work execute(Connection conn) throws NoSuchCatalogRecordException
    {
-      List<Work> works = new ArrayList<>();
-      try (PreparedStatement ps = conn.prepareStatement(sql);
-           ResultSet rs = ps.executeQuery())
+      try (PreparedStatement ps = conn.prepareStatement(sql))
       {
-         while(rs.next())
+         ps.setLong(1, workId);
+         try (ResultSet rs = ps.executeQuery())
          {
+            if (!rs.next())
+               throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + workId);
+
             PGobject pgo = (PGobject)rs.getObject("work");
             String workJson = pgo.toString();
             try
             {
                WorkDV dv = jsonMapper.parse(workJson, WorkDV.class);
-               works.add(new WorkImpl(dv));
+               return new WorkImpl(dv);
             }
             catch (JsonException e)
             {
                throw new IllegalStateException("Failed to parse bibliographic record\n" + workJson, e);
             }
          }
-
-         return works;
       }
       catch (SQLException e)
       {
-         throw new IllegalStateException("Failed to list bibliographic entries", e);
+         throw new IllegalStateException("Failed to retrieve bibliographic entry [entry id = " + workId + "]", e);
       }
    }
 }

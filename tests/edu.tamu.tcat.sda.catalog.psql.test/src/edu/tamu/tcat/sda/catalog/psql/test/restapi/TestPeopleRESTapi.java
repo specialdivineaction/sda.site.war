@@ -29,10 +29,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
-import edu.tamu.tcat.oss.db.DbExecTask;
-import edu.tamu.tcat.oss.db.DbExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
@@ -83,7 +82,7 @@ public class TestPeopleRESTapi
    public static void cleanDB() throws InterruptedException, ExecutionException
    {
       final String cleanDB = "DELETE FROM people";
-      DbExecTask<Void> delete = new DbExecTask<Void>()
+      SqlExecutor.ExecutorTask<Void> delete = new SqlExecutor.ExecutorTask<Void>()
       {
 
          @Override
@@ -103,7 +102,7 @@ public class TestPeopleRESTapi
 
       try (ServiceHelper helper = new ServiceHelper(Activator.getDefault().getContext()))
       {
-         DbExecutor executor = helper.waitForService(DbExecutor.class, 10000);
+         SqlExecutor executor = helper.waitForService(SqlExecutor.class, 10000);
          Future<Void> future = executor.submit(delete);
 
          future.get();
