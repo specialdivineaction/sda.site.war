@@ -14,9 +14,7 @@ import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
-import edu.tamu.tcat.oss.db.DbExecTask;
-import edu.tamu.tcat.oss.db.DbExecutor;
-import edu.tamu.tcat.oss.db.ExecutionFailedException;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
@@ -32,14 +30,14 @@ public class PsqlPeopleRepo implements PeopleRepository
 {
    private static final Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.people.db.errors");
 
-   private DbExecutor exec;
+   private SqlExecutor exec;
    private JsonMapper jsonMapper;
 
    public PsqlPeopleRepo()
    {
    }
 
-   public void setDatabaseExecutor(DbExecutor exec)
+   public void setDatabaseExecutor(SqlExecutor exec)
    {
       this.exec = exec;
    }
@@ -69,9 +67,8 @@ public class PsqlPeopleRepo implements PeopleRepository
 
       final String querySql = "SELECT historical_figure FROM people";
 
-      DbExecTask<List<Person>> query = new DbExecTask<List<Person>>()
+      SqlExecutor.ExecutorTask<List<Person>> query = new SqlExecutor.ExecutorTask<List<Person>>()
       {
-
          @Override
          public List<Person> execute(Connection conn) throws Exception
          {
@@ -144,7 +141,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    public Person getPerson(final long personId) throws NoSuchCatalogRecordException
    {
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
-      DbExecTask<Person> query = new DbExecTask<Person>()
+      SqlExecutor.ExecutorTask<Person> query = new SqlExecutor.ExecutorTask<Person>()
       {
          @Override
          public Person execute(Connection conn) throws NoSuchCatalogRecordException, InterruptedException
@@ -212,7 +209,7 @@ public class PsqlPeopleRepo implements PeopleRepository
                                + " SET historical_figure = ?"
                                + " WHERE id = ?";
 
-      DbExecTask<Person> createPersonTask = new DbExecTask<Person>()
+      SqlExecutor.ExecutorTask<Person> createPersonTask = new SqlExecutor.ExecutorTask<Person>()
       {
          private final String createPersonId(Connection conn) throws InterruptedException, ExecutionFailedException
          {
@@ -287,7 +284,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       final String updateSql = "UPDATE people "
             + " SET historical_figure = ?"
             + " WHERE id = ?";
-      DbExecTask<Person> task1 = new DbExecTask<Person>()
+      SqlExecutor.ExecutorTask<Person> task1 = new SqlExecutor.ExecutorTask<Person>()
       {
          @Override
          public Person execute(Connection conn) throws SQLException
@@ -322,7 +319,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    {
       // TODO: Add another column for active.
       final String updateSql = "";
-      DbExecTask<Void> deleteTask = new DbExecTask<Void>()
+      SqlExecutor.ExecutorTask<Void> deleteTask = new SqlExecutor.ExecutorTask<Void>()
       {
          @Override
          public Void execute(Connection conn) throws SQLException
