@@ -23,7 +23,7 @@ import edu.tamu.tcat.account.login.LoginProvider;
 import edu.tamu.tcat.account.store.AccountNotFoundException;
 import edu.tamu.tcat.account.store.AccountStore;
 import edu.tamu.tcat.crypto.CryptoProvider;
-import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 
 @Path("/accounts")
 public class AccountsResource
@@ -31,7 +31,7 @@ public class AccountsResource
    private static final String LOGIN_PROVIDER_DB = "db.basic";
    
    private CryptoProvider crypto;
-   private DbExecutor dbExec;
+   private SqlExecutor dbExec;
    private AccountStore accountStore;
    
    public void bind(CryptoProvider cp)
@@ -39,7 +39,7 @@ public class AccountsResource
       crypto = cp;
    }
 
-   public void bind(DbExecutor db)
+   public void bind(SqlExecutor db)
    {
       dbExec = db;
    }
