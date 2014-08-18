@@ -2,15 +2,15 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.sql.Connection;
 
-import edu.tamu.tcat.oss.db.DbExecTask;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
-public class ObservableTaskWrapper<R> implements DbExecTask<R> 
+public class ObservableTaskWrapper<R> implements SqlExecutor.ExecutorTask<R>
 {
    private final DataUpdateObserver<R> observer;
-   private final DbExecTask<R> task;
+   private final SqlExecutor.ExecutorTask<R> task;
    
-   public ObservableTaskWrapper(DbExecTask<R> task, DataUpdateObserver<R> observer)
+   public ObservableTaskWrapper(SqlExecutor.ExecutorTask<R> task, DataUpdateObserver<R> observer)
    {
       this.task = task;
       this.observer = observer;
@@ -18,18 +18,18 @@ public class ObservableTaskWrapper<R> implements DbExecTask<R>
 
    /**
     * In the event that either the wrapped task or the observer throw an exception, this
-    * will attempt to notify the observer and propagate the exception. Since tasks will 
-    * typically be run in an {@code Executor}, this make the exception available to clients 
+    * will attempt to notify the observer and propagate the exception. Since tasks will
+    * typically be run in an {@code Executor}, this make the exception available to clients
     * via the Java concurrency API's {@code Future} interface.
     * 
     * <p>
-    * Note that this may return null if the task is canceled by the observer or if the 
+    * Note that this may return null if the task is canceled by the observer or if the
     * underlying task returns null.
     */
    @Override
    public R execute(Connection conn) throws Exception
    {
-      try 
+      try
       {
          checkConnection(conn);
 
@@ -41,7 +41,7 @@ public class ObservableTaskWrapper<R> implements DbExecTask<R>
 
          observer.start();
          return runTask(conn);
-      } 
+      }
       catch(Exception ex)
       {
          if (!observer.isCompleted())
@@ -53,7 +53,7 @@ public class ObservableTaskWrapper<R> implements DbExecTask<R>
 
    private R runTask(Connection conn) throws Exception
    {
-      try 
+      try
       {
          R result = task.execute(conn);
          observer.finish(result);

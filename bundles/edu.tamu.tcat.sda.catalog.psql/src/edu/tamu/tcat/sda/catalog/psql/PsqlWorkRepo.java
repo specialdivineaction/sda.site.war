@@ -6,8 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import edu.tamu.tcat.oss.db.DbExecTask;
-import edu.tamu.tcat.oss.db.DbExecutor;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
@@ -26,7 +25,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
-   private DbExecutor exec;
+   private SqlExecutor exec;
    private JsonMapper jsonMapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
@@ -35,7 +34,7 @@ public class PsqlWorkRepo implements WorkRepository
    {
    }
 
-   public void setDatabaseExecutor(DbExecutor exec)
+   public void setDatabaseExecutor(SqlExecutor exec)
    {
       this.exec = exec;
    }
@@ -151,7 +150,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public Work getWork(int workId) throws NoSuchCatalogRecordException
    {
-      DbExecTask<Work> task = taskProvider.makeGetWorkTask(workId);
+      SqlExecutor.ExecutorTask<Work> task = taskProvider.makeGetWorkTask(workId);
       try
       {
          return exec.submit(task).get();
