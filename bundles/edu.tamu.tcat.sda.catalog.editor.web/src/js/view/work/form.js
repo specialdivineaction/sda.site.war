@@ -37,7 +37,7 @@ define(function (require) {
             'click .add-other-author': 'addOtherAuthorForm',
             'click .add-title': 'addTitleForm',
             'submit': 'submit',
-            'click .save-add-button': function (evt) { this.submit(evt, true); }
+            'click .save-new-button': function (evt) { this.submit(evt, true); }
         },
 
         addTitleForm: function (evt) {
@@ -83,6 +83,8 @@ define(function (require) {
 
         submit: function (evt, saveAndNew) {
             evt.preventDefault();
+
+            console.log(saveAndNew);
 
             var _this = this;
             this.model.save({}, {
