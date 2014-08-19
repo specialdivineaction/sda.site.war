@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.BeanParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -59,7 +60,11 @@ public class AccountsResource
    @Path ("/authenticate")
    @Produces (MediaType.APPLICATION_JSON)
    @TokenProviding(payloadType=UUID.class)
-   public AccountDV authenticate(@FormParam("username") String username, @FormParam("password") String password, @BeanParam ContextBean bean) throws AccountException
+   public AccountDV authenticate(@BeanParam ContextBean bean,
+                                 @FormParam("username") String username,
+                                 @FormParam("password") String password,
+                                 @FormParam("provider") @DefaultValue(LOGIN_PROVIDER_DB) String providerId)
+   throws AccountException
    {
       if (username == null || username.length() == 0)
          throw new AccountException("Username not specified");
@@ -67,7 +72,7 @@ public class AccountsResource
          throw new AccountException("Password not specified");
       
       //TODO: later, allow the user to select a Login Provider
-      String providerId = LOGIN_PROVIDER_DB;
+      //String providerId = LOGIN_PROVIDER_DB;
       
       LoginProvider loginProvider = null;
       if (providerId.equals(LOGIN_PROVIDER_DB))
@@ -106,5 +111,4 @@ public class AccountsResource
          uuid = acct.getId();
       }
    }
-
 }

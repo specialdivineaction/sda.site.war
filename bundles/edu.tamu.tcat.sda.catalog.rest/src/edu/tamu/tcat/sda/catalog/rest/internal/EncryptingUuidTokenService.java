@@ -14,18 +14,31 @@ import edu.tamu.tcat.account.token.TokenService;
 import edu.tamu.tcat.crypto.CryptoProvider;
 import edu.tamu.tcat.crypto.SecureToken;
 import edu.tamu.tcat.crypto.TokenException;
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 
 public class EncryptingUuidTokenService implements TokenService<UUID>
 {
+   private static final String PROP_TOKEN_KEY = "token.key";
+   
+   //TODO: remove these default values and require a config property to be set
+   @Deprecated
    final String keyb64_128 = "blahDiddlyBlahSchmacko";
+   @Deprecated
    final String keyb64_256 = "blahDiddlyBlahSchmackety+ABitLongerThanThat+";
+   
    private SecureToken secureToken;
    
    private CryptoProvider crypto;
+   private ConfigurationProperties props;
    
    public void bind(CryptoProvider cp)
    {
       crypto = cp;
+   }
+   
+   public void bind(ConfigurationProperties cp)
+   {
+      props = cp;
    }
    
    public void activate() throws AccountTokenException
@@ -33,7 +46,9 @@ public class EncryptingUuidTokenService implements TokenService<UUID>
       byte[] key;
       try
       {
-         key = Base64.getDecoder().decode(keyb64_128);
+         String encryptionKey = props.getPropertyValue(PROP_TOKEN_KEY, String.class, keyb64_128);
+         
+         key = Base64.getDecoder().decode(encryptionKey);
       }
       catch (Exception e)
       {
