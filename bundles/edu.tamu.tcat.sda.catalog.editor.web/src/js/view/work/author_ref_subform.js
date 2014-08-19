@@ -47,10 +47,8 @@ define(function (require) {
 
         setAuthor: function (person) {
             this.model.set('authorId', person.id);
-
-            var name = person.getFormattedName();
-            this.model.set('name', name);
-            this.$('.linked-author').html(name);
+            this.model.set('name', person.getFullName());
+            this.$('.linked-author').html(person.getFormattedName());
         },
 
         render: function () {
