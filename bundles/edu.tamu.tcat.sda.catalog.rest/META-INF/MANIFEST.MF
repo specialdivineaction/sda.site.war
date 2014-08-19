@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: edu.tamu.tcat.sda.catalog.rest.internal.Activator
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  com.fasterxml.jackson.databind;version="2.3.1",
