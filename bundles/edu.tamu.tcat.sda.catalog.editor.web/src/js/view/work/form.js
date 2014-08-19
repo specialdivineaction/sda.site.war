@@ -18,6 +18,10 @@ define(function (require) {
 
         tagName: 'form',
 
+        attributes: {
+            autocomplete: 'on'
+        },
+
         template: require('tpl!templates/work/form.html.ejs'),
 
         initialize: function (options) {
