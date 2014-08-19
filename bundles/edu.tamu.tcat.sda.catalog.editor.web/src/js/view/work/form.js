@@ -84,8 +84,6 @@ define(function (require) {
         submit: function (evt, saveAndNew) {
             evt.preventDefault();
 
-            console.log(saveAndNew);
-
             var _this = this;
             this.model.save({}, {
                 success: function (model, response, options) {
