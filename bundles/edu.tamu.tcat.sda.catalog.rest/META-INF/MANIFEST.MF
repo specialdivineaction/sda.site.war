@@ -10,6 +10,16 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  com.fasterxml.jackson.databind;version="2.3.1",
+ edu.tamu.tcat.account;version="1.0.0",
+ edu.tamu.tcat.account.db.login;version="1.0.0",
+ edu.tamu.tcat.account.db.store;version="1.0.0",
+ edu.tamu.tcat.account.jaxrs.bean;version="1.0.0",
+ edu.tamu.tcat.account.jaxrs.provider.token;version="1.0.0",
+ edu.tamu.tcat.account.login;version="1.0.0",
+ edu.tamu.tcat.account.store;version="1.0.0",
+ edu.tamu.tcat.account.token;version="1.0.0",
+ edu.tamu.tcat.crypto;version="1.1.4",
+ edu.tamu.tcat.crypto.bouncycastle;version="1.1.0",
  edu.tamu.tcat.db.exec.sql;version="1.0.0",
  edu.tamu.tcat.db.postgresql.exec;version="1.0.0",
  edu.tamu.tcat.db.provider;version="1.0.0",
@@ -29,5 +39,5 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0"
 Service-Component: OSGI-INF/rest/works.xml,OSGI-INF/rest/people.xml,OSGI-INF/props.xml,OSGI-INF/dbexec.xml,OSGI-INF/peopleRepo.xml,OSGI-INF/workRepo.xml, OSGI-INF/json.xml,
- OSGI-INF/datasource.xml
+ OSGI-INF/rest/accounts.xml,OSGI-INF/crypto.xml,OSGI-INF/rest/feature.token.xml,OSGI-INF/accountstore.xml,OSGI-INF/datasource.xml
 Export-Package: edu.tamu.tcat.sda.catalog.rest
