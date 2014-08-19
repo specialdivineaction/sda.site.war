@@ -18,7 +18,10 @@ define(function (require) {
             return {
                 id: null,
                 authors: new AuthorRefCollection([new AuthorRef({ role: 'author' })]),
-                titles: new TitleCollection([new Title({ type: 'canonical' })]),
+                titles: new TitleCollection([
+                    new Title({ type: 'short' }),
+                    new Title({ type: 'canonical' })
+                ]),
                 otherAuthors: new AuthorRefCollection(),
                 pubInfo: new PublicationInfo(),
                 series: '',
