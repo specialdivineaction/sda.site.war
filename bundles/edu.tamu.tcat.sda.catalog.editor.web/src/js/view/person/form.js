@@ -16,6 +16,10 @@ define(function (require) {
 
         tagName: 'form',
 
+        attributes: {
+            autocomplete: 'on'
+        },
+
         template: require('tpl!templates/person/form.html.ejs'),
 
         initialize: function (options) {
