@@ -26,7 +26,7 @@ define(function (require) {
                 // 'success', 'info', 'warning', 'danger', and 'error' (aliased to 'danger')
                 type: 'info',
                 dismissible: true,
-                showTimer: true,
+                showTimer: false,
             });
 
             if (typeof this.options.admonition === 'undefined' || this.options.admonition === null)
