@@ -7,6 +7,21 @@ define(function (require) {
 
 
     var INFER_FORMATS = [
+        // year
+        'YYYY',
+
+        // month year
+        'MMMM-YYYY',
+        'MMM-YYYY',
+        'MM-YYYY',
+        'M-YYYY',
+
+        // year month
+        'YYYY-MMMM',
+        'YYYY-MMM',
+        'YYYY-MM',
+        'YYYY-M',
+
         // month day year
         'MMMM-DD-YYYY',
         'MMM-DD-YYYY',
@@ -29,22 +44,7 @@ define(function (require) {
 
         // year month day
         'YYYY-MM-DD',
-        'YYYY-M-D',
-
-        // month year
-        'MMMM-YYYY',
-        'MMM-YYYY',
-        'MM-YYYY',
-        'M-YYYY',
-
-        // year month
-        'YYYY-MMMM',
-        'YYYY-MMM',
-        'YYYY-MM',
-        'YYYY-M',
-
-        // year
-        'YYYY'
+        'YYYY-M-D'
     ];
 
 
