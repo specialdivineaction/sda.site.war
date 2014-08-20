@@ -1,51 +1,15 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
-        Moment   = require('moment');
+        Moment   = require('moment'),
 
+        inferMoment = require('js/util/moment/parse');
+
+    // attach epoxy to backbone
     require('backbone.epoxy');
 
-
-    var INFER_FORMATS = [
-        // year
-        'YYYY',
-
-        // month year
-        'MMMM-YYYY',
-        'MMM-YYYY',
-        'MM-YYYY',
-        'M-YYYY',
-
-        // year month
-        'YYYY-MMMM',
-        'YYYY-MMM',
-        'YYYY-MM',
-        'YYYY-M',
-
-        // month day year
-        'MMMM-DD-YYYY',
-        'MMM-DD-YYYY',
-        'MM-DD-YYYY',
-        'M-DD-YYYY',
-        'MMMM-D-YYYY',
-        'MMM-D-YYYY',
-        'MM-D-YYYY',
-        'M-D-YYYY',
-
-        // day month year
-        'DD-MMMM-YYYY',
-        'DD-MMM-YYYY',
-        'DD-MM-YYYY',
-        'DD-M-YYYY',
-        'D-MMMM-YYYY',
-        'D-MMM-YYYY',
-        'D-MM-YYYY',
-        'D-M-YYYY',
-
-        // year month day
-        'YYYY-MM-DD',
-        'YYYY-M-D'
-    ];
+    // attach dateValue handler to epoxy
+    require('js/util/epoxy/handlers/date_value');
 
 
     var DateDescriptionSubform = Backbone.Epoxy.View.extend({
@@ -62,47 +26,8 @@ define(function (require) {
             'keyup .display': 'inferDate'
         },
 
-        bindingHandlers: {
-            dateValue: {
-                set: function ($el, modelValue) {
-                    var m = Moment(modelValue);
-
-                    $el.parent()
-                        .removeClass('has-error has-success has-feedback')
-                        .find('.form-control-feedback').remove();
-
-                    if (m.isValid()) {
-                        $el.val(m.format('YYYY-MM-DD'));
-                        $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
-                    }
-                },
-                get: function ($el, oldValue, evt) {
-                    var parent = $el.parent();
-
-                    parent.removeClass('has-error has-success has-feedback');
-                    $el.siblings('.form-control-feedback').remove();
-
-                    var newValue = $el.val();
-                    if (newValue === '') return null;
-
-                    var m = Moment(newValue, INFER_FORMATS);
-                    $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
-
-                    if (m.isValid()) {
-                        parent.addClass('has-feedback has-success');
-                        $('<span>', {class: 'glyphicon glyphicon-ok form-control-feedback'}).appendTo(parent);
-                        return m.toISOString();
-                    } else {
-                        parent.addClass('has-feedback has-error');
-                        $('<span>', {class: 'glyphicon glyphicon-remove form-control-feedback'}).appendTo(parent);
-                        return null;
-                    }
-                }
-            }
-        },
-
         inferDate: function (evt) {
-            var m = Moment($(evt.target).val(), INFER_FORMATS);
+            var m = inferMoment($(evt.target).val());
             if (!m.isValid()) {
                 return;
             }
