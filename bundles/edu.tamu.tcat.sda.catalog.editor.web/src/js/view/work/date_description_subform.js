@@ -1,9 +1,15 @@
 define(function (require) {
 
     var Backbone = require('backbone'),
-        Moment   = require('moment');
+        Moment   = require('moment'),
 
+        inferMoment = require('js/util/moment/parse');
+
+    // attach epoxy to backbone
     require('backbone.epoxy');
+
+    // attach dateValue handler to epoxy
+    require('js/util/epoxy/handlers/date_value');
 
 
     var DateDescriptionSubform = Backbone.Epoxy.View.extend({
@@ -15,30 +21,20 @@ define(function (require) {
             '.display': 'value:display,events:["keyup"]'
         },
 
-        bindingHandlers: {
-            dateValue: {
-                set: function ($el, modelValue) {
-                    var m = Moment(modelValue);
-                    if (m.isValid()) {
-                        $el.val(m.format('YYYY-MM-DD'));
-                    }
-                },
-                get: function ($el, oldValue, evt) {
-                    $el.parent().removeClass('has-error');
+        events: {
+            'blur .date-value': function (evt) { this.valueSetAutomatically = !this.model.get('value'); },
+            'keyup .display': 'inferDate'
+        },
 
-                    var newValue = $el.val();
-                    if (newValue === '') return null;
+        inferDate: function (evt) {
+            var m = inferMoment($(evt.target).val());
+            if (!m.isValid()) {
+                return;
+            }
 
-                    var m = Moment(newValue);
-                    $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
-
-                    if (m.isValid()) {
-                        return m.toISOString();
-                    } else {
-                        $el.parent().addClass('has-error');
-                        return null;
-                    }
-                }
+            if (!this.model.get('value') || this.valueSetAutomatically) {
+                this.model.set('value', m.toISOString());
+                this.valueSetAutomatically = true;
             }
         },
 
