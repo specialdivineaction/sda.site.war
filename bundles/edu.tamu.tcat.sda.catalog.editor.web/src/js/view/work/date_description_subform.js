@@ -66,13 +66,21 @@ define(function (require) {
             dateValue: {
                 set: function ($el, modelValue) {
                     var m = Moment(modelValue);
+
+                    $el.parent()
+                        .removeClass('has-error has-success has-feedback')
+                        .find('.form-control-feedback').remove();
+
                     if (m.isValid()) {
                         $el.val(m.format('YYYY-MM-DD'));
                         $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
                     }
                 },
                 get: function ($el, oldValue, evt) {
-                    $el.parent().removeClass('has-error');
+                    var parent = $el.parent();
+
+                    parent.removeClass('has-error has-success has-feedback');
+                    $el.siblings('.form-control-feedback').remove();
 
                     var newValue = $el.val();
                     if (newValue === '') return null;
@@ -81,9 +89,12 @@ define(function (require) {
                     $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
 
                     if (m.isValid()) {
+                        parent.addClass('has-feedback has-success');
+                        $('<span>', {class: 'glyphicon glyphicon-ok form-control-feedback'}).appendTo(parent);
                         return m.toISOString();
                     } else {
-                        $el.parent().addClass('has-error');
+                        parent.addClass('has-feedback has-error');
+                        $('<span>', {class: 'glyphicon glyphicon-remove form-control-feedback'}).appendTo(parent);
                         return null;
                     }
                 }
