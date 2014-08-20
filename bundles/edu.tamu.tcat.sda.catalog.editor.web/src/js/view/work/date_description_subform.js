@@ -6,6 +6,48 @@ define(function (require) {
     require('backbone.epoxy');
 
 
+    var INFER_FORMATS = [
+        // month day year
+        'MMMM-DD-YYYY',
+        'MMM-DD-YYYY',
+        'MM-DD-YYYY',
+        'M-DD-YYYY',
+        'MMMM-D-YYYY',
+        'MMM-D-YYYY',
+        'MM-D-YYYY',
+        'M-D-YYYY',
+
+        // day month year
+        'DD-MMMM-YYYY',
+        'DD-MMM-YYYY',
+        'DD-MM-YYYY',
+        'DD-M-YYYY',
+        'D-MMMM-YYYY',
+        'D-MMM-YYYY',
+        'D-MM-YYYY',
+        'D-M-YYYY',
+
+        // year month day
+        'YYYY-MM-DD',
+        'YYYY-M-D',
+
+        // month year
+        'MMMM-YYYY',
+        'MMM-YYYY',
+        'MM-YYYY',
+        'M-YYYY',
+
+        // year month
+        'YYYY-MMMM',
+        'YYYY-MMM',
+        'YYYY-MM',
+        'YYYY-M',
+
+        // year
+        'YYYY'
+    ];
+
+
     var DateDescriptionSubform = Backbone.Epoxy.View.extend({
 
         template: require('tpl!templates/work/date_description_subform.html.ejs'),
@@ -15,12 +57,18 @@ define(function (require) {
             '.display': 'value:display,events:["keyup"]'
         },
 
+        events: {
+            'blur .date-value': function (evt) { this.valueSetAutomatically = !this.model.get('value'); },
+            'keyup .display': 'inferDate'
+        },
+
         bindingHandlers: {
             dateValue: {
                 set: function ($el, modelValue) {
                     var m = Moment(modelValue);
                     if (m.isValid()) {
                         $el.val(m.format('YYYY-MM-DD'));
+                        $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
                     }
                 },
                 get: function ($el, oldValue, evt) {
@@ -39,6 +87,18 @@ define(function (require) {
                         return null;
                     }
                 }
+            }
+        },
+
+        inferDate: function (evt) {
+            var m = Moment($(evt.target).val(), INFER_FORMATS);
+            if (!m.isValid()) {
+                return;
+            }
+
+            if (!this.model.get('value') || this.valueSetAutomatically) {
+                this.model.set('value', m.toISOString());
+                this.valueSetAutomatically = true;
             }
         },
 
