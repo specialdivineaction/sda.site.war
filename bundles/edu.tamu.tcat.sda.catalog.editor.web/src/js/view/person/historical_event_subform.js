@@ -22,6 +22,7 @@ define(function (require) {
                     var m = Moment(modelValue);
                     if (m.isValid()) {
                         $el.val(m.format('YYYY-MM-DD'));
+                        $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
                     }
                 },
                 get: function ($el, oldValue, evt) {
@@ -39,7 +40,6 @@ define(function (require) {
                         $el.parent().addClass('has-error');
                         return null;
                     }
-
                 }
             }
         },
@@ -47,7 +47,6 @@ define(function (require) {
         render: function () {
             this.$el.html(this.template({
                 model: this.model.toJSON(),
-                moment: Moment
             }));
 
             this.applyBindings();
