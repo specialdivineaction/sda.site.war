@@ -85,7 +85,7 @@ define(function (require) {
                     var newValue = $el.val();
                     if (newValue === '') return null;
 
-                    var m = Moment(newValue);
+                    var m = Moment(newValue, INFER_FORMATS);
                     $el.siblings('.help-block').text(m.format('ddd, MMM D, YYYY'));
 
                     if (m.isValid()) {
