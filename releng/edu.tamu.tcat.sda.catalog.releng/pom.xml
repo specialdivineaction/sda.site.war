@@ -45,7 +45,7 @@
     <assembly-version>2.4</assembly-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
     
     <repo-ed-path>sda.editor/bundles</repo-ed-path>
     <repo-ed-tests-path>sda.editor/tests</repo-ed-tests-path>
@@ -110,6 +110,11 @@
       <id>OSGI.Utils</id>
       <layout>p2</layout>
       <url>${repo-base-url}/OSGI.Utilities/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+    <repository>
+      <id>Database.Utils</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/Database.Utilities/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
     <repository>
       <id>Core Deps</id>
