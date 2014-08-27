@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.account.Account;
 import edu.tamu.tcat.account.AccountException;
@@ -83,7 +84,11 @@ public class AccountsResource
       }
       else
       {
-         throw new BadRequestException("Unknown login provider ["+providerId+"]");
+         Response resp = Response.status(Response.Status.BAD_REQUEST)
+         .entity("Unknown login provider ["+providerId+"]")
+         .type(MediaType.TEXT_PLAIN)
+         .build();
+         throw new BadRequestException(resp);
       }
 
       try
