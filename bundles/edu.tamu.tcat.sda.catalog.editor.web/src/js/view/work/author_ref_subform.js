@@ -37,7 +37,7 @@ define(function (require) {
                 dataType: 'json',
                 url: Config.apiPrefix + '/people',
                 data: {
-                    last: name
+                    lastName: name
                 },
                 success: function (data) {
                     _this.people.reset(data, {parse: true});
