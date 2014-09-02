@@ -63,6 +63,10 @@ module.exports = function (grunt) {
                     {
                         dest: buildPath + '/login.html',
                         src: srcPath + '/login.html'
+                    },
+                    {
+                        dest: buildPath + '/js/config.js',
+                        src: srcPath + '/js/config.js'
                     }
                 ]
             },
@@ -121,7 +125,10 @@ module.exports = function (grunt) {
                         moment: path.relative(srcPath, vendorPath) + '/moment/moment',
                         text: path.relative(srcPath, vendorPath) + '/requirejs-text/text',
                         tpl: path.relative(srcPath, vendorPath) + '/requirejs-tpl/tpl',
-                        underscore: path.relative(srcPath, vendorPath) + '/underscore/underscore'
+                        underscore: path.relative(srcPath, vendorPath) + '/underscore/underscore',
+
+                        // will be loaded externally at runtime:
+                        config: 'empty:'
                     },
                     shim: {
                         backbone: { deps: ['jquery', 'underscore'], exports: 'Backbone' },
@@ -132,7 +139,11 @@ module.exports = function (grunt) {
                         underscore: { exports: '_' }
                     },
                     include: ['js/main'],
-                    insertRequire: ['js/main'],
+
+                    // since config is externally defined (i.e. in a separate file), js/main must be
+                    // called manually AFTER config definition is loaded
+                    // insertRequire: ['js/main'],
+
                     stubModules: [],
                     exclude: [],
                     out: buildPath + '/js/main.min.js'

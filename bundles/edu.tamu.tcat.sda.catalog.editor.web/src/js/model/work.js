@@ -2,7 +2,7 @@ define(function (require) {
 
     var Backbone = require('backbone'),
 
-        Config              = require('js/config'),
+        Config              = require('config'),
         AuthorRef           = require('js/model/author_ref'),
         Title               = require('js/model/title'),
         TitleCollection     = require('js/collection/titles'),

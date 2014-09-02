@@ -3,7 +3,7 @@ define(function (require) {
     var Backbone = require('backbone'),
         Moment   = require('moment'),
 
-        Config          = require('js/config'),
+        Config          = require('config'),
         Name            = require('js/model/name'),
         HistoricalEvent = require('js/model/historical_event'),
         NameCollection  = require('js/collection/names');
