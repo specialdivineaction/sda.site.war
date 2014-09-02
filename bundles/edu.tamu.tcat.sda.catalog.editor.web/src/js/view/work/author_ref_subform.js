@@ -3,7 +3,7 @@ define(function (require) {
     var Backbone = require('backbone'),
         $        = require('jquery'),
 
-        Config                 = require('js/config'),
+        Config                 = require('config'),
         PeopleCollection       = require('js/collection/people'),
         Autocomplete           = require('js/view/autocomplete');
 

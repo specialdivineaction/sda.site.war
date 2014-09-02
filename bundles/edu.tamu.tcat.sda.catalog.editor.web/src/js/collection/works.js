@@ -2,7 +2,7 @@ define(function (require) {
 
     var Backbone = require('backbone'),
 
-        Config = require('js/config'),
+        Config = require('config'),
         Work   = require('js/model/work');
 
 

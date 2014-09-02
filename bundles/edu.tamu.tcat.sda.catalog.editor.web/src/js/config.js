@@ -1,4 +1,4 @@
-define({
+define('config', [], {
 
     apiPrefix: '/api/catalog'
 

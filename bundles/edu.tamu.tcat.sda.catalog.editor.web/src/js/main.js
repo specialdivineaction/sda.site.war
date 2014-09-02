@@ -12,7 +12,7 @@ define(function (require) {
         WorkCollection   = require('js/collection/works'),
 
         Message = require('js/view/message'),
-        Config  = require('js/config');
+        Config  = require('config');
 
     require('bootstrap');
 
