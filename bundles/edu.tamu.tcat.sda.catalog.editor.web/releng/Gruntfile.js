@@ -189,6 +189,13 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+
+        watch: {
+            src: {
+                files: [srcPath + '/**/*'],
+                tasks: ['dev']
+            }
         }
     });
 
@@ -199,6 +206,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-stylus');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('prod', ['bower:install', 'requirejs:build', 'stylus:build', 'uglify:build', 'cssmin:build', 'copy:build', 'clean:build']);
     grunt.registerTask('dev', ['bower:dev', 'stylus:dev', 'copy:dev']);
