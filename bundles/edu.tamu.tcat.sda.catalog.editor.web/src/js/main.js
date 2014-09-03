@@ -88,7 +88,16 @@ define(function (require) {
         }
     });
 
-    peopleSearchForm.collection.fetch({reset: true});
+    peopleSearchForm.collection.fetch({
+        reset: true,
+        error: function () {
+            new Message({
+                type: 'error',
+                message: 'Unable to connect to server.',
+                ttl: 4000,
+            }).open();
+        }
+    });
 
     $('#sidebar #people .search-form').html(peopleSearchForm.render().el);
 
