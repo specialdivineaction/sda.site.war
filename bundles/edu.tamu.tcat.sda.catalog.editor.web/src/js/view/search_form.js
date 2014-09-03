@@ -6,6 +6,41 @@ define(function (require) {
         Message  = require('js/view/message');
 
 
+    var ResultItemView = Backbone.View.extend({
+
+        tagName: 'a',
+
+        className: 'list-group-item',
+
+        events: {
+            click: function (e) { this.options.click.call(this.options, e); }
+        },
+
+        defaultOptions: {
+            href: '#',
+            click: function () {},
+        },
+
+        initialize: function (options) {
+            this.options = _.defaults(options, this.defaultOptions);
+        },
+
+        render: function () {
+            this.$el
+                .attr('href', this.options.href)
+                .html(this.options.html)
+            ;
+
+            return this;
+        },
+
+        close: function () {
+            this.remove();
+            this.unbind();
+        }
+    });
+
+
     var SearchForm = Backbone.View.extend({
 
         template: require('tpl!templates/search_form.html.ejs'),
@@ -14,8 +49,16 @@ define(function (require) {
             this.type = options.type;
 
             /**
-             * Search handler to process queries and give back results.
-             * Results are of the form:
+             * Search handler to process queries and give back resulting model objects.
+             *
+             * @param {String} query
+             * @return {Promise<Array<Object>>}
+             */
+            this.searchHandler = options.search || function () { return Promise.resolve([]); };
+
+            /**
+             * Data transformer to convert raw collection models into search results.
+             * A search result is of the form:
              *
              * {
              *     html: 'text to display',        // REQUIRED
@@ -26,10 +69,18 @@ define(function (require) {
              *     }
              * }
              *
-             * @param {String} query
-             * @return {Promise<Array<Result>>}
+             * @param {Object} model data
+             * @return {Result}
              */
-            this.searchHandler = options.search || function () { return Promise.resolve([]); };
+            this.transform = options.transform || function (a) { return a; };
+
+            if (typeof options.collection === 'undefined') {
+                this.collection = new Backbone.Collection();
+            }
+
+            this.listenTo(this.collection, 'change reset', this.refresh);
+
+            this.resultViews = [];
         },
 
         events: {
@@ -44,6 +95,8 @@ define(function (require) {
 
             var $resultContainer = this.$('.search-results').empty();
 
+            var _this = this;
+
             resultsPromise.then(function (results) {
                 if (results.length === 0) {
                     message = new Message({
@@ -54,16 +107,8 @@ define(function (require) {
                     return;
                 }
 
-                _.each(results, function (result) {
-                    var resultLink = $('<a>', {
-                        'class': 'list-group-item',
-                        'href': result.href || '#',
-                        'html': result.html
-                    }).appendTo($resultContainer);
+                _this.collection.reset(results, {parse: true});
 
-                    if (_.isFunction(result.click))
-                        resultLink.on('click', result, result.click);
-                });
             }, function (error) {
                 message = new Message({
                     type: 'error',
@@ -74,21 +119,40 @@ define(function (require) {
             });
         },
 
+        refresh: function () {
+            var $resultContainer = this.$('.search-results');
+            this.emptyResults();
+
+            var _this = this;
+            this.resultViews = this.collection.map(function (result) {
+                var subView = new ResultItemView(_this.transform(result));
+                $resultContainer.append(subView.render().el);
+                return subView;
+            });
+        },
+
         clearForm: function (evt) {
             evt.preventDefault();
-
-            this.$('.search-results').empty();
+            this.emptyResults();
             this.$('.search').val('').focus();
+        },
+
+        emptyResults: function () {
+            _.each(this.resultViews, function (v) {
+                if (v.close) v.close();
+            });
         },
 
         render: function () {
             this.$el.html(this.template({ type: this.type }));
+            this.refresh();
             return this;
         },
 
         close: function () {
             this.remove();
             this.unbind();
+            this.emptyResults();
         }
 
     });

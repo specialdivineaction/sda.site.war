@@ -27,8 +27,18 @@ define(function (require) {
     Backbone.history.start();
 
     // global UI elements
+
     var bookSearchForm = new SearchForm({
         type: 'books',
+        collection: new WorkCollection(),
+
+        transform: function (work) {
+            return {
+                html: work.getFormattedTitle(),
+                href: '#works/' + work.id
+            };
+        },
+
         search: function (query) {
             return new Promise(function (resolve, reject) {
                 if (query === '') {
@@ -37,25 +47,31 @@ define(function (require) {
                 }
 
                 $.getJSON(Config.apiPrefix + '/works', { title: query }, function (data) {
-                    var works = new WorkCollection(data, { parse: true });
-
-                    // TODO: convert data to result array
-                    resolve(works.map(function (work) {
-                        return {
-                            html: work.getFormattedTitle(),
-                            href: '#works/' + work.id
-                        };
-                    }));
+                    resolve(data);
                 }).fail(function (jqxhr, status, errorMessage) {
                     reject(new Error(errorMessage));
                 });
             });
         }
     });
+
+    bookSearchForm.collection.fetch({reset: true});
+
     $('#sidebar #books .search-form').html(bookSearchForm.render().el);
+
+
 
     var peopleSearchForm = new SearchForm({
         type: 'people',
+        collection: new PersonCollection(),
+
+        transform: function (person) {
+            return {
+                html: person.getFormattedName(),
+                href: '#people/' + person.id
+            };
+        },
+
         search: function (query) {
             return new Promise(function (resolve, reject) {
                 if (query === '') {
@@ -64,21 +80,25 @@ define(function (require) {
                 }
 
                 $.getJSON(Config.apiPrefix + '/people', { lastName: query }, function (data) {
-                    var people = new PersonCollection(data, { parse: true });
-
-                    // TODO: convert data to result array
-                    resolve(people.map(function (person) {
-                        return {
-                            html: person.getFormattedName(),
-                            href: '#people/' + person.id
-                        };
-                    }));
+                    resolve(data);
                 }).fail(function (jqxhr, status, errorMessage) {
                     reject(new Error(errorMessage));
                 });
             });
         }
     });
+
+    peopleSearchForm.collection.fetch({
+        reset: true,
+        error: function () {
+            new Message({
+                type: 'error',
+                message: 'Unable to connect to server.',
+                ttl: 4000,
+            }).open();
+        }
+    });
+
     $('#sidebar #people .search-form').html(peopleSearchForm.render().el);
 
 });
