@@ -6,7 +6,8 @@ define(function (require) {
 
         NameSubform            = require('js/view/person/name_subform'),
         HistoricalEventSubform = require('js/view/person/historical_event_subform'),
-        Message                = require('js/view/message');
+        Message                = require('js/view/message'),
+        Config                 = require('config');
 
     // attach epoxy to backbone
     require('backbone.epoxy');
@@ -35,8 +36,8 @@ define(function (require) {
         },
 
         events: {
-            'submit': 'submit',
-            'click .save-new-button': function (evt) { this.submit(evt, true); }
+            'submit': _.debounce(function (evt) { this.submit(evt, false); }, Config.submitDebounceLimit, true),
+            'click .save-new-button': _.debounce(function (evt) { this.submit(evt, true); }, Config.submitDebounceLimit, true)
         },
 
         submit: function (evt, saveAndNew) {

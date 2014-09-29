@@ -9,7 +9,8 @@ define(function (require) {
         AuthorRefSubform       = require('js/view/work/author_ref_subform'),
         PublicationInfoSubform = require('js/view/work/publication_info_subform'),
 
-        Message = require('js/view/message');
+        Message = require('js/view/message'),
+        Config  = require('config');
 
     require('backbone.epoxy');
 
@@ -40,8 +41,8 @@ define(function (require) {
             'click .add-primary-author': 'addPrimaryAuthorForm',
             'click .add-other-author': 'addOtherAuthorForm',
             'click .add-title': 'addTitleForm',
-            'submit': 'submit',
-            'click .save-new-button': function (evt) { this.submit(evt, true); }
+            'submit': _.debounce(function (evt) { this.submit(evt, false); }, Config.submitDebounceLimit, true),
+            'click .save-new-button': _.debounce(function (evt) { this.submit(evt, true); }, Config.submitDebounceLimit, true)
         },
 
         addTitleForm: function (evt) {

@@ -1,5 +1,7 @@
 define('config', [], {
 
-    apiPrefix: '/api/catalog'
+    apiPrefix: '/sda/api',
+
+    submitDebounceLimit: 500
 
 });
