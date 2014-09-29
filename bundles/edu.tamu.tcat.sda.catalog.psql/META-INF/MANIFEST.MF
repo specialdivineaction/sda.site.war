@@ -32,6 +32,10 @@ Export-Package: edu.tamu.tcat.sda.catalog.events.psql,
  edu.tamu.tcat.sda.catalog.psql.provider,
  edu.tamu.tcat.sda.catalog.psql.tasks
 Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
- .
+ lib/solr-core-4.9.0.jar,
+ lib/solr-solrj-4.9.0.jar,
+ .,
+ lib/slf4j-api-1.7.6.jar,
+ lib/noggit-0.5.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: edu.tamu.tcat.sda.catalog.psql.internal.Activator
