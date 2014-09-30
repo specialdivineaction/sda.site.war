@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import edu.tamu.tcat.sda.catalog.CommandExecutionListener;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -48,8 +49,25 @@ public interface WorkRepository extends DataStore
     */
    Person getAuthor(AuthorReference ref);
 
+   /**
+    * Construct an {@link EditWorkCommand} to be used to modify an existing work.
+    *
+    * @param id
+    * @return
+    * @throws NoSuchCatalogRecordException
+    */
+   EditWorkCommand edit(String id) throws NoSuchCatalogRecordException;
+
+   EditWorkCommand create();
+
+   AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears);
+
+   AutoCloseable addAfterUpdateListener(CommandExecutionListener ears);
+
+   @Deprecated // use the EditWorkCommand methods
    void create(WorkDV work, DataUpdateObserver<Work> observer);
 
    // TODO might return a handle that allows for cancellation, and blocking
+   @Deprecated // use the EditWorkCommand methods
    void update(WorkDV work, DataUpdateObserver<Work> observer);
 }
