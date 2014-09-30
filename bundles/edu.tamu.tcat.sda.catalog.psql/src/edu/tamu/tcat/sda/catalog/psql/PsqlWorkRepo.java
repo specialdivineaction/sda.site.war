@@ -111,14 +111,14 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public void create(final WorkDV work, DataUpdateObserver<Work> observer)
+   public void create(final WorkDV work, DataUpdateObserver<String> observer)
    {
       PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
       exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
 
    @Override
-   public void update(WorkDV work, DataUpdateObserver<Work> observer)
+   public void update(WorkDV work, DataUpdateObserver<String> observer)
    {
       PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
       exec.submit(new ObservableTaskWrapper<>(task, observer));

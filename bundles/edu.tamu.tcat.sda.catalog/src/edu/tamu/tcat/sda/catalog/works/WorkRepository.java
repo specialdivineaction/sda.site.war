@@ -70,9 +70,9 @@ public interface WorkRepository extends DataStore
    AutoCloseable addAfterUpdateListener(CommandExecutionListener ears);
 
    @Deprecated // use the EditWorkCommand methods
-   void create(WorkDV work, DataUpdateObserver<Work> observer);
+   void create(WorkDV work, DataUpdateObserver<String> observer);
 
    // TODO might return a handle that allows for cancellation, and blocking
    @Deprecated // use the EditWorkCommand methods
-   void update(WorkDV work, DataUpdateObserver<Work> observer);
+   void update(WorkDV work, DataUpdateObserver<String> observer);
 }

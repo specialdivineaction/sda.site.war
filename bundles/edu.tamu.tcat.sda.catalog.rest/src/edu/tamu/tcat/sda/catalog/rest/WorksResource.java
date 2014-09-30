@@ -93,7 +93,7 @@ public class WorksResource
    @Produces(MediaType.APPLICATION_JSON)
    public WorkDV createWork(WorkDV work)
    {
-      CreateWorkObserver workObserver = new CreateWorkObserver();
+      CreateWorkObserver workObserver = new CreateWorkObserver(repo);
       repo.create(work, workObserver);
       try
       {
@@ -112,7 +112,7 @@ public class WorksResource
    @Produces(MediaType.APPLICATION_JSON)
    public WorkDV updateWork(WorkDV work)
    {
-      CreateWorkObserver workObserver = new CreateWorkObserver();
+      CreateWorkObserver workObserver = new CreateWorkObserver(repo);
       repo.update(work, workObserver);
 
       try
@@ -168,22 +168,31 @@ public class WorksResource
    }
 
 
-   private static final class CreateWorkObserver extends DataUpdateObserverAdapter<Work>
+   private static final class CreateWorkObserver extends DataUpdateObserverAdapter<String>
    {
       private final CountDownLatch latch;
+
+      private final WorkRepository repo;
 
       private volatile Work result;
       private volatile ResourceCreationException exception = null;
 
-      CreateWorkObserver()
+      CreateWorkObserver(WorkRepository repo)
       {
+         this.repo = repo;
          latch = new CountDownLatch(1);
       }
 
       @Override
-      protected void onFinish(Work work)
+      protected void onFinish(String workId)
       {
-         this.result = work;
+         // HACK: need to do string-based data identifiers
+         try {
+            this.result = repo.getWork(Integer.valueOf(workId));
+         }
+         catch (NumberFormatException | NoSuchCatalogRecordException e) {
+            throw new IllegalStateException("Failed to retrieve work [" + workId + "]", e);
+         }
          latch.countDown();
       }
 

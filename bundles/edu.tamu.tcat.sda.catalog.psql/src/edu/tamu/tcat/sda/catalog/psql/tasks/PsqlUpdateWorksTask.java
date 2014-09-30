@@ -11,11 +11,9 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
-import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
-import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
-public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<Work>
+public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.works.db.errors");
    private final static String sql = "Update works "
@@ -44,7 +42,7 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<Work>
    }
 
    @Override
-   public Work execute(Connection conn) throws Exception
+   public String execute(Connection conn) throws Exception
    {
       try (PreparedStatement ps = conn.prepareStatement(sql))
       {
@@ -60,7 +58,7 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<Work>
             throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + ct + "]");
 
 
-         return new WorkImpl(work);
+         return work.id;
       }
       catch(SQLException e)
       {

@@ -12,11 +12,9 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
-import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
-import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
-public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<Work>
+public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static String insertSql = "INSERT INTO works (work) VALUES(?)";
    private final static String updateSql = "UPDATE works "
@@ -46,7 +44,56 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<Work>
    }
 
    @Override
-   public Work execute(Connection conn) throws SQLException, ExecutionFailedException
+   public String execute(Connection conn) throws SQLException, ExecutionFailedException
+   {
+      /*
+       * Two-step insertion process:
+       *
+       * 1.  insert partial object into the database to create auto-generated ID
+       * 2.  update stored object's ID with auto-generated ID and save again
+       */
+
+      work.id = initialInsert(conn);
+      updateWorkId(conn);
+      return work.id;
+   }
+
+   /**
+    * Set the internal ID field of a newly inserted Work
+    *
+    * @param conn
+    * @throws ExecutionFailedException
+    */
+   private void updateWorkId(Connection conn) throws ExecutionFailedException
+   {
+      // TODO: see if we can't update the ID field directly
+      try (PreparedStatement updatePs = conn.prepareStatement(updateSql))
+      {
+         PGobject updatedJsonObject = new PGobject();
+         updatedJsonObject.setType("json");
+         updatedJsonObject.setValue(getJson());
+
+         updatePs.setObject(1, updatedJsonObject);
+         updatePs.setInt(2, Integer.parseInt(work.id));
+
+         int updateCt = updatePs.executeUpdate();
+         if (updateCt != 1)
+            throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + updateCt + "]");
+      }
+      catch (SQLException ue)
+      {
+         throw new IllegalStateException("Failed to create work: [" + work + "]");
+      }
+   }
+
+   /**
+    * Insert a (partial) Work into the DB and return its newly-generated ID.
+    *
+    * @param conn
+    * @return
+    * @throws ExecutionFailedException
+    */
+   private String initialInsert(Connection conn) throws ExecutionFailedException
    {
       try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS))
       {
@@ -65,28 +112,8 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<Work>
             if (!rs.next())
                throw new ExecutionFailedException("Failed to generate id for a work [" + work + "]");
 
-            work.id = Integer.toString(rs.getInt("id"));
-            try (PreparedStatement updatePs = conn.prepareStatement(updateSql))
-            {
-               PGobject updatedJsonObject = new PGobject();
-               updatedJsonObject.setType("json");
-               updatedJsonObject.setValue(getJson());
-
-               updatePs.setObject(1, updatedJsonObject);
-               updatePs.setInt(2, Integer.parseInt(work.id));
-
-               int updateCt = updatePs.executeUpdate();
-               if (updateCt != 1)
-                  throw new ExecutionFailedException("Failed to create work. Unexpected number of rows updates [" + updateCt + "]");
-            }
-            catch (SQLException ue)
-            {
-               throw new IllegalStateException("Failed to create work: [" + work + "]");
-            }
-
+            return Integer.toString(rs.getInt("id"));
          }
-
-         return new WorkImpl(work);
       }
       catch (SQLException e)
       {
