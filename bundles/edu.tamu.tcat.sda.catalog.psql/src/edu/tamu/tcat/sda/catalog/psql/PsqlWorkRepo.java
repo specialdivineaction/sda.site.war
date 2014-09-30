@@ -13,7 +13,6 @@ import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
-import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlGetWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
@@ -189,43 +188,36 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
-      int workId;
+      Work work = getWork(asInteger(id));
+
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work));
+      command.setCommitHook((workDv) -> {
+         PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
+         return exec.submit(task);
+      });
+
+      return command;
+   }
+
+   private int asInteger(String id)
+   {
       try {
-         workId = Integer.valueOf(id);
+         return Integer.valueOf(id);
       }
       catch (NumberFormatException e) {
          throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
       }
-
-      PsqlGetWorkTask task = taskProvider.makeGetWorkTask(workId);
-      Future<Work> getWork = exec.submit(task);
-
-      Work work;
-      try {
-         work = getWork.get();
-      }
-      catch (ExecutionException e) {
-         Throwable cause = e.getCause();
-
-         if (cause instanceof NoSuchCatalogRecordException)
-            throw (NoSuchCatalogRecordException)cause;
-
-         if (cause instanceof RuntimeException)
-            throw (RuntimeException) cause;
-
-         throw new IllegalStateException("Unexpected problems while attempting to retrieve bibliographic entry [" + id + "]", e);
-      }
-      catch (InterruptedException e) {
-         throw new IllegalStateException("Failed to retrieve bibliographic entry [" + id + "]", e);
-      }
-
-      return new PsqlEditWorkCommand(work, this);
    }
 
    @Override
    public EditWorkCommand create()
    {
-      return new PsqlEditWorkCommand(this);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV());
+      command.setCommitHook((workDv) -> {
+         PsqlCreateWorkTask task = new PsqlCreateWorkTask(workDv, jsonMapper);
+         return exec.submit(task);
+      });
+      return command;
    }
 
    @Override

@@ -23,7 +23,7 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
    private final JsonMapper jsonMapper;
    private final WorkDV work;
 
-   PsqlUpdateWorksTask(WorkDV work, JsonMapper jsonMapper)
+   public PsqlUpdateWorksTask(WorkDV work, JsonMapper jsonMapper)
    {
       this.work = work;
       this.jsonMapper = jsonMapper;

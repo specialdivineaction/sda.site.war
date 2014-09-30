@@ -24,7 +24,7 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String
    private final WorkDV work;
    private final JsonMapper jsonMapper;
 
-   PsqlCreateWorkTask(WorkDV work, JsonMapper jsonMapper)
+   public PsqlCreateWorkTask(WorkDV work, JsonMapper jsonMapper)
    {
       // TODO convert to form where these can be configured using plugins/task provider, etc.
       this.work = work;
