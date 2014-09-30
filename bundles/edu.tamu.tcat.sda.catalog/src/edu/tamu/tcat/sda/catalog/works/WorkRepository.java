@@ -58,6 +58,11 @@ public interface WorkRepository extends DataStore
     */
    EditWorkCommand edit(String id) throws NoSuchCatalogRecordException;
 
+   /**
+    * Construct an {@link EditWorkCommand} to be used to create a new work.
+    *
+    * @return
+    */
    EditWorkCommand create();
 
    AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears);

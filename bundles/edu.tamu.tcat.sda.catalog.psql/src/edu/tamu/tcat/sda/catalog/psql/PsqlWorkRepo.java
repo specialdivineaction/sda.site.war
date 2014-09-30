@@ -8,14 +8,17 @@ import java.util.concurrent.Future;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.CommandExecutionListener;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
+import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlGetWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
@@ -181,5 +184,61 @@ public class PsqlWorkRepo implements WorkRepository
          return true;
 
       return false;
+   }
+
+   @Override
+   public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
+   {
+      int workId;
+      try {
+         workId = Integer.valueOf(id);
+      }
+      catch (NumberFormatException e) {
+         throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
+      }
+
+      PsqlGetWorkTask task = taskProvider.makeGetWorkTask(workId);
+      Future<Work> getWork = exec.submit(task);
+
+      Work work;
+      try {
+         work = getWork.get();
+      }
+      catch (ExecutionException e) {
+         Throwable cause = e.getCause();
+
+         if (cause instanceof NoSuchCatalogRecordException)
+            throw (NoSuchCatalogRecordException)cause;
+
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException) cause;
+
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve bibliographic entry [" + id + "]", e);
+      }
+      catch (InterruptedException e) {
+         throw new IllegalStateException("Failed to retrieve bibliographic entry [" + id + "]", e);
+      }
+
+      return new PsqlEditWorkCommand(work, this);
+   }
+
+   @Override
+   public EditWorkCommand create()
+   {
+      return new PsqlEditWorkCommand(this);
+   }
+
+   @Override
+   public AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public AutoCloseable addAfterUpdateListener(CommandExecutionListener ears)
+   {
+      // TODO Auto-generated method stub
+      return null;
    }
 }
