@@ -6,18 +6,18 @@ import java.util.concurrent.Future;
 
 public interface EditWorkCommand // extends Callable<Work>
 {
-   public void setId(String id);
-   public void setSeries(String series);
-   public void setSummary(String summary);
+   void setSeries(String series);
+   void setSummary(String summary);
 
-   public void setAuthors(List<AuthorReference> authors);
+   void setAuthors(List<AuthorReference> authors);
+   void setOtherAuthors(List<AuthorReference> authors);
 
-   public void setTitles(List<Title> titles);
+   void setTitles(List<Title> titles);
 
-   public void setPublicationDate(Date pubDate);
-   public void setPublicationDateDisplay(String display);
+   void setPublicationDate(Date pubDate);
+   void setPublicationDateDisplay(String display);
 
-   public EditionMutator getEditionMutator();
+   EditionMutator getEditionMutator();
 
    Future<String> execute();
 }
