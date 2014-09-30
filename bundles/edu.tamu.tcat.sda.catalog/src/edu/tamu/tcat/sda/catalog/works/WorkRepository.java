@@ -6,13 +6,39 @@ import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataStore;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
+/**
+ * Provides the main point of access for creating, editing and querying works.
+ *
+ */
 public interface WorkRepository extends DataStore
 {
+   /**
+    *
+    * @return An {@link Iterable} over all works in the collection.
+    * @deprecated This method will be replaced or updated in order to prevent unbounded
+    *    retrieval of all items. In general, we should provide a robust query mechanism
+    *    rather than a 'get all'. We also need to support a repeatable, pageable,
+    *    identifiable result set.
+    */
+   @Deprecated
    Iterable<Work> listWorks();      // TODO must create a repeatable, pageable, identifiable result set.
 
+   /**
+    *
+    * @param title The title to search for.
+    * @return All works whose title partially matches the supplied title.
+    * @deprecated To be replaced with a more robust query/search mechanism.
+    *
+    */
+   @Deprecated
    Iterable<Work> listWorks(String title);
 
-   Work getWork(int workId) throws NoSuchCatalogRecordException;
+   /**
+    * @param workId The id of the work to retrieve.
+    * @return The record for a specific work.
+    * @throws NoSuchCatalogRecordException If the requested work does not exist.
+    */
+   Work getWork(int workId) throws NoSuchCatalogRecordException;     // FIXME should be a string valued id
 
    /**
     * Given an author reference, return the biographical record for the referenced person.
