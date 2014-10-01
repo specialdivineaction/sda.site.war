@@ -9,6 +9,9 @@ public interface EditWorkCommand // extends Callable<Work>
    void setSeries(String series);
    void setSummary(String summary);
 
+   // TODO: Should these methods take in full models or data vehicles?
+   //       Should there be methods to handle both data types?
+
    void setAuthors(List<AuthorReference> authors);
    void setOtherAuthors(List<AuthorReference> authors);
 
