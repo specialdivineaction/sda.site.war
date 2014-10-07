@@ -9,16 +9,15 @@ import edu.tamu.tcat.sda.catalog.works.Title;
 
 public interface EditWorkCommand extends Command
 {
-   public void setId(String id);
-   public void setSeries(String series);
-   public void setSummary(String summary);
+   void setSeries(String series);
+   void setSummary(String summary);
 
-   public void setAuthors(List<AuthorReference> authors);
+   void setAuthors(List<AuthorReference> authors);
 
-   public void setTitles(List<Title> titles);
+   void setTitles(List<Title> titles);
 
-   public void setPublicationDate(Date pubDate);
-   public void setPublicationDateDisplay(String display);
+   void setPublicationDate(Date pubDate);
+   void setPublicationDateDisplay(String display);
 
-   public EditionMutator getEditionMutator();
+   EditionMutator getEditionMutator();
 }

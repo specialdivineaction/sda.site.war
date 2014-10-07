@@ -202,7 +202,7 @@ public class PsqlWorkRepo implements WorkRepository
    private int asInteger(String id)
    {
       try {
-         return Integer.valueOf(id);
+         return Integer.parseInt(id);
       }
       catch (NumberFormatException e) {
          throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
@@ -223,14 +223,12 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears)
    {
-      // TODO Auto-generated method stub
-      return null;
+      throw new UnsupportedOperationException("not impl");
    }
 
    @Override
    public AutoCloseable addAfterUpdateListener(CommandExecutionListener ears)
    {
-      // TODO Auto-generated method stub
-      return null;
+      throw new UnsupportedOperationException("not impl");
    }
 }
