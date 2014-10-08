@@ -6,18 +6,25 @@ import java.util.concurrent.Future;
 
 public interface EditWorkCommand // extends Callable<Work>
 {
+   // TODO: Should these methods take in full models or data vehicles?
+   //       Should there be methods to handle both data types?
+
+   void setAuthors(List<AuthorReference> authors);
+   void setTitles(List<Title> titles);
+   // TODO: Should these methods take in full models or data vehicles?
+   //       Should there be methods to handle both data types?
+
+   void setOtherAuthors(List<AuthorReference> authors);
    void setSeries(String series);
    void setSummary(String summary);
 
    // TODO: Should these methods take in full models or data vehicles?
    //       Should there be methods to handle both data types?
 
-   void setAuthors(List<AuthorReference> authors);
-   void setOtherAuthors(List<AuthorReference> authors);
-
-   void setTitles(List<Title> titles);
-
+   @Deprecated // this is a property of an edition.
    void setPublicationDate(Date pubDate);
+
+   @Deprecated // this is a property of an edition.
    void setPublicationDateDisplay(String display);
 
    EditionMutator getEditionMutator();

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.works;
+package edu.tamu.tcat.sda.catalog.events;
 
 import java.util.Date;
 
