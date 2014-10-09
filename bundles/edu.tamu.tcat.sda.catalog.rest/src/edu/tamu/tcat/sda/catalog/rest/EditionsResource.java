@@ -20,10 +20,23 @@ public class EditionsResource
 {
    WorkRepository repo;
 
+
+   // Called by DS
    void setRepository(WorkRepository repo)
    {
       this.repo = repo;
    }
+
+   // called by DS
+   public void activate()
+   {
+   }
+
+   // called by DS
+   public void dispose()
+   {
+   }
+
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
