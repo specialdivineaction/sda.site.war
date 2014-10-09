@@ -14,6 +14,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 
 public class EditionImpl implements Edition
 {
+   private String id;
    private List<AuthorReference> authors;
    private List<Title> titles;
    private List<AuthorReference> otherAuthors;
@@ -32,6 +33,8 @@ public class EditionImpl implements Edition
 
    public EditionImpl(EditionDV dv)
    {
+      id = dv.id;
+
       authors = dv.authors.stream()
             .map((a) -> new AuthorReferenceImpl(a))
             .collect(Collectors.toList());
@@ -61,6 +64,12 @@ public class EditionImpl implements Edition
       notes = dv.notes;
    }
 
+
+   @Override
+   public String getId()
+   {
+      return id;
+   }
 
    @Override
    public List<AuthorReference> getAuthors()
