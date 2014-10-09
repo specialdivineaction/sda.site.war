@@ -1,6 +1,10 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import edu.tamu.tcat.sda.catalog.works.AuthorList;
+import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
@@ -15,6 +19,7 @@ public class WorkImpl implements Work
    private final PublicationImpl publication;
    private final String series;
    private final String summary;
+   private final Collection<Edition> editions;
 
    public WorkImpl(WorkDV workDV)
    {
@@ -26,6 +31,9 @@ public class WorkImpl implements Work
       this.publication = new PublicationImpl(workDV.pubInfo);
       this.series = workDV.series;
       this.summary = workDV.summary;
+      this.editions = workDV.editions.stream().unordered()
+            .map((e) -> new EditionImpl(e))
+            .collect(Collectors.toSet());
    }
 
    @Override
@@ -68,6 +76,12 @@ public class WorkImpl implements Work
    public String getSummary()
    {
       return summary;
+   }
+
+   @Override
+   public Collection<Edition> getEditions()
+   {
+      return editions;
    }
 
 }

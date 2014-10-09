@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import java.util.Collection;
+
 
 /**
  * Bibliographic description for a book, article, journal or other work. This is the main
@@ -35,6 +37,11 @@ public interface Work
     * @return Details about when, where and by whom this work was published.
     */
    PublicationInfo getPublicationInfo();
+
+   /**
+    * @return The editions associated with this work.
+    */
+   Collection<Edition> getEditions();
 
    /**
     * @return A defined series of related works, typically published by a single publishers and
