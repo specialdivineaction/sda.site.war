@@ -1,9 +1,11 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.Title;
@@ -22,6 +24,7 @@ public class WorkDV
    public PublicationInfoDV pubInfo;
    public String series;
    public String summary;
+   public Collection<EditionDV> editions;
 
    public WorkDV(Work work)
    {
@@ -48,6 +51,10 @@ public class WorkDV
       this.pubInfo = new PublicationInfoDV(work.getPublicationInfo());
       this.series = work.getSeries();
       this.summary = work.getSummary();
+
+      this.editions = work.getEditions().stream().unordered()
+            .map((e) -> new EditionDV(e))
+            .collect(Collectors.toSet());
    }
 
    public WorkDV()
