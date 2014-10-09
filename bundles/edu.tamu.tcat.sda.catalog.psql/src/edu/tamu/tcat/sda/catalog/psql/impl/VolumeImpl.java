@@ -12,6 +12,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
 public class VolumeImpl implements Volume
 {
+   private String id;
    private String volume;
    private List<AuthorReference> authors;
    private List<Title> titles;
@@ -28,6 +29,8 @@ public class VolumeImpl implements Volume
 
    public VolumeImpl(VolumeDV dv)
    {
+      id = dv.id;
+
       volume = dv.volume;
 
       authors = dv.authors.stream()
@@ -47,6 +50,13 @@ public class VolumeImpl implements Volume
       tags = dv.tags;
 
       notes = dv.notes;
+   }
+
+
+   @Override
+   public String getId()
+   {
+      return id;
    }
 
    @Override
