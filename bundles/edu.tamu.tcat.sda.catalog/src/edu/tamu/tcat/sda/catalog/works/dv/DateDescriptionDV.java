@@ -2,7 +2,7 @@ package edu.tamu.tcat.sda.catalog.works.dv;
 
 import java.util.Date;
 
-import edu.tamu.tcat.sda.catalog.works.DateDescription;
+import edu.tamu.tcat.sda.catalog.events.DateDescription;
 
 /**
  * Defines a date as represented by user-entered values. The primary representation of 

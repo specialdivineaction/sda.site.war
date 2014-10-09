@@ -2,7 +2,7 @@ package edu.tamu.tcat.sda.catalog.psql.impl;
 
 import java.util.Date;
 
-import edu.tamu.tcat.sda.catalog.works.DateDescription;
+import edu.tamu.tcat.sda.catalog.events.DateDescription;
 import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 
 public class DateDescriptionImpl implements DateDescription

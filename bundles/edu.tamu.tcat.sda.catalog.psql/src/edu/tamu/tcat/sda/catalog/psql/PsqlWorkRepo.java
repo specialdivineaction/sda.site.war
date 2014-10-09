@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.CommandExecutionListener;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
@@ -16,6 +17,7 @@ import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
 import edu.tamu.tcat.sda.catalog.works.Work;
@@ -108,14 +110,14 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public void create(final WorkDV work, DataUpdateObserver<Work> observer)
+   public void create(final WorkDV work, DataUpdateObserver<String> observer)
    {
       PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
       exec.submit(new ObservableTaskWrapper<>(task, observer));
    }
 
    @Override
-   public void update(WorkDV work, DataUpdateObserver<Work> observer)
+   public void update(WorkDV work, DataUpdateObserver<String> observer)
    {
       PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
       exec.submit(new ObservableTaskWrapper<>(task, observer));
@@ -181,5 +183,52 @@ public class PsqlWorkRepo implements WorkRepository
          return true;
 
       return false;
+   }
+
+   @Override
+   public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(asInteger(id));
+
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work));
+      command.setCommitHook((workDv) -> {
+         PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
+         return exec.submit(task);
+      });
+
+      return command;
+   }
+
+   private int asInteger(String id)
+   {
+      try {
+         return Integer.parseInt(id);
+      }
+      catch (NumberFormatException e) {
+         throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
+      }
+   }
+
+   @Override
+   public EditWorkCommand create()
+   {
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV());
+      command.setCommitHook((workDv) -> {
+         PsqlCreateWorkTask task = new PsqlCreateWorkTask(workDv, jsonMapper);
+         return exec.submit(task);
+      });
+      return command;
+   }
+
+   @Override
+   public AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears)
+   {
+      throw new UnsupportedOperationException("not impl");
+   }
+
+   @Override
+   public AutoCloseable addAfterUpdateListener(CommandExecutionListener ears)
+   {
+      throw new UnsupportedOperationException("not impl");
    }
 }

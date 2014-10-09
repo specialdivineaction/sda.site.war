@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import edu.tamu.tcat.sda.catalog.events.DateDescription;
+
 
 /**
  * Publication details for a particular work.

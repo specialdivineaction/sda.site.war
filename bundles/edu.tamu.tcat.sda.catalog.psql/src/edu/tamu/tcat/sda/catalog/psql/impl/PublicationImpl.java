@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import edu.tamu.tcat.sda.catalog.works.DateDescription;
+import edu.tamu.tcat.sda.catalog.events.DateDescription;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 
