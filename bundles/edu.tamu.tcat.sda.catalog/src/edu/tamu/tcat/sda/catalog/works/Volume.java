@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -51,9 +52,12 @@ public interface Volume
    /**
     * URLs to images of the edition (e.g. cover page, title page)
     *
+    * TODO: images will eventually need more info such as:
+    *       title, description, URI, source, and rights info
+    *
     * @return
     */
-   List<String> getImages();
+   List<URI> getImages();
 
    /**
     * Tags for this edition
