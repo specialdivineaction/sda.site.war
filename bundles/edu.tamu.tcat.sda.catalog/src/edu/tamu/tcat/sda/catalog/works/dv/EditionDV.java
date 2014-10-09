@@ -9,6 +9,7 @@ import edu.tamu.tcat.sda.catalog.works.Edition;
 
 public class EditionDV
 {
+   public String id;
    public String edition;
    public PublicationInfoDV publicationInfo;
    public List<VolumeDV> volumes;
@@ -23,6 +24,8 @@ public class EditionDV
 
    public EditionDV(Edition ed)
    {
+      id = ed.getId();
+
       edition = ed.getEdition();
 
       publicationInfo = new PublicationInfoDV(ed.getPublicationInfo());

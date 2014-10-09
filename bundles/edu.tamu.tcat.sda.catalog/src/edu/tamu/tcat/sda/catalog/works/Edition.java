@@ -9,6 +9,11 @@ import java.util.List;
  */
 public interface Edition
 {
+   /**
+    * @return A unique system identifier for this edition.
+    */
+   String getId();
+
 
    // the following properties may vary independently from works
 

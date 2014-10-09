@@ -24,7 +24,8 @@ public class WorkDV
    public PublicationInfoDV pubInfo;
    public String series;
    public String summary;
-   public Collection<EditionDV> editions;
+   // HACK: old records may not have this field; set to empty set by default.
+   public Collection<EditionDV> editions = new HashSet<>();
 
    public WorkDV(Work work)
    {

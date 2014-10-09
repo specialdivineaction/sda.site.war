@@ -9,6 +9,7 @@ import edu.tamu.tcat.sda.catalog.works.Volume;
 
 public class VolumeDV
 {
+   public String id;
    public String volume;
    public List<AuthorRefDV> authors;
    public List<TitleDV> titles;
@@ -20,6 +21,8 @@ public class VolumeDV
 
    public VolumeDV(Volume vol)
    {
+      id = vol.getId();
+
       volume = vol.getVolume();
 
       authors = vol.getAuthors().stream()

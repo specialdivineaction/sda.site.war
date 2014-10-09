@@ -7,6 +7,11 @@ import java.util.List;
 public interface Volume
 {
    /**
+    * @return A unique system identifier for this volume.
+    */
+   String getId();
+
+   /**
     * The number or authoritative identifier for this volume.
     *
     * @return
