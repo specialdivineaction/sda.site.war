@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="edu.tamu.tcat.sda.catalog.rest.editions">
+   <implementation class="edu.tamu.tcat.sda.catalog.rest.EditionsResource"/>
+   <service>
+      <provide interface="edu.tamu.tcat.sda.catalog.rest.EditionsResource"/>
+   </service>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.works.WorkRepository" name="WorkRepository" policy="static"/>
+</scr:component>

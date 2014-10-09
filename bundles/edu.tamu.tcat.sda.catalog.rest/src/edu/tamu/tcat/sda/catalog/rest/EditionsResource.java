@@ -12,11 +12,18 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 
 @Path("/works/{workId}/editions")
 public class EditionsResource
 {
+   WorkRepository repo;
+
+   void setRepository(WorkRepository repo)
+   {
+      this.repo = repo;
+   }
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
