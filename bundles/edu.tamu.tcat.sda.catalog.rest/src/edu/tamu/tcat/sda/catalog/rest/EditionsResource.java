@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +12,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.works.Edition;
+import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 
@@ -40,18 +43,33 @@ public class EditionsResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   Collection<String> listEditions(@PathParam(value = "workId") String workId)
+   public Collection<EditionDV> listEditions(@PathParam(value = "workId") String workId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      return Collections.emptySet();
+      Work work = repo.getWork(Integer.parseInt(workId));
+
+      Collection<Edition> editions = work.getEditions();
+
+      // .unordered() allows for concurrent execution.
+      return editions.stream().unordered()
+            .map((e) -> new EditionDV(e))
+            .collect(Collectors.toSet());
    }
 
    @GET
    @Path("{editionId}")
    @Produces(MediaType.APPLICATION_JSON)
-   Collection<String> getEdition(@PathParam(value = "workId") String workId,
-                                 @PathParam(value = "editionId") String editionId)
+   public EditionDV getEdition(@PathParam(value = "workId") String workId,
+                                 @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      return Collections.emptySet();
+      Work work = repo.getWork(Integer.parseInt(workId));
+
+      for (Edition e : work.getEditions()) {
+         if (editionId.equals(e.getId())) {
+            return new EditionDV(e);
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Unable to find edition with id [" + editionId + "].");
    }
 
    @PUT
@@ -59,13 +77,13 @@ public class EditionsResource
    public String updateEdition(@PathParam(value = "workId") String workId,
                                @PathParam(value = "editionId") String editionId)
    {
-	   return null;
+      throw new UnsupportedOperationException("EditionsResource#updateEdition() has not yet been implemented.");
    }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public String createEdition(EditionDV edition)
+   public String createEdition(@PathParam(value = "workId") String workId, EditionDV edition)
    {
-	   return null;
+      throw new UnsupportedOperationException("EditionsResource#createEdition() has not yet been implemented.");
    }
 }
