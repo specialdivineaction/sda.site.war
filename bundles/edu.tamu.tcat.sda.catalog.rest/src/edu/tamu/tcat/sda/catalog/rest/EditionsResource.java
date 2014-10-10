@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -13,7 +14,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Edition;
+import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
@@ -75,15 +78,23 @@ public class EditionsResource
    @PUT
    @Path("{editionId}")
    public String updateEdition(@PathParam(value = "workId") String workId,
-                               @PathParam(value = "editionId") String editionId)
+                               @PathParam(value = "editionId") String editionId, EditionDV edition) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
    {
-      throw new UnsupportedOperationException("EditionsResource#updateEdition() has not yet been implemented.");
+      EditWorkCommand command = repo.edit(workId);
+      EditionMutator editionMutator = command.editEdition(editionId);
+      editionMutator.setAll(edition);
+
+      return command.execute().get();
    }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public String createEdition(@PathParam(value = "workId") String workId, EditionDV edition)
+   public String createEdition(@PathParam(value = "workId") String workId, EditionDV edition) throws ExecutionException, NoSuchCatalogRecordException, InterruptedException
    {
-      throw new UnsupportedOperationException("EditionsResource#createEdition() has not yet been implemented.");
+      EditWorkCommand command = repo.edit(workId);
+      EditionMutator editionMutator = command.createEdition();
+      editionMutator.setAll(edition);
+
+      return command.execute().get();
    }
 }
