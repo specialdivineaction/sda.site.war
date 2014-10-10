@@ -4,22 +4,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
-public interface EditWorkCommand // extends Callable<Work>
+import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+
+public interface EditWorkCommand
 {
    // TODO: Should these methods take in full models or data vehicles?
    //       Should there be methods to handle both data types?
 
-   void setAuthors(List<AuthorReference> authors);
-   void setTitles(List<Title> titles);
-   // TODO: Should these methods take in full models or data vehicles?
-   //       Should there be methods to handle both data types?
+   void setAll(WorkDV work);
 
-   void setOtherAuthors(List<AuthorReference> authors);
+   // TODO: Any field that is a collection of models should eventually use mutators.
+
+   void setAuthors(List<AuthorRefDV> authors);
+   void setTitles(List<TitleDV> titles);
+   void setOtherAuthors(List<AuthorRefDV> authors);
    void setSeries(String series);
    void setSummary(String summary);
-
-   // TODO: Should these methods take in full models or data vehicles?
-   //       Should there be methods to handle both data types?
 
    @Deprecated // this is a property of an edition.
    void setPublicationDate(Date pubDate);
@@ -27,7 +29,20 @@ public interface EditWorkCommand // extends Callable<Work>
    @Deprecated // this is a property of an edition.
    void setPublicationDateDisplay(String display);
 
-   EditionMutator getEditionMutator();
+   /**
+    * Creates an edition mutator to update fields on an existing edition of this work.
+    *
+    * @param id The ID of a contained edition.
+    * @return A mutator for the given edition ID.
+    */
+   EditionMutator editEdition(String id);
+
+   /**
+    * Creates an edition mutator for a new edition of this work.
+    *
+    * @return
+    */
+   EditionMutator createEdition();
 
    Future<String> execute();
 }
