@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -35,7 +36,7 @@ public interface EditWorkCommand
     * @param id The ID of a contained edition.
     * @return A mutator for the given edition ID.
     */
-   EditionMutator editEdition(String id);
+   EditionMutator editEdition(String id) throws NoSuchCatalogRecordException;
 
    /**
     * Creates an edition mutator for a new edition of this work.
