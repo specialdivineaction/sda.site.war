@@ -18,8 +18,10 @@ import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
+import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
+import edu.tamu.tcat.sda.catalog.works.Volume;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -170,6 +172,27 @@ public class PsqlWorkRepo implements WorkRepository
       catch (InterruptedException e) {
          throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
       }
+   }
+
+   @Override
+   public Work getWork(String workId) throws NoSuchCatalogRecordException
+   {
+      return getWork(Integer.parseInt(workId));
+   }
+
+   @Override
+   public Edition getEdition(String workId, String editionId) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(workId);
+      return work.getEdition(editionId);
+   }
+
+   @Override
+   public Volume getVolume(String workId, String editionId, String volumeId) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(workId);
+      Edition edition = work.getEdition(editionId);
+      return edition.getVolume(volumeId);
    }
 
    private boolean hasTitleName(Title title, String titleName)

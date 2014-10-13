@@ -39,7 +39,26 @@ public interface WorkRepository extends DataStore
     * @return The record for a specific work.
     * @throws NoSuchCatalogRecordException If the requested work does not exist.
     */
+   @Deprecated
    Work getWork(int workId) throws NoSuchCatalogRecordException;     // FIXME should be a string valued id
+   Work getWork(String workId) throws NoSuchCatalogRecordException;
+
+   /**
+    * @param workId The ID of a work.
+    * @param editionId The ID of an edition of the given work.
+    * @return The edition for a specific work.
+    * @throws NoSuchCatalogRecordException If the requested work or edition does not exist.
+    */
+   Edition getEdition(String workId, String editionId) throws NoSuchCatalogRecordException;
+
+   /**
+    * @param workId The ID of a work.
+    * @param editionId The ID of an edition of the given work.
+    * @param volumeId The ID of a volume of the specified edition.
+    * @return The volume for a specific edition of a work.
+    * @throws NoSuchCatalogRecordException If the requested work, edition, or volume does not exist.
+    */
+   Volume getVolume(String workId, String editionId, String volumeId) throws NoSuchCatalogRecordException;
 
    /**
     * Given an author reference, return the biographical record for the referenced person.
