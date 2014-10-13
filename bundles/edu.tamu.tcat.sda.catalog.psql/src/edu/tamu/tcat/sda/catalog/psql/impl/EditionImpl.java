@@ -21,6 +21,7 @@ public class EditionImpl implements Edition
    private String edition;
    private PublicationInfo publicationInfo;
    private List<Volume> volumes;
+   private String series;
    private String summary;
    private List<URI> images;
    private Collection<String> tags;
@@ -54,6 +55,8 @@ public class EditionImpl implements Edition
       volumes = dv.volumes.stream()
             .map((v) -> new VolumeImpl(v))
             .collect(Collectors.toList());
+
+      series = dv.series;
 
       summary = dv.summary;
 
@@ -116,8 +119,7 @@ public class EditionImpl implements Edition
    @Override
    public String getSeries()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return series;
    }
 
    @Override
