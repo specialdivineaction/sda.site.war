@@ -24,64 +24,62 @@ public class VolumeMutatorImpl implements VolumeMutator
    @Override
    public void setAll(VolumeDV volume)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      setVolume(volume.volume);
+      setAuthors(volume.authors);
+      setTitles(volume.titles);
+      setSummary(volume.summary);
+      setSeries(volume.series);
+      setImages(volume.images);
+      setTags(volume.tags);
+      setNotes(volume.notes);
    }
 
    @Override
    public void setVolume(String volume)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      this.volume.volume = volume;
    }
 
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.authors = authors;
    }
 
    @Override
    public void setTitles(List<TitleDV> titles)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.titles = titles;
    }
 
    @Override
    public void setSummary(String summary)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.summary = summary;
    }
 
    @Override
    public void setSeries(String series)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.series = series;
    }
 
    @Override
    public void setImages(List<URI> images)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.images = images;
    }
 
    @Override
    public void setTags(Collection<String> tags)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.tags = tags;
    }
 
    @Override
    public void setNotes(Collection<String> notes)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented.");
+      volume.notes = notes;
    }
 
 }
