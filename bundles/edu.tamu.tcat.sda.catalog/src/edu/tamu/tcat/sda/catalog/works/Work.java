@@ -2,6 +2,8 @@ package edu.tamu.tcat.sda.catalog.works;
 
 import java.util.Collection;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+
 
 /**
  * Bibliographic description for a book, article, journal or other work. This is the main
@@ -42,6 +44,15 @@ public interface Work
     * @return The editions associated with this work.
     */
    Collection<Edition> getEditions();
+
+   /**
+    * Obtain a particular edition of this work by edition ID.
+    *
+    * @param editionId
+    * @return The edition associated with this work that possesses the given ID.
+    * @throws NoSuchCatalogRecordException
+    */
+   Edition getEdition(String editionId) throws NoSuchCatalogRecordException;
 
    /**
     * @return A defined series of related works, typically published by a single publishers and

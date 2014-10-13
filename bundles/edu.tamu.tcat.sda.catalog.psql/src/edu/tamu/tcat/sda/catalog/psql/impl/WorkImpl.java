@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.catalog.psql.impl;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.AuthorList;
 import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
@@ -82,6 +83,18 @@ public class WorkImpl implements Work
    public Collection<Edition> getEditions()
    {
       return editions;
+   }
+
+   @Override
+   public Edition getEdition(String editionId) throws NoSuchCatalogRecordException
+   {
+      for (Edition edition : editions) {
+         if (edition.getId().equals(editionId)) {
+            return edition;
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Unable to find edition [" + editionId + "] in work [" + id + "].");
    }
 
 }
