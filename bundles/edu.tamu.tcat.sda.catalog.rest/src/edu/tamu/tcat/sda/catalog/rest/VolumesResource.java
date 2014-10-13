@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +12,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.works.Edition;
+import edu.tamu.tcat.sda.catalog.works.Volume;
+import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
@@ -36,9 +40,13 @@ public class VolumesResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    public Collection<VolumeDV> listVolumes(@PathParam(value = "workId") String workId,
-                                           @PathParam(value = "editionId") String editionId)
+                                           @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      return Collections.emptySet();
+      Work work = repo.getWork(Integer.parseInt(workId));
+      Edition edition = work.getEdition(editionId);
+      return edition.getVolumes().stream()
+            .map(v -> new VolumeDV(v))
+            .collect(Collectors.toSet());
    }
 
    @GET
@@ -46,9 +54,12 @@ public class VolumesResource
    @Produces(MediaType.APPLICATION_JSON)
    public VolumeDV getVolume(@PathParam(value = "workId") String workId,
                              @PathParam(value = "editionId") String editionId,
-                             @PathParam(value = "volumeId") String volumeId)
+                             @PathParam(value = "volumeId") String volumeId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      return null;
+      Work work = repo.getWork(Integer.parseInt(workId));
+      Edition edition = work.getEdition(editionId);
+      Volume volume = edition.getVolume(volumeId);
+      return new VolumeDV(volume);
    }
 
    @PUT
