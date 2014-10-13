@@ -188,7 +188,7 @@ public class WorksResource
       {
          // HACK: need to do string-based data identifiers
          try {
-            this.result = repo.getWork(Integer.valueOf(workId));
+            this.result = repo.getWork(Integer.parseInt(workId));
          }
          catch (NumberFormatException | NoSuchCatalogRecordException e) {
             throw new IllegalStateException("Failed to retrieve work [" + workId + "]", e);
