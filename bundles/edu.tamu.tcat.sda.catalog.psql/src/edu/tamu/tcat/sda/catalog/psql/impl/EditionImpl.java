@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
@@ -138,6 +139,18 @@ public class EditionImpl implements Edition
    public Collection<String> getNotes()
    {
       return notes;
+   }
+
+   @Override
+   public Volume getVolume(String volumeId) throws NoSuchCatalogRecordException
+   {
+      for (Volume volume : volumes) {
+         if (volume.getId().equals(volumeId)) {
+            return volume;
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Unable to find volume [" + volumeId + "] in edition [" + id + "].");
    }
 
 }

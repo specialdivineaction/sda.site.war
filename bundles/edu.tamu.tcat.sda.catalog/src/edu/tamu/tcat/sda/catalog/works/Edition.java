@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+
 /**
  * Editions are published manifestations of a {@link Work}.
  */
@@ -68,6 +70,15 @@ public interface Edition
     * @return
     */
    List<Volume> getVolumes();
+
+   /**
+    * Get volume by ID
+    *
+    * @param volumeId
+    * @return The volume of this edition that corresponds to the given ID
+    * @throws NoSuchCatalogRecordException
+    */
+   Volume getVolume(String volumeId) throws NoSuchCatalogRecordException;
 
 
    // the following properties may vary independently from works
