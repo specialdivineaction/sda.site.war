@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -13,8 +14,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Edition;
+import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.Volume;
+import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
@@ -67,16 +71,28 @@ public class VolumesResource
    @Consumes(MediaType.APPLICATION_JSON)
    public String updateVolume(@PathParam(value = "workId") String workId,
                               @PathParam(value = "editionId") String editionId,
-                              @PathParam(value = "volumeId") String volumeId)
+                              @PathParam(value = "volumeId") String volumeId,
+                              VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
    {
-      return null;
+      EditWorkCommand editWorkCommand = repo.edit(workId);
+      EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
+      VolumeMutator volumeMutator = editionMutator.editVolume(volumeId);
+      volumeMutator.setAll(volume);
+
+      return editWorkCommand.execute().get();
    }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    public String createVolume(@PathParam(value = "workId") String workId,
-                              @PathParam(value = "editionId") String editionId)
+                              @PathParam(value = "editionId") String editionId,
+                              VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
    {
-      return null;
+      EditWorkCommand editWorkCommand = repo.edit(workId);
+      EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
+      VolumeMutator volumeMutator = editionMutator.createVolume();
+      volumeMutator.setAll(volume);
+
+      return editWorkCommand.execute().get();
    }
 }
