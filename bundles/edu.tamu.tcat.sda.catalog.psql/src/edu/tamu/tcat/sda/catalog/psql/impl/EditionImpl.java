@@ -19,7 +19,7 @@ public class EditionImpl implements Edition
    private List<AuthorReference> authors;
    private List<Title> titles;
    private List<AuthorReference> otherAuthors;
-   private String edition;
+   private String editionName;
    private PublicationInfo publicationInfo;
    private List<Volume> volumes;
    private String series;
@@ -49,7 +49,7 @@ public class EditionImpl implements Edition
             .map((a) -> new AuthorReferenceImpl(a))
             .collect(Collectors.toList());
 
-      edition = dv.edition;
+      editionName = dv.editionName;
 
       publicationInfo = new PublicationImpl(dv.publicationInfo);
 
@@ -94,9 +94,9 @@ public class EditionImpl implements Edition
    }
 
    @Override
-   public String getEdition()
+   public String getEditionName()
    {
-      return edition;
+      return editionName;
    }
 
    @Override

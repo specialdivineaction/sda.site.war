@@ -55,7 +55,7 @@ public interface Edition
     *
     * @return The identifier for this edition of the work or {@code null} if no edition identifier is supplied.
     */
-   String getEdition();
+   String getEditionName();
 
    /**
     * Editions are physical manifestations of {@link Work}s.

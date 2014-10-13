@@ -30,7 +30,7 @@ public class EditionMutatorImpl implements EditionMutator
       setAuthors(edition.authors);
       setTitles(edition.titles);
       setOtherAuthors(edition.otherAuthors);
-      setEdition(edition.edition);
+      setEditionName(edition.editionName);
       setPublicationInfo(edition.publicationInfo);
       setSummary(edition.summary);
       setSeries(edition.series);
@@ -72,10 +72,9 @@ public class EditionMutatorImpl implements EditionMutator
    }
 
    @Override
-   public void setEdition(String edition)
+   public void setEditionName(String editionName)
    {
-      // HACK: this isn't confusing at all... </sarcasm>
-      this.edition.edition = edition;
+      this.edition.editionName = editionName;
    }
 
    @Override
