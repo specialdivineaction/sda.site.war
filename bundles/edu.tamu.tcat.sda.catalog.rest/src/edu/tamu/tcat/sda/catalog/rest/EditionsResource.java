@@ -65,14 +65,8 @@ public class EditionsResource
                                  @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
       Work work = repo.getWork(Integer.parseInt(workId));
-
-      for (Edition e : work.getEditions()) {
-         if (editionId.equals(e.getId())) {
-            return new EditionDV(e);
-         }
-      }
-
-      throw new NoSuchCatalogRecordException("Unable to find edition with id [" + editionId + "].");
+      Edition edition = work.getEdition(editionId);
+      return new EditionDV(edition);
    }
 
    @PUT
