@@ -43,4 +43,8 @@ public class VolumeDV
 
       notes = vol.getNotes();
    }
+
+   public VolumeDV()
+   {
+   }
 }

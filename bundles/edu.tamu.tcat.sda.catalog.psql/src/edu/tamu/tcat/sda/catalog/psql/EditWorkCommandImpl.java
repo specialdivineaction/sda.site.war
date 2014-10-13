@@ -1,17 +1,18 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
-import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
+import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
@@ -33,6 +34,35 @@ public class EditWorkCommandImpl implements EditWorkCommand
    }
 
    @Override
+   public void setAll(WorkDV work)
+   {
+      setSeries(work.series);
+      setSummary(work.summary);
+      setAuthors(work.authors);
+      setOtherAuthors(work.otherAuthors);
+
+      // TODO: see note in #setTitles()
+      setTitles(new ArrayList<>(work.titles));
+
+      setPublicationDate(work.pubInfo.date.value);
+      setPublicationDateDisplay(work.pubInfo.date.display);
+
+      for (EditionDV edition : work.editions) {
+         EditionMutator mutator;
+
+         try {
+            mutator = (null == edition.id) ? createEdition() : editEdition(edition.id);
+         }
+         catch (NoSuchCatalogRecordException e) {
+            // TODO: Log warning message
+            mutator = createEdition();
+         }
+
+         mutator.setAll(edition);
+      }
+   }
+
+   @Override
    public void setSeries(String series)
    {
       work.series = series;
@@ -45,29 +75,23 @@ public class EditWorkCommandImpl implements EditWorkCommand
    }
 
    @Override
-   public void setAuthors(List<AuthorReference> authors)
+   public void setAuthors(List<AuthorRefDV> authors)
    {
-      work.authors = authors.stream()
-            .map((ref) -> new AuthorRefDV(ref))
-            .collect(Collectors.toList());
+      work.authors = authors;
    }
 
    @Override
-   public void setOtherAuthors(List<AuthorReference> authors)
+   public void setOtherAuthors(List<AuthorRefDV> authors)
    {
-      work.otherAuthors = authors.stream()
-            .map((ref) -> new AuthorRefDV(ref))
-            .collect(Collectors.toList());
+      work.otherAuthors = authors;
    }
 
    @Override
-   public void setTitles(List<Title> titles)
+   public void setTitles(List<TitleDV> titles)
    {
       // TODO: Should work.titles be a list instead of a set, or
       //       Should the argument to this function be a set?
-      work.titles = titles.stream()
-            .map((title) -> new TitleDV(title))
-            .collect(Collectors.toSet());
+      work.titles = new HashSet<>(titles);
    }
 
    @Override
@@ -99,10 +123,23 @@ public class EditWorkCommandImpl implements EditWorkCommand
    }
 
    @Override
-   public EditionMutator getEditionMutator()
+   public EditionMutator createEdition()
    {
-      // TODO Auto-generated method stub
-      return null;
+      EditionDV edition = new EditionDV();
+      work.editions.add(edition);
+      return new EditionMutatorImpl(edition);
+   }
+
+   @Override
+   public EditionMutator editEdition(String id) throws NoSuchCatalogRecordException
+   {
+      for (EditionDV edition : work.editions) {
+         if (edition.id.equals(id)) {
+            return new EditionMutatorImpl(edition);
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Unable to find edition with id [" + id + "].");
    }
 
    @Override

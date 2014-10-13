@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
@@ -25,5 +26,5 @@ public interface EditionMutator
    void setNotes(Collection<String> notes);
 
    VolumeMutator createVolume();
-   VolumeMutator editVolume(String id);
+   VolumeMutator editVolume(String id) throws NoSuchCatalogRecordException;
 }
