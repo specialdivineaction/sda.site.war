@@ -16,7 +16,7 @@ public interface Volume
     *
     * @return
     */
-   String getVolume();
+   String getVolumeNumber();
 
    // the following properties may vary independently from works
 

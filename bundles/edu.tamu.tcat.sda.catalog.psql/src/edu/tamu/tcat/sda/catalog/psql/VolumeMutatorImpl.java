@@ -24,7 +24,7 @@ public class VolumeMutatorImpl implements VolumeMutator
    @Override
    public void setAll(VolumeDV volume)
    {
-      setVolume(volume.volume);
+      setVolumeNumber(volume.volumeNumber);
       setAuthors(volume.authors);
       setTitles(volume.titles);
       setSummary(volume.summary);
@@ -35,9 +35,9 @@ public class VolumeMutatorImpl implements VolumeMutator
    }
 
    @Override
-   public void setVolume(String volume)
+   public void setVolumeNumber(String volumeNumber)
    {
-      this.volume.volume = volume;
+      this.volume.volumeNumber = volumeNumber;
    }
 
    @Override
