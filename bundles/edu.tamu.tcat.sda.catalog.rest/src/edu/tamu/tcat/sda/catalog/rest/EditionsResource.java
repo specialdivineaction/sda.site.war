@@ -24,11 +24,11 @@ import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 @Path("/works/{workId}/editions")
 public class EditionsResource
 {
-   WorkRepository repo;
+   private WorkRepository repo;
 
 
    // Called by DS
-   void setRepository(WorkRepository repo)
+   public void setRepository(WorkRepository repo)
    {
       this.repo = repo;
    }
