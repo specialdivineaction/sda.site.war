@@ -27,6 +27,7 @@ public class VolumeMutatorImpl implements VolumeMutator
       setVolumeNumber(volume.volumeNumber);
       setAuthors(volume.authors);
       setTitles(volume.titles);
+      setOtherAuthors(volume.otherAuthors);
       setSummary(volume.summary);
       setSeries(volume.series);
       setImages(volume.images);
@@ -50,6 +51,12 @@ public class VolumeMutatorImpl implements VolumeMutator
    public void setTitles(Collection<TitleDV> titles)
    {
       volume.titles = titles;
+   }
+
+   @Override
+   public void setOtherAuthors(List<AuthorRefDV> otherAuthors)
+   {
+      volume.otherAuthors = otherAuthors;
    }
 
    @Override

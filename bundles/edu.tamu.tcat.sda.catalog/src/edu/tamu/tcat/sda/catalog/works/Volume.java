@@ -41,6 +41,14 @@ public interface Volume
    Collection<Title> getTitles();
 
    /**
+    * Other individuals who played a role in the creation of this work, but who are not primarily
+    * responsible for its creation. Translators are a common example.
+    *
+    * @return The other authors associated with this work.
+    */
+   List<AuthorReference> getOtherAuthors();
+
+   /**
     * Descriptive summary about this volume.
     *
     * @return

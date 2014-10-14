@@ -16,6 +16,7 @@ public class VolumeImpl implements Volume
    private String volumeNumber;
    private List<AuthorReference> authors;
    private Collection<Title> titles;
+   private List<AuthorReference> otherAuthors;
    private String summary;
    private String series;
    private List<URI> images;
@@ -40,6 +41,10 @@ public class VolumeImpl implements Volume
       titles = dv.titles.stream().unordered()
             .map((t) -> new TitleImpl(t))
             .collect(Collectors.toSet());
+
+      otherAuthors = dv.otherAuthors.stream()
+            .map((a) -> new AuthorReferenceImpl(a))
+            .collect(Collectors.toList());
 
       summary = dv.summary;
 
@@ -75,6 +80,12 @@ public class VolumeImpl implements Volume
    public Collection<Title> getTitles()
    {
       return titles;
+   }
+
+   @Override
+   public List<AuthorReference> getOtherAuthors()
+   {
+      return otherAuthors;
    }
 
    @Override
