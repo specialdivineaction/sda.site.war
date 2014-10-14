@@ -16,17 +16,14 @@ import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 public class EditionImpl implements Edition
 {
    private String id;
-   private List<AuthorReference> authors;
-   private Collection<Title> titles;
-   private List<AuthorReference> otherAuthors;
+
+   private CommonFieldsDelegate delegate = new CommonFieldsDelegate();
    private String editionName;
    private PublicationInfo publicationInfo;
    private List<Volume> volumes;
+
+   // TODO might belong in CommonFieldsDelegate?
    private String series;
-   private String summary;
-   private List<URI> images;
-   private Collection<String> tags;
-   private Collection<String> notes;
 
 
    public EditionImpl()
@@ -37,35 +34,14 @@ public class EditionImpl implements Edition
    {
       id = dv.id;
 
-      authors = dv.authors.stream()
-            .map((a) -> new AuthorReferenceImpl(a))
-            .collect(Collectors.toList());
-
-      titles = dv.titles.stream().unordered()
-            .map((t) -> new TitleImpl(t))
-            .collect(Collectors.toSet());
-
-      otherAuthors = dv.otherAuthors.stream()
-            .map((a) -> new AuthorReferenceImpl(a))
-            .collect(Collectors.toList());
+      delegate = new CommonFieldsDelegate(dv.authors, dv.titles, dv.otherAuthors, dv.summary);
 
       editionName = dv.editionName;
-
       publicationInfo = new PublicationImpl(dv.publicationInfo);
-
       volumes = dv.volumes.stream()
             .map((v) -> new VolumeImpl(v))
             .collect(Collectors.toList());
-
       series = dv.series;
-
-      summary = dv.summary;
-
-      images = dv.images;
-
-      tags = dv.tags;
-
-      notes = dv.notes;
    }
 
 
@@ -78,19 +54,19 @@ public class EditionImpl implements Edition
    @Override
    public List<AuthorReference> getAuthors()
    {
-      return authors;
+      return delegate.getAuthors();
    }
 
    @Override
    public Collection<Title> getTitles()
    {
-      return titles;
+      return delegate.getTitles();
    }
 
    @Override
    public List<AuthorReference> getOtherAuthors()
    {
-      return otherAuthors;
+      return delegate.getOtherAuthors();
    }
 
    @Override
@@ -114,7 +90,7 @@ public class EditionImpl implements Edition
    @Override
    public String getSummary()
    {
-      return summary;
+      return delegate.getSummary();
    }
 
    @Override
@@ -126,19 +102,19 @@ public class EditionImpl implements Edition
    @Override
    public List<URI> getImages()
    {
-      return images;
+      throw new UnsupportedOperationException();
    }
 
    @Override
    public Collection<String> getTags()
    {
-      return tags;
+      throw new UnsupportedOperationException();
    }
 
    @Override
    public Collection<String> getNotes()
    {
-      return notes;
+      throw new UnsupportedOperationException();
    }
 
    @Override
