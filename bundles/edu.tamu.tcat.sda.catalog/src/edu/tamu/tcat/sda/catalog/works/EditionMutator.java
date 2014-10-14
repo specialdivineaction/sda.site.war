@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 
 public interface EditionMutator
 {
+   // TODO add JavaDoc!!
    void setAll(EditionDV edition);
 
    void setAuthors(List<AuthorRefDV> authors);
@@ -19,11 +19,8 @@ public interface EditionMutator
    void setOtherAuthors(List<AuthorRefDV> otherAuthors);
    void setEditionName(String editionName);
    void setPublicationInfo(PublicationInfoDV pubInfo);
-   void setSummary(String summary);
    void setSeries(String series);
-   void setImages(List<URI> images);
-   void setTags(Collection<String> tags);
-   void setNotes(Collection<String> notes);
+   void setSummary(String summary);
 
    VolumeMutator createVolume();
    VolumeMutator editVolume(String id) throws NoSuchCatalogRecordException;

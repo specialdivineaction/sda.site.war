@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,24 +96,6 @@ public class EditionImpl implements Edition
    public String getSeries()
    {
       return series;
-   }
-
-   @Override
-   public List<URI> getImages()
-   {
-      throw new UnsupportedOperationException();
-   }
-
-   @Override
-   public Collection<String> getTags()
-   {
-      throw new UnsupportedOperationException();
-   }
-
-   @Override
-   public Collection<String> getNotes()
-   {
-      throw new UnsupportedOperationException();
    }
 
    @Override

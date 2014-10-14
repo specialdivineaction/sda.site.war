@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +17,6 @@ public class EditionDV
    public List<AuthorRefDV> otherAuthors;
    public String summary;
    public String series;
-   public List<URI> images;
-   public Collection<String> tags;
-   public Collection<String> notes;
 
    public EditionDV(Edition ed)
    {
@@ -49,12 +45,6 @@ public class EditionDV
       summary = ed.getSummary();
 
       series = ed.getSeries();
-
-      images = ed.getImages();
-
-      tags = ed.getTags();
-
-      notes = ed.getNotes();
    }
 
    public EditionDV()

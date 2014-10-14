@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,9 +35,7 @@ public class EditionMutatorImpl implements EditionMutator
       setPublicationInfo(edition.publicationInfo);
       setSummary(edition.summary);
       setSeries(edition.series);
-      setImages(edition.images);
-      setTags(edition.tags);
-      setNotes(edition.notes);
+
 
       for (VolumeDV volume : edition.volumes) {
          VolumeMutator mutator;
@@ -95,24 +92,6 @@ public class EditionMutatorImpl implements EditionMutator
    public void setSeries(String series)
    {
       edition.series = series;
-   }
-
-   @Override
-   public void setImages(List<URI> images)
-   {
-      edition.images = new ArrayList<>(images);
-   }
-
-   @Override
-   public void setTags(Collection<String> tags)
-   {
-      edition.tags = new HashSet<>(tags);
-   }
-
-   @Override
-   public void setNotes(Collection<String> notes)
-   {
-      edition.notes = new HashSet<>(notes);
    }
 
    @Override
