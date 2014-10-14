@@ -1,7 +1,9 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
@@ -56,19 +58,19 @@ public class EditionMutatorImpl implements EditionMutator
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      edition.authors = authors;
+      edition.authors = new ArrayList<>(authors);
    }
 
    @Override
    public void setTitles(Collection<TitleDV> titles)
    {
-      edition.titles = titles;
+      edition.titles = new HashSet<>(titles);
    }
 
    @Override
    public void setOtherAuthors(List<AuthorRefDV> otherAuthors)
    {
-      edition.otherAuthors = otherAuthors;
+      edition.otherAuthors = new ArrayList<>(otherAuthors);
    }
 
    @Override
@@ -98,19 +100,19 @@ public class EditionMutatorImpl implements EditionMutator
    @Override
    public void setImages(List<URI> images)
    {
-      edition.images = images;
+      edition.images = new ArrayList<>(images);
    }
 
    @Override
    public void setTags(Collection<String> tags)
    {
-      edition.tags = tags;
+      edition.tags = new HashSet<>(tags);
    }
 
    @Override
    public void setNotes(Collection<String> notes)
    {
-      edition.notes = notes;
+      edition.notes = new HashSet<>(notes);
    }
 
    @Override

@@ -1,7 +1,9 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
@@ -44,19 +46,19 @@ public class VolumeMutatorImpl implements VolumeMutator
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      volume.authors = authors;
+      volume.authors = new ArrayList<>(authors);
    }
 
    @Override
    public void setTitles(Collection<TitleDV> titles)
    {
-      volume.titles = titles;
+      volume.titles = new HashSet<>(titles);
    }
 
    @Override
    public void setOtherAuthors(List<AuthorRefDV> otherAuthors)
    {
-      volume.otherAuthors = otherAuthors;
+      volume.otherAuthors = new ArrayList<>(otherAuthors);
    }
 
    @Override
@@ -74,19 +76,19 @@ public class VolumeMutatorImpl implements VolumeMutator
    @Override
    public void setImages(List<URI> images)
    {
-      volume.images = images;
+      volume.images = new ArrayList<>(images);
    }
 
    @Override
    public void setTags(Collection<String> tags)
    {
-      volume.tags = tags;
+      volume.tags = new HashSet<>(tags);
    }
 
    @Override
    public void setNotes(Collection<String> notes)
    {
-      volume.notes = notes;
+      volume.notes = new HashSet<>(notes);
    }
 
 }

@@ -41,10 +41,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
       setSummary(work.summary);
       setAuthors(work.authors);
       setOtherAuthors(work.otherAuthors);
-
-      // TODO: see note in #setTitles()
-      setTitles(new ArrayList<>(work.titles));
-
+      setTitles(work.titles);
       setPublicationDate(work.pubInfo.date.value);
       setPublicationDateDisplay(work.pubInfo.date.display);
 
@@ -78,20 +75,18 @@ public class EditWorkCommandImpl implements EditWorkCommand
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      work.authors = authors;
+      work.authors = new ArrayList<>(authors);
    }
 
    @Override
    public void setOtherAuthors(List<AuthorRefDV> authors)
    {
-      work.otherAuthors = authors;
+      work.otherAuthors = new ArrayList<>(authors);
    }
 
    @Override
    public void setTitles(Collection<TitleDV> titles)
    {
-      // TODO: Should work.titles be a list instead of a set, or
-      //       Should the argument to this function be a set?
       work.titles = new HashSet<>(titles);
    }
 
