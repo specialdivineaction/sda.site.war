@@ -12,7 +12,7 @@ public class VolumeDV
    public String id;
    public String volumeNumber;
    public List<AuthorRefDV> authors;
-   public List<TitleDV> titles;
+   public Collection<TitleDV> titles;
    public String summary;
    public String series;
    public List<URI> images;
@@ -29,9 +29,9 @@ public class VolumeDV
             .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
-      titles = vol.getTitles().stream()
+      titles = vol.getTitles().stream().unordered()
             .map((title) -> new TitleDV(title))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
       summary = vol.getSummary();
 

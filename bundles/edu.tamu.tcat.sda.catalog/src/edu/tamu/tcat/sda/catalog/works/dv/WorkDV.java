@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
@@ -19,7 +18,7 @@ public class WorkDV
 {
    public String id;
    public List<AuthorRefDV> authors;
-   public Set<TitleDV> titles;
+   public Collection<TitleDV> titles;
    public List<AuthorRefDV> otherAuthors;
    public PublicationInfoDV pubInfo;
    public String series;
@@ -43,7 +42,7 @@ public class WorkDV
       }
 
       titles = new HashSet<>();
-      Set<Title> altTitles = work.getTitle().getAlternateTitles();
+      Collection<Title> altTitles = work.getTitle().getAlternateTitles();
       for(Title title : altTitles)
       {
          titles.add(new TitleDV(title));

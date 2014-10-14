@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -87,7 +88,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
    }
 
    @Override
-   public void setTitles(List<TitleDV> titles)
+   public void setTitles(Collection<TitleDV> titles)
    {
       // TODO: Should work.titles be a list instead of a set, or
       //       Should the argument to this function be a set?

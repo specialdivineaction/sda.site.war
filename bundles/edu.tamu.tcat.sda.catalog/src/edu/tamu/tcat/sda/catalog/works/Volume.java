@@ -38,7 +38,7 @@ public interface Volume
     *
     * @return
     */
-   List<Title> getTitles();
+   Collection<Title> getTitles();
 
    /**
     * Descriptive summary about this volume.

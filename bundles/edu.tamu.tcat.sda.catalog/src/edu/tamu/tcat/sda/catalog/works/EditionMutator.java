@@ -15,7 +15,7 @@ public interface EditionMutator
    void setAll(EditionDV edition);
 
    void setAuthors(List<AuthorRefDV> authors);
-   void setTitles(List<TitleDV> titles);
+   void setTitles(Collection<TitleDV> titles);
    void setOtherAuthors(List<AuthorRefDV> otherAuthors);
    void setEditionName(String editionName);
    void setPublicationInfo(PublicationInfoDV pubInfo);

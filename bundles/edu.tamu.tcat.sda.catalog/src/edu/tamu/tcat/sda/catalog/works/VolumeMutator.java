@@ -14,7 +14,7 @@ public interface VolumeMutator
 
    void setVolumeNumber(String volumeNumber);
    void setAuthors(List<AuthorRefDV> authors);
-   void setTitles(List<TitleDV> titles);
+   void setTitles(Collection<TitleDV> titles);
    void setSummary(String summary);
    void setSeries(String series);
    void setImages(List<URI> images);

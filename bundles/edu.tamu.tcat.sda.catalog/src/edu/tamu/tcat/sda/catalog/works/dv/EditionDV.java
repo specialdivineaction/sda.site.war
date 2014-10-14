@@ -14,7 +14,7 @@ public class EditionDV
    public PublicationInfoDV publicationInfo;
    public List<VolumeDV> volumes;
    public List<AuthorRefDV> authors;
-   public List<TitleDV> titles;
+   public Collection<TitleDV> titles;
    public List<AuthorRefDV> otherAuthors;
    public String summary;
    public String series;
@@ -38,9 +38,9 @@ public class EditionDV
             .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
-      titles = ed.getTitles().stream()
+      titles = ed.getTitles().stream().unordered()
             .map((title) -> new TitleDV(title))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
       otherAuthors = ed.getOtherAuthors().stream()
             .map((ref) -> new AuthorRefDV(ref))

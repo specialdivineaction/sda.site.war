@@ -17,7 +17,7 @@ public class EditionImpl implements Edition
 {
    private String id;
    private List<AuthorReference> authors;
-   private List<Title> titles;
+   private Collection<Title> titles;
    private List<AuthorReference> otherAuthors;
    private String editionName;
    private PublicationInfo publicationInfo;
@@ -41,9 +41,9 @@ public class EditionImpl implements Edition
             .map((a) -> new AuthorReferenceImpl(a))
             .collect(Collectors.toList());
 
-      titles = dv.titles.stream()
+      titles = dv.titles.stream().unordered()
             .map((t) -> new TitleImpl(t))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
       otherAuthors = dv.otherAuthors.stream()
             .map((a) -> new AuthorReferenceImpl(a))
@@ -82,7 +82,7 @@ public class EditionImpl implements Edition
    }
 
    @Override
-   public List<Title> getTitles()
+   public Collection<Title> getTitles()
    {
       return titles;
    }

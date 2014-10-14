@@ -38,7 +38,7 @@ public interface Edition
     *
     * @return The titles associated with this edition.
     */
-   List<Title> getTitles();
+   Collection<Title> getTitles();
 
    /**
     * Other individuals who played a role in the creation of this work, but who are not primarily

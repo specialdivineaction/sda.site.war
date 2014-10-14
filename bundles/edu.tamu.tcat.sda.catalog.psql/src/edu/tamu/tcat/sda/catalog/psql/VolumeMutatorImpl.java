@@ -47,7 +47,7 @@ public class VolumeMutatorImpl implements VolumeMutator
    }
 
    @Override
-   public void setTitles(List<TitleDV> titles)
+   public void setTitles(Collection<TitleDV> titles)
    {
       volume.titles = titles;
    }

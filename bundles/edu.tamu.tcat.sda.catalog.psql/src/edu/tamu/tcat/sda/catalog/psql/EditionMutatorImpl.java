@@ -60,7 +60,7 @@ public class EditionMutatorImpl implements EditionMutator
    }
 
    @Override
-   public void setTitles(List<TitleDV> titles)
+   public void setTitles(Collection<TitleDV> titles)
    {
       edition.titles = titles;
    }

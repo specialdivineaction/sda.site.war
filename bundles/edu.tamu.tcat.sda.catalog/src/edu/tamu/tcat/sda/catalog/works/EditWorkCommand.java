@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -19,7 +20,7 @@ public interface EditWorkCommand
    // TODO: Any field that is a collection of models should eventually use mutators.
 
    void setAuthors(List<AuthorRefDV> authors);
-   void setTitles(List<TitleDV> titles);
+   void setTitles(Collection<TitleDV> titles);
    void setOtherAuthors(List<AuthorRefDV> authors);
    void setSeries(String series);
    void setSummary(String summary);
