@@ -13,11 +13,10 @@ import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
 public class VolumeMutatorImpl implements VolumeMutator
 {
-
    private final VolumeDV volume;
 
 
-   public VolumeMutatorImpl(VolumeDV volume)
+   VolumeMutatorImpl(VolumeDV volume)
    {
       this.volume = volume;
    }

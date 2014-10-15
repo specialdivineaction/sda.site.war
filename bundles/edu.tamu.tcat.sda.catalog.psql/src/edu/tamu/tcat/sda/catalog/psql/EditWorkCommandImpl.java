@@ -26,7 +26,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
 
    private Function<WorkDV, Future<String>> commitHook;
 
-   public EditWorkCommandImpl(WorkDV work, IdProvider editionIdProvider)
+   EditWorkCommandImpl(WorkDV work, IdProvider editionIdProvider)
    {
       this.work = work;
       this.editionIdProvider = editionIdProvider;

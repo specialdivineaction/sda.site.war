@@ -19,7 +19,7 @@ public class EditionMutatorImpl implements EditionMutator
    private final EditionDV edition;
 
 
-   public EditionMutatorImpl(EditionDV edition)
+   EditionMutatorImpl(EditionDV edition)
    {
       this.edition = edition;
    }
