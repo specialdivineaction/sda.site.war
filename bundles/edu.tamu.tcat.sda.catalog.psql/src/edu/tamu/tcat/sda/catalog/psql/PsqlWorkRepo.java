@@ -37,18 +37,18 @@ public class PsqlWorkRepo implements WorkRepository
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
 
-   private static Map<String, WeakReference<IdProvider>> idProviders = new HashMap<>();
+   private static Map<String, WeakReference<IdFactory>> idProviders = new HashMap<>();
 
-   private static IdProvider getIdProvider(Work work)
+   private static IdFactory getIdFactory(Work work)
    {
       if (null == work) {
-         return new IdProvider();
+         return new IdFactory();
       }
 
       String workId = work.getId();
 
       if (null == workId) {
-         return new IdProvider();
+         return new IdFactory();
       }
 
       synchronized (idProviders) {
@@ -60,7 +60,7 @@ public class PsqlWorkRepo implements WorkRepository
                .mapToInt((e) -> Integer.parseInt(e.getId()))
                .max().orElse(1);
 
-         IdProvider provider = new IdProvider(maxId);
+         IdFactory provider = new IdFactory(maxId);
          idProviders.put(workId, new WeakReference<>(provider));
          return provider;
       }
@@ -244,7 +244,7 @@ public class PsqlWorkRepo implements WorkRepository
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
       Work work = getWork(asInteger(id));
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), getIdProvider(work));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), getIdFactory(work));
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
          return exec.submit(task);
@@ -266,7 +266,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand create()
    {
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(), getIdProvider(null));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(), getIdFactory(null));
       command.setCommitHook((workDv) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(workDv, jsonMapper);
          return exec.submit(task);

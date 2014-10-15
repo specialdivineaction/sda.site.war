@@ -22,14 +22,14 @@ public class EditWorkCommandImpl implements EditWorkCommand
 {
 
    private final WorkDV work;
-   private final IdProvider editionIdProvider;
+   private final IdFactory editionIdFactory;
 
    private Function<WorkDV, Future<String>> commitHook;
 
-   EditWorkCommandImpl(WorkDV work, IdProvider editionIdProvider)
+   EditWorkCommandImpl(WorkDV work, IdFactory editionIdFactory)
    {
       this.work = work;
-      this.editionIdProvider = editionIdProvider;
+      this.editionIdFactory = editionIdFactory;
    }
 
    public void setCommitHook(Function<WorkDV, Future<String>> hook)
@@ -125,7 +125,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
    public EditionMutator createEdition()
    {
       EditionDV edition = new EditionDV();
-      edition.id = editionIdProvider.nextId();
+      edition.id = editionIdFactory.nextId();
       work.editions.add(edition);
       return new EditionMutatorImpl(edition);
    }

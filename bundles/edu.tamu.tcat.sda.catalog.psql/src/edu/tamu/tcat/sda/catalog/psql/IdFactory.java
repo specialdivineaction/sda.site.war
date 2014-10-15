@@ -2,16 +2,16 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class IdProvider
+public class IdFactory
 {
    private final AtomicInteger counter;
 
-   public IdProvider()
+   public IdFactory()
    {
       this(1);
    }
 
-   public IdProvider(int initialValue)
+   public IdFactory(int initialValue)
    {
       counter = new AtomicInteger(initialValue);
    }
