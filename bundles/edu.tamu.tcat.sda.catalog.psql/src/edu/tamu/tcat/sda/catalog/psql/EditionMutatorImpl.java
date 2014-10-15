@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
@@ -17,11 +18,17 @@ import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 public class EditionMutatorImpl implements EditionMutator
 {
    private final EditionDV edition;
+   private Supplier<String> volumeIdSupplier;
 
 
-   EditionMutatorImpl(EditionDV edition)
+   /**
+    * @param edition
+    * @param volumeIdSupplier Supplier to generate IDs for volumes.
+    */
+   EditionMutatorImpl(EditionDV edition, Supplier<String> volumeIdSupplier)
    {
       this.edition = edition;
+      this.volumeIdSupplier = volumeIdSupplier;
    }
 
 
@@ -98,6 +105,7 @@ public class EditionMutatorImpl implements EditionMutator
    public VolumeMutator createVolume()
    {
       VolumeDV volume = new VolumeDV();
+      volume.id = volumeIdSupplier.get();
       edition.volumes.add(volume);
       return new VolumeMutatorImpl(volume);
    }

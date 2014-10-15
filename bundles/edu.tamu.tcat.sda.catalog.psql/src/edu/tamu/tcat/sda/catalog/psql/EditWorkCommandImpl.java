@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
@@ -22,14 +23,14 @@ public class EditWorkCommandImpl implements EditWorkCommand
 {
 
    private final WorkDV work;
-   private final IdFactory editionIdFactory;
+   private final IdFactory idFactory;
 
    private Function<WorkDV, Future<String>> commitHook;
 
-   EditWorkCommandImpl(WorkDV work, IdFactory editionIdFactory)
+   EditWorkCommandImpl(WorkDV work, IdFactory idFactory)
    {
       this.work = work;
-      this.editionIdFactory = editionIdFactory;
+      this.idFactory = idFactory;
    }
 
    public void setCommitHook(Function<WorkDV, Future<String>> hook)
@@ -125,9 +126,11 @@ public class EditWorkCommandImpl implements EditWorkCommand
    public EditionMutator createEdition()
    {
       EditionDV edition = new EditionDV();
-      edition.id = editionIdFactory.nextId();
+      edition.id = idFactory.getNextId(PsqlWorkRepo.getContext(work));
       work.editions.add(edition);
-      return new EditionMutatorImpl(edition);
+
+      // create a supplier to generate volume IDs
+      return new EditionMutatorImpl(edition, () -> idFactory.getNextId(PsqlWorkRepo.getContext(work, edition)));
    }
 
    @Override
@@ -135,7 +138,8 @@ public class EditWorkCommandImpl implements EditWorkCommand
    {
       for (EditionDV edition : work.editions) {
          if (edition.id.equals(id)) {
-            return new EditionMutatorImpl(edition);
+            // create a supplier to generate volume IDs
+            return new EditionMutatorImpl(edition, () -> idFactory.getNextId(PsqlWorkRepo.getContext(work, edition)));
          }
       }
 
