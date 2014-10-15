@@ -39,5 +39,5 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0"
 Service-Component: OSGI-INF/rest/works.xml,OSGI-INF/rest/people.xml,OSGI-INF/props.xml,OSGI-INF/dbexec.xml,OSGI-INF/peopleRepo.xml,OSGI-INF/workRepo.xml, OSGI-INF/json.xml,
- OSGI-INF/rest/accounts.xml,OSGI-INF/crypto.xml,OSGI-INF/rest/feature.token.xml,OSGI-INF/accountstore.xml,OSGI-INF/datasource.xml
+ OSGI-INF/rest/accounts.xml,OSGI-INF/crypto.xml,OSGI-INF/rest/feature.token.xml,OSGI-INF/accountstore.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml
 Export-Package: edu.tamu.tcat.sda.catalog.rest
