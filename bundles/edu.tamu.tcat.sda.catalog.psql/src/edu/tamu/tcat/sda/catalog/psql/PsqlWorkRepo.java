@@ -1,7 +1,10 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -33,6 +36,35 @@ public class PsqlWorkRepo implements WorkRepository
    private JsonMapper jsonMapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
+
+   private static Map<String, WeakReference<IdProvider>> idProviders = new HashMap<>();
+
+   private static IdProvider getIdProvider(Work work)
+   {
+      if (null == work) {
+         return new IdProvider();
+      }
+
+      String workId = work.getId();
+
+      if (null == workId) {
+         return new IdProvider();
+      }
+
+      synchronized (idProviders) {
+         if (idProviders.containsKey(workId) && null != idProviders.get(workId).get()) {
+            return idProviders.get(workId).get();
+         }
+
+         int maxId = work.getEditions().parallelStream()
+               .mapToInt((e) -> Integer.parseInt(e.getId()))
+               .max().orElse(1);
+
+         IdProvider provider = new IdProvider(maxId);
+         idProviders.put(workId, new WeakReference<>(provider));
+         return provider;
+      }
+   }
 
    public PsqlWorkRepo()
    {
@@ -212,8 +244,7 @@ public class PsqlWorkRepo implements WorkRepository
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
       Work work = getWork(asInteger(id));
-
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), getIdProvider(work));
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
          return exec.submit(task);
@@ -235,7 +266,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand create()
    {
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV());
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(), getIdProvider(null));
       command.setCommitHook((workDv) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(workDv, jsonMapper);
          return exec.submit(task);

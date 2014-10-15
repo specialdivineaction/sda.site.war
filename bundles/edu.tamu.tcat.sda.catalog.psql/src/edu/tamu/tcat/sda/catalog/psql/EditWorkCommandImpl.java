@@ -21,12 +21,15 @@ import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 public class EditWorkCommandImpl implements EditWorkCommand
 {
 
-   private WorkDV work;
+   private final WorkDV work;
+   private final IdProvider editionIdProvider;
+
    private Function<WorkDV, Future<String>> commitHook;
 
-   public EditWorkCommandImpl(WorkDV work)
+   public EditWorkCommandImpl(WorkDV work, IdProvider editionIdProvider)
    {
       this.work = work;
+      this.editionIdProvider = editionIdProvider;
    }
 
    public void setCommitHook(Function<WorkDV, Future<String>> hook)
@@ -122,6 +125,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
    public EditionMutator createEdition()
    {
       EditionDV edition = new EditionDV();
+      edition.id = editionIdProvider.nextId();
       work.editions.add(edition);
       return new EditionMutatorImpl(edition);
    }
