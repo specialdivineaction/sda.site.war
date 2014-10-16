@@ -30,17 +30,14 @@ import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
-import edu.tamu.tcat.sda.catalog.solr.ManageDocuments;
+import edu.tamu.tcat.sda.catalog.solr.AuthorController;
 
-public class TestAuthors
+public class TestAuthorController
 {
    private static HttpGet  get;
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
-
-   private final String solrBaseUri = "https://sda-dev.citd.tamu.edu/solr/";
-
 
    @BeforeClass
    public static void initHTTPConnection()
@@ -59,11 +56,18 @@ public class TestAuthors
    public void testAdd() throws Exception
    {
       List<PersonDV> authors = getAuthors();
-      ManageDocuments docs = new ManageDocuments();
+      AuthorController docs = new AuthorController();
       for(PersonDV author : authors)
       {
-         docs.addAuthorDocument(author);
+         docs.addDocument(author);
       }
+   }
+
+   @Test
+   public void cleanAuthors()
+   {
+      AuthorController docs = new AuthorController();
+      docs.clean();
    }
 
    public List<PersonDV> getAuthors()
