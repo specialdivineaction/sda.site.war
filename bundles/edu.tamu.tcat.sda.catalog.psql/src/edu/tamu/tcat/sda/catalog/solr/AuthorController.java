@@ -5,93 +5,115 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
-public class ManageDocuments
+public class AuthorController
 {
 
+   Logger log = Logger.getLogger("edu.tamu.tcat.sda.catalog.solr.authorcontroller");
    private final String solrBaseUri = "https://sda-dev.citd.tamu.edu/solr/";
+   private final SolrServer solr;
 
-   public ManageDocuments()
+   private final static String authorId = "id";
+   private final static String authorTitle = "title";
+   private final static String givenName = "givenName";
+   private final static String middleName = "middleName";
+   private final static String familyName = "familyName";
+   private final static String suffix = "suffix";
+   private final static String displayName = "displayName";
+   private final static String birthTitle = "bTitle";
+   private final static String birthDescription = "bDescript";
+   private final static String birthLocation = "bLocation";
+   private final static String birthDate = "bDate";
+   private final static String deathTitle = "dTitle";
+   private final static String deathDescription = "dDescript";
+   private final static String deathLocation = "dLocation";
+   private final static String deathDate = "dDate";
+   private final static String summary = "summary";
+
+   public AuthorController()
    {
+      solr = new HttpSolrServer(solrBaseUri + "authors");
    }
 
-   public void addAuthorDocument(PersonDV author)
+   public void addDocument(PersonDV author)
    {
-      SolrServer solr = new HttpSolrServer(solrBaseUri + "authors");
       SolrInputDocument document = new SolrInputDocument();
 
 
-      document.addField("id", author.id);
+      document.addField(authorId, author.id);
 
       Set<PersonNameDV> authors = author.names;
       for(PersonNameDV authorDV : authors)
       {
-         document.addField("title", isNull(authorDV.title) ? "" : authorDV.title);
-         document.addField("givenName", isNull(authorDV.givenName) ? "" : authorDV.givenName);
-         document.addField("middleName", isNull(authorDV.middleName) ? "" : authorDV.middleName);
-         document.addField("familyName", isNull(authorDV.familyName) ? "" : authorDV.familyName);
-         document.addField("suffix", isNull(authorDV.suffix) ? "" : authorDV.suffix);
-         document.addField("displayName", isNull(authorDV.displayName) ? "" : authorDV.displayName);
+         document.addField(authorTitle, authorDV.title == null ? "" : authorDV.title);
+         document.addField(givenName, authorDV.givenName == null ? "" : authorDV.givenName);
+         document.addField(middleName, authorDV.middleName == null ? "" : authorDV.middleName);
+         document.addField(familyName, authorDV.familyName == null ? "" : authorDV.familyName);
+         document.addField(suffix, authorDV.suffix == null ? "" : authorDV.suffix);
+         document.addField(displayName,  authorDV.displayName == null ? "" : authorDV.displayName);
       }
 
-      DateFormat df = DateFormat.getDateInstance();
-      String format = "2014-01-01T23:00:00Z";
       HistoricalEventDV birth = author.birth;
-      document.addField("birthId", isNull(birth.id) ? "" : birth.id);
-      document.addField("bTitle", isNull(birth.title) ? "" : birth.title);
-      document.addField("bDescript", isNull(birth.description) ? "" : birth.description);
-      document.addField("bLocation", isNull(birth.location) ? "" : birth.location);
+      document.addField(birthTitle, birth.title == null ? "" : birth.title);
+      document.addField(birthDescription, birth.description == null ? "" : birth.description);
+      document.addField(birthLocation, birth.location == null ? "" : birth.location);
       Date bDate = birth.eventDate;
-      if (bDate == null)
-         document.addField("bDate", format);
-      else
-         document.addField("bDate", convertDate(birth.eventDate));
+      if (bDate != null)
+         document.addField(birthDate, convertDate(birth.eventDate));
 
       HistoricalEventDV death = author.birth;
-      document.addField("deathId", isNull(death.id) ? "" : death.id);
-      document.addField("dTitle", isNull(death.title) ? "" : death.title);
-      document.addField("dDescript", isNull(death.description) ? "" : death.description);
-      document.addField("dLocation", isNull(death.location) ? "" : death.location);
-      if (death.eventDate == null)
-         document.addField("dDate", format);
-      else
-         document.addField("dDate", convertDate(death.eventDate));
+      document.addField(deathTitle, death.title == null ? "" : death.title);
+      document.addField(deathDescription, death.description == null ? "" : death.description);
+      document.addField(deathLocation, death.location == null ? "" : death.location);
+      if (death.eventDate != null)
+         document.addField(deathDate, convertDate(death.eventDate));
 
-
-      document.addField("summary", isNull(author.summary) ? "" : author.summary);
+      document.addField(summary, author.summary == null ? "" : author.summary);
 
       try
       {
 
-         UpdateResponse response = solr.add(document);
+         solr.add(document);
          solr.commit();
       }
       catch (IOException e)
       {
-
+         log.severe("An error occured in the transmition of the document:" + e);
       }
       catch (SolrServerException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         log.severe("An error occured with Solr Server:" + e);
       }
    }
 
-   private Boolean isNull(String field)
+   public void clean()
    {
-      if(field == null)
-         return true;
-      return false;
+      try
+      {
+         solr.deleteByQuery("*:*");
+      }
+      catch (IOException e)
+      {
+         log.severe("An error occured in the transmition of the document:" + e);
+      }
+      catch (SolrServerException e)
+      {
+         log.severe("An error occured with Solr Server:" + e);
+      }
+   }
+
+   public void reindex()
+   {
 
    }
 
