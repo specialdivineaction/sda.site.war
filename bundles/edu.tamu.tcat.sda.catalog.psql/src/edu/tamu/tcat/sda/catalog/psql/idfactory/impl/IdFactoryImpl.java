@@ -48,13 +48,17 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
  */
 public class IdFactoryImpl implements IdFactory
 {
-   private static final String PERSIST_FILE_CONFIG_PROPERTY = "idfactory.persistence.filepath";
+   private static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
+   private static final String CONFIG_PERSIST_INTERVAL = "idfactory.persist.interval";
+   private static final String CONFIG_PERSIST_INTERVAL_UNIT = "idfactory.persist.interval.unit";
+   private static final String CONFIG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
+   private static final String CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT = "idfactory.persist.shutdown.delay.unit";
 
-   private static final long PERSIST_INTERVAL_PERIOD = 5;
-   private static final TimeUnit PERSIST_INTERVAL_PERIOD_UNIT = TimeUnit.MINUTES;
+   private static final Long PERSIST_INTERVAL_DEFAULT = Long.valueOf(5);
+   private static final TimeUnit PERSIST_INTERVAL_UNIT_DEFAULT = TimeUnit.MINUTES;
 
-   private static final long PERSIST_SHUTDOWN_DELAY = 10;
-   private static final TimeUnit PERSIST_SHUTDOWN_DELAY_UNIT = TimeUnit.SECONDS;
+   private static final Long PERSIST_SHUTDOWN_DELAY_DEFAULT = Long.valueOf(10);
+   private static final TimeUnit PERSIST_SHUTDOWN_DELAY_UNIT_DEFAULT = TimeUnit.SECONDS;
 
    private static final Logger logger = Logger.getLogger(IdFactoryImpl.class.getName());
 
@@ -62,10 +66,19 @@ public class IdFactoryImpl implements IdFactory
     * Stores a mapping of context to the <em>next</em> ID in the system.
     */
    private final Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
+
    private ConfigurationProperties config;
    private JsonMapper mapper;
    private ScheduledExecutorService executor;
+
+   /**
+    * Whether the internal state has changed since the last save operation.
+    */
    private AtomicBoolean isDirty = new AtomicBoolean(false);
+
+   /**
+    * A handle by which to cancel the periodic task that persists state to disk.
+    */
    private ScheduledFuture<?> persistTaskHandle;
 
 
@@ -82,7 +95,7 @@ public class IdFactoryImpl implements IdFactory
    public void activate()
    {
       // load saved state from file on disk
-      Path filePath = config.getPropertyValue(PERSIST_FILE_CONFIG_PROPERTY, Path.class);
+      Path filePath = config.getPropertyValue(CONFIG_PERSIST_PATH, Path.class);
 
       try (InputStream in = Files.newInputStream(filePath, StandardOpenOption.READ)) {
          // Type erasure prevents us from passing generic parameters to mapper.parse
@@ -101,9 +114,15 @@ public class IdFactoryImpl implements IdFactory
          throw new IllegalStateException("Malformed IdFactory file", e);
       }
 
+      Long interval = config.getPropertyValue(CONFIG_PERSIST_INTERVAL, Long.class, PERSIST_INTERVAL_DEFAULT);
+
+      // cannot handle pulling TimeUnit from config, so read in string and use TimeUnit.valueOf()
+      String unitStr = config.getPropertyValue(CONFIG_PERSIST_INTERVAL_UNIT, String.class);
+      TimeUnit intervalUnit = (unitStr == null) ? PERSIST_INTERVAL_UNIT_DEFAULT : TimeUnit.valueOf(unitStr.toUpperCase());
+
       // start polling for changes to be saved
       executor = Executors.newScheduledThreadPool(1);
-      persistTaskHandle = executor.scheduleAtFixedRate(this::persistCounters, 0, PERSIST_INTERVAL_PERIOD, PERSIST_INTERVAL_PERIOD_UNIT);
+      persistTaskHandle = executor.scheduleAtFixedRate(this::persistCounters, 0, interval.longValue(), intervalUnit);
    }
 
    public void dispose()
@@ -111,8 +130,14 @@ public class IdFactoryImpl implements IdFactory
       // stop polling for changes
       persistTaskHandle.cancel(false);
 
+      Long delay = config.getPropertyValue(CONFIG_PERSIST_SHUTDOWN_DELAY, Long.class, PERSIST_SHUTDOWN_DELAY_DEFAULT);
+
+      // cannot handle pulling TimeUnit from config, so read in string and use TimeUnit.valueOf()
+      String unitStr = config.getPropertyValue(CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT, String.class);
+      TimeUnit delayUnit = (unitStr == null) ? PERSIST_SHUTDOWN_DELAY_UNIT_DEFAULT : TimeUnit.valueOf(unitStr.toUpperCase());
+
       try {
-         if (!executor.awaitTermination(PERSIST_SHUTDOWN_DELAY, PERSIST_SHUTDOWN_DELAY_UNIT)) {
+         if (!executor.awaitTermination(delay.longValue(), delayUnit)) {
             logger.log(Level.INFO, "Periodic persistence task failed to shut down in a timely manner... Requesting a little more urgently...");
             executor.shutdownNow();
          }
@@ -120,6 +145,9 @@ public class IdFactoryImpl implements IdFactory
       catch (InterruptedException e) {
          logger.log(Level.WARNING, "Periodic persistence shutdown interrupted", e);
       }
+
+      // "deallocate" executor
+      executor = null;
 
       // save one last time for good measure
       persistCounters();
@@ -145,7 +173,7 @@ public class IdFactoryImpl implements IdFactory
    {
       try {
          if (isDirty.getAndSet(false)) {
-            Path filePath = config.getPropertyValue(PERSIST_FILE_CONFIG_PROPERTY, Path.class);
+            Path filePath = config.getPropertyValue(CONFIG_PERSIST_PATH, Path.class);
             try (OutputStream out = Files.newOutputStream(filePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
                Map<String, String> exportMap = counters.entrySet().parallelStream()
                      .collect(Collectors.toMap(Map.Entry::getKey, (e) -> e.getValue().toString()));
