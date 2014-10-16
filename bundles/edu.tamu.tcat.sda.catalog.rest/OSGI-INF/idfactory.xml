@@ -4,4 +4,6 @@
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory"/>
    </service>
+   <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+   <reference bind="setMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
 </scr:component>
