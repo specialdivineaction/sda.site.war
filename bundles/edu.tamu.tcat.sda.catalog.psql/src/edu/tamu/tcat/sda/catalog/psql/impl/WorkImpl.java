@@ -32,7 +32,7 @@ public class WorkImpl implements Work
       this.publication = new PublicationImpl(workDV.pubInfo);
       this.series = workDV.series;
       this.summary = workDV.summary;
-      this.editions = workDV.editions.stream().unordered()
+      this.editions = workDV.editions.parallelStream()
             .map((e) -> new EditionImpl(e))
             .collect(Collectors.toSet());
    }

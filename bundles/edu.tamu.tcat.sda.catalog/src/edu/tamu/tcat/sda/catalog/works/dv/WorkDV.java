@@ -52,7 +52,7 @@ public class WorkDV
       this.series = work.getSeries();
       this.summary = work.getSummary();
 
-      this.editions = work.getEditions().stream().unordered()
+      this.editions = work.getEditions().parallelStream()
             .map((e) -> new EditionDV(e))
             .collect(Collectors.toSet());
    }

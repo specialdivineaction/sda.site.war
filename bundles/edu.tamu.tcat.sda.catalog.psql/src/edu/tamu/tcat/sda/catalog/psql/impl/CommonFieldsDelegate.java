@@ -36,7 +36,7 @@ public class CommonFieldsDelegate
             .map((a) -> new AuthorReferenceImpl(a))
             .collect(Collectors.toList());
 
-      this.titles = titles.stream().unordered()
+      this.titles = titles.parallelStream()
             .map((t) -> new TitleImpl(t))
             .collect(Collectors.toSet());
 

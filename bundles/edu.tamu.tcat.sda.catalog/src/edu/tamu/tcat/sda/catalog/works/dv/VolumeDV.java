@@ -30,7 +30,7 @@ public class VolumeDV
             .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
-      titles = vol.getTitles().stream().unordered()
+      titles = vol.getTitles().parallelStream()
             .map((title) -> new TitleDV(title))
             .collect(Collectors.toSet());
 

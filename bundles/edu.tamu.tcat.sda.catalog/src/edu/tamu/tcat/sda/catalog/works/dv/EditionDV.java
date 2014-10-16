@@ -34,7 +34,7 @@ public class EditionDV
             .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
-      titles = ed.getTitles().stream().unordered()
+      titles = ed.getTitles().parallelStream()
             .map((title) -> new TitleDV(title))
             .collect(Collectors.toSet());
 

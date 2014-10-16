@@ -38,7 +38,7 @@ public class VolumeImpl implements Volume
             .map((a) -> new AuthorReferenceImpl(a))
             .collect(Collectors.toList());
 
-      titles = dv.titles.stream().unordered()
+      titles = dv.titles.parallelStream()
             .map((t) -> new TitleImpl(t))
             .collect(Collectors.toSet());
 
