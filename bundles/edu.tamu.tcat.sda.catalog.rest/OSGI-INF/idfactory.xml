@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.sda.catalog.psql.idfactory">
+   <implementation class="edu.tamu.tcat.sda.catalog.psql.idfactory.impl.IdFactoryImpl"/>
+   <service>
+      <provide interface="edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory"/>
+   </service>
+   <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+   <reference bind="setMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
+</scr:component>

@@ -12,25 +12,34 @@ import edu.tamu.tcat.sda.catalog.CommandExecutionListener;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
+import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
+import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
+import edu.tamu.tcat.sda.catalog.works.Volume;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
+import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
 {
+   public static final String WORK_CONTEXT = "works";
+
    private SqlExecutor exec;
    private JsonMapper jsonMapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
+
+   private IdFactory idFactory;
+
 
    public PsqlWorkRepo()
    {
@@ -49,6 +58,11 @@ public class PsqlWorkRepo implements WorkRepository
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
+   }
+
+   public void setIdFactory(IdFactory idFactory)
+   {
+      this.idFactory = idFactory;
    }
 
    public void activate()
@@ -172,6 +186,27 @@ public class PsqlWorkRepo implements WorkRepository
       }
    }
 
+   @Override
+   public Work getWork(String workId) throws NoSuchCatalogRecordException
+   {
+      return getWork(Integer.parseInt(workId));
+   }
+
+   @Override
+   public Edition getEdition(String workId, String editionId) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(workId);
+      return work.getEdition(editionId);
+   }
+
+   @Override
+   public Volume getVolume(String workId, String editionId, String volumeId) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(workId);
+      Edition edition = work.getEdition(editionId);
+      return edition.getVolume(volumeId);
+   }
+
    private boolean hasTitleName(Title title, String titleName)
    {
       String test = title.getFullTitle();
@@ -189,8 +224,7 @@ public class PsqlWorkRepo implements WorkRepository
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
       Work work = getWork(asInteger(id));
-
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
          return exec.submit(task);
@@ -212,11 +246,15 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand create()
    {
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV());
-      command.setCommitHook((workDv) -> {
-         PsqlCreateWorkTask task = new PsqlCreateWorkTask(workDv, jsonMapper);
+      WorkDV work = new WorkDV();
+      work.id = idFactory.getNextId(WORK_CONTEXT);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(work, idFactory);
+
+      command.setCommitHook((w) -> {
+         PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, jsonMapper);
          return exec.submit(task);
       });
+
       return command;
    }
 
@@ -230,5 +268,24 @@ public class PsqlWorkRepo implements WorkRepository
    public AutoCloseable addAfterUpdateListener(CommandExecutionListener ears)
    {
       throw new UnsupportedOperationException("not impl");
+   }
+
+   /**
+    * @param work
+    * @return Context for generating IDs for Editions within a Work.
+    */
+   public static String getContext(WorkDV work)
+   {
+      return WORK_CONTEXT + "/" + work.id;
+   }
+
+   /**
+    * @param work
+    * @param edition
+    * @return Context for generating IDs for Volumes within an Edition (subs. w/in a Work).
+    */
+   public static String getContext(WorkDV work, EditionDV edition)
+   {
+      return getContext(work) + "/" + edition.id;
    }
 }

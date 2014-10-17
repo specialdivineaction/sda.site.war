@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -13,7 +14,7 @@ public class TitleDefinitionImpl implements TitleDefinition
 {
    private Set<Title> titles = new HashSet<>();
 
-   public TitleDefinitionImpl(Set<TitleDV> titles)
+   public TitleDefinitionImpl(Collection<TitleDV> titles)
    {
       for (TitleDV title : titles)
       {

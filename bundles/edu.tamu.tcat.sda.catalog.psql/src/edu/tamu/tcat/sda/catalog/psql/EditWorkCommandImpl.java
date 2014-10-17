@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
@@ -20,12 +22,15 @@ import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 public class EditWorkCommandImpl implements EditWorkCommand
 {
 
-   private WorkDV work;
+   private final WorkDV work;
+   private final IdFactory idFactory;
+
    private Function<WorkDV, Future<String>> commitHook;
 
-   public EditWorkCommandImpl(WorkDV work)
+   EditWorkCommandImpl(WorkDV work, IdFactory idFactory)
    {
       this.work = work;
+      this.idFactory = idFactory;
    }
 
    public void setCommitHook(Function<WorkDV, Future<String>> hook)
@@ -40,10 +45,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
       setSummary(work.summary);
       setAuthors(work.authors);
       setOtherAuthors(work.otherAuthors);
-
-      // TODO: see note in #setTitles()
-      setTitles(new ArrayList<>(work.titles));
-
+      setTitles(work.titles);
       setPublicationDate(work.pubInfo.date.value);
       setPublicationDateDisplay(work.pubInfo.date.display);
 
@@ -77,20 +79,18 @@ public class EditWorkCommandImpl implements EditWorkCommand
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      work.authors = authors;
+      work.authors = new ArrayList<>(authors);
    }
 
    @Override
    public void setOtherAuthors(List<AuthorRefDV> authors)
    {
-      work.otherAuthors = authors;
+      work.otherAuthors = new ArrayList<>(authors);
    }
 
    @Override
-   public void setTitles(List<TitleDV> titles)
+   public void setTitles(Collection<TitleDV> titles)
    {
-      // TODO: Should work.titles be a list instead of a set, or
-      //       Should the argument to this function be a set?
       work.titles = new HashSet<>(titles);
    }
 
@@ -126,8 +126,11 @@ public class EditWorkCommandImpl implements EditWorkCommand
    public EditionMutator createEdition()
    {
       EditionDV edition = new EditionDV();
+      edition.id = idFactory.getNextId(PsqlWorkRepo.getContext(work));
       work.editions.add(edition);
-      return new EditionMutatorImpl(edition);
+
+      // create a supplier to generate volume IDs
+      return new EditionMutatorImpl(edition, () -> idFactory.getNextId(PsqlWorkRepo.getContext(work, edition)));
    }
 
    @Override
@@ -135,7 +138,8 @@ public class EditWorkCommandImpl implements EditWorkCommand
    {
       for (EditionDV edition : work.editions) {
          if (edition.id.equals(id)) {
-            return new EditionMutatorImpl(edition);
+            // create a supplier to generate volume IDs
+            return new EditionMutatorImpl(edition, () -> idFactory.getNextId(PsqlWorkRepo.getContext(work, edition)));
          }
       }
 

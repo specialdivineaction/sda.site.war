@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public interface Edition
     *
     * @return The titles associated with this edition.
     */
-   List<Title> getTitles();
+   Collection<Title> getTitles();
 
    /**
     * Other individuals who played a role in the creation of this work, but who are not primarily
@@ -55,7 +54,7 @@ public interface Edition
     *
     * @return The identifier for this edition of the work or {@code null} if no edition identifier is supplied.
     */
-   String getEdition();
+   String getEditionName();
 
    /**
     * Editions are physical manifestations of {@link Work}s.
@@ -94,35 +93,4 @@ public interface Edition
     * @return
     */
    String getSeries();
-
-   /**
-    * URLs to images of the edition (e.g. cover page, title page)
-    *
-    * @return
-    * @deprecated We may supply a different mechanism for creating images
-    */
-   @Deprecated
-   List<URI> getImages();
-
-   /**
-    * Tags for this edition
-    *
-    * @return
-    * @deprecated We may supply a different mechanism for working with tags. Notably, we'll use a
-    *       concrete type for tags.
-    */
-   @Deprecated
-   Collection<String> getTags();
-
-   /**
-    * Notes on this edition:
-    *
-    * @return
-    * @deprecated We may supply a different mechanism for working with tags. Notably, we'll use a
-    *       concrete type for notes.
-    */
-   @Deprecated
-   Collection<String> getNotes();
-
-   // TODO: represent references
 }

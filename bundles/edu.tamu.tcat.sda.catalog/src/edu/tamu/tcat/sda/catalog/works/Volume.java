@@ -16,7 +16,7 @@ public interface Volume
     *
     * @return
     */
-   String getVolume();
+   String getVolumeNumber();
 
    // the following properties may vary independently from works
 
@@ -38,7 +38,15 @@ public interface Volume
     *
     * @return
     */
-   List<Title> getTitles();
+   Collection<Title> getTitles();
+
+   /**
+    * Other individuals who played a role in the creation of this work, but who are not primarily
+    * responsible for its creation. Translators are a common example.
+    *
+    * @return The other authors associated with this work.
+    */
+   List<AuthorReference> getOtherAuthors();
 
    /**
     * Descriptive summary about this volume.

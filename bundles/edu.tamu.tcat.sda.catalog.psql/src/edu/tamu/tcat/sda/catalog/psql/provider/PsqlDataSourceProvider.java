@@ -15,6 +15,8 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 
 public class PsqlDataSourceProvider implements DataSourceProvider
 {
+   // HACK This should not be here. Surely there is a PsqlDataSourceProvider in our db utilities?
+
    public static final Logger DB_LOGGER = Logger.getLogger("edu.tamu.tcat.oss.db.hsqldb");
 
    public static final String PROP_URL = "db.postgres.url";
@@ -29,7 +31,7 @@ public class PsqlDataSourceProvider implements DataSourceProvider
 
    private DataSource dataSource;
    private ConfigurationProperties props;
-   
+
    public void bind(ConfigurationProperties cp)
    {
       this.props = cp;
@@ -48,29 +50,29 @@ public class PsqlDataSourceProvider implements DataSourceProvider
    {
       try
       {
-   
+
          String url = props.getPropertyValue(PROP_URL, String.class);
          String user = props.getPropertyValue(PROP_USER, String.class);
          String pass = props.getPropertyValue(PROP_PASS, String.class);
-   
+
          Objects.requireNonNull(url, "Database connection URL not supplied");
          Objects.requireNonNull(user, "Database username not supplied");
          Objects.requireNonNull(pass, "Database password not supplied");
-   
+
          int maxActive = getIntValue(props, PROP_MAX_ACTIVE, 30);
          int maxIdle = getIntValue(props, PROP_MAX_IDLE, 3);
          int minIdle = getIntValue(props, PROP_MIN_IDLE, 0);
          int minEviction = getIntValue(props, PROP_MIN_EVICTION, 10 * 1000);
          int betweenEviction = getIntValue(props, PROP_BETWEEN_EVICTION, 100);
-         
+
          PostgreSqlDataSourceFactory factory = new PostgreSqlDataSourceFactory();
          PostgreSqlPropertiesBuilder builder = factory.getPropertiesBuilder().create(url, user, pass);
          dataSource = factory.getDataSource(builder.getProperties());
-         
+
          //HACK: should add this API to the properties builder instead of downcasting and overriding
          {
             BasicDataSource basic = (BasicDataSource)dataSource;
-            
+
             basic.setMaxActive(maxActive);
             basic.setMaxIdle(maxIdle);
             basic.setMinIdle(minIdle);
@@ -87,7 +89,7 @@ public class PsqlDataSourceProvider implements DataSourceProvider
    public void dispose()
    {
    }
-   
+
    @Override
    public DataSource getDataSource() throws SQLException
    {

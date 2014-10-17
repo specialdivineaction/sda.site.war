@@ -1,8 +1,10 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
@@ -16,11 +18,17 @@ import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 public class EditionMutatorImpl implements EditionMutator
 {
    private final EditionDV edition;
+   private Supplier<String> volumeIdSupplier;
 
 
-   public EditionMutatorImpl(EditionDV edition)
+   /**
+    * @param edition
+    * @param volumeIdSupplier Supplier to generate IDs for volumes.
+    */
+   EditionMutatorImpl(EditionDV edition, Supplier<String> volumeIdSupplier)
    {
       this.edition = edition;
+      this.volumeIdSupplier = volumeIdSupplier;
    }
 
 
@@ -30,13 +38,11 @@ public class EditionMutatorImpl implements EditionMutator
       setAuthors(edition.authors);
       setTitles(edition.titles);
       setOtherAuthors(edition.otherAuthors);
-      setEdition(edition.edition);
+      setEditionName(edition.editionName);
       setPublicationInfo(edition.publicationInfo);
       setSummary(edition.summary);
       setSeries(edition.series);
-      setImages(edition.images);
-      setTags(edition.tags);
-      setNotes(edition.notes);
+
 
       for (VolumeDV volume : edition.volumes) {
          VolumeMutator mutator;
@@ -56,26 +62,25 @@ public class EditionMutatorImpl implements EditionMutator
    @Override
    public void setAuthors(List<AuthorRefDV> authors)
    {
-      edition.authors = authors;
+      edition.authors = new ArrayList<>(authors);
    }
 
    @Override
-   public void setTitles(List<TitleDV> titles)
+   public void setTitles(Collection<TitleDV> titles)
    {
-      edition.titles = titles;
+      edition.titles = new HashSet<>(titles);
    }
 
    @Override
    public void setOtherAuthors(List<AuthorRefDV> otherAuthors)
    {
-      edition.otherAuthors = otherAuthors;
+      edition.otherAuthors = new ArrayList<>(otherAuthors);
    }
 
    @Override
-   public void setEdition(String edition)
+   public void setEditionName(String editionName)
    {
-      // HACK: this isn't confusing at all... </sarcasm>
-      this.edition.edition = edition;
+      this.edition.editionName = editionName;
    }
 
    @Override
@@ -97,27 +102,10 @@ public class EditionMutatorImpl implements EditionMutator
    }
 
    @Override
-   public void setImages(List<URI> images)
-   {
-      edition.images = images;
-   }
-
-   @Override
-   public void setTags(Collection<String> tags)
-   {
-      edition.tags = tags;
-   }
-
-   @Override
-   public void setNotes(Collection<String> notes)
-   {
-      edition.notes = notes;
-   }
-
-   @Override
    public VolumeMutator createVolume()
    {
       VolumeDV volume = new VolumeDV();
+      volume.id = volumeIdSupplier.get();
       edition.volumes.add(volume);
       return new VolumeMutatorImpl(volume);
    }

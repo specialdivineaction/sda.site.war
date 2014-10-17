@@ -12,9 +12,10 @@ public interface VolumeMutator
 {
    void setAll(VolumeDV volume);
 
-   void setVolume(String volume);
+   void setVolumeNumber(String volumeNumber);
    void setAuthors(List<AuthorRefDV> authors);
-   void setTitles(List<TitleDV> titles);
+   void setTitles(Collection<TitleDV> titles);
+   void setOtherAuthors(List<AuthorRefDV> otherAuthors);
    void setSummary(String summary);
    void setSeries(String series);
    void setImages(List<URI> images);

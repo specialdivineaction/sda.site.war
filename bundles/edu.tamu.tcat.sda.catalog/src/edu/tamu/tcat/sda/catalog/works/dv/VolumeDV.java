@@ -10,9 +10,10 @@ import edu.tamu.tcat.sda.catalog.works.Volume;
 public class VolumeDV
 {
    public String id;
-   public String volume;
+   public String volumeNumber;
    public List<AuthorRefDV> authors;
-   public List<TitleDV> titles;
+   public Collection<TitleDV> titles;
+   public List<AuthorRefDV> otherAuthors;
    public String summary;
    public String series;
    public List<URI> images;
@@ -23,14 +24,18 @@ public class VolumeDV
    {
       id = vol.getId();
 
-      volume = vol.getVolume();
+      volumeNumber = vol.getVolumeNumber();
 
       authors = vol.getAuthors().stream()
             .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
-      titles = vol.getTitles().stream()
+      titles = vol.getTitles().parallelStream()
             .map((title) -> new TitleDV(title))
+            .collect(Collectors.toSet());
+
+      otherAuthors = vol.getOtherAuthors().stream()
+            .map((ref) -> new AuthorRefDV(ref))
             .collect(Collectors.toList());
 
       summary = vol.getSummary();
