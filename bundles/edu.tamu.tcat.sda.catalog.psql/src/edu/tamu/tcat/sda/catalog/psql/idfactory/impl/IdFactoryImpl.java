@@ -76,7 +76,9 @@ public class IdFactoryImpl implements IdFactory
    {
       try {
          Map<String, String> initialValues = persistenceStrategy.load();
-         initialValues.forEach((k,v) -> counters.put(k, new AtomicLong(Long.parseLong(v))));
+         if (initialValues != null) {
+            initialValues.forEach((k,v) -> counters.put(k, new AtomicLong(Long.parseLong(v))));
+         }
       }
       catch (PersistenceException e) {
          throw new IllegalStateException("Unable to load saved state", e);
