@@ -1,11 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -19,9 +13,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
+import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
 
 /**
  * An arbiter to hand out monotonically increasing numeric IDs unique to a particular (String)
@@ -30,25 +24,8 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
  * Twitter has encountered a similar need for generating coherent IDs and has developed Snowflake:
  * https://blog.twitter.com/2010/announcing-snowflake
  */
-/**
- * @author matt.barry
- *
- */
-/**
- * @author matt.barry
- *
- */
-/**
- * @author matt.barry
- *
- */
-/**
- * @author matt.barry
- *
- */
 public class IdFactoryImpl implements IdFactory
 {
-   private static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
    private static final String CONFIG_PERSIST_INTERVAL = "idfactory.persist.interval";
    private static final String CONFIG_PERSIST_INTERVAL_UNIT = "idfactory.persist.interval.unit";
    private static final String CONFIG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
@@ -68,8 +45,10 @@ public class IdFactoryImpl implements IdFactory
    private final Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
 
    private ConfigurationProperties config;
-   private JsonMapper mapper;
    private ScheduledExecutorService executor;
+
+   // TODO: this should be a service
+   private FilePersistenceStrategy persistenceStrategy = new FilePersistenceStrategy();
 
    /**
     * Whether the internal state has changed since the last save operation.
@@ -85,33 +64,22 @@ public class IdFactoryImpl implements IdFactory
    public void setConfiguration(ConfigurationProperties config)
    {
       this.config = config;
+      this.persistenceStrategy.setConfiguration(config);
    }
 
    public void setMapper(JsonMapper mapper)
    {
-      this.mapper = mapper;
+      this.persistenceStrategy.setMapper(mapper);
    }
 
    public void activate()
    {
-      // load saved state from file on disk
-      Path filePath = config.getPropertyValue(CONFIG_PERSIST_PATH, Path.class);
-
-      try (InputStream in = Files.newInputStream(filePath, StandardOpenOption.READ)) {
-         // Type erasure prevents us from passing generic parameters to mapper.parse
-         // We just have to trust that the values have been saved correctly
-         @SuppressWarnings("unchecked")
-         Map<String, String> initialValues = mapper.parse(in, Map.class);
-
+      try {
+         Map<String, String> initialValues = persistenceStrategy.load();
          initialValues.forEach((k,v) -> counters.put(k, new AtomicLong(Long.parseLong(v))));
       }
-      catch (IOException e) {
-         if (filePath.toFile().exists()) {
-            throw new IllegalStateException("Unable to read IdFactory state file", e);
-         }
-      }
-      catch (JsonException | ClassCastException | NumberFormatException e) {
-         throw new IllegalStateException("Malformed IdFactory file", e);
+      catch (PersistenceException e) {
+         throw new IllegalStateException("Unable to load saved state", e);
       }
 
       Long interval = config.getPropertyValue(CONFIG_PERSIST_INTERVAL, Long.class, PERSIST_INTERVAL_DEFAULT);
@@ -173,20 +141,10 @@ public class IdFactoryImpl implements IdFactory
    {
       try {
          if (isDirty.getAndSet(false)) {
-            Path filePath = config.getPropertyValue(CONFIG_PERSIST_PATH, Path.class);
-            try (OutputStream out = Files.newOutputStream(filePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
-               Map<String, String> exportMap = counters.entrySet().parallelStream()
-                     .collect(Collectors.toMap(Map.Entry::getKey, (e) -> e.getValue().toString()));
+            Map<String, String> exportMap = counters.entrySet().parallelStream()
+                  .collect(Collectors.toMap(Map.Entry::getKey, (e) -> e.getValue().toString()));
 
-               String json = mapper.asString(exportMap);
-               out.write(json.getBytes());
-            }
-            catch (IOException e) {
-               throw new Exception("Unable to open or create IdFactory state file", e);
-            }
-            catch (JsonException e) {
-               throw new Exception("Unable to save IdFatory state", e);
-            }
+            persistenceStrategy.save(exportMap);
 
             logger.log(Level.INFO, "Periodic IdFactory persist completed successfully");
          }
