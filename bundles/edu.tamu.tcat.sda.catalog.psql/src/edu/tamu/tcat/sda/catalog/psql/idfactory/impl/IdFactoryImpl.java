@@ -26,16 +26,11 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
  */
 public class IdFactoryImpl implements IdFactory
 {
-   public static final String CONFIG_PERSIST_INTERVAL = "idfactory.persist.interval";
-   public static final String CONFIG_PERSIST_INTERVAL_UNIT = "idfactory.persist.interval.unit";
-   public static final String CONFIG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
-   public static final String CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT = "idfactory.persist.shutdown.delay.unit";
+   public static final String CFG_PERSIST_INTERVAL = "idfactory.persist.interval";
+   public static final String CFG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
 
-   private static final Long PERSIST_INTERVAL_DEFAULT = Long.valueOf(5);
-   private static final TimeUnit PERSIST_INTERVAL_UNIT_DEFAULT = TimeUnit.MINUTES;
-
+   private static final Long PERSIST_INTERVAL_DEFAULT = Long.valueOf(300);
    private static final Long PERSIST_SHUTDOWN_DELAY_DEFAULT = Long.valueOf(10);
-   private static final TimeUnit PERSIST_SHUTDOWN_DELAY_UNIT_DEFAULT = TimeUnit.SECONDS;
 
    private static final Logger logger = Logger.getLogger(IdFactoryImpl.class.getName());
 
@@ -84,15 +79,11 @@ public class IdFactoryImpl implements IdFactory
          throw new IllegalStateException("Unable to load saved state", e);
       }
 
-      Long interval = config.getPropertyValue(CONFIG_PERSIST_INTERVAL, Long.class, PERSIST_INTERVAL_DEFAULT);
-
-      // cannot handle pulling TimeUnit from config, so read in string and use TimeUnit.valueOf()
-      String unitStr = config.getPropertyValue(CONFIG_PERSIST_INTERVAL_UNIT, String.class);
-      TimeUnit intervalUnit = (unitStr == null) ? PERSIST_INTERVAL_UNIT_DEFAULT : TimeUnit.valueOf(unitStr.toUpperCase());
+      Long interval = config.getPropertyValue(CFG_PERSIST_INTERVAL, Long.class, PERSIST_INTERVAL_DEFAULT);
 
       // start polling for changes to be saved
       executor = Executors.newScheduledThreadPool(1);
-      persistTaskHandle = executor.scheduleAtFixedRate(this::persistCounters, 0, interval.longValue(), intervalUnit);
+      persistTaskHandle = executor.scheduleAtFixedRate(this::persistCounters, 0, interval.longValue(), TimeUnit.SECONDS);
    }
 
    public void dispose()
@@ -100,20 +91,18 @@ public class IdFactoryImpl implements IdFactory
       // stop polling for changes
       persistTaskHandle.cancel(false);
 
-      Long delay = config.getPropertyValue(CONFIG_PERSIST_SHUTDOWN_DELAY, Long.class, PERSIST_SHUTDOWN_DELAY_DEFAULT);
-
-      // cannot handle pulling TimeUnit from config, so read in string and use TimeUnit.valueOf()
-      String unitStr = config.getPropertyValue(CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT, String.class);
-      TimeUnit delayUnit = (unitStr == null) ? PERSIST_SHUTDOWN_DELAY_UNIT_DEFAULT : TimeUnit.valueOf(unitStr.toUpperCase());
+      Long delay = config.getPropertyValue(CFG_PERSIST_SHUTDOWN_DELAY, Long.class, PERSIST_SHUTDOWN_DELAY_DEFAULT);
 
       try {
-         if (!executor.awaitTermination(delay.longValue(), delayUnit)) {
+         executor.shutdown();
+         if (!executor.awaitTermination(delay.longValue(), TimeUnit.SECONDS)) {
             logger.log(Level.INFO, "Periodic persistence task failed to shut down in a timely manner... Requesting a little more urgently...");
             executor.shutdownNow();
          }
       }
       catch (InterruptedException e) {
          logger.log(Level.WARNING, "Periodic persistence shutdown interrupted", e);
+         executor.shutdownNow();
       }
 
       // "deallocate" executor
