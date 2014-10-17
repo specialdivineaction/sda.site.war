@@ -2,6 +2,7 @@ package edu.tamu.tcat.oss.json.jackson;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +46,18 @@ public class JacksonJsonMapper implements JsonMapper
          return mapper.writeValueAsString(o);
       }
       catch (JsonProcessingException e)
+      {
+         throw new JsonException(e);
+      }
+   }
+
+   public void asString(Object o, OutputStream os) throws JsonException
+   {
+      try
+      {
+         mapper.writeValue(os, o);
+      }
+      catch (IOException e)
       {
          throw new JsonException(e);
       }
