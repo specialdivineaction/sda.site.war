@@ -16,7 +16,7 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceStrategy;
 
 public class FilePersistenceStrategy implements PersistenceStrategy
 {
-   private static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
+   public static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
 
    private ConfigurationProperties config;
    private JsonMapper mapper;

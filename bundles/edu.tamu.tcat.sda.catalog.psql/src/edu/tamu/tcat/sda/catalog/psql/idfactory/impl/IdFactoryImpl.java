@@ -26,10 +26,10 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
  */
 public class IdFactoryImpl implements IdFactory
 {
-   private static final String CONFIG_PERSIST_INTERVAL = "idfactory.persist.interval";
-   private static final String CONFIG_PERSIST_INTERVAL_UNIT = "idfactory.persist.interval.unit";
-   private static final String CONFIG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
-   private static final String CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT = "idfactory.persist.shutdown.delay.unit";
+   public static final String CONFIG_PERSIST_INTERVAL = "idfactory.persist.interval";
+   public static final String CONFIG_PERSIST_INTERVAL_UNIT = "idfactory.persist.interval.unit";
+   public static final String CONFIG_PERSIST_SHUTDOWN_DELAY = "idfactory.persist.shutdown.delay";
+   public static final String CONFIG_PERSIST_SHUTDOWN_DELAY_UNIT = "idfactory.persist.shutdown.delay.unit";
 
    private static final Long PERSIST_INTERVAL_DEFAULT = Long.valueOf(5);
    private static final TimeUnit PERSIST_INTERVAL_UNIT_DEFAULT = TimeUnit.MINUTES;
