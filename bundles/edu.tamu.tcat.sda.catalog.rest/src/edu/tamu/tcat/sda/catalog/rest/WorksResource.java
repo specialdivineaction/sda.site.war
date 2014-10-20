@@ -129,7 +129,7 @@ public class WorksResource
    @GET
    @Path("{workid}")
    @Produces(MediaType.APPLICATION_JSON)
-   public WorkDV getWork(@PathParam(value = "workid") int id) throws NoSuchCatalogRecordException
+   public WorkDV getWork(@PathParam(value = "workid") String id) throws NoSuchCatalogRecordException
    {
       Work w = repo.getWork(id);
       return new WorkDV(w);
@@ -188,7 +188,7 @@ public class WorksResource
       {
          // HACK: need to do string-based data identifiers
          try {
-            this.result = repo.getWork(Integer.valueOf(workId));
+            this.result = repo.getWork(Integer.parseInt(workId));
          }
          catch (NumberFormatException | NoSuchCatalogRecordException e) {
             throw new IllegalStateException("Failed to retrieve work [" + workId + "]", e);
