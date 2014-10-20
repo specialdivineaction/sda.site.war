@@ -19,7 +19,6 @@ import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.Volume;
 import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
-import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
@@ -46,8 +45,7 @@ public class VolumesResource
    public Collection<VolumeDV> listVolumes(@PathParam(value = "workId") String workId,
                                            @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      Work work = repo.getWork(Integer.parseInt(workId));
-      Edition edition = work.getEdition(editionId);
+      Edition edition = repo.getEdition(workId, editionId);
       return edition.getVolumes().stream()
             .map(v -> new VolumeDV(v))
             .collect(Collectors.toSet());
@@ -60,9 +58,7 @@ public class VolumesResource
                              @PathParam(value = "editionId") String editionId,
                              @PathParam(value = "volumeId") String volumeId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      Work work = repo.getWork(Integer.parseInt(workId));
-      Edition edition = work.getEdition(editionId);
-      Volume volume = edition.getVolume(volumeId);
+      Volume volume = repo.getVolume(workId, editionId, volumeId);
       return new VolumeDV(volume);
    }
 

@@ -48,7 +48,7 @@ public class EditionsResource
    @Produces(MediaType.APPLICATION_JSON)
    public Collection<EditionDV> listEditions(@PathParam(value = "workId") String workId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      Work work = repo.getWork(Integer.parseInt(workId));
+      Work work = repo.getWork(workId);
 
       Collection<Edition> editions = work.getEditions();
 
@@ -64,8 +64,7 @@ public class EditionsResource
    public EditionDV getEdition(@PathParam(value = "workId") String workId,
                                  @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
-      Work work = repo.getWork(Integer.parseInt(workId));
-      Edition edition = work.getEdition(editionId);
+      Edition edition = repo.getEdition(workId, editionId);
       return new EditionDV(edition);
    }
 

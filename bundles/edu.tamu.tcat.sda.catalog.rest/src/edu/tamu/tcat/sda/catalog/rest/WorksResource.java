@@ -129,7 +129,7 @@ public class WorksResource
    @GET
    @Path("{workid}")
    @Produces(MediaType.APPLICATION_JSON)
-   public WorkDV getWork(@PathParam(value = "workid") int id) throws NoSuchCatalogRecordException
+   public WorkDV getWork(@PathParam(value = "workid") String id) throws NoSuchCatalogRecordException
    {
       Work w = repo.getWork(id);
       return new WorkDV(w);
