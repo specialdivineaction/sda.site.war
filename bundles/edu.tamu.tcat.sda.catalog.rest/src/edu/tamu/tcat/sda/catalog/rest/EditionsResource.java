@@ -52,8 +52,7 @@ public class EditionsResource
 
       Collection<Edition> editions = work.getEditions();
 
-      // .unordered() allows for concurrent execution.
-      return editions.stream().unordered()
+      return editions.parallelStream()
             .map((e) -> new EditionDV(e))
             .collect(Collectors.toSet());
    }
