@@ -49,7 +49,7 @@ public class TestAuthorController
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
-
+      cleanAuthors();
    }
 
    @Test
@@ -63,8 +63,8 @@ public class TestAuthorController
       }
    }
 
-   @Test
-   public void cleanAuthors()
+
+   private static void cleanAuthors()
    {
       AuthorController docs = new AuthorController();
       docs.clean();
