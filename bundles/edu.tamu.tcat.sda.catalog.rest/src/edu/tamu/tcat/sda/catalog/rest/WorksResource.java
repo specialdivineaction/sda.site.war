@@ -21,10 +21,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
+import edu.tamu.tcat.sda.catalog.solr.WorksController;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
+import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
@@ -63,27 +66,28 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkDV> listWorks(@Context UriInfo ctx) throws CatalogRepoException, NoSuchCatalogRecordException
+   public List<SimpleWorkDV> listWorks(@Context UriInfo ctx) throws CatalogRepoException, NoSuchCatalogRecordException
    {
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
-      MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
-
+      WorksController controller = new WorksController();
       // TODO need to add slicing/paging support
       // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
 
       // HACK: This allows the title to be searched, filtering will be added.
 
-      List<WorkDV> results = new ArrayList<>();
-      Iterable<Work> works = null;
-      if(queryParams.containsKey("title"))
-         works = repo.listWorks(queryParams.getFirst("title"));
+      List<SimpleWorkDV> results = new ArrayList<SimpleWorkDV>();
+      if(!queryParams.isEmpty())
+         try
+         {
+            results = controller.query(queryParams);
+         }
+         catch (JsonException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
       else
-         works = repo.listWorks();
-
-      for (Work work : works)
-      {
-         results.add(new WorkDV(work));
-      }
+         return results;
 
       return Collections.unmodifiableList(results);
    }
