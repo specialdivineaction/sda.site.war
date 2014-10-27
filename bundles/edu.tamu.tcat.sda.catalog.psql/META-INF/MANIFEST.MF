@@ -41,3 +41,4 @@ Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
  lib/noggit-0.5.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: edu.tamu.tcat.sda.catalog.psql.internal.Activator
+Require-Bundle: org.slf4j.api;bundle-version="1.7.2"
