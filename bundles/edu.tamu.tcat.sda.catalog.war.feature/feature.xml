@@ -25,13 +25,6 @@
          unpack="false"/>
 
    <plugin
-         id="javax.ws.rs-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="javax.xml"
          download-size="0"
          install-size="0"
@@ -193,27 +186,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.glassfish.jersey.core.jersey-server"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.jersey.containers.jersey-container-servlet-core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.jersey.core.jersey-common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.osgi.services"
          download-size="0"
          install-size="0"
@@ -245,84 +217,7 @@
          id="com.google.guava"
          download-size="0"
          install-size="0"
-         version="14.0.1"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.locator"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.external.asm-all-repackaged"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.external.javax.inject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.external.aopalliance-repackaged"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.utils"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.annotation-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.validation.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.jersey.core.jersey-client"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javassist"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.glassfish.hk2.osgi-resource-locator"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="15.0.0"
          unpack="false"/>
 
    <plugin
@@ -488,6 +383,13 @@
 
    <plugin
          id="edu.tamu.tcat.account.jaas"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.eclipsesource.jaxrs.jersey-all"
          download-size="0"
          install-size="0"
          version="0.0.0"
