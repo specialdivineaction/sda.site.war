@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import edu.tamu.tcat.account.token.AccountTokenException;
 import edu.tamu.tcat.account.token.TokenService;
@@ -65,9 +64,10 @@ public class EncryptingUuidTokenService implements TokenService<UUID>
    }
    
    @Override
-   public TokenService.TokenData<UUID> createTokenData(UUID id, long expiresIn, TimeUnit expiresInUnit) throws AccountTokenException
+   public TokenService.TokenData<UUID> createTokenData(UUID id) throws AccountTokenException
    {
       ByteBuffer buffer = ByteBuffer.allocate(4 + 8 + 16);
+      //HACK: allow configuration of the expiration duration
       ZonedDateTime now = ZonedDateTime.now();
       ZonedDateTime expires = now.plus(2, ChronoUnit.WEEKS);
       buffer.putInt(1);
