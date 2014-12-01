@@ -26,11 +26,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
+import edu.tamu.tcat.sda.catalog.people.dv.SimplePersonDV;
+import edu.tamu.tcat.sda.catalog.solr.AuthorController;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
@@ -80,46 +83,32 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<PersonDV> listPeople(@Context UriInfo ctx) throws CatalogRepoException
+   public List<SimplePersonDV> listPeople(@Context UriInfo ctx) throws CatalogRepoException
    {
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
-      MultivaluedMap<String, String> pathParams = ctx.getPathParameters();
-
+      AuthorController controller = new AuthorController();
       // TODO need to add slicing/paging support
       // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
 
-      // HACK: this gets search by last name working, but isn't scalable to additional filter
-      //       criteria
-      List<PersonDV> results = new ArrayList<PersonDV>();
-      Iterable<Person> people = null;
-      if (queryParams.containsKey("lastName"))
+      List<SimplePersonDV> results = new ArrayList<SimplePersonDV>();
+      if (!queryParams.isEmpty())
       {
-         people = repo.findByName(queryParams.getFirst("lastName"));
+         try
+         {
+            results = controller.query(queryParams);
+         }
+         catch (JsonException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
       }
       else
       {
-         people = repo.findPeople();
+         return null;
       }
-
-      for (Person figure : people)
-      {
-         results.add(getHistoricalFigureDV(figure));
-      }
-
       return Collections.unmodifiableList(results);
    }
-
-//   /**
-//    * <api_endpoint>/people?q=query
-//    * @param query
-//    * @return
-//    */
-//   @GET
-//   @Produces(MediaType.APPLICATION_JSON)
-//   public List<PersonDV> find(@QueryParam(value="q") String query)
-//   {
-//      throw new UnsupportedOperationException();
-//   }
 
    @GET
    @Path("{personId}")

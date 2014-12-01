@@ -4,5 +4,9 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/org.apache.httpcomponents.httpclient_4.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/solr-core-4.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/solr-solrj-4.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/noggit-0.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
