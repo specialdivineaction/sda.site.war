@@ -193,7 +193,10 @@ public class WorksController
 
       for (AuthorRefDV author : work.authors)
       {
-         document.addField(authorIds, author.authorId);
+         if (author.authorId != null)
+            document.addField(authorIds, author.authorId);
+         else
+            document.addField(authorIds, "");
          document.addField(authorNames, author.name);
          document.addField(authorRoles, author.role);
       }
@@ -212,7 +215,9 @@ public class WorksController
 
       DateDescriptionDV dateDescription = publication.date;
       document.addField(pubDateString, dateDescription.display);
-      document.addField(pubDateValue, convertDate(dateDescription.value));
+
+      if (dateDescription.value != null)
+         document.addField(pubDateValue, convertDate(dateDescription.value));
 
       document.addField(series, work.series);
       document.addField(summary, work.summary);
