@@ -12,10 +12,10 @@ public class SimpleWorkDV
    public ArrayList<String> lang;
    public ArrayList<String> titles;
    public ArrayList<String> subtitles;
-   public String publisher;
-   public String publisherLocation;
-   public String publishDateString;
-   public String publishDateValue;
+//   public String publisher;
+//   public String publisherLocation;
+//   public String publishDateString;
+//   public String publishDateValue;
    public String series;
    public String summary;
 
@@ -42,11 +42,11 @@ public class SimpleWorkDV
          titleTypes.add(title.type);
       }
 
-      PublicationInfoDV publication = works.pubInfo;
-      this.publisher = publication.publisher;
-      this.publisherLocation = publication.place;
-      this.publishDateString = publication.date.display;
-      this.publishDateValue = publication.date.value.toString();
+//      PublicationInfoDV publication = works.pubInfo;
+//      this.publisher = publication.publisher;
+//      this.publisherLocation = publication.place;
+//      this.publishDateString = publication.date.display;
+//      this.publishDateValue = publication.date.value.toString();
 
       this.series = works.series;
       this.summary = works.summary;

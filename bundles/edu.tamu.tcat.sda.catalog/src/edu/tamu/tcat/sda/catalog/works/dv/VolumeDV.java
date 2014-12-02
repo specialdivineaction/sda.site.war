@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,9 +15,9 @@ public class VolumeDV
    public List<AuthorRefDV> otherAuthors;
    public String summary;
    public String series;
-   public List<URI> images;
-   public Collection<String> tags;
-   public Collection<String> notes;
+//   public List<URI> images;
+//   public Collection<String> tags;
+//   public Collection<String> notes;
 
    public VolumeDV(Volume vol)
    {
@@ -42,11 +41,11 @@ public class VolumeDV
 
       series = vol.getSeries();
 
-      images = vol.getImages();
-
-      tags = vol.getTags();
-
-      notes = vol.getNotes();
+//      images = vol.getImages();
+//
+//      tags = vol.getTags();
+//
+//      notes = vol.getNotes();
    }
 
    public VolumeDV()

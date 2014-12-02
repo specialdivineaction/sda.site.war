@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +18,9 @@ public class VolumeImpl implements Volume
    private List<AuthorReference> otherAuthors;
    private String summary;
    private String series;
-   private List<URI> images;
-   private Collection<String> tags;
-   private Collection<String> notes;
+//   private List<URI> images;
+//   private Collection<String> tags;
+//   private Collection<String> notes;
 
 
    public VolumeImpl()
@@ -49,12 +48,12 @@ public class VolumeImpl implements Volume
       summary = dv.summary;
 
       series = dv.series;
-
-      images = dv.images;
-
-      tags = dv.tags;
-
-      notes = dv.notes;
+//
+//      images = dv.images;
+//
+//      tags = dv.tags;
+//
+//      notes = dv.notes;
    }
 
 
@@ -100,22 +99,22 @@ public class VolumeImpl implements Volume
       return series;
    }
 
-   @Override
-   public List<URI> getImages()
-   {
-      return images;
-   }
-
-   @Override
-   public Collection<String> getTags()
-   {
-      return tags;
-   }
-
-   @Override
-   public Collection<String> getNotes()
-   {
-      return notes;
-   }
+//   @Override
+//   public List<URI> getImages()
+//   {
+//      return images;
+//   }
+//
+//   @Override
+//   public Collection<String> getTags()
+//   {
+//      return tags;
+//   }
+//
+//   @Override
+//   public Collection<String> getNotes()
+//   {
+//      return notes;
+//   }
 
 }

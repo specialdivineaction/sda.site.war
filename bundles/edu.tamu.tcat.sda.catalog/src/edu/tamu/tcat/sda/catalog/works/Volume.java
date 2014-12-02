@@ -1,9 +1,20 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A physical volume in which an edition is published. Editions of a work are published in some media, typically one
+ * or more volumes. While the bibliographic description of the parent work is typically inherited by different volumes,
+ * individual volumes may need to supply their own values for these fields. For example, the 12 volumes of the
+ * 1910-1915 edition of <em>The Fundamentals</em> have different publication dates and editors.
+ *
+ * <dl>
+ *   <dt>Volume Title</dt><dd>If applicable, the title of the volume</dd>
+ *   <dt>Volume</dt><dd>The number or other authoritative identifier for this volume</dd>
+ * </dl>
+ *
+ */
 public interface Volume
 {
    /**
@@ -18,11 +29,6 @@ public interface Volume
     */
    String getVolumeNumber();
 
-   // the following properties may vary independently from works
-
-   // TODO: These methods are copied directly from Edition, and those in turn are based on the
-   //       fields in Work. Should these be refactored into a one or more base interfaces?
-
    /**
     * Volumes have their own series of authors who may not contribute to the underlying {@link
     * Edition} or {@link Work}. This list should be disjoint with the list of authors of the
@@ -33,8 +39,7 @@ public interface Volume
    List<AuthorReference> getAuthors();
 
    /**
-    * Titles of volumes may vary independently from the original work title. The first title will be
-    * considered the canonical title of the Volume.
+    * Titles of volumes may vary independently from the original work title.
     *
     * @return
     */
@@ -49,13 +54,6 @@ public interface Volume
    List<AuthorReference> getOtherAuthors();
 
    /**
-    * Descriptive summary about this volume.
-    *
-    * @return
-    */
-   String getSummary();
-
-   /**
     * Series to which the works belongs
     *
     * @return
@@ -63,28 +61,9 @@ public interface Volume
    String getSeries();
 
    /**
-    * URLs to images of the edition (e.g. cover page, title page)
-    *
-    * TODO: images will eventually need more info such as:
-    *       title, description, URI, source, and rights info
+    * A descriptive summary about this volume.
     *
     * @return
     */
-   List<URI> getImages();
-
-   /**
-    * Tags for this edition
-    *
-    * @return
-    */
-   Collection<String> getTags();
-
-   /**
-    * Notes on this edition:
-    *
-    * @return
-    */
-   Collection<String> getNotes();
-
-   // TODO: represent references
+   String getSummary();
 }

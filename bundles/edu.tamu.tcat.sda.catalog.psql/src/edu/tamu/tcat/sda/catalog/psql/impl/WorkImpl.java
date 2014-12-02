@@ -17,7 +17,7 @@ public class WorkImpl implements Work
    private final AuthorListImpl authors;
    private final AuthorListImpl otherAuthors;
    private final TitleDefinitionImpl title;
-   private final PublicationImpl publication;
+//   private final PublicationImpl publication;
    private final String series;
    private final String summary;
    private final Collection<Edition> editions;
@@ -29,7 +29,7 @@ public class WorkImpl implements Work
       this.authors = new AuthorListImpl(workDV.authors);
       this.title = new TitleDefinitionImpl(workDV.titles);
       this.otherAuthors = new AuthorListImpl(workDV.otherAuthors);
-      this.publication = new PublicationImpl(workDV.pubInfo);
+//      this.publication = new PublicationImpl(workDV.pubInfo);
       this.series = workDV.series;
       this.summary = workDV.summary;
       this.editions = workDV.editions.parallelStream()
@@ -64,7 +64,7 @@ public class WorkImpl implements Work
    @Override
    public PublicationInfo getPublicationInfo()
    {
-      return publication;
+      throw new UnsupportedOperationException();
    }
 
    @Override

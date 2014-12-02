@@ -1,7 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -10,26 +9,60 @@ import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
+/**
+ * Used to edit a {@link Work}. This class allows clients to make updates to a {@link Work}
+ * instance and its component elements (e.g., {@link Edition}s and {@link Volume}s) in a multi-step
+ * transaction and to commit those changes to the persistence layer via its
+ * {@link #execute()} method.
+ *
+ * <p>Note that implementations typically are not thread safe.
+ *
+ * @see WorkRepository#create()
+ * @see WorkRepository#edit(String)
+ */
 public interface EditWorkCommand
 {
    // TODO: Should these methods take in full models or data vehicles?
    //       Should there be methods to handle both data types?
 
+   /**
+    * Sets all properties defined in the supplied {@link WorkDV} (i.e., non-null values).
+    *
+    * @param work The data vehicle to be used to update the work being edited.
+    */
    void setAll(WorkDV work);
 
    // TODO: Any field that is a collection of models should eventually use mutators.
 
+   /**
+    * Updates the list of authors.
+    * @param authors
+    */
    void setAuthors(List<AuthorRefDV> authors);
+
+   /**
+    *
+    * @param titles
+    */
    void setTitles(Collection<TitleDV> titles);
+
+   /**
+    *
+    * @param authors
+    */
    void setOtherAuthors(List<AuthorRefDV> authors);
+
+   /**
+    *
+    * @param series
+    */
    void setSeries(String series);
+
+   /**
+    *
+    * @param summary
+    */
    void setSummary(String summary);
-
-   @Deprecated // this is a property of an edition.
-   void setPublicationDate(Date pubDate);
-
-   @Deprecated // this is a property of an edition.
-   void setPublicationDateDisplay(String display);
 
    /**
     * Creates an edition mutator to update fields on an existing edition of this work.
@@ -46,5 +79,9 @@ public interface EditWorkCommand
     */
    EditionMutator createEdition();
 
+   /**
+    *
+    * @return The id of the created or edited work.
+    */
    Future<String> execute();
 }

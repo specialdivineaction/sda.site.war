@@ -6,7 +6,7 @@ import java.util.List;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 
 /**
- * Editions are published manifestations of a {@link Work}.
+ * Editions are published manifestations of a {@link Work}. An edition adds specific information related to the
  */
 public interface Edition
 {
@@ -14,9 +14,6 @@ public interface Edition
     * @return A unique system identifier for this edition.
     */
    String getId();
-
-
-   // the following properties may vary independently from works
 
    /**
     * The authors or other individuals responsible for the creation of this work. Note that different
@@ -26,8 +23,6 @@ public interface Edition
     * @return The authors of this edition.
     */
    List<AuthorReference> getAuthors();
-
-   // the following properties may vary independently from works
 
    /**
     * The title(s) of this edition. Note that an individual edition may have different titles when,
@@ -64,33 +59,31 @@ public interface Edition
    PublicationInfo getPublicationInfo();
 
    /**
-    * Editions may consist of multiple {@link Volume}s.
+    * Editions consist of of at least one and possibly multiple {@link Volume}s.
     *
-    * @return
+    * @return The volumes in which this work was published.
     */
    List<Volume> getVolumes();
 
    /**
-    * Get volume by ID
+    * Get volume by its identifier.
     *
     * @param volumeId
-    * @return The volume of this edition that corresponds to the given ID
+    * @return The volume of this edition that corresponds to the given id
     * @throws NoSuchCatalogRecordException
     */
    Volume getVolume(String volumeId) throws NoSuchCatalogRecordException;
 
-
-   // the following properties may vary independently from works
+   /**
+    * Series to which the edition belongs
+    *
+    * @return The name of the series to which this edition belongs. May be {@code null} or the empty string
+    *       if this work is not part of a series.
+    */
+   String getSeries();
 
    /**
     * @return An editorial summary of this edition. Typically 150 to 300 words.
     */
    String getSummary();
-
-   /**
-    * Series to which the works belongs
-    *
-    * @return
-    */
-   String getSeries();
 }

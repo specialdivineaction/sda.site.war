@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,9 +30,6 @@ public class VolumeMutatorImpl implements VolumeMutator
       setOtherAuthors(volume.otherAuthors);
       setSummary(volume.summary);
       setSeries(volume.series);
-      setImages(volume.images);
-      setTags(volume.tags);
-      setNotes(volume.notes);
    }
 
    @Override
@@ -71,23 +67,4 @@ public class VolumeMutatorImpl implements VolumeMutator
    {
       volume.series = series;
    }
-
-   @Override
-   public void setImages(List<URI> images)
-   {
-      volume.images = new ArrayList<>(images);
-   }
-
-   @Override
-   public void setTags(Collection<String> tags)
-   {
-      volume.tags = new HashSet<>(tags);
-   }
-
-   @Override
-   public void setNotes(Collection<String> notes)
-   {
-      volume.notes = new HashSet<>(notes);
-   }
-
 }

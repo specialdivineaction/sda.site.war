@@ -31,7 +31,7 @@ public interface Title
    String getType();
 
    /**
-    * @return The language that the work / title is written in.
+    * @return The language that the title is written in.
     */
    String getLanuguage();
 }

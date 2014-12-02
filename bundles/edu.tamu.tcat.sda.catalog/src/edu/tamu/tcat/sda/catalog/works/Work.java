@@ -11,6 +11,8 @@ import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
  */
 public interface Work
 {
+   // TODO rename to BibliographicEntry
+
    /**
     * @return A unique, persistent identifier for this work.
     */
@@ -38,6 +40,7 @@ public interface Work
    /**
     * @return Details about when, where and by whom this work was published.
     */
+   @Deprecated
    PublicationInfo getPublicationInfo();
 
    /**

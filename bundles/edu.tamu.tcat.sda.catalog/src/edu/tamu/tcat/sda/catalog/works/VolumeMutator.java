@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.works;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,6 +7,15 @@ import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
+/**
+ * Used to edit the properties of a {@link Volume}. A {@code VolumeMutator} is created
+ * within the transactional scope of an {@link EditWorkCommand} via either the
+ * {@link EditionMutator#createVolume()} or the {@link EditionMutator#editVolume(String)}
+ * method. Changes made to the {@code Volume} modified by this mutator will take effect
+ * when the parent {@link EditWorkCommand#execute()} method is invoked. Note that any changes
+ * made after this commands {@code execute()} method is called will have indeterminate affects.
+ * Note that implementations are typically not threadsafe.
+ */
 public interface VolumeMutator
 {
    void setAll(VolumeDV volume);
@@ -16,9 +24,7 @@ public interface VolumeMutator
    void setAuthors(List<AuthorRefDV> authors);
    void setTitles(Collection<TitleDV> titles);
    void setOtherAuthors(List<AuthorRefDV> otherAuthors);
-   void setSummary(String summary);
    void setSeries(String series);
-   void setImages(List<URI> images);
-   void setTags(Collection<String> tags);
-   void setNotes(Collection<String> notes);
+   void setSummary(String summary);
+
 }

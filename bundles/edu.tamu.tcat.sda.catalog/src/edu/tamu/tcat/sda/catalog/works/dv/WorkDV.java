@@ -20,9 +20,10 @@ public class WorkDV
    public List<AuthorRefDV> authors;
    public Collection<TitleDV> titles;
    public List<AuthorRefDV> otherAuthors;
-   public PublicationInfoDV pubInfo;
+//   public PublicationInfoDV pubInfo;
    public String series;
    public String summary;
+
    // HACK: old records may not have this field; set to empty set by default.
    public Collection<EditionDV> editions = new HashSet<>();
 
@@ -48,7 +49,7 @@ public class WorkDV
          titles.add(new TitleDV(title));
       }
 
-      this.pubInfo = new PublicationInfoDV(work.getPublicationInfo());
+//      this.pubInfo = new PublicationInfoDV(work.getPublicationInfo());
       this.series = work.getSeries();
       this.summary = work.getSummary();
 

@@ -2,9 +2,9 @@ package edu.tamu.tcat.sda.catalog.psql;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
@@ -13,9 +13,7 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
@@ -46,8 +44,8 @@ public class EditWorkCommandImpl implements EditWorkCommand
       setAuthors(work.authors);
       setOtherAuthors(work.otherAuthors);
       setTitles(work.titles);
-      setPublicationDate(work.pubInfo.date.value);
-      setPublicationDateDisplay(work.pubInfo.date.display);
+//      setPublicationDate(work.pubInfo.date.value);
+//      setPublicationDateDisplay(work.pubInfo.date.display);
 
       for (EditionDV edition : work.editions) {
          EditionMutator mutator;
@@ -94,33 +92,33 @@ public class EditWorkCommandImpl implements EditWorkCommand
       work.titles = new HashSet<>(titles);
    }
 
-   @Override
-   public void setPublicationDate(Date pubDate)
-   {
-      if (null == work.pubInfo) {
-         work.pubInfo = new PublicationInfoDV();
-      }
-
-      if (null == work.pubInfo.date) {
-         work.pubInfo.date = new DateDescriptionDV();
-      }
-
-      work.pubInfo.date.value = pubDate;
-   }
-
-   @Override
-   public void setPublicationDateDisplay(String display)
-   {
-      if (null == work.pubInfo) {
-         work.pubInfo = new PublicationInfoDV();
-      }
-
-      if (null == work.pubInfo.date) {
-         work.pubInfo.date = new DateDescriptionDV();
-      }
-
-      work.pubInfo.date.display = display;
-   }
+//   @Override
+//   public void setPublicationDate(Date pubDate)
+//   {
+//      if (null == work.pubInfo) {
+//         work.pubInfo = new PublicationInfoDV();
+//      }
+//
+//      if (null == work.pubInfo.date) {
+//         work.pubInfo.date = new DateDescriptionDV();
+//      }
+//
+//      work.pubInfo.date.value = pubDate;
+//   }
+//
+//   @Override
+//   public void setPublicationDateDisplay(String display)
+//   {
+//      if (null == work.pubInfo) {
+//         work.pubInfo = new PublicationInfoDV();
+//      }
+//
+//      if (null == work.pubInfo.date) {
+//         work.pubInfo.date = new DateDescriptionDV();
+//      }
+//
+//      work.pubInfo.date.display = display;
+//   }
 
    @Override
    public EditionMutator createEdition()
@@ -149,6 +147,8 @@ public class EditWorkCommandImpl implements EditWorkCommand
    @Override
    public Future<String> execute()
    {
+      Objects.requireNonNull(commitHook, "");
+
       return commitHook.apply(work);
    }
 
