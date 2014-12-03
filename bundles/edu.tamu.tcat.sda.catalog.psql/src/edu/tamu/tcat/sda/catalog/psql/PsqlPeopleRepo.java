@@ -24,6 +24,7 @@ import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.PersonName;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
+import edu.tamu.tcat.sda.catalog.solr.AuthorController;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
@@ -32,9 +33,12 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private SqlExecutor exec;
    private JsonMapper jsonMapper;
+   private long personId;
+   private AuthorController authController;
 
    public PsqlPeopleRepo()
    {
+      authController = new AuthorController();
    }
 
    public void setDatabaseExecutor(SqlExecutor exec)
@@ -128,8 +132,9 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Person getPerson(String personId) throws NoSuchCatalogRecordException
    {
+      this.personId = Long.parseLong(personId);
       try {
-         return getPerson(Long.parseLong(personId));
+         return getPerson(this.personId);
       }
       catch (NumberFormatException nfe)
       {
@@ -141,6 +146,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    public Person getPerson(final long personId) throws NoSuchCatalogRecordException
    {
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
+      this.personId = personId;
       SqlExecutor.ExecutorTask<Person> query = new SqlExecutor.ExecutorTask<Person>()
       {
          @Override
@@ -251,6 +257,7 @@ public class PsqlPeopleRepo implements PeopleRepository
                if (ct != 1)
                   throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
 
+               authController.addDocument(histFigure);
                return new PersonImpl(histFigure);
             }
             catch (JsonException e)
@@ -270,7 +277,6 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             histFigure.id = createPersonId(conn);
             Person result = savePersonDetails(conn);
-
             return result;
          }
       };
@@ -307,6 +313,7 @@ public class PsqlPeopleRepo implements PeopleRepository
             {
                throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
             }
+            authController.addDocument(histFigure);
             return new PersonImpl(histFigure);
          }
       };
