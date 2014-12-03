@@ -33,7 +33,6 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private SqlExecutor exec;
    private JsonMapper jsonMapper;
-   private long personId;
    private AuthorController authController;
 
    public PsqlPeopleRepo()
@@ -132,9 +131,8 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Person getPerson(String personId) throws NoSuchCatalogRecordException
    {
-      this.personId = Long.parseLong(personId);
       try {
-         return getPerson(this.personId);
+         return getPerson(Long.parseLong(personId));
       }
       catch (NumberFormatException nfe)
       {
@@ -146,7 +144,6 @@ public class PsqlPeopleRepo implements PeopleRepository
    public Person getPerson(final long personId) throws NoSuchCatalogRecordException
    {
       final String querySql = "SELECT historical_figure FROM people WHERE id=?";
-      this.personId = personId;
       SqlExecutor.ExecutorTask<Person> query = new SqlExecutor.ExecutorTask<Person>()
       {
          @Override
