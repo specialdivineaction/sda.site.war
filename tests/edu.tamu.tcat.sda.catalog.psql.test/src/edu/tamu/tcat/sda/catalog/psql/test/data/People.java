@@ -79,10 +79,12 @@ public class People
        // TODO create a new DateOfDeath/Birth class
        histFig.birth = new HistoricalEventDV();
        histFig.birth.title = "Date of birth for " + author.displayName;
+       histFig.birth.location = "England";
        histFig.birth.eventDate = birthDate[num].getTime();
 
        histFig.death = new HistoricalEventDV();
        histFig.death.title = "Date of death for " + author.displayName;
+       histFig.death.location = "England";
        histFig.death.eventDate = deathDate[num].getTime();
        histFig.names = authNames;
        histFig.summary = summary[num];
