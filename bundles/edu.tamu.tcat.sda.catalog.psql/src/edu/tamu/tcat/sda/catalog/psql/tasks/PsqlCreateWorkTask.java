@@ -48,7 +48,7 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String
          jsonObject.setType("json");
          jsonObject.setValue(getJson());
 
-         ps.setObject(1, work.id);
+         ps.setObject(1, Long.parseLong(work.id));
          ps.setObject(2, jsonObject);
 
          int ct = ps.executeUpdate();
