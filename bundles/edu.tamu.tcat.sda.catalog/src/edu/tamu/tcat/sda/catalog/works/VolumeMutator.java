@@ -21,4 +21,13 @@ public interface VolumeMutator
    void setImages(List<URI> images);
    void setTags(Collection<String> tags);
    void setNotes(Collection<String> notes);
+
+   /**
+   *
+   * @return The unique identifier for the volume that this mutator modifies.
+   *         Will not be {@code null}. For newly created volumes, this identifier
+   *         will be assigned when the java object is first created rather than when
+   *         the volume is committed to the persistence layer.
+   */
+  String getId();
 }
