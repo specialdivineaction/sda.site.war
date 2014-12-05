@@ -20,6 +20,7 @@ import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.Volume;
 import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
+import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
 @Path("/works/{workId}/editions/{editionId}/volumes")
@@ -65,7 +66,8 @@ public class VolumesResource
    @PUT
    @Path("{volumeId}")
    @Consumes(MediaType.APPLICATION_JSON)
-   public String updateVolume(@PathParam(value = "workId") String workId,
+   @Produces(MediaType.APPLICATION_JSON)
+   public CustomResultsDV updateVolume(@PathParam(value = "workId") String workId,
                               @PathParam(value = "editionId") String editionId,
                               @PathParam(value = "volumeId") String volumeId,
                               VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
@@ -74,13 +76,14 @@ public class VolumesResource
       EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
       VolumeMutator volumeMutator = editionMutator.editVolume(volumeId);
       volumeMutator.setAll(volume);
-
-      return editWorkCommand.execute().get();
+      editWorkCommand.execute();
+      return new CustomResultsDV(volumeMutator.getId());
    }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public String createVolume(@PathParam(value = "workId") String workId,
+   @Produces(MediaType.APPLICATION_JSON)
+   public CustomResultsDV createVolume(@PathParam(value = "workId") String workId,
                               @PathParam(value = "editionId") String editionId,
                               VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
    {
@@ -88,7 +91,7 @@ public class VolumesResource
       EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
       VolumeMutator volumeMutator = editionMutator.createVolume();
       volumeMutator.setAll(volume);
-
-      return editWorkCommand.execute().get();
+      editWorkCommand.execute();
+      return new CustomResultsDV(volumeMutator.getId());
    }
 }
