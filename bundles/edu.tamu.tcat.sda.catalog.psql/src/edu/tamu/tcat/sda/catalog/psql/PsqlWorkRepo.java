@@ -17,6 +17,7 @@ import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
+import edu.tamu.tcat.sda.catalog.solr.WorksController;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Edition;
@@ -85,8 +86,7 @@ public class PsqlWorkRepo implements WorkRepository
    {
       String id = ref.getId();
       try {
-         // FIXME repo should accept string identifiers.
-         return peopleRepo.getPerson(Integer.parseInt(id));
+         return peopleRepo.getPerson(id);
       }
       catch (Exception ex)
       {
@@ -227,7 +227,10 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
-         return exec.submit(task);
+         Future<String> submitWork = exec.submit(task);
+         WorksController controller = new WorksController();
+         controller.addDocument(workDv);
+         return submitWork;
       });
 
       return command;
@@ -252,7 +255,10 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, jsonMapper);
-         return exec.submit(task);
+         WorksController controller = new WorksController();
+         Future<String> submitWork = exec.submit(task);
+         controller.addDocument(w);
+         return submitWork;
       });
 
       return command;
