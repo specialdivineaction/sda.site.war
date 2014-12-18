@@ -1,10 +1,9 @@
 package edu.tamu.tcat.sda.catalog.solr;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,11 +19,9 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
+import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class WorksController
@@ -34,8 +31,12 @@ public class WorksController
    private final String solrBaseUri = "https://sda-dev.citd.tamu.edu/solr/";
    private final SolrServer solr;
 
-   // Field Name values
+   // Field Name values for works
    private final static String workId = "id";
+   private final static String editionId = "editionId";
+   private final static String editionName = "editionName";
+   private final static String volumeId = "volumeId";
+   private final static String vNumber = "volumeNumber";
    private final static String authorIds = "authorIds";
    private final static String authorNames = "authorNames";
    private final static String authorRoles = "authorRole";
@@ -102,6 +103,8 @@ public class WorksController
 
          }
       }
+      if (queryParams.isEmpty())
+         query.setQuery("*:*");
 
       // Sort order can not be done on an arraylist
 
@@ -127,7 +130,7 @@ public class WorksController
             {
                switch(fieldName)
                {
-                  case "id":
+                  case "workId":
                      simpleWork.id = result.getFieldValue(fieldName).toString();
                      break;
                   case "authorIds":
@@ -151,18 +154,6 @@ public class WorksController
                   case "subtitles":
                      simpleWork.subtitles = (ArrayList<String>)result.getFieldValue(fieldName);
                      break;
-                  case "publisher":
-                     simpleWork.publisher = result.getFieldValue(fieldName).toString();
-                     break;
-                  case "publisherLocation":
-                     simpleWork.publisherLocation = result.getFieldValue(fieldName).toString();
-                     break;
-                  case "publishDateString":
-                     simpleWork.publishDateString = result.getFieldValue(fieldName).toString();
-                     break;
-                  case "publishDateValue":
-                     simpleWork.publishDateValue = result.getFieldValue(fieldName).toString();
-                     break;
                   case "series":
                      simpleWork.series = result.getFieldValue(fieldName).toString();
                      break;
@@ -185,46 +176,57 @@ public class WorksController
       return null;
    }
 
+
    public void addDocument(WorkDV work)
    {
-      SolrInputDocument document = new SolrInputDocument();
+      Collection<SolrInputDocument> documents = new HashSet<>();
+      SolrWorkDocument workDocument = new SolrWorkDocument();
 
-      document.addField(workId, work.id);
-
-      for (AuthorRefDV author : work.authors)
+      workDocument.addDocumentId(work.id);
+      workDocument.addAuthors(work.authors);
+      workDocument.addTitle(work.titles);
+      workDocument.addSeries(work.series);
+      workDocument.addSummary(work.summary);
+      documents.add(workDocument.getDocument());
+      if (!work.editions.isEmpty())
       {
-         if (author.authorId != null)
-            document.addField(authorIds, author.authorId);
-         else
-            document.addField(authorIds, "");
-         document.addField(authorNames, author.name);
-         document.addField(authorRoles, author.role);
+         SolrWorkDocument editionDocument = new SolrWorkDocument();
+         for (EditionDV edition : work.editions)
+         {
+            editionDocument.addDocumentId(work.id + ":" + edition.id);
+//            editionDocument.addEditionId(edition.id);
+            editionDocument.addEditionName(edition.editionName);
+            editionDocument.addAuthors(edition.authors);
+            editionDocument.addTitle(edition.titles);
+            editionDocument.addPublication(edition.publicationInfo);
+            editionDocument.addSeries(edition.series);
+            editionDocument.addSummary(edition.summary);
+            documents.add(editionDocument.getDocument());
+
+            if(!edition.volumes.isEmpty())
+            {
+               SolrWorkDocument volumeDocument = new SolrWorkDocument();
+               for (VolumeDV volume : edition.volumes)
+               {
+                  volumeDocument.addDocumentId(work.id + ":" + edition.id + ":" + volume.id);
+//                  volumeDocument.addEditionId(edition.id);
+                  volumeDocument.addEditionName(edition.editionName);
+//                  volumeDocument.addVolumeId(volume.id);
+                  volumeDocument.addVolumeNumber(volume.volumeNumber);
+                  volumeDocument.addAuthors(volume.authors);
+                  volumeDocument.addTitle(volume.titles);
+                  volumeDocument.addPublication(edition.publicationInfo); // Is there not a volume Publisher?
+                  volumeDocument.addSeries(volume.series);
+                  volumeDocument.addSummary(volume.summary);
+                  documents.add(volumeDocument.getDocument());
+               }
+            }
+         }
       }
-
-      for (TitleDV title : work.titles)
-      {
-         document.addField(titleTypes, title.type);
-         document.addField(language, title.lg);
-         document.addField(titles, title.title);
-         document.addField(subtitles, title.subtitle);
-      }
-
-      PublicationInfoDV publication = work.pubInfo;
-      document.addField(publisher, publication.publisher);
-      document.addField(pubLocation, publication.place);
-
-      DateDescriptionDV dateDescription = publication.date;
-      document.addField(pubDateString, dateDescription.display);
-
-      if (dateDescription.value != null)
-         document.addField(pubDateValue, convertDate(dateDescription.value));
-
-      document.addField(series, work.series);
-      document.addField(summary, work.summary);
 
       try
       {
-         solr.add(document);
+         solr.add(documents);
          solr.commit();
       }
       catch (IOException e)
@@ -235,7 +237,6 @@ public class WorksController
       {
          log.severe("An error occured with Solr Server:" + e);
       }
-
    }
 
    public void clean()
@@ -258,17 +259,6 @@ public class WorksController
    public void reindex()
    {
 
-   }
-
-   private String convertDate(Date event)
-   {
-      String dateRep = "";
-
-      SimpleDateFormat calendar = new SimpleDateFormat("yyyy-MM-dd");
-      SimpleDateFormat time = new SimpleDateFormat("HH:mm:SS");
-      dateRep = calendar.format(event) + "T" + time.format(event) + "Z";
-
-      return dateRep;
    }
 
 }

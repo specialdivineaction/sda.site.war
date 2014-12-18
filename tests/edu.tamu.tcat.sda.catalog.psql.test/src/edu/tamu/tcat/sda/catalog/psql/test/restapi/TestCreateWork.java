@@ -3,7 +3,12 @@ package edu.tamu.tcat.sda.catalog.psql.test.restapi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,14 +19,23 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Works;
+import edu.tamu.tcat.sda.catalog.solr.WorksController;
+import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
+import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
+import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
+import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 
@@ -56,106 +70,178 @@ public class TestCreateWork
       get.setHeader("Content-type", "application/json");
    }
 
-
 	@Test
-	public void testCreate() throws JsonException, ClientProtocolException, IOException
+	public void testWork() throws JsonException, IOException
 	{
 	   Works workDb = new Works();
-		String json = mapper.asString(workDb.buildWork());
-      StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
-      post.setEntity(sEntity);
+	   WorkDV workOrig = workDb.addWork();
+	   String workId = addWork(workOrig);
 
-		HttpResponse response = client.execute(post);
-		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode >=200 && statusCode < 300)
-		   Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
-		else if (statusCode >= 300 && statusCode < 400)
-		   Assert.fail("Redirection: " + statusCode);
-		else if (statusCode >= 400 && statusCode < 500)
-		   Assert.fail("Client Error: " + statusCode);
-		else
-		   Assert.fail("Server Error: " + statusCode);
-
-		WorkDV createdWork = mapper.parse(response.getEntity().getContent(), WorkDV.class);
-
-		// The created work does not contain an ID until after the creation.
-		// TODO: Add additional checking for commetted out Objects
-//		Assert.assertEquals(workDb.workDV.authors, createdWork.authors);
-//		Assert.assertEquals(workDb.workDV.otherAuthors, createdWork.otherAuthors);
-//		Assert.assertEquals(workDb.workDV.titles, createdWork.titles);
-//		Assert.assertEquals(workDb.workDV.pubInfo, createdWork.pubInfo);
-		Assert.assertEquals(workDb.workDV.series, createdWork.series);
-		Assert.assertEquals(workDb.workDV.summary, createdWork.summary);
-
-	}
-
-	@Test
-	public void testUpdate() throws JsonException, ClientProtocolException, IOException
-	{
-      Works workDb = new Works();
-      String json = mapper.asString(workDb.buildWork());
-      StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
-      post.setEntity(sEntity);
-
-      HttpResponse response = client.execute(post);
-      InputStream content = response.getEntity().getContent();
-
-      WorkDV createdWork = mapper.parse(content, WorkDV.class);
-      createdWork.summary = "Change to a new Summary";
-
-      put.setURI(uri.resolve("works/" + createdWork.id));
-      String updatedJson = mapper.asString(createdWork);
-      StringEntity updatedEntity = new StringEntity(updatedJson, ContentType.create("application/json", "UTF-8"));
-      put.setEntity(updatedEntity);
-
-      HttpResponse updatedResponse = client.execute(put);
-      InputStream updatedContent = updatedResponse.getEntity().getContent();
-      WorkDV updatedWork = mapper.parse(updatedContent, WorkDV.class);
-      Assert.assertEquals(workDb.workDV.series, updatedWork.series);
-      Assert.assertNotEquals(workDb.workDV.summary, updatedWork.summary);
-
-	}
-
-	@Test
-	public void testSearchTitle() throws JsonException, ClientProtocolException, IOException
-	{
-      Works workDb = new Works();
-      String json = mapper.asString(workDb.buildWork());
-      StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
-      post.setEntity(sEntity);
-
-      HttpResponse response = client.execute(post);
-      try (InputStream content = response.getEntity().getContent())
+      try (InputStream getStream = get(URI.create("works/" + workId)))
       {
-         WorkDV createdWork = mapper.parse(content, WorkDV.class);
+         WorkDV  workComp = mapper.parse(getStream, WorkDV.class);
+         Assert.assertEquals(workOrig.series, workComp.series);
+         Assert.assertEquals(workOrig.summary, workComp.summary);
       }
-      catch(IOException e)
-      {
-         throw new IllegalStateException("");
-      }
-      get.setURI(uri.resolve("works/?title=comp"));
-      HttpResponse getResponse = client.execute(get);
-      InputStream getContent = getResponse.getEntity().getContent();
-
-      List<WorkDV> searchedWorks = mapper.fromJSON(getContent, new JsonTypeReference<List<WorkDV>>(){});
-
 	}
 
-//	@Test
-//	public void testGet() throws ClientProtocolException, IOException
-//	{
-//	   CloseableHttpResponse response = client.execute(get);
-//      InputStream content = response.getEntity().getContent();
-//      StatusLine statusLine = response.getStatusLine();
-//	}
+   @Test
+   public void testEdition() throws JsonException, IOException
+   {
+      Works workDb = new Works();
 
-//   @Test
-//   public void testWork() throws ClientProtocolException, IOException
-//   {
-//      URI personUri = uri.resolve("works/16");
-//      get.setURI(personUri);
-//      CloseableHttpResponse response = client.execute(get);
-//      InputStream content = response.getEntity().getContent();
-//      StatusLine statusLine = response.getStatusLine();
-//   }
+      WorkDV workOrig = workDb.addWork();
+      String workId = addWork(workOrig);
+
+      EditionDV edition = workDb.addEdition();
+      String editionId = addEdition(edition, workId);
+
+      try (InputStream getStream = get(URI.create("works/" + workId + "/editions/" + editionId)))
+      {
+         EditionDV createdEdition = mapper.parse(getStream, EditionDV.class);
+         Assert.assertEquals(edition.series, createdEdition.series);
+         Assert.assertEquals(edition.summary, createdEdition.summary);
+      }
+   }
+
+   @Test
+   public void testVolume() throws JsonException, IOException
+   {
+      Works workDb = new Works();
+
+      WorkDV workOrig = workDb.addWork();
+      String workId = addWork(workOrig);
+
+      EditionDV edition = workDb.addEdition();
+      String editionId = addEdition(edition, workId);
+
+      VolumeDV volume = workDb.addVolume();
+      String volumeId = addVolume(volume, workId, editionId);
+
+      try (InputStream getStream = get(URI.create("works/" + workId + "/editions/"
+                                              + editionId + "/volumes/" + volumeId)))
+      {
+         VolumeDV createdVolume = mapper.parse(getStream, VolumeDV.class);
+         Assert.assertEquals(volume.series, createdVolume.series);
+         Assert.assertEquals(volume.summary, createdVolume.summary);
+      }
+   }
+
+	String addWork(WorkDV original) throws JsonException, IOException
+	{
+	   String json = mapper.asString(original);
+	   StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
+	   post.setEntity(sEntity);
+	   try (InputStream postStream = post(uri))
+	   {
+	      CustomResultsDV workResult = mapper.parse(postStream, CustomResultsDV.class);
+	      return workResult.id;
+	   }
+	}
+
+	String addEdition(EditionDV original, String workId) throws JsonException, IOException
+	{
+	   String json = mapper.asString(original);
+	   StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
+      post.setEntity(sEntity);
+      try (InputStream postStream = post(URI.create("works/" + workId + "/editions")))
+      {
+         CustomResultsDV workResult = mapper.parse(postStream, CustomResultsDV.class);
+         return workResult.id;
+      }
+	}
+
+	String addVolume(VolumeDV original, String workID, String editionId) throws JsonException, IOException
+	{
+	   String json = mapper.asString(original);
+	   StringEntity sEntity = new StringEntity(json, ContentType.create("application/json", "UTF-8"));
+	   post.setEntity(sEntity);
+	   try (InputStream postStream = post(URI.create("works/" + workID + "/editions/" + editionId + "/volumes")))
+	   {
+	      CustomResultsDV workResult = mapper.parse(postStream, CustomResultsDV.class);
+	      return workResult.id;
+	   }
+	}
+
+   InputStream get(URI getUri)
+   {
+      HttpResponse response;
+      if (!getUri.equals(get))
+         get.setURI(uri.resolve(getUri));
+      try
+      {
+         response =  client.execute(get);
+         if (checkResponse(response.getStatusLine().getStatusCode()))
+            return response.getEntity().getContent();
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   InputStream post(URI postUri)
+   {
+      HttpResponse response;
+      if (!postUri.equals(uri))
+         post.setURI(uri.resolve(postUri));
+
+      try
+      {
+         response = client.execute(post);
+         if (checkResponse(response.getStatusLine().getStatusCode()))
+            return response.getEntity().getContent();
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   InputStream put(URI putUri)
+   {
+      if (!putUri.equals(uri))
+         put.setURI(uri.resolve(putUri));
+
+      HttpResponse response;
+      try
+      {
+         response = client.execute(put);
+         if (checkResponse(response.getStatusLine().getStatusCode()))
+            return response.getEntity().getContent();
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   Boolean checkResponse(int statusCode)
+   {
+      if (statusCode >=200 && statusCode < 300)
+      {
+         Assert.assertTrue("Successfull", (statusCode >=200 && statusCode < 300));
+         return true;
+      }
+      else if (statusCode >= 300 && statusCode < 400)
+      {
+         Assert.fail("Redirection: " + statusCode);
+         return false;
+      }
+      else if (statusCode >= 400 && statusCode < 500)
+      {
+         Assert.fail("Client Error: " + statusCode);
+         return false;
+      }
+      else
+      {
+         Assert.fail("Server Error: " + statusCode);
+         return false;
+      }
+   }
+
+
 }

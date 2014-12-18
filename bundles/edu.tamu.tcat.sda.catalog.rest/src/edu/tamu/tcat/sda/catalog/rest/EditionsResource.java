@@ -19,6 +19,7 @@ import edu.tamu.tcat.sda.catalog.works.Edition;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
+import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 
 @Path("/works/{workId}/editions")
@@ -69,24 +70,26 @@ public class EditionsResource
 
    @PUT
    @Path("{editionId}")
-   public String updateEdition(@PathParam(value = "workId") String workId,
+   @Produces(MediaType.APPLICATION_JSON)
+   public CustomResultsDV updateEdition(@PathParam(value = "workId") String workId,
                                @PathParam(value = "editionId") String editionId, EditionDV edition) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
    {
       EditWorkCommand command = repo.edit(workId);
       EditionMutator editionMutator = command.editEdition(editionId);
       editionMutator.setAll(edition);
-
-      return command.execute().get();
+      command.execute();
+      return new CustomResultsDV(editionMutator.getId());
    }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public String createEdition(@PathParam(value = "workId") String workId, EditionDV edition) throws ExecutionException, NoSuchCatalogRecordException, InterruptedException
+   @Produces(MediaType.APPLICATION_JSON)
+   public CustomResultsDV createEdition(@PathParam(value = "workId") String workId, EditionDV edition) throws ExecutionException, NoSuchCatalogRecordException, InterruptedException
    {
       EditWorkCommand command = repo.edit(workId);
       EditionMutator editionMutator = command.createEdition();
       editionMutator.setAll(edition);
-
-      return command.execute().get();
+      command.execute();
+      return new CustomResultsDV(editionMutator.getId());
    }
 }

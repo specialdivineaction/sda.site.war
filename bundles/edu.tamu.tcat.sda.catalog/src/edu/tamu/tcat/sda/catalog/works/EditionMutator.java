@@ -24,4 +24,13 @@ public interface EditionMutator
 
    VolumeMutator createVolume();
    VolumeMutator editVolume(String id) throws NoSuchCatalogRecordException;
+
+   /**
+    *
+    * @return The unique identifier for the edition that this mutator modifies.
+    *         Will not be {@code null}. For newly created editions, this identifier
+    *         will be assigned when the java object is first created rather than when
+    *         the edition is committed to the persistence layer.
+    */
+   String getId();
 }

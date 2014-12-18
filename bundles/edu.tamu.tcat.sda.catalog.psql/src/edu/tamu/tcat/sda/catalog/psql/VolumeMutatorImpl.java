@@ -20,6 +20,11 @@ public class VolumeMutatorImpl implements VolumeMutator
       this.volume = volume;
    }
 
+   @Override
+   public String getId()
+   {
+      return volume.id;
+   }
 
    @Override
    public void setAll(VolumeDV volume)

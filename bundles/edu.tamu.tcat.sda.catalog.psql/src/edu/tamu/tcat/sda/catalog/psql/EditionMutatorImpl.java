@@ -33,6 +33,13 @@ public class EditionMutatorImpl implements EditionMutator
 
 
    @Override
+   public String getId()
+   {
+      return edition.id;
+   }
+
+
+   @Override
    public void setAll(EditionDV edition)
    {
       setAuthors(edition.authors);
