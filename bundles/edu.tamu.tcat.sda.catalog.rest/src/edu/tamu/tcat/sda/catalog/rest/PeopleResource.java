@@ -83,7 +83,7 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<SimplePersonDV> listPeople(@Context UriInfo ctx) throws CatalogRepoException
+   public List<SimplePersonDV> listPeople(@Context UriInfo ctx) throws JsonException
    {
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
       AuthorController controller = new AuthorController();
@@ -91,29 +91,14 @@ public class PeopleResource
       // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
 
       List<SimplePersonDV> results = new ArrayList<SimplePersonDV>();
-      if (!queryParams.isEmpty())
-      {
-         try
-         {
-            results = controller.query(queryParams);
-         }
-         catch (JsonException e)
-         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
-      }
-      else
-      {
-         return null;
-      }
+      results = controller.query(queryParams);
       return Collections.unmodifiableList(results);
    }
 
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public PersonDV getPerson(@PathParam(value="personId") long personId) throws CatalogRepoException, NoSuchCatalogRecordException
+   public PersonDV getPerson(@PathParam(value="personId") String personId) throws CatalogRepoException, NoSuchCatalogRecordException
    {
       // FIXME make this a string based identifier
       // TODO make this a mangled string instead of an ID. Don't want people guessing

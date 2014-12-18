@@ -72,22 +72,25 @@ public class AuthorController
                query.setQuery(deathLocation + ":*" + first + "*");
                break;
             case birthDate:
-               query.setQuery(familyName + ":*" + first + "*");
+               query.setQuery(birthDate + ":*" + first + "*");
                break;
             case deathDate:
-               query.setQuery(familyName + ":*" + first + "*");
+               query.setQuery(deathDate + ":*" + first + "*");
                break;
             case numResults:
                query.setRows(Integer.parseInt(first));
                break;
             default:
                query.setQuery(syntheticName + ":*" + first + "*");
-               query.setQuery(summary + ":*" + first + "*");
                break;
 
          }
       }
-
+      if (queryParams.isEmpty())
+      {
+         query.setQuery(syntheticName + ":*");
+//         query.setQuery(summary + ":*");
+      }
       return query;
    }
 
