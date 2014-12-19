@@ -111,6 +111,7 @@ public class WorksController
       return query;
    }
 
+   @SuppressWarnings("unchecked")
    public List<SimpleWorkDV> query(MultivaluedMap<String, String> queryParams) throws JsonException
    {
 
@@ -134,25 +135,25 @@ public class WorksController
                      simpleWork.id = result.getFieldValue(fieldName).toString();
                      break;
                   case "authorIds":
-                     simpleWork.authorIds = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.authorIds = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "authorNames":
-                     simpleWork.authorNames = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.authorNames = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "authorRole":
-                     simpleWork.authorRole = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.authorRole = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "titleTypes":
-                     simpleWork.titleTypes = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.titleTypes = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "lang":
-                     simpleWork.lang = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.lang = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "titles":
-                     simpleWork.titles = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.titles = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "subtitles":
-                     simpleWork.subtitles = (ArrayList<String>)result.getFieldValue(fieldName);
+                     simpleWork.subtitles = (List<String>)result.getFieldValue(fieldName);
                      break;
                   case "series":
                      simpleWork.series = result.getFieldValue(fieldName).toString();
@@ -160,7 +161,9 @@ public class WorksController
                   case "summary":
                      simpleWork.summary = result.getFieldValue(fieldName).toString();
                      break;
-
+                  default:
+                     // ignore unknown fields
+                     break;
                }
             }
 
@@ -180,7 +183,7 @@ public class WorksController
    public void addDocument(WorkDV work)
    {
       Collection<SolrInputDocument> documents = new HashSet<>();
-      SolrWorkDocument workDocument = new SolrWorkDocument();
+      WorkDocumentBuilder workDocument = new WorkDocumentBuilder();
 
       workDocument.addDocumentId(work.id);
       workDocument.addAuthors(work.authors);
@@ -190,37 +193,10 @@ public class WorksController
       documents.add(workDocument.getDocument());
       if (!work.editions.isEmpty())
       {
-         SolrWorkDocument editionDocument = new SolrWorkDocument();
+         WorkDocumentBuilder editionDocument = new WorkDocumentBuilder();
          for (EditionDV edition : work.editions)
          {
-            editionDocument.addDocumentId(work.id + ":" + edition.id);
-//            editionDocument.addEditionId(edition.id);
-            editionDocument.addEditionName(edition.editionName);
-            editionDocument.addAuthors(edition.authors);
-            editionDocument.addTitle(edition.titles);
-            editionDocument.addPublication(edition.publicationInfo);
-            editionDocument.addSeries(edition.series);
-            editionDocument.addSummary(edition.summary);
-            documents.add(editionDocument.getDocument());
-
-            if(!edition.volumes.isEmpty())
-            {
-               SolrWorkDocument volumeDocument = new SolrWorkDocument();
-               for (VolumeDV volume : edition.volumes)
-               {
-                  volumeDocument.addDocumentId(work.id + ":" + edition.id + ":" + volume.id);
-//                  volumeDocument.addEditionId(edition.id);
-                  volumeDocument.addEditionName(edition.editionName);
-//                  volumeDocument.addVolumeId(volume.id);
-                  volumeDocument.addVolumeNumber(volume.volumeNumber);
-                  volumeDocument.addAuthors(volume.authors);
-                  volumeDocument.addTitle(volume.titles);
-                  volumeDocument.addPublication(edition.publicationInfo); // Is there not a volume Publisher?
-                  volumeDocument.addSeries(volume.series);
-                  volumeDocument.addSummary(volume.summary);
-                  documents.add(volumeDocument.getDocument());
-               }
-            }
+            appendEdition(work, documents, editionDocument, edition);
          }
       }
 
@@ -236,6 +212,46 @@ public class WorksController
       catch (SolrServerException e)
       {
          log.severe("An error occured with Solr Server:" + e);
+      }
+   }
+
+   private void appendEdition(WorkDV work, Collection<SolrInputDocument> documents, WorkDocumentBuilder editionDocument, EditionDV edition)
+   {
+      editionDocument.addDocumentId(work.id + ":" + edition.id);
+//            editionDocument.addEditionId(edition.id);
+      editionDocument.addEditionName(edition.editionName);
+      editionDocument.addAuthors(edition.authors);
+      editionDocument.addTitle(edition.titles);
+      editionDocument.addPublication(edition.publicationInfo);
+      editionDocument.addSeries(edition.series);
+      editionDocument.addSummary(edition.summary);
+      documents.add(editionDocument.getDocument());
+
+      if(!edition.volumes.isEmpty())
+      {
+         appendVolume(work, documents, edition);
+      }
+   }
+
+   private void appendVolume(WorkDV work, Collection<SolrInputDocument> documents, EditionDV edition)
+   {
+      for (VolumeDV volume : edition.volumes)
+      {
+         // HACK this is a document builder, not a document
+         WorkDocumentBuilder volumeDocument = new WorkDocumentBuilder();
+
+         volumeDocument.addDocumentId(work.id + ":" + edition.id + ":" + volume.id);
+//       volumeDocument.addEditionId(edition.id);
+         volumeDocument.addEditionName(edition.editionName);
+//       volumeDocument.addVolumeId(volume.id);
+         volumeDocument.addVolumeNumber(volume.volumeNumber);
+         volumeDocument.addAuthors(volume.authors);
+         volumeDocument.addTitle(volume.titles);
+         volumeDocument.addPublication(edition.publicationInfo); // Is there not a volume Publisher?
+         volumeDocument.addSeries(volume.series);
+         volumeDocument.addSummary(volume.summary);
+
+         documents.add(volumeDocument.getDocument());
       }
    }
 

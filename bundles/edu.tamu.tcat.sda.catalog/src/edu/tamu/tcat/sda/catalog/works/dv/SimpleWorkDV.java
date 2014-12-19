@@ -1,28 +1,28 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleWorkDV
 {
+   // FIXME this is internal to the search system. Does not belong here.
+
    public String id;
-   public ArrayList<String> authorIds;
-   public ArrayList<String> authorNames;
-   public ArrayList<String> authorRole;
-   public ArrayList<String> titleTypes;
-   public ArrayList<String> lang;
-   public ArrayList<String> titles;
-   public ArrayList<String> subtitles;
-//   public String publisher;
-//   public String publisherLocation;
-//   public String publishDateString;
-//   public String publishDateValue;
+   public List<String> authorIds;
+   public List<String> authorNames;
+   public List<String> authorRole;
+   public List<String> titleTypes;
+   public List<String> lang;
+   public List<String> titles;
+   public List<String> subtitles;
    public String series;
    public String summary;
 
    public String _version_;
 
    public SimpleWorkDV()
-   {}
+   {
+
+   }
 
    public SimpleWorkDV(WorkDV works)
    {
@@ -41,12 +41,6 @@ public class SimpleWorkDV
          lang.add(title.lg);
          titleTypes.add(title.type);
       }
-
-//      PublicationInfoDV publication = works.pubInfo;
-//      this.publisher = publication.publisher;
-//      this.publisherLocation = publication.place;
-//      this.publishDateString = publication.date.display;
-//      this.publishDateValue = publication.date.value.toString();
 
       this.series = works.series;
       this.summary = works.summary;

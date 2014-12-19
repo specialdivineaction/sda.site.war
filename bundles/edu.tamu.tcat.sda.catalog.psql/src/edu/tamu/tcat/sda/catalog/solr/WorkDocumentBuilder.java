@@ -12,7 +12,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 
-public class SolrWorkDocument
+public class WorkDocumentBuilder
 {
 
    private SolrInputDocument document;
@@ -37,7 +37,7 @@ public class SolrWorkDocument
    private final static String volumeId = "volumeId";
    private final static String volumeNumber = "volumeNumber";
 
-   SolrWorkDocument()
+   WorkDocumentBuilder()
    {
       document = new SolrInputDocument();
    }
