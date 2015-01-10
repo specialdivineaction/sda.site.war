@@ -79,5 +79,5 @@ public interface Relationship
     *  @return For directed relationships, returns the entities that are being referenced.
     *    For undirected relationships, returns {@code null} or an empty {@code AnchorSet}.
     */
-   AnchorSet getDestination();
+   AnchorSet getTargetEntities();
 }
