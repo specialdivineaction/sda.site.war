@@ -14,7 +14,7 @@ import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
 import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceStrategy;
 
-public class FilePersistenceStrategy implements PersistenceStrategy
+class FilePersistenceStrategy implements PersistenceStrategy
 {
    public static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
 
