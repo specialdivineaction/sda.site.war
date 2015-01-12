@@ -13,6 +13,10 @@ package edu.tamu.tcat.sda.catalog;
  */
 public interface IdFactory
 {
+   
+   // Twitter has encountered a similar need for generating coherent IDs and has developed Snowflake:
+   // https://blog.twitter.com/2010/announcing-snowflake
+   
    /**
     * Generate a new id for the named context.
     *
