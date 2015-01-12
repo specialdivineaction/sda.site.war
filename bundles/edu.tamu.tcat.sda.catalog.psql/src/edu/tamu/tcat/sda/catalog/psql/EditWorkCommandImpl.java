@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
+import edu.tamu.tcat.sda.catalog.IdFactory;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
