@@ -26,6 +26,11 @@ public class DbBackedObfuscatingIdFactory implements IdFactory
 
    }
 
+   public void dispose()
+   {
+      this.exec = null;
+   }
+
    @Override
    public String getNextId(String context)
    {
