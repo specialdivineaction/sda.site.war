@@ -56,6 +56,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    {
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
+      Objects.requireNonNull(idFactory);
    }
 
    public void dispose()

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
+package edu.tamu.tcat.sda.catalog.idfactory.impl.db;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.IdFactory;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
 
 /**
  * An arbiter to hand out monotonically increasing numeric IDs unique to a particular (String)

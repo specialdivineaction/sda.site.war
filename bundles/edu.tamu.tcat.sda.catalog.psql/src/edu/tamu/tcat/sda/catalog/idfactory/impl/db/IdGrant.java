@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
+package edu.tamu.tcat.sda.catalog.idfactory.impl.db;
 
 /**
  * Represents a range of identifiers that can be returned. An IdGrant is provided
