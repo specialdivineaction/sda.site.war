@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
+package edu.tamu.tcat.sda.catalog.psql.idfactory;
 
 /**
  * Java implementation for generating Tiny URL- and bit.ly-like URLs. This is

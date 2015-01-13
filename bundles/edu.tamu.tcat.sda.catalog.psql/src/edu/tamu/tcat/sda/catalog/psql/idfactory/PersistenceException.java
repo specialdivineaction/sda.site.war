@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.psql.idfactory;
 
+@Deprecated
 public class PersistenceException extends Exception
 {
    public PersistenceException()

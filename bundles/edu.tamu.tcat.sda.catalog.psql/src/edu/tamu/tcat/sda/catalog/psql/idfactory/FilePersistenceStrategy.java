@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
+package edu.tamu.tcat.sda.catalog.psql.idfactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +11,8 @@ import java.util.Map;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceStrategy;
 
+@Deprecated
 public class FilePersistenceStrategy implements PersistenceStrategy
 {
    public static final String CONFIG_PERSIST_PATH = "idfactory.persist.filepath";
