@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory;
+package edu.tamu.tcat.sda.catalog.idfactory.impl.db;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
