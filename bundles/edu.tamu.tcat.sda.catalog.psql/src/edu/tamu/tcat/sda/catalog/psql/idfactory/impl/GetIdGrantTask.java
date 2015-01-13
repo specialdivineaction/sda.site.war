@@ -15,9 +15,9 @@ public class GetIdGrantTask implements SqlExecutor.ExecutorTask<IdGrant>
 {
    private static final int MAX_ATTEMPTS = 5;     // HACK: need to retrieve from a
 
-   private static final String QUERY = "SELECT nextId FROM id_table WHERE context = ?";
-   private static final String UPDATE = "UPDATE id_table SET nextId ? WHERE context = ? AND nextId = ?";
-   private static final String CREATE = "INSERT INTO  id_table (nextId, context) VALUES (?, ?)";
+   private static final String QUERY = "SELECT next_id FROM id_table WHERE context = ?";
+   private static final String UPDATE = "UPDATE id_table SET next_id = ? WHERE context = ? AND next_id = ?";
+   private static final String CREATE = "INSERT INTO  id_table (next_id, context) VALUES (?, ?)";
 
    private final String context;
    private final long increment;
@@ -62,7 +62,7 @@ public class GetIdGrantTask implements SqlExecutor.ExecutorTask<IdGrant>
             }
             else
             {
-               initial = rs.getLong("nextId");
+               initial = rs.getLong("next_id");
                limit = initial + increment;
                isNewContext = false;
             }
