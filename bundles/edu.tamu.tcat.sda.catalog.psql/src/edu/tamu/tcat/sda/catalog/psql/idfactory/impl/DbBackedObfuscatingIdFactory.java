@@ -1,12 +1,15 @@
 package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.catalog.IdFactory;
 
 public class DbBackedObfuscatingIdFactory implements IdFactory
 {
+   private final static Logger logger = Logger.getLogger(DbBackedObfuscatingIdFactory.class.getName());
 
    private SqlExecutor exec;
    private final ConcurrentHashMap<String, IdGenerator> generators = new ConcurrentHashMap<>();
@@ -23,11 +26,13 @@ public class DbBackedObfuscatingIdFactory implements IdFactory
 
    public void activate()
    {
-
+      logger.info("Activating Id factory");
+      Objects.requireNonNull(exec, "SqlExecutor not available.");
    }
 
    public void dispose()
    {
+      logger.info("Shuting down Id factory");
       this.exec = null;
    }
 
