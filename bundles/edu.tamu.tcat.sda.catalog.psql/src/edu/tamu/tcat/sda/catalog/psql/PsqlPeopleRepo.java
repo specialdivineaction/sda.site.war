@@ -107,18 +107,6 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Person getPerson(String personId) throws NoSuchCatalogRecordException
    {
-      try {
-         return getPerson(Long.parseLong(personId));
-      }
-      catch (NumberFormatException nfe)
-      {
-         throw new NoSuchCatalogRecordException("Could not find record for person [" + personId + "]");
-      }
-   }
-
-   @Override
-   public Person getPerson(long personId) throws NoSuchCatalogRecordException
-   {
       ExecutorTask<Person> query = new GetPersonTask(personId);
 
       try
@@ -188,11 +176,11 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private final class GetPersonTask implements ExecutorTask<Person>
    {
-      private final static String SQL = "SELECT historical_figure FROM people WHERE id=?";
+      private final static String SQL = "SELECT historical_figure FROM people WHERE id = ?";
 
-      private final long personId;
+      private final String personId;
 
-      private GetPersonTask(long personId)
+      private GetPersonTask(String personId)
       {
          this.personId = personId;
       }
@@ -206,7 +194,7 @@ public class PsqlPeopleRepo implements PeopleRepository
          try (PreparedStatement ps = conn.prepareStatement(SQL))
          {
             PersonImpl result;
-            ps.setLong(1, personId);
+            ps.setString(1, personId);
             try (ResultSet rs = ps.executeQuery())
             {
                if (!rs.next())
@@ -284,7 +272,7 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             PGobject jsonObject = toPGobject(histFigure);
             ps.setObject(1, jsonObject);
-            ps.setInt(2, Integer.parseInt(histFigure.id));
+            ps.setString(2, histFigure.id);
 
             int ct = ps.executeUpdate();
             if (ct != 1)
@@ -317,7 +305,7 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             PGobject jsonObject = toPGobject(histFigure);
 
-            ps.setInt(1, Integer.parseInt(histFigure.id));     // FIXME change to string
+            ps.setString(1, histFigure.id);
             ps.setObject(2, jsonObject);
 
             int ct = ps.executeUpdate();
