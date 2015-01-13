@@ -6,4 +6,5 @@
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.people.PeopleRepository"/>
    </service>
+   <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.IdFactory" name="IdFactory" policy="static"/>
 </scr:component>
