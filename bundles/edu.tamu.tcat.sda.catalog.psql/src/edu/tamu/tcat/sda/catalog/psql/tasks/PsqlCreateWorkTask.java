@@ -3,7 +3,6 @@ package edu.tamu.tcat.sda.catalog.psql.tasks;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.postgresql.util.PGobject;
 
@@ -42,13 +41,13 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String
    @Override
    public String execute(Connection conn) throws SQLException, ExecutionFailedException
    {
-      try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS))
+      try (PreparedStatement ps = conn.prepareStatement(insertSql))
       {
          PGobject jsonObject = new PGobject();
          jsonObject.setType("json");
          jsonObject.setValue(getJson());
 
-         ps.setObject(1, Long.parseLong(work.id));
+         ps.setLong(1, Long.parseLong(work.id));
          ps.setObject(2, jsonObject);
 
          int ct = ps.executeUpdate();
