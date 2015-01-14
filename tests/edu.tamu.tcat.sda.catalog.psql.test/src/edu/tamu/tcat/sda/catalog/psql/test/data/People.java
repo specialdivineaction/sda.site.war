@@ -1,11 +1,13 @@
 package edu.tamu.tcat.sda.catalog.psql.test.data;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
@@ -37,8 +39,8 @@ public class People
                "Dixon was the brother of minister, playwright, and influential racist Thomas Dixon. Dixon was born on a " +
                "plantation near Shelby, North Carolina, on July 6, 1854 to a Baptist preacher. While still young, Dixon " +
                "believed he was called to preach the gospel."};
-   private static GregorianCalendar[] birthDate = {new GregorianCalendar(1856, 1, 28),new GregorianCalendar(1854, 7, 6)};
-   private static GregorianCalendar[] deathDate = {new GregorianCalendar(1928, 10, 26),new GregorianCalendar(1925, 6, 14)};
+   private static LocalDate[] birthDate =  {LocalDate.of(1856, 1, 28), LocalDate.of(1854, 7, 6)};
+   private static LocalDate[] deathDate =  {LocalDate.of(1928, 10, 26), LocalDate.of(1825, 6, 14)};
 
    public People()
    {
@@ -80,16 +82,15 @@ public class People
        histFig.birth = new HistoricalEventDV();
        histFig.birth.title = "Date of birth for " + author.displayName;
        histFig.birth.location = "England";
-       histFig.birth.eventDate = birthDate[num].getTime();
+       histFig.birth.date = new DateDescriptionDV(null, birthDate[num]);
 
        histFig.death = new HistoricalEventDV();
        histFig.death.title = "Date of death for " + author.displayName;
        histFig.death.location = "England";
-       histFig.death.eventDate = deathDate[num].getTime();
+       histFig.death.date = new DateDescriptionDV(null, deathDate[num]);
        histFig.names = authNames;
        histFig.summary = summary[num];
 
        return histFig;
    }
-
 }
