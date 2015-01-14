@@ -106,10 +106,10 @@ public class WorkDocumentBuilder
          document.addField(pubLocation, "");
 
       DateDescriptionDV dateDescription = publication.date;
-      document.addField(pubDateString, dateDescription.display);
+      document.addField(pubDateString, dateDescription.description);
 
-      if (dateDescription.instant != null)
-         document.addField(pubDateValue, convertDate(dateDescription.instant));
+      if (dateDescription.calendar != null)
+         document.addField(pubDateValue, convertDate(dateDescription.calendar));
    }
 
    void addSeries(String series)

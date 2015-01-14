@@ -161,7 +161,7 @@ public class AuthorController
 
    private String convertDate(DateDescriptionDV date)
    {
-      return date.instant + "T00:00:00Z";
+      return date.calendar + "T00:00:00Z";
    }
 
 //   <T> SolrDocumentAdapter<T> getAdapter(Class<T> type) throws UnsupportedTypeException

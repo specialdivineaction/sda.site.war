@@ -15,10 +15,10 @@ public class DateDescriptionDV
    public static java.time.format.DateTimeFormatter Iso8601Formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
    /** ISO 8601 local (YYYY-MM-DD) representation of this date. */
-   public String instant;
+   public String calendar;
 
    /** A human readable description of this date. */
-   public String display;     // NOTE use this to capture intended degree of precision
+   public String description;     // NOTE use this to capture intended degree of precision
 
    public DateDescriptionDV()
    {
@@ -26,13 +26,13 @@ public class DateDescriptionDV
 
    public DateDescriptionDV(DateDescription date)
    {
-      LocalDate d = date.getDate();
+      LocalDate d = date.getCalendar();
       if (d != null)
       {
-         this.instant = Iso8601Formatter.format(d);
+         this.calendar = Iso8601Formatter.format(d);
       }
 
-      this.display = date.getDisplay();
+      this.description = date.getDescription();
    }
 
    public static DateDescription convert(DateDescriptionDV dv)
@@ -47,20 +47,20 @@ public class DateDescriptionDV
 
       DateDescriptionImpl(DateDescriptionDV dv)
       {
-         this.display = dv.display;
-         this.value = (dv.instant != null && !dv.instant.trim().isEmpty())
-                  ? LocalDate.parse(dv.instant, Iso8601Formatter) : null;
+         this.display = dv.description;
+         this.value = (dv.calendar != null && !dv.calendar.trim().isEmpty())
+                  ? LocalDate.parse(dv.calendar, Iso8601Formatter) : null;
 
       }
       @Override
-      public String getDisplay()
+      public String getDescription()
       {
          // TODO Auto-generated method stub
          return null;
       }
 
       @Override
-      public LocalDate getDate()
+      public LocalDate getCalendar()
       {
          return value;
       }

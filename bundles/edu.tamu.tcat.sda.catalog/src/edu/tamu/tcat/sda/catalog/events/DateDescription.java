@@ -19,11 +19,11 @@ public interface DateDescription
     * @return The human-readable representation of this date. This value is to be considered
     *       authoritative.
     */
-   String getDisplay();
+   String getDescription();
 
    /**
     * @return A machine interpretable calendar date to be used as an approximate value for
     *       computational purposes.
     */
-   LocalDate getDate();
+   LocalDate getCalendar();
 }
