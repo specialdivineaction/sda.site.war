@@ -27,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
@@ -98,7 +97,7 @@ public class PeopleResource
    @GET
    @Path("{personId}")
    @Produces(MediaType.APPLICATION_JSON)
-   public PersonDV getPerson(@PathParam(value="personId") String personId) throws CatalogRepoException, NoSuchCatalogRecordException
+   public PersonDV getPerson(@PathParam(value="personId") String personId) throws NoSuchCatalogRecordException
    {
       // FIXME make this a string based identifier
       // TODO make this a mangled string instead of an ID. Don't want people guessing
