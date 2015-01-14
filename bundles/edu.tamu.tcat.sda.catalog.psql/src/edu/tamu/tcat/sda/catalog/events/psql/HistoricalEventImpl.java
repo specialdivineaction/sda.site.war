@@ -1,18 +1,17 @@
 package edu.tamu.tcat.sda.catalog.events.psql;
 
-import java.util.Date;
-
+import edu.tamu.tcat.sda.catalog.events.DateDescription;
 import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 
 public class HistoricalEventImpl implements HistoricalEvent
 {
-
    private final String id;
    private final String title;
    private final String description;
    private final String location;
-   private final Date start;
+   private final DateDescription eventDate;
 
    public HistoricalEventImpl(HistoricalEventDV src)
    {
@@ -20,9 +19,9 @@ public class HistoricalEventImpl implements HistoricalEvent
       this.title = src.title;
       this.description = src.description;
       this.location = src.location;
-      this.start = src.eventDate;
+      this.eventDate = DateDescriptionDV.convert(src.eventDate);
    }
-   
+
    @Override
    public String getId()
    {
@@ -46,11 +45,11 @@ public class HistoricalEventImpl implements HistoricalEvent
    {
       return location;
    }
-   
+
    @Override
-   public Date getDate()
+   public DateDescription getDate()
    {
-      return start;
+      return eventDate;
    }
 
 
