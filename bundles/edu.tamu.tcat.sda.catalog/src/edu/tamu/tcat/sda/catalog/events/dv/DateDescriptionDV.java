@@ -24,6 +24,12 @@ public class DateDescriptionDV
    {
    }
 
+   public DateDescriptionDV(String description, LocalDate calendar)
+   {
+      this.description = description;
+      this.calendar = Iso8601Formatter.format(calendar);
+   }
+
    public DateDescriptionDV(DateDescription date)
    {
       LocalDate d = date.getCalendar();
@@ -38,26 +44,26 @@ public class DateDescriptionDV
 
    public static DateDescription convert(DateDescriptionDV dv)
    {
-      throw new UnsupportedOperationException();
+      return new DateDescriptionImpl(dv);
    }
 
-   private final class DateDescriptionImpl implements DateDescription
+   private static final class DateDescriptionImpl implements DateDescription
    {
-      private final String display;
+      private final String description;
       private final LocalDate value;
 
       DateDescriptionImpl(DateDescriptionDV dv)
       {
-         this.display = dv.description;
+         this.description = dv.description;
          this.value = (dv.calendar != null && !dv.calendar.trim().isEmpty())
                   ? LocalDate.parse(dv.calendar, Iso8601Formatter) : null;
 
       }
+
       @Override
       public String getDescription()
       {
-         // TODO Auto-generated method stub
-         return null;
+         return description;
       }
 
       @Override
