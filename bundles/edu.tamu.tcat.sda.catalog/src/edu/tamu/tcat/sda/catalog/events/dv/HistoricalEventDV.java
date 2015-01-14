@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.events.dv;
 
+import java.util.Date;
+
 import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
 
 public class HistoricalEventDV
@@ -11,7 +13,11 @@ public class HistoricalEventDV
    public String location;
 
    /** The date this event took place. */
-   public DateDescriptionDV eventDate;
+   public DateDescriptionDV date;
+
+   /** Replaced by date. */
+   @Deprecated
+   public Date eventDate;
 
    public HistoricalEventDV()
    {
@@ -24,6 +30,6 @@ public class HistoricalEventDV
       this.title = orig.getTitle();
       this.description = orig.getDescription();
       this.location = orig.getLocation();
-      this.eventDate = new DateDescriptionDV(orig.getDate());
+      this.date = new DateDescriptionDV(orig.getDate());
    }
 }

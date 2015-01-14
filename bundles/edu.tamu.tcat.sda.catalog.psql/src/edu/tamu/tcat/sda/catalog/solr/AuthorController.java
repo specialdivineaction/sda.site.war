@@ -191,14 +191,14 @@ public class AuthorController
 
       HistoricalEventDV birth = person.birth;
       document.addField(birthLocation, guardNull(birth.location));
-      DateDescriptionDV bDate = birth.eventDate;
+      DateDescriptionDV bDate = birth.date;
       if (bDate != null)
          document.addField(birthDate, convertDate(bDate));
 
       HistoricalEventDV death = person.birth;
       document.addField(deathLocation, guardNull(death.location));
-      if (death.eventDate != null)
-         document.addField(deathDate, convertDate(death.eventDate));
+      if (death.date != null)
+         document.addField(deathDate, convertDate(death.date));
 
       document.addField(summary, guardNull(person.summary));
 

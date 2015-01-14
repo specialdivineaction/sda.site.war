@@ -19,7 +19,7 @@ public class HistoricalEventImpl implements HistoricalEvent
       this.title = src.title;
       this.description = src.description;
       this.location = src.location;
-      this.eventDate = DateDescriptionDV.convert(src.eventDate);
+      this.eventDate = DateDescriptionDV.convert(src.date);
    }
 
    @Override

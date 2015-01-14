@@ -32,6 +32,7 @@ public class DateDescriptionDV
          this.calendar = Iso8601Formatter.format(d);
       }
 
+      // TODO convert legacy eventDate into DateDescriptionDV and set to null
       this.description = date.getDescription();
    }
 
