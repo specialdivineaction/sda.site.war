@@ -1,10 +1,8 @@
 package edu.tamu.tcat.sda.catalog.solr;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +20,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
@@ -160,16 +159,9 @@ public class AuthorController
       return value == null ? "" : value;
    }
 
-   private String convertDate(Date event)
+   private String convertDate(DateDescriptionDV date)
    {
-      // TODO we need some more tooling around dates.
-      String dateRep = "";
-
-      SimpleDateFormat calendar = new SimpleDateFormat("yyyy-MM-dd");
-      SimpleDateFormat time = new SimpleDateFormat("HH:mm:SS");
-      dateRep = calendar.format(event) + "T" + time.format(event) + "Z";
-
-      return dateRep;
+      return date.calendar + "T00:00:00Z";
    }
 
 //   <T> SolrDocumentAdapter<T> getAdapter(Class<T> type) throws UnsupportedTypeException
@@ -199,14 +191,14 @@ public class AuthorController
 
       HistoricalEventDV birth = person.birth;
       document.addField(birthLocation, guardNull(birth.location));
-      Date bDate = birth.eventDate;
+      DateDescriptionDV bDate = birth.date;
       if (bDate != null)
          document.addField(birthDate, convertDate(bDate));
 
       HistoricalEventDV death = person.birth;
       document.addField(deathLocation, guardNull(death.location));
-      if (death.eventDate != null)
-         document.addField(deathDate, convertDate(death.eventDate));
+      if (death.date != null)
+         document.addField(deathDate, convertDate(death.date));
 
       document.addField(summary, guardNull(person.summary));
 

@@ -30,15 +30,6 @@ public interface PeopleRepository
    Iterable<Person> findByName(String prefix) throws CatalogRepoException;
 
    /**
-    * Retrieves a person by their long identifier.
-    *
-    * @param personId
-    * @return
-    */
-   @Deprecated
-   Person getPerson(long personId) throws CatalogRepoException, NoSuchCatalogRecordException;
-
-   /**
     * Retrieves a person instance by their string identifier.
     * @param personId
     * @return

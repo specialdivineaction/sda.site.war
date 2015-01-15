@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.idfactory.impl;
+package edu.tamu.tcat.sda.catalog.idfactory.impl.db;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.IdFactory;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
+import edu.tamu.tcat.sda.catalog.IdFactory;
 
 /**
  * An arbiter to hand out monotonically increasing numeric IDs unique to a particular (String)
@@ -24,6 +23,7 @@ import edu.tamu.tcat.sda.catalog.psql.idfactory.PersistenceException;
  * Twitter has encountered a similar need for generating coherent IDs and has developed Snowflake:
  * https://blog.twitter.com/2010/announcing-snowflake
  */
+@Deprecated
 public class IdFactoryImpl implements IdFactory
 {
    public static final String CFG_PERSIST_INTERVAL = "idfactory.persist.interval";

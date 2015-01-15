@@ -1,14 +1,12 @@
 package edu.tamu.tcat.sda.catalog.solr;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.solr.common.SolrInputDocument;
 
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 
@@ -108,10 +106,10 @@ public class WorkDocumentBuilder
          document.addField(pubLocation, "");
 
       DateDescriptionDV dateDescription = publication.date;
-      document.addField(pubDateString, dateDescription.display);
+      document.addField(pubDateString, dateDescription.description);
 
-      if (dateDescription.value != null)
-         document.addField(pubDateValue, convertDate(dateDescription.value));
+      if (dateDescription.calendar != null)
+         document.addField(pubDateValue, convertDate(dateDescription.calendar));
    }
 
    void addSeries(String series)
@@ -124,14 +122,8 @@ public class WorkDocumentBuilder
       document.addField(docSummary, summary);
    }
 
-   private String convertDate(Date event)
+   private String convertDate(String localDate)
    {
-      String dateRep = "";
-
-      SimpleDateFormat calendar = new SimpleDateFormat("yyyy-MM-dd");
-      SimpleDateFormat time = new SimpleDateFormat("HH:mm:SS");
-      dateRep = calendar.format(event) + "T" + time.format(event) + "Z";
-
-      return dateRep;
+      return localDate + "T00:00:00Z";
    }
 }

@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.works.dv;
 
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 
 public class PublicationInfoDV
@@ -7,11 +8,11 @@ public class PublicationInfoDV
    public String publisher;
    public String place;
    public DateDescriptionDV date;
-   
+
    public PublicationInfoDV()
    {
    }
-   
+
    public PublicationInfoDV(PublicationInfo pubInfo)
    {
       this.publisher = pubInfo.getPublisher();

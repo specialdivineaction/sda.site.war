@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.impl.FilePersistenceStrategy;
-import edu.tamu.tcat.sda.catalog.psql.idfactory.impl.IdFactoryImpl;
+import edu.tamu.tcat.sda.catalog.idfactory.impl.db.FilePersistenceStrategy;
+import edu.tamu.tcat.sda.catalog.idfactory.impl.db.IdFactoryImpl;
 
 public class TestIdFactory
 {

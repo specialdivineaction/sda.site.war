@@ -1,34 +1,39 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
 import edu.tamu.tcat.sda.catalog.events.DateDescription;
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 
 public class PublicationImpl implements PublicationInfo
 {
-   PublicationInfoDV pubInfo;
-   
-   public PublicationImpl(PublicationInfoDV publicationInfo)
+   private final String place;
+   private final String publisher;
+   private final DateDescription date;
+
+   public PublicationImpl(PublicationInfoDV pubInfo)
    {
-      this.pubInfo = publicationInfo;
+      this.place = pubInfo.place;
+      this.publisher = pubInfo.publisher;
+      this.date = DateDescriptionDV.convert(pubInfo.date);
    }
-   
+
    @Override
    public String getLocation()
    {
-      return pubInfo.place;
+      return place;
    }
 
    @Override
    public String getPublisher()
    {
-      return pubInfo.publisher;
+      return publisher;
    }
 
    @Override
    public DateDescription getPublicationDate()
    {
-      return new DateDescriptionImpl(pubInfo.date);
+      return date;
    }
 
 }
