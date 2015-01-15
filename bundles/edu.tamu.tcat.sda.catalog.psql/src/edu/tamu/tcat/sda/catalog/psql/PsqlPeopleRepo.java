@@ -63,6 +63,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    {
       this.exec = null;
       this.jsonMapper = null;
+      this.idFactory = null;
    }
 
 
