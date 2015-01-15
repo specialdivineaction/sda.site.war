@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.relationship;
 
-import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
@@ -13,11 +12,6 @@ public interface Provenance
 
 //   * Note that this may be expanded to include information about any software used or
 //   * relationships that were generated through automated processes.
-
-   /**
-    * @return The annotation described by this provenance information.
-    */
-   Annotation getAnnotation();
 
    /**
     * Returns a collection of URIs that references the people or other entities responsible
