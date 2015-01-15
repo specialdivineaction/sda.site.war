@@ -37,8 +37,8 @@ public class SimplePersonDV
       syntheticName = constructSyntheticName(person.names);
       birthLocation = person.birth.location;
       deathLocation = person.death.location;
-      birthDate = person.birth.eventDate.toString();
-      deathDate = person.death.eventDate.toString();
+      birthDate = person.birth.date.toString();
+      deathDate = person.death.date.toString();
       summary = person.summary;
 //      _version_ = null;
    }
