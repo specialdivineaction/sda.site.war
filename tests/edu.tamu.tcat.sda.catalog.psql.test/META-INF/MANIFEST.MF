@@ -15,6 +15,7 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  edu.tamu.tcat.oss.json,
  edu.tamu.tcat.oss.json.jackson,
  edu.tamu.tcat.sda.catalog,
+ edu.tamu.tcat.sda.catalog.events.dv,
  edu.tamu.tcat.sda.catalog.people.dv,
  edu.tamu.tcat.sda.catalog.rest,
  org.apache.commons.logging

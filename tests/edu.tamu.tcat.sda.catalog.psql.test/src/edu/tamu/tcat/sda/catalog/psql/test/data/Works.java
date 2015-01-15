@@ -1,15 +1,16 @@
 package edu.tamu.tcat.sda.catalog.psql.test.data;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.DateDescriptionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
 import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
@@ -126,8 +127,8 @@ public class Works
       PublicationInfoDV pubInfo = new PublicationInfoDV();
 
       DateDescriptionDV dateDescript = new DateDescriptionDV();
-      dateDescript.display = "";
-      dateDescript.value = new GregorianCalendar(1856, 1, 28).getTime();
+      dateDescript.description = "";
+      dateDescript.calendar = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.of(1856, 1, 28));
 
       pubInfo.date = dateDescript;
       pubInfo.place = "London";
