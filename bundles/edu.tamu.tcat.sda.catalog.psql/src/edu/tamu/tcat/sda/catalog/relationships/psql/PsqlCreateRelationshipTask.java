@@ -14,7 +14,7 @@ import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 public class PsqlCreateRelationshipTask implements SqlExecutor.ExecutorTask<String>
 {
-   private final static String insert = "INSERT INTO relationships (id, work) VALUES(?,?)";
+   private final static String insert = "INSERT INTO relationships (id, relationship) VALUES(?,?)";
 
    private final RelationshipDV relationship;
    private final JsonMapper jsonMapper;

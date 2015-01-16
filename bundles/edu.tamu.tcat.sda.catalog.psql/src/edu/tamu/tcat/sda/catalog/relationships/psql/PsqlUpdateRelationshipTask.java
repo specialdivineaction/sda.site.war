@@ -15,8 +15,8 @@ import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 public class PsqlUpdateRelationshipTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static String insert = "UPDATE relationships"
-                                      + "  SET work = ?,"
-                                      + "      timestamp = now()"
+                                      + "  SET relationship = ?,"
+                                      + "      date_updated = now()"
                                       + "  WHERE id = ?";
 
    private final RelationshipDV relationship;

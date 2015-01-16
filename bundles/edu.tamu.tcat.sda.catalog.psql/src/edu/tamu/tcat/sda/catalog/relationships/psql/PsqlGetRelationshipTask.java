@@ -17,7 +17,8 @@ import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 public class PsqlGetRelationshipTask implements SqlExecutor.ExecutorTask<Relationship>
 {
-   private final static String select = "SELECT relationship FROM relationships WHERE id=?";
+   private final static String select = "SELECT relationship FROM relationships"
+                                      + "  WHERE id=? AND active=true";
 
    private final JsonMapper jsonMapper;
    private final String id;
