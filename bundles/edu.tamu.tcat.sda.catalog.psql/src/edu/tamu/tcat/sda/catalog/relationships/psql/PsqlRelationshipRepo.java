@@ -117,7 +117,8 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    @Override
    public void delete(String id) throws RelationshipNotAvailableException, RelationshipPersistenceException
    {
-      throw new UnsupportedOperationException("not impl");
+      PsqlDeleteRelationshipTask task = new PsqlDeleteRelationshipTask(id);
+      exec.submit(task);
    }
 
 }
