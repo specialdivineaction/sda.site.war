@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SDA Catalog REST API
-Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.rest
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.rest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: edu.tamu.tcat.sda.catalog.rest.internal.Activator
 Bundle-Vendor: Texas A&M Engineering Experiment Station
@@ -36,6 +36,8 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  edu.tamu.tcat.sda.catalog.people.dv,
  edu.tamu.tcat.sda.catalog.psql,
  edu.tamu.tcat.sda.catalog.psql.provider,
+ edu.tamu.tcat.sda.catalog.relationship,
+ edu.tamu.tcat.sda.catalog.relationship.model,
  edu.tamu.tcat.sda.catalog.solr,
  edu.tamu.tcat.sda.catalog.works,
  edu.tamu.tcat.sda.catalog.works.dv,
