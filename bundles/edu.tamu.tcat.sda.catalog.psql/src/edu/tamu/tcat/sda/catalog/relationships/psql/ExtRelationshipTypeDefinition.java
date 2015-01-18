@@ -17,7 +17,7 @@ public class ExtRelationshipTypeDefinition implements RelationshipType
    public ExtRelationshipTypeDefinition(IConfigurationElement e)
    {
       config = e;
-      id = config.getAttribute("id");
+      id = config.getAttribute("identifier");
       title = config.getAttribute("title");
       reverse = config.getAttribute("reverse_title");
       description = config.getAttribute("description");
