@@ -7,6 +7,7 @@ import edu.tamu.tcat.sda.catalog.relationship.Anchor;
 import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
 import edu.tamu.tcat.sda.catalog.relationship.Provenance;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
+import edu.tamu.tcat.sda.catalog.relationship.RelationshipException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipType;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
 import edu.tamu.tcat.sda.catalog.relationship.model.internal.BasicAnchorSet;
@@ -55,7 +56,14 @@ public class RelationshipDV
       return result;
    }
 
-   public static Relationship instantiate(RelationshipDV data, RelationshipTypeRegistry registry)
+   /**
+    *
+    * @param data
+    * @param registry
+    * @return
+    * @throws RelationshipException If the supplied data cannot be parsed into a valid {@link Relationship}.
+    */
+   public static Relationship instantiate(RelationshipDV data, RelationshipTypeRegistry registry) throws RelationshipException
    {
       String id = data.id;
       RelationshipType type = registry.resolve(data.typeId);
