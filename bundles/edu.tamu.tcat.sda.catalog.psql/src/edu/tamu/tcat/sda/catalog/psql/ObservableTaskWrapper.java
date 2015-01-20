@@ -5,12 +5,12 @@ import java.sql.Connection;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
-public class ObservableTaskWrapper<R> implements SqlExecutor.ExecutorTask<R>
+public class ObservableTaskWrapper<ResultType> implements SqlExecutor.ExecutorTask<ResultType>
 {
-   private final DataUpdateObserver<R> observer;
-   private final SqlExecutor.ExecutorTask<R> task;
-   
-   public ObservableTaskWrapper(SqlExecutor.ExecutorTask<R> task, DataUpdateObserver<R> observer)
+   private final DataUpdateObserver<ResultType> observer;
+   private final SqlExecutor.ExecutorTask<ResultType> task;
+
+   public ObservableTaskWrapper(SqlExecutor.ExecutorTask<ResultType> task, DataUpdateObserver<ResultType> observer)
    {
       this.task = task;
       this.observer = observer;
@@ -21,13 +21,13 @@ public class ObservableTaskWrapper<R> implements SqlExecutor.ExecutorTask<R>
     * will attempt to notify the observer and propagate the exception. Since tasks will
     * typically be run in an {@code Executor}, this make the exception available to clients
     * via the Java concurrency API's {@code Future} interface.
-    * 
+    *
     * <p>
     * Note that this may return null if the task is canceled by the observer or if the
     * underlying task returns null.
     */
    @Override
-   public R execute(Connection conn) throws Exception
+   public ResultType execute(Connection conn) throws Exception
    {
       try
       {
@@ -46,16 +46,16 @@ public class ObservableTaskWrapper<R> implements SqlExecutor.ExecutorTask<R>
       {
          if (!observer.isCompleted())
             observer.error(ex.getMessage(), ex);
-         
+
          throw ex;
       }
    }
 
-   private R runTask(Connection conn) throws Exception
+   private ResultType runTask(Connection conn) throws Exception
    {
       try
       {
-         R result = task.execute(conn);
+         ResultType result = task.execute(conn);
          observer.finish(result);
          return result;
       }
