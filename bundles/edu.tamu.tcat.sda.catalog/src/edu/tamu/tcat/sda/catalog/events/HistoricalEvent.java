@@ -29,7 +29,7 @@ public interface HistoricalEvent
    String getDescription();
 
    /**
-    * @return The date at when this event happened.
+    * @return The date at when this event happened. This value will not be null.
     */
    DateDescription getDate();
 

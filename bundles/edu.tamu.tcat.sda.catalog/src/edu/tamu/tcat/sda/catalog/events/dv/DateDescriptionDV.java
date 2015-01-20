@@ -27,7 +27,7 @@ public class DateDescriptionDV
    public DateDescriptionDV(String description, LocalDate calendar)
    {
       this.description = description;
-      this.calendar = Iso8601Formatter.format(calendar);
+      this.calendar = (calendar == null) ? null : Iso8601Formatter.format(calendar);
    }
 
    public DateDescriptionDV(DateDescription date)

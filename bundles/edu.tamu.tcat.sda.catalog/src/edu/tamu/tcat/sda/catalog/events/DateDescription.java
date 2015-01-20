@@ -17,13 +17,13 @@ public interface DateDescription
 {
    /**
     * @return The human-readable representation of this date. This value is to be considered
-    *       authoritative.
+    *       authoritative. May be an empty string if no user information is supplied.
     */
    String getDescription();
 
    /**
     * @return A machine interpretable calendar date to be used as an approximate value for
-    *       computational purposes.
+    *       computational purposes. May be null.
     */
    LocalDate getCalendar();
 }

@@ -1,5 +1,11 @@
 package edu.tamu.tcat.sda.catalog.events.psql;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 import edu.tamu.tcat.sda.catalog.events.DateDescription;
 import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
 import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
@@ -19,7 +25,22 @@ public class HistoricalEventImpl implements HistoricalEvent
       this.title = src.title;
       this.description = src.description;
       this.location = src.location;
-      this.eventDate = DateDescriptionDV.convert(src.date);
+
+      if (src.date == null) {
+         if (src.eventDate != null) {
+            Instant instant = Instant.ofEpochMilli(src.eventDate.getTime());
+            LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy");
+            DateDescriptionDV dv = new DateDescriptionDV(localDate.format(formatter), localDate);
+
+            this.eventDate = DateDescriptionDV.convert(dv);
+         } else {
+            this.eventDate = DateDescriptionDV.convert(new DateDescriptionDV("", null));
+         }
+      } else {
+         this.eventDate = DateDescriptionDV.convert(src.date);
+      }
    }
 
    @Override
