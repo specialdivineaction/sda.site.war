@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.relationship;
 
+import edu.tamu.tcat.sda.datastore.DataStore;
+
 
 /**
  * Manages the persistence of {@link Relationship}s and other entities within the
@@ -15,7 +17,7 @@ package edu.tamu.tcat.sda.catalog.relationship;
  * the repository.
  *
  */
-public interface RelationshipRepository
+public interface RelationshipRepository extends DataStore
 {
    /**
     * @param id The id of the relationship to retrieve.
