@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.relationship;
 
-import edu.tamu.tcat.sda.datastore.DataStore;
+import java.util.function.Consumer;
 
 
 /**
@@ -17,7 +17,7 @@ import edu.tamu.tcat.sda.datastore.DataStore;
  * the repository.
  *
  */
-public interface RelationshipRepository extends DataStore
+public interface RelationshipRepository
 {
    /**
     * @param id The id of the relationship to retrieve.
@@ -60,12 +60,19 @@ public interface RelationshipRepository extends DataStore
     */
    void delete(String id) throws RelationshipNotAvailableException, RelationshipPersistenceException;
 
-//
-//   AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears);
-//
-//   AutoCloseable addAfterUpdateListener(CommandExecutionListener ears);
+   /**
+    * Add listener to be notified whenever a relationship is modified (created, updated or deleted).
+    * Note that this will be fired after the change has taken place and the attached listener will not
+    * be able affect or modify the update action.
+    *
+    * @param ears The listener to be added.
+    * @return A registration handle that allows the listener to be removed.
+    */
+   AutoCloseable addUpdateListener(Consumer<RelationshipChangeEvent> ears);
 
-   // TODO provide support for listener system
+   // TODO may need to add hook for notification before the change happens to allow
+   //      modification of the event (e.g., permission checks, etc).
+
    // TODO support the creation/mgnt of defined sets of relationships
    // TODO support tracking the history of revisions to relationships
    // NOTE these might be separate services
