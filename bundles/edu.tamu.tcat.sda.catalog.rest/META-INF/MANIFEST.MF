@@ -38,11 +38,27 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  edu.tamu.tcat.sda.catalog.psql.provider,
  edu.tamu.tcat.sda.catalog.relationship,
  edu.tamu.tcat.sda.catalog.relationship.model,
+ edu.tamu.tcat.sda.catalog.relationships.psql,
+ edu.tamu.tcat.sda.catalog.relationships.search.solr,
  edu.tamu.tcat.sda.catalog.solr,
  edu.tamu.tcat.sda.catalog.works,
  edu.tamu.tcat.sda.catalog.works.dv,
  edu.tamu.tcat.sda.datastore,
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0"
-Service-Component: OSGI-INF/rest/works.xml,OSGI-INF/rest/people.xml,OSGI-INF/props.xml,OSGI-INF/dbexec.xml,OSGI-INF/peopleRepo.xml,OSGI-INF/workRepo.xml,OSGI-INF/json.xml,OSGI-INF/rest/accounts.xml,OSGI-INF/crypto.xml,OSGI-INF/rest/feature.token.xml,OSGI-INF/accountstore.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml,OSGI-INF/rest/editions.xml,OSGI-INF/rest/volumes.xml,OSGI-INF/JacksonJsonProvider.xml,OSGI-INF/JsonMapperMapper.xml,OSGI-INF/JsonParseMapper.xml
-Export-Package: edu.tamu.tcat.sda.catalog.rest
+Service-Component: OSGI-INF/rest/works.xml,OSGI-INF/rest/people.xml,OSGI-INF/props.xml,OSGI-INF/dbexec.xml,OSGI-INF/peopleRepo.xml,OSGI-INF/workRepo.xml,OSGI-INF/json.xml,OSGI-INF/rest/accounts.xml,OSGI-INF/crypto.xml,OSGI-INF/rest/feature.token.xml,OSGI-INF/accountstore.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml,OSGI-INF/rest/editions.xml,OSGI-INF/rest/volumes.xml,OSGI-INF/JacksonJsonProvider.xml,OSGI-INF/JsonMapperMapper.xml,OSGI-INF/JsonParseMapper.xml,OSGI-INF/rest/relationships.xml,
+ OSGI-INF/relationshipRepo.xml
+Export-Package: edu.tamu.tcat.sda.catalog.rest;
+  uses:="edu.tamu.tcat.sda.catalog.works.dv,
+   edu.tamu.tcat.account.jaxrs.bean,
+   edu.tamu.tcat.sda.catalog.people.dv,
+   edu.tamu.tcat.sda.catalog.people,
+   edu.tamu.tcat.account,
+   edu.tamu.tcat.sda.catalog.relationship.model,
+   edu.tamu.tcat.account.store,
+   javax.ws.rs.core,
+   edu.tamu.tcat.db.exec.sql,
+   edu.tamu.tcat.crypto,
+   edu.tamu.tcat.osgi.config,
+   edu.tamu.tcat.sda.catalog.relationship,
+   edu.tamu.tcat.sda.catalog.works"
