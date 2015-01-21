@@ -27,7 +27,12 @@ public class PersonDV
    public PersonDV(Person figure)
    {
       id = figure.getId();
-      displayName = new PersonNameDV(figure.getCanonicalName());
+
+      PersonName canonicalName = figure.getCanonicalName();
+      if (canonicalName != null) {
+         displayName = new PersonNameDV(canonicalName);
+      }
+
       names = new HashSet<PersonNameDV>();
       for (PersonName n : figure.getAlternativeNames())
       {

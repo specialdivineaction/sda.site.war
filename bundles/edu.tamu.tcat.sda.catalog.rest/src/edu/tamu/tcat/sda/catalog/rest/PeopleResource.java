@@ -85,7 +85,8 @@ public class PeopleResource
       try {
          List<SimplePersonResultDV> results = new ArrayList<>();
 
-         for (Person person : repo.findByName(prefix)) {
+         Iterable<Person> people = (prefix == null) ? repo.findPeople() : repo.findByName(prefix);
+         for (Person person : people) {
             results.add(new SimplePersonResultDV(person));
 
             if (results.size() == numResults) {

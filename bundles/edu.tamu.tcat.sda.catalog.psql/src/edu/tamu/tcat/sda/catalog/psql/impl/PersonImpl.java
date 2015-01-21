@@ -23,7 +23,7 @@ public class PersonImpl implements Person
    public PersonImpl(PersonDV figure)
    {
       id = figure.id;
-      canonicalName = (figure.displayName == null) ? null : new PersonNameImpl(figure.displayName);
+      canonicalName = getCanonicalName(figure);
       names = new HashSet<PersonName>();
       for (PersonNameDV n : figure.names)
       {
@@ -33,6 +33,32 @@ public class PersonImpl implements Person
       birth = new HistoricalEventImpl(figure.birth);
       death = new HistoricalEventImpl(figure.death);
       summary = figure.summary;
+   }
+
+   /**
+    * Get a canonical name from a person DV. Prefer to use the displayName field, but fall back to
+    * the first element in the 'names' set if a displayName is not available.
+    *
+    * @param figure
+    * @return canonical name for this person
+    */
+   private static PersonName getCanonicalName(PersonDV figure)
+   {
+      // try the 'displayName' first
+      if (figure.displayName != null) {
+         return new PersonNameImpl(figure.displayName);
+      }
+
+      // fall back to using the first element of the 'names' set
+      if (!figure.names.isEmpty()) {
+         PersonNameDV nameDV = figure.names.iterator().next();
+         return new PersonNameImpl(nameDV);
+      }
+
+      // fall back to "Name Unknown" if this person does not have any names
+      PersonNameDV fallbackName = new PersonNameDV();
+      fallbackName.displayName = "Name Unknown";
+      return new PersonNameImpl(fallbackName);
    }
 
    @Override
