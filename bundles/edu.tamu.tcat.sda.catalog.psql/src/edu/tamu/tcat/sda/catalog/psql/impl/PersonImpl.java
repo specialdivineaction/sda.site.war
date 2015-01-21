@@ -14,6 +14,7 @@ import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 public class PersonImpl implements Person
 {
    private final String id;
+   private final PersonName canonicalName;
    private final Set<PersonName> names;
    private final HistoricalEventImpl birth;
    private final HistoricalEventImpl death;
@@ -22,6 +23,7 @@ public class PersonImpl implements Person
    public PersonImpl(PersonDV figure)
    {
       id = figure.id;
+      canonicalName = (figure.displayName == null) ? null : new PersonNameImpl(figure.displayName);
       names = new HashSet<PersonName>();
       for (PersonNameDV n : figure.names)
       {
@@ -42,7 +44,7 @@ public class PersonImpl implements Person
    @Override
    public PersonName getCanonicalName()
    {
-      return null;
+      return canonicalName;
    }
 
    @Override
@@ -74,8 +76,15 @@ public class PersonImpl implements Person
    {
       StringBuilder sb = new StringBuilder();
 
-      for (PersonName name : names)
-      {
+      // use canonical name for display purposes
+      PersonName name = canonicalName;
+
+      // fall back to first element of names
+      if (name == null && !names.isEmpty()) {
+         name = names.iterator().next();
+      }
+
+      if (name != null) {
          if (name.getDisplayName() != null)
          {
             sb.append(name.getDisplayName());
@@ -97,8 +106,6 @@ public class PersonImpl implements Person
          }
 
          // TODO append dates
-
-         break;
       }
 
       return sb.toString();

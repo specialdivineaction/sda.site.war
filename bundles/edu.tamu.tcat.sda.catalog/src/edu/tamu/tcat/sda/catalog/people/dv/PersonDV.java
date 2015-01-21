@@ -13,6 +13,7 @@ import edu.tamu.tcat.sda.catalog.people.PersonName;
 public class PersonDV
 {
    public String id;
+   public PersonNameDV displayName;
    public Set<PersonNameDV> names;
    public HistoricalEventDV birth;
    public HistoricalEventDV death;
@@ -26,6 +27,7 @@ public class PersonDV
    public PersonDV(Person figure)
    {
       id = figure.getId();
+      displayName = new PersonNameDV(figure.getCanonicalName());
       names = new HashSet<PersonNameDV>();
       for (PersonName n : figure.getAlternativeNames())
       {

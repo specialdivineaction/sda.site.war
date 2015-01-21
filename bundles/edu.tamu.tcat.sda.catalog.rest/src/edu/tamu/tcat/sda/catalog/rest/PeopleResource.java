@@ -18,21 +18,19 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.sda.catalog.CatalogRepoException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
 import edu.tamu.tcat.sda.catalog.people.Person;
 import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
-import edu.tamu.tcat.sda.catalog.people.dv.SimplePersonDV;
-import edu.tamu.tcat.sda.catalog.solr.AuthorController;
+import edu.tamu.tcat.sda.catalog.rest.model.SimplePersonResultDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 
 
@@ -82,8 +80,28 @@ public class PeopleResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<SimplePersonDV> listPeople(@Context UriInfo ctx) throws JsonException
+   public List<SimplePersonResultDV> listPeople(@QueryParam(value="syntheticName") String prefix, @QueryParam(value="numResults") int numResults) throws JsonException
    {
+      try {
+         List<SimplePersonResultDV> results = new ArrayList<>();
+
+         for (Person person : repo.findByName(prefix)) {
+            results.add(new SimplePersonResultDV(person));
+
+            if (results.size() == numResults) {
+               break;
+            }
+         }
+
+         return results;
+      }
+      catch (CatalogRepoException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         return Collections.emptyList();
+      }
+
+      /*
       MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
       AuthorController controller = new AuthorController();
       // TODO need to add slicing/paging support
@@ -92,6 +110,7 @@ public class PeopleResource
       List<SimplePersonDV> results = new ArrayList<SimplePersonDV>();
       results = controller.query(queryParams);
       return Collections.unmodifiableList(results);
+      */
    }
 
    @GET
