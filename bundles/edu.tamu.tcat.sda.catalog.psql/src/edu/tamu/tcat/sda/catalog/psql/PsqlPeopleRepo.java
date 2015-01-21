@@ -91,6 +91,11 @@ public class PsqlPeopleRepo implements PeopleRepository
       Iterable<Person> people = findPeople();
       for (Person p : people)
       {
+         if (p.getCanonicalName().getFamilyName().toLowerCase().startsWith(prefix)) {
+            results.add(p);
+            continue;
+         }
+
          for (PersonName name : p.getAlternativeNames())
          {
             String fname = name.getFamilyName();
