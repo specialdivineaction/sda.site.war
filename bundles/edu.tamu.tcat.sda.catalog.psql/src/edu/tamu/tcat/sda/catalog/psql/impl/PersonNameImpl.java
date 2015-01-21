@@ -5,47 +5,60 @@ import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
 
 public class PersonNameImpl implements PersonName
 {
-   // TODO change to local private final fields
-   PersonNameDV personRef;
+   private String title;
+   private String givenName;
+   private String middleName;
+   private String familyName;
+   private String suffix;
+
+   private String displayName;
+
+
    public PersonNameImpl(PersonNameDV personDV)
    {
-      this.personRef = personDV;
+      title = personDV.title;
+      givenName = personDV.givenName;
+      middleName = personDV.middleName;
+      familyName = personDV.familyName;
+      suffix = personDV.suffix;
+
+      displayName = personDV.displayName;
    }
-   
+
    @Override
    public String getTitle()
    {
-      return personRef.title;
+      return title;
    }
 
    @Override
    public String getGivenName()
    {
-      return personRef.givenName;
+      return givenName;
    }
 
    @Override
    public String getMiddleName()
    {
-      return personRef.middleName;
+      return middleName;
    }
 
    @Override
    public String getFamilyName()
    {
-      return personRef.familyName;
+      return familyName;
    }
 
    @Override
    public String getSuffix()
    {
-      return personRef.suffix;
+      return suffix;
    }
 
    @Override
    public String getDisplayName()
    {
-      return personRef.displayName;
+      return displayName;
    }
 
 }
