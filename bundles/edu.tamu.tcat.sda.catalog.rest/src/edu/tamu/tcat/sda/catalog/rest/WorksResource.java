@@ -80,7 +80,8 @@ public class WorksResource
    {
       EditWorkCommand workCommand = repo.create();
       workCommand.setAll(work);
-      return new CustomResultsDV(workCommand.execute().get());
+      String id = workCommand.execute().get();
+      return new CustomResultsDV(id);
    }
 
    @PUT
