@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.catalog.events.dv;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 import edu.tamu.tcat.sda.catalog.events.DateDescription;
 
@@ -12,6 +13,8 @@ import edu.tamu.tcat.sda.catalog.events.DateDescription;
  */
 public class DateDescriptionDV
 {
+   private static final Logger logger = Logger.getLogger(DateDescriptionDV.class.getName());
+
    public static java.time.format.DateTimeFormatter Iso8601Formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
    /** ISO 8601 local (YYYY-MM-DD) representation of this date. */
@@ -55,9 +58,21 @@ public class DateDescriptionDV
       DateDescriptionImpl(DateDescriptionDV dv)
       {
          this.description = dv.description;
-         this.value = (dv.calendar != null && !dv.calendar.trim().isEmpty())
-                  ? LocalDate.parse(dv.calendar, Iso8601Formatter) : null;
+         this.value = extractCalendarDate(dv);
+      }
 
+      private static LocalDate extractCalendarDate(DateDescriptionDV dv)
+      {
+         try
+         {
+            return (dv.calendar != null && !dv.calendar.trim().isEmpty())
+                     ? LocalDate.parse(dv.calendar, Iso8601Formatter) : null;
+         }
+         catch (Exception ex)
+         {
+            logger.info("Invalid date supplied [" + dv.calendar + "]. Converting to null.");
+            return null;
+         }
       }
 
       @Override
