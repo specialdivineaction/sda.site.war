@@ -56,7 +56,7 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String
       }
       catch (SQLException e)
       {
-         throw new IllegalStateException("Failed to create work: [" + work + "]");
+         throw new IllegalStateException("Failed to create work: [" + work + "]", e);
       }
 
       return work.id;
