@@ -10,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
@@ -17,7 +18,6 @@ import edu.tamu.tcat.sda.catalog.relationship.RelationshipNotAvailableException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
 import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
-import edu.tamu.tcat.sda.catalog.relationship.rest.v1.model.RelationshipId;
 
 @Path("/relationships/{id}")
 public class RelationshipService
@@ -49,28 +49,40 @@ public class RelationshipService
 
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   public RelationshipId remove(@PathParam(value = "id") String id, RelationshipDV relationship)
+   public void update(@PathParam(value = "id") String id, RelationshipDV relationship)
    {
-      RelationshipId results = new RelationshipId();
-      EditRelationshipCommand updateCommand;
+      checkRelationshipValidity(relationship, id);;
       try
       {
-         updateCommand = repo.edit(id);
+         EditRelationshipCommand updateCommand = repo.edit(id);
          updateCommand.setAll(relationship);
-         return new RelationshipId(updateCommand.execute().get());
+
+         // NOTE: we call get here to ensure that
+         updateCommand.execute().get();
       }
       catch (Exception e)
       {
-         // TODO may need to report error to client. This looks like a 5xx error.
+         // TODO Might check underlying cause of the exception and ensure that this isn't
+         //      the result of malformed data.
          logger.log(Level.SEVERE, "An error occured during the udpating process.", e);
+         throw new WebApplicationException("Failed to update relationship [" + id + "]", e.getCause(), 500);
+      }
+   }
+
+   private void checkRelationshipValidity(RelationshipDV reln, String id)
+   {
+      if (!reln.id.equals(id))
+      {
+         String msg = "The id of the supplied relationship data [" + reln.id + "] does not match the id component of the URI [" + id + "]";
+         logger.info("Bad Request: " + msg);
+         throw new WebApplicationException(msg, 400);
       }
 
-      return results;
+      // TODO need to supply additional checks for constraints on validity.
    }
 
    @DELETE
-   public void deleteRelationship(@PathParam(value = "id") String id)
+   public void remove(@PathParam(value = "id") String id)
    {
 
    }
