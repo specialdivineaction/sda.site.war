@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.relationship.rest.v1;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -61,7 +62,8 @@ public class RelationshipService
       }
       catch (Exception e)
       {
-         logger.severe("An error occured during the udpating process. Exception: " + e);
+         // TODO may need to report error to client. This looks like a 5xx error.
+         logger.log(Level.SEVERE, "An error occured during the udpating process.", e);
       }
 
       return results;
