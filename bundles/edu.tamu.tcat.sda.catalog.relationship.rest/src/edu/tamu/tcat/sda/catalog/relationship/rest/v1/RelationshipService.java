@@ -82,9 +82,9 @@ public class RelationshipService
    }
 
    @DELETE
-   public void remove(@PathParam(value = "id") String id)
+   public void remove(@PathParam(value = "id") String id) throws RelationshipNotAvailableException, RelationshipPersistenceException
    {
-
+      repo.delete(id);
    }
 
 }
