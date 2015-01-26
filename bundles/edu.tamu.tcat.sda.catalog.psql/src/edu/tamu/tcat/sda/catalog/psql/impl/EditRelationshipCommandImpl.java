@@ -35,6 +35,17 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    public void setAll(RelationshipDV relationship)
    {
        setTypeId(relationship.typeId);
+       setDescription(relationship.description);
+       setDescriptionFormat(relationship.descriptionMimeType);
+       setProvenance(relationship.provenance);
+       for (AnchorDV anchor : relationship.relatedEntities)
+       {
+          addRelatedEntity(anchor);
+       }
+       for (AnchorDV anchor : relationship.targetEntities)
+       {
+          addTargetEntity(anchor);
+       }
    }
 
    @Override
