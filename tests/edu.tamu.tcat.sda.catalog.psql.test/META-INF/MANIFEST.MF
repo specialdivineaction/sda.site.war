@@ -20,8 +20,8 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  edu.tamu.tcat.sda.catalog.relationship.model,
  edu.tamu.tcat.sda.catalog.rest,
  org.apache.commons.logging
-Service-Component: OSGI-INF/props.xml,OSGI-INF/dbexec.xml, OSGI-INF/workRepo.xml,OSGI-INF/peopleRepo.xml, OSGI-INF/json.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml,
- OSGI-INF/relationshipRepo.xml
+Service-Component: OSGI-INF/props.xml,OSGI-INF/dbexec.xml, OSGI-INF/workRepo.xml,OSGI-INF/peopleRepo.xml, OSGI-INF/json.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml,OSGI-INF/relationshipRepo.xml,
+ OSGI-INF/tests/TestRelationshipApiCreate.xml
 Bundle-ClassPath: lib/solr-core-4.9.0.jar,
  lib/solr-solrj-4.9.0.jar,
  .,
