@@ -11,7 +11,7 @@ public class PsqlDeleteRelationshipTask implements SqlExecutor.ExecutorTask<Void
 {
    private final static String insert = "UPDATE relationships"
                                       + "  SET active = ?,"
-                                      + "      date_updated = now()"
+                                      + "      modified = now()"
                                       + "  WHERE id = ?";
 
    private final String id;
