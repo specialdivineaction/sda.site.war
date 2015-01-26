@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.catalog.relationship.rest">
    <implementation class="edu.tamu.tcat.sda.catalog.relationship.rest.v1.RelationshipsCollectionService"/>
-   <reference cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository" name="RelationshipRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository" name="RelationshipRepository" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.relationship.rest.v1.RelationshipsCollectionService"/>
    </service>
