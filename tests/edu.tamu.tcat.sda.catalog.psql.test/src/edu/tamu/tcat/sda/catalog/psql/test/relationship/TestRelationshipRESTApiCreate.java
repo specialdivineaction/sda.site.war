@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.catalog.psql.test.relationship;
 
-
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -36,8 +35,6 @@ public class TestRelationshipRESTApiCreate
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
-
-
 
    @BeforeClass
    public static void initHTTPConnection() throws Exception

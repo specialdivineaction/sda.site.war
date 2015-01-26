@@ -18,7 +18,6 @@ public class Relationships
       relnDV.description = "New Description";
       relnDV.descriptionMimeType = "MimeType";
       relnDV.typeId = "uk.ac.ox.bodleian.sda.relationships.influence";
-//      relnDV.typeId = "Influenced";
       relnDV.provenance = createProvenance();
       relnDV.relatedEntities = createRelatedEntities();
       relnDV.targetEntities = createTargetEntities();
