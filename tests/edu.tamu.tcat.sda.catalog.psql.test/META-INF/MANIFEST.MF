@@ -18,6 +18,7 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  edu.tamu.tcat.sda.catalog.events.dv,
  edu.tamu.tcat.sda.catalog.people.dv,
  edu.tamu.tcat.sda.catalog.relationship.model,
+ edu.tamu.tcat.sda.catalog.relationship.rest.v1.model,
  edu.tamu.tcat.sda.catalog.rest,
  org.apache.commons.logging
 Service-Component: OSGI-INF/props.xml,OSGI-INF/dbexec.xml, OSGI-INF/workRepo.xml,OSGI-INF/peopleRepo.xml, OSGI-INF/json.xml,OSGI-INF/datasource.xml,OSGI-INF/idfactory.xml,OSGI-INF/relationshipRepo.xml,
