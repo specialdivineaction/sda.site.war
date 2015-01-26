@@ -16,7 +16,7 @@ public class PsqlUpdateRelationshipTask implements SqlExecutor.ExecutorTask<Stri
 {
    private final static String insert = "UPDATE relationships"
                                       + "  SET relationship = ?,"
-                                      + "      date_updated = now()"
+                                      + "      modified = now()"
                                       + "  WHERE id = ?";
 
    private final RelationshipDV relationship;
@@ -49,8 +49,8 @@ public class PsqlUpdateRelationshipTask implements SqlExecutor.ExecutorTask<Stri
          jsonObject.setType("json");
          jsonObject.setValue(getJson());
 
-         ps.setLong(1, Long.parseLong(relationship.id));
-         ps.setObject(2, jsonObject);
+         ps.setObject(1, jsonObject);
+         ps.setString(2, relationship.id);
 
          int ct = ps.executeUpdate();
          if (ct != 1)
