@@ -10,6 +10,7 @@ public class VolumeDV
 {
    public String id;
    public String volumeNumber;
+   public PublicationInfoDV publicationInfo;
    public List<AuthorRefDV> authors;
    public Collection<TitleDV> titles;
    public List<AuthorRefDV> otherAuthors;
@@ -24,6 +25,8 @@ public class VolumeDV
       id = vol.getId();
 
       volumeNumber = vol.getVolumeNumber();
+
+      publicationInfo = new PublicationInfoDV(vol.getPublicationInfo());
 
       authors = vol.getAuthors().stream()
             .map((ref) -> new AuthorRefDV(ref))

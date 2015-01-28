@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
+import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Volume;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
@@ -13,6 +14,7 @@ public class VolumeImpl implements Volume
 {
    private String id;
    private String volumeNumber;
+   private PublicationInfo publicationInfo;
    private List<AuthorReference> authors;
    private Collection<Title> titles;
    private List<AuthorReference> otherAuthors;
@@ -32,6 +34,8 @@ public class VolumeImpl implements Volume
       id = dv.id;
 
       volumeNumber = dv.volumeNumber;
+
+      publicationInfo = new PublicationImpl(dv.publicationInfo);
 
       authors = dv.authors.stream()
             .map((a) -> new AuthorReferenceImpl(a))
@@ -67,6 +71,12 @@ public class VolumeImpl implements Volume
    public String getVolumeNumber()
    {
       return volumeNumber;
+   }
+
+   @Override
+   public PublicationInfo getPublicationInfo()
+   {
+      return publicationInfo;
    }
 
    @Override

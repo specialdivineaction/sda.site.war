@@ -30,6 +30,14 @@ public interface Volume
    String getVolumeNumber();
 
    /**
+    * Volumes have publication information that is usually the same as that of their edition, but
+    * it could potentially differ.
+    *
+    * @return
+    */
+   PublicationInfo getPublicationInfo();
+
+   /**
     * Volumes have their own series of authors who may not contribute to the underlying {@link
     * Edition} or {@link Work}. This list should be disjoint with the list of authors of the
     * underlying Edition and Work.
@@ -66,4 +74,5 @@ public interface Volume
     * @return
     */
    String getSummary();
+
 }
