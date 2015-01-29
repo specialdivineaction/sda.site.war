@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
@@ -57,6 +58,11 @@ public interface VolumeMutator
    void setOtherAuthors(List<AuthorRefDV> otherAuthors);
 
    /**
+    * @param info The publication info for this volume.
+    */
+   void setPublicationInfo(PublicationInfoDV info);
+
+   /**
     *
     * @param series The series this volume belongs to.
     */
@@ -67,6 +73,7 @@ public interface VolumeMutator
     * @param summary An editorial summary of this volume.
     */
    void setSummary(String summary);
+
 
 
 }

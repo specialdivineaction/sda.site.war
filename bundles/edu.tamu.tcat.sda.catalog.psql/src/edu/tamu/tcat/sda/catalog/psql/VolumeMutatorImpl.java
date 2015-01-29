@@ -7,6 +7,7 @@ import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
 import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
@@ -33,8 +34,15 @@ public class VolumeMutatorImpl implements VolumeMutator
       setAuthors(volume.authors);
       setTitles(volume.titles);
       setOtherAuthors(volume.otherAuthors);
+      setPublicationInfo(volume.publicationInfo);
       setSummary(volume.summary);
       setSeries(volume.series);
+   }
+
+   @Override
+   public void setPublicationInfo(PublicationInfoDV info)
+   {
+      this.volume.publicationInfo = info;
    }
 
    @Override
