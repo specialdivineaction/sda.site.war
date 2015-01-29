@@ -1,11 +1,14 @@
 package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
@@ -133,17 +136,45 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
 
    private void onCreate(Relationship reln)
    {
-      // TODO implement me
+      RelnSolrProxy proxy = new RelnSolrProxy();
+      proxy.create(reln);
+      try
+      {
+         solr.add(proxy.getDocument());
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit new relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
+      }
    }
 
    private void onChange(Relationship reln)
    {
-      // TODO implement me
+      RelnSolrProxy proxy = new RelnSolrProxy();
+      proxy.create(reln);
+      try
+      {
+         solr.add(proxy.getDocument());
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit the updated relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
+      }
    }
 
    private void onDelete(String id)
    {
-      // TODO implement me
+      try
+      {
+         UpdateResponse uReq = solr.deleteById(id);
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete relationship id:[" + id + "] to the SOLR server. " + e);
+      }
    }
 
    @Override
