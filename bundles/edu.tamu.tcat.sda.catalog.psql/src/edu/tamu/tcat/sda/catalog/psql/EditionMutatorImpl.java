@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
+import edu.tamu.tcat.sda.catalog.InvalidDataException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
 import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
@@ -58,8 +59,9 @@ public class EditionMutatorImpl implements EditionMutator
             mutator = (null == volume.id) ? createVolume() : editVolume(volume.id);
          }
          catch (NoSuchCatalogRecordException e) {
-            // TODO: Log warning message
-            mutator = createVolume();
+            throw new InvalidDataException("Failed to edit existing volume. A supplied volume contains an id [" + volume.id + "], "
+                  + "but the identified volume cannot be retrieved for editing.", e);
+
          }
 
          mutator.setAll(volume);

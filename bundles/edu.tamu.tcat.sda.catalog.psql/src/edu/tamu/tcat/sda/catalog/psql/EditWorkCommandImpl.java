@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import edu.tamu.tcat.sda.catalog.IdFactory;
+import edu.tamu.tcat.sda.catalog.InvalidDataException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.EditionMutator;
@@ -19,6 +21,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
 {
+   private static final Logger logger = Logger.getLogger(EditWorkCommandImpl.class.getName());
 
    private final WorkDV work;
    private final IdFactory idFactory;
@@ -37,15 +40,13 @@ public class EditWorkCommandImpl implements EditWorkCommand
    }
 
    @Override
-   public void setAll(WorkDV work)
+   public void setAll(WorkDV work) throws InvalidDataException
    {
       setSeries(work.series);
       setSummary(work.summary);
       setAuthors(work.authors);
       setOtherAuthors(work.otherAuthors);
       setTitles(work.titles);
-//      setPublicationDate(work.pubInfo.date.value);
-//      setPublicationDateDisplay(work.pubInfo.date.display);
 
       for (EditionDV edition : work.editions) {
          EditionMutator mutator;
@@ -54,8 +55,7 @@ public class EditWorkCommandImpl implements EditWorkCommand
             mutator = (null == edition.id) ? createEdition() : editEdition(edition.id);
          }
          catch (NoSuchCatalogRecordException e) {
-            // TODO: Log warning message
-            mutator = createEdition();
+            throw new InvalidDataException("Failed to edit existing edition. A supplied edition contains an id [" + edition.id + "], but the identified edition cannot be retrieved for editing.", e);
          }
 
          mutator.setAll(edition);
