@@ -35,7 +35,7 @@ public class RelnSolrProxy
 
    private SolrInputDocument document;
 
-   public RelnSolrProxy create(Relationship reln)
+   public static RelnSolrProxy create(Relationship reln)
    {
       RelnSolrProxy proxy = new RelnSolrProxy();
 

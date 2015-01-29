@@ -136,8 +136,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
 
    private void onCreate(Relationship reln)
    {
-      RelnSolrProxy proxy = new RelnSolrProxy();
-      proxy.create(reln);
+      RelnSolrProxy proxy = RelnSolrProxy.create(reln);
       try
       {
          solr.add(proxy.getDocument());
@@ -151,8 +150,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
 
    private void onChange(Relationship reln)
    {
-      RelnSolrProxy proxy = new RelnSolrProxy();
-      proxy.create(reln);
+      RelnSolrProxy proxy = RelnSolrProxy.create(reln);
       try
       {
          solr.add(proxy.getDocument());
