@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Catalog Relationships REST API
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.relationship.rest
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Texas A&M Engineering Experiment Station
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: edu.tamu.tcat.sda.catalog.relationship,
+ edu.tamu.tcat.sda.catalog.relationship.model,
+ javax.ws.rs,
+ javax.ws.rs.core;version="2.0.0"
+Export-Package: edu.tamu.tcat.sda.catalog.relationship.rest.v1,
+ edu.tamu.tcat.sda.catalog.relationship.rest.v1.model

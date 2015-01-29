@@ -46,7 +46,7 @@ public class PsqlCreateRelationshipTask implements SqlExecutor.ExecutorTask<Stri
          jsonObject.setType("json");
          jsonObject.setValue(getJson());
 
-         ps.setLong(1, Long.parseLong(relationship.id));
+         ps.setString(1, relationship.id);
          ps.setObject(2, jsonObject);
 
          int ct = ps.executeUpdate();

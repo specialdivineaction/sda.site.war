@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" enabled="true" immediate="false" name="edu.tamu.tcat.sda.catalog.rest.repo.relationship">
+   <implementation class="edu.tamu.tcat.sda.catalog.relationships.psql.PsqlRelationshipRepo"/>
+   <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.IdFactory" name="IdFactory" policy="static"/>
+   <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
+   <service>
+      <provide interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository"/>
+   </service>
+   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
+</scr:component>
