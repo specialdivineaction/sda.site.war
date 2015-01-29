@@ -1,9 +1,13 @@
 package edu.tamu.tcat.sda.catalog.relationships.psql;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +43,8 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    private JsonMapper jsonMapper;
    private RelationshipTypeRegistry typeReg;
 
+   private ExecutorService notifications;
+
    private final CopyOnWriteArrayList<Consumer<RelationshipChangeEvent>> listeners = new CopyOnWriteArrayList<>();
 
 
@@ -67,6 +73,9 @@ public class PsqlRelationshipRepo implements RelationshipRepository
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
       Objects.requireNonNull(idFactory);
+
+      // TODO evalutate choice of executor
+      notifications = Executors.newCachedThreadPool();
    }
 
    public void dispose()
@@ -75,7 +84,28 @@ public class PsqlRelationshipRepo implements RelationshipRepository
       this.jsonMapper = null;
       this.idFactory = null;
 
+      shutdownNotificationsExec();
+
       listeners.clear();
+   }
+
+   private void shutdownNotificationsExec()
+   {
+      try
+      {
+         notifications.shutdown();
+         notifications.awaitTermination(10, TimeUnit.SECONDS);    // HACK: make this configurable
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.WARNING, "Failed to shut down event notifications executor in a timely fashion.", ex);
+         try {
+            List<Runnable> pendingTasks = notifications.shutdownNow();
+            logger.info("Forcibly shutdown notifications executor. [" + pendingTasks.size() + "] pending tasks were aborted.");
+         } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred attempting to forcibly shutdown executor service", e);
+         }
+      }
    }
 
    @Override
@@ -150,14 +180,13 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    {
       RelationshipChangeEventImpl evt = new RelationshipChangeEventImpl(type, relnId);
       listeners.forEach(ears -> {
-         try
-         {
-            ears.accept(evt);
-         }
-         catch (Exception ex)
-         {
-            logger.log(Level.WARNING, "Call to update listener failed.", ex);
-         }
+         notifications.submit(() -> {
+            try {
+               ears.accept(evt);
+            } catch (Exception ex) {
+               logger.log(Level.WARNING, "Call to update listener failed.", ex);
+            }
+         });
       });
    }
 
