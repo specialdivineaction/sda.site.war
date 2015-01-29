@@ -19,7 +19,6 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
 
    public SolrRelationshipSearchService()
    {
-      // TODO Auto-generated constructor stub
    }
 
    public void setRelationshipRepo(RelationshipRepository repo)

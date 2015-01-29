@@ -5,6 +5,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
@@ -24,6 +26,8 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlRelationshipRepo implements RelationshipRepository
 {
+
+   private static final Logger logger = Logger.getLogger(PsqlRelationshipRepo.class.getName());
 
    public PsqlRelationshipRepo()
    {
@@ -145,7 +149,16 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    private void notifyRelationshipUpdate(ChangeType type, String relnId)
    {
       RelationshipChangeEventImpl evt = new RelationshipChangeEventImpl(type, relnId);
-      listeners.forEach(ears -> ears.accept(evt));
+      listeners.forEach(ears -> {
+         try
+         {
+            ears.accept(evt);
+         }
+         catch (Exception ex)
+         {
+            logger.log(Level.WARNING, "Call to update listener failed.", ex);
+         }
+      });
    }
 
    @Override
