@@ -20,9 +20,9 @@ public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
    private final static String sql = "SELECT work FROM works WHERE id=?";
 
    private final JsonMapper jsonMapper;
-   private final int workId;
+   private final String workId;
 
-   PsqlGetWorkTask(int id, JsonMapper jsonMapper)
+   PsqlGetWorkTask(String id, JsonMapper jsonMapper)
    {
       this.jsonMapper = jsonMapper;
       this.workId = id;
@@ -33,7 +33,7 @@ public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
    {
       try (PreparedStatement ps = conn.prepareStatement(sql))
       {
-         ps.setLong(1, workId);
+         ps.setString(1, workId);
          try (ResultSet rs = ps.executeQuery())
          {
             if (!rs.next())

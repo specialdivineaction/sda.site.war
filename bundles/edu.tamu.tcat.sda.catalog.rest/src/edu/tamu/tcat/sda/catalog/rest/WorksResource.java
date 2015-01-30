@@ -66,15 +66,16 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title)
+   public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title, @QueryParam(value = "numResults") int numResults)
    {
       // TODO to be backed by search service, add more robust query API
-      Iterable<Work> works = repo.listWorks(title);
       List<WorkInfo> result = new ArrayList<WorkInfo>();
-      works.forEach(w ->
-      {
+      for (Work w : repo.listWorks(title)) {
+         if (result.size() == numResults) {
+            break;
+         }
          result.add(WorkInfo.create(w));
-      });
+      }
 
       return result;
    }

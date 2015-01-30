@@ -166,6 +166,12 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public Work getWork(int workId) throws NoSuchCatalogRecordException
    {
+      return getWork(String.valueOf(workId));
+   }
+
+   @Override
+   public Work getWork(String workId) throws NoSuchCatalogRecordException
+   {
       SqlExecutor.ExecutorTask<Work> task = taskProvider.makeGetWorkTask(workId);
       try
       {
@@ -184,12 +190,6 @@ public class PsqlWorkRepo implements WorkRepository
       catch (InterruptedException e) {
          throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
       }
-   }
-
-   @Override
-   public Work getWork(String workId) throws NoSuchCatalogRecordException
-   {
-      return getWork(Integer.parseInt(workId));
    }
 
    @Override
