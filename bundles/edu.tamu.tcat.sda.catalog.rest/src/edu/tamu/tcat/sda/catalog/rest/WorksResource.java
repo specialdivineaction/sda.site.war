@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.catalog.rest;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,21 +18,17 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.sda.catalog.InvalidDataException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.solr.WorksController;
+import edu.tamu.tcat.sda.catalog.rest.model.WorkInfo;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Work;
 import edu.tamu.tcat.sda.catalog.works.WorkRepository;
 import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
-import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 @Path("/works")
@@ -68,17 +64,31 @@ public class WorksResource
    {
    }
 
-
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<SimpleWorkDV> listWorks(@Context UriInfo ctx) throws JsonException
+   public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title)
    {
-      MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
-      WorksController controller = new WorksController();
-      // TODO need to add slicing/paging support
-      // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
-      return Collections.unmodifiableList(controller.query(queryParams));
+      // TODO to be backed by search service, add more robust query API
+      Iterable<Work> works = repo.listWorks(title);
+      List<WorkInfo> result = new ArrayList<WorkInfo>();
+      works.forEach(w ->
+      {
+         result.add(WorkInfo.create(w));
+      });
+
+      return result;
    }
+
+//   @GET
+//   @Produces(MediaType.APPLICATION_JSON)
+//   public List<SimpleWorkDV> listWorks(@Context UriInfo ctx) throws JsonException
+//   {
+//      MultivaluedMap<String, String> queryParams = ctx.getQueryParameters();
+//      WorksController controller = new WorksController();
+//      // TODO need to add slicing/paging support
+//      // TODO add mappers for exceptions. CatalogRepoException should map to internal error.
+//      return Collections.unmodifiableList(controller.query(queryParams));
+//   }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
