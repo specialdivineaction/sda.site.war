@@ -166,7 +166,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    {
       try
       {
-         UpdateResponse uReq = solr.deleteById(id);
+         solr.deleteById(id);
          solr.commit();
       }
       catch (SolrServerException | IOException e)

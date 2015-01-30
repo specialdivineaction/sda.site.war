@@ -26,7 +26,7 @@ public class RelnSolrProxy
    private final static String relnId = "id";
    private final static String description = "description";
    private final static String descriptMimeType = "descriptionMimeType";
-   private final static String relationshipType = "realtionshipType";
+   private final static String relationshipType = "relationshipType";
    private final static String relatedEntities = "relatedEntities";
    private final static String targetEntities = "targetEntities";
    private final static String provCreators = "provCreator";
