@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.rest.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class WorkInfo
 {
    public String id;
    public String uri;
-   public List<AuthorRefDV> authors;
+   public List<AuthorRefDV> authors = new ArrayList<>();
    public String title;
    public String summary;
    public String pubYear = null;
@@ -55,7 +56,10 @@ public class WorkInfo
       result.summary = w.getSummary();    // TODO trim to first sentence
 
       AuthorList authors = w.getAuthors();
-      authors.forEach(author -> result.authors.add(new AuthorRefDV(author)));
+      authors.forEach(author ->
+      {
+         result.authors.add(new AuthorRefDV(author));
+      });
 
       // TODO find earliest listed publication date (first edition)
 

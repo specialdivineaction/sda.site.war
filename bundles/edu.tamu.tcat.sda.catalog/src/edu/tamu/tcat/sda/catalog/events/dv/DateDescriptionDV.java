@@ -47,7 +47,7 @@ public class DateDescriptionDV
 
    public static DateDescription convert(DateDescriptionDV dv)
    {
-      return new DateDescriptionImpl(dv);
+      return dv == null ? new DateDescriptionImpl(new DateDescriptionDV()) : new DateDescriptionImpl(dv);
    }
 
    private static final class DateDescriptionImpl implements DateDescription

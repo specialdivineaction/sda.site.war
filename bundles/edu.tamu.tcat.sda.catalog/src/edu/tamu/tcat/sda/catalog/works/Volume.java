@@ -31,7 +31,7 @@ public interface Volume
 
    /**
     * Volumes have publication information that is usually the same as that of their edition, but
-    * it could potentially differ.
+    * it could potentially differ. This value will not be null.
     *
     * @return
     */

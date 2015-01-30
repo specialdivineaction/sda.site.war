@@ -8,6 +8,7 @@ import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
 import edu.tamu.tcat.sda.catalog.works.Title;
 import edu.tamu.tcat.sda.catalog.works.Volume;
+import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 
 public class VolumeImpl implements Volume
@@ -35,7 +36,7 @@ public class VolumeImpl implements Volume
 
       volumeNumber = dv.volumeNumber;
 
-      publicationInfo = new PublicationImpl(dv.publicationInfo);
+      publicationInfo = dv.publicationInfo == null ? new PublicationImpl(new PublicationInfoDV()) : new PublicationImpl(dv.publicationInfo);
 
       authors = dv.authors.stream()
             .map((a) -> new AuthorReferenceImpl(a))
