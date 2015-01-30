@@ -62,7 +62,8 @@
     <module>${repo-ed-path}/${pqns}</module>
     <module>${repo-ed-path}/${pqns}.psql</module>
     <module>${repo-ed-path}/${pqns}.rest</module>
-    <module>${repo-ed-path}/${pqns}.relationship</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.relationship</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.relationship.rest</module>
     
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json</module>
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json.jackson</module>
