@@ -6,4 +6,6 @@
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService"/>
    </service>
+   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
+   <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
 </scr:component>

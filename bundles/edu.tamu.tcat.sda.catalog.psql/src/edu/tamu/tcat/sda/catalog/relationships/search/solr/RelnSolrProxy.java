@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.solr.common.SolrInputDocument;
 
+import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.relationship.Anchor;
 import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
 import edu.tamu.tcat.sda.catalog.relationship.Provenance;
@@ -32,10 +34,11 @@ public class RelnSolrProxy
    private final static String provCreators = "provCreator";
    private final static String provCreateDate = "provCreateDate";
    private final static String provModifiedDate = "provModifiedDate";
+   private final static String relationshipModel = "relationshipModel";
 
    private SolrInputDocument document;
 
-   public static RelnSolrProxy create(Relationship reln)
+   public static RelnSolrProxy create(Relationship reln, JsonMapper jsonMapper) throws JsonException
    {
       RelnSolrProxy proxy = new RelnSolrProxy();
 
@@ -46,6 +49,7 @@ public class RelnSolrProxy
       proxy.addRelatedEntities(reln.getRelatedEntities());
       proxy.addTargetEntities(reln.getTargetEntities());
       proxy.addProvenance(reln.getProvenance());
+      proxy.addRelationshipModel(jsonMapper.asString(reln));
 
       return proxy;
    }
@@ -58,6 +62,11 @@ public class RelnSolrProxy
    public SolrInputDocument getDocument()
    {
       return document;
+   }
+
+   void addRelationshipModel(String jsonReln)
+   {
+      document.addField(relationshipModel, jsonReln);
    }
 
    void addDocumentId(String id)
