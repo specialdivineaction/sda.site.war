@@ -51,7 +51,7 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
          jsonObject.setValue(getJson());
 
          ps.setObject(1, jsonObject);
-         ps.setInt(2, Integer.parseInt(work.id));
+         ps.setString(2, work.id);
 
          int ct = ps.executeUpdate();
          if (ct != 1)
