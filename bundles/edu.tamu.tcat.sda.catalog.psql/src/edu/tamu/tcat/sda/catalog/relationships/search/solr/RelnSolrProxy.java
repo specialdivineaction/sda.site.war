@@ -12,6 +12,7 @@ import edu.tamu.tcat.sda.catalog.relationship.Anchor;
 import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
 import edu.tamu.tcat.sda.catalog.relationship.Provenance;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
+import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 /**
  *  A data structure for representing the searchable fields associated with a {@link Relationship}.
@@ -41,6 +42,7 @@ public class RelnSolrProxy
    public static RelnSolrProxy create(Relationship reln, JsonMapper jsonMapper) throws JsonException
    {
       RelnSolrProxy proxy = new RelnSolrProxy();
+      RelationshipDV relnDV = RelationshipDV.create(reln);
 
       proxy.addDocumentId(reln.getId());
       proxy.addDescription(reln.getDescription());
@@ -49,7 +51,8 @@ public class RelnSolrProxy
       proxy.addRelatedEntities(reln.getRelatedEntities());
       proxy.addTargetEntities(reln.getTargetEntities());
       proxy.addProvenance(reln.getProvenance());
-      proxy.addRelationshipModel(jsonMapper.asString(reln));
+      String asString = jsonMapper.asString(relnDV);
+      proxy.addRelationshipModel(asString);
 
       return proxy;
    }
