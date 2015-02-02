@@ -10,9 +10,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.response.JSONResponseWriter;
-import org.noggit.JSONUtil;
-import org.noggit.JSONWriter;
 
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
@@ -56,12 +53,9 @@ public class SolrRelationshipQuery
       {
          try
          {
-            // Get full object from solr field
-            String json = JSONUtil.toJSON(result);
-            relationshipJson = removeVersionNum(json);
-            dv = this.jsonMapper.parse(relationshipJson, RelationshipDV.class);
+            String relationship = result.getFieldValue("relationshipModel").toString();
+            dv = this.jsonMapper.parse(relationship, RelationshipDV.class);
             relationships.add(RelationshipDV.instantiate(dv, this.typeReg));
-            return relationships;
          }
          catch (JsonException e)
          {
