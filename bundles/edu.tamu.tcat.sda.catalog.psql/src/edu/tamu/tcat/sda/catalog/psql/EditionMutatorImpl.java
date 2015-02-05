@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.InvalidDataException;
 import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
@@ -57,7 +60,16 @@ public class EditionMutatorImpl implements EditionMutator
 
    private void setVolumes(List<VolumeDV> volumes)
    {
-      edition.volumes.clear();
+      // get IDs supplied by the client; after the update, these IDs should be the only ones in the database
+      Set<String> clientIds = volumes.parallelStream()
+            .map(v -> v.id)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+      // remove any volumes that were removed by the client
+      edition.volumes.removeIf(v -> !clientIds.contains(v.id));
+
+      // create or update client-supplied volumes
       for (VolumeDV volume : volumes) {
          VolumeMutator mutator;
 

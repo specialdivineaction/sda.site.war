@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.IdFactory;
 import edu.tamu.tcat.sda.catalog.InvalidDataException;
@@ -53,7 +55,16 @@ public class EditWorkCommandImpl implements EditWorkCommand
 
    private void setEditions(Collection<EditionDV> editions)
    {
-      work.editions.clear();
+      // get IDs supplied by the client; after the update, these IDs should be the only ones in the database
+      Set<String> clientIds = editions.parallelStream()
+            .map(e -> e.id)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+      // remove any editions that were removed by the client
+      work.editions.removeIf(e -> !clientIds.contains(e.id));
+
+      // create or update client-supplied editions
       for (EditionDV edition : editions) {
          EditionMutator mutator;
 
