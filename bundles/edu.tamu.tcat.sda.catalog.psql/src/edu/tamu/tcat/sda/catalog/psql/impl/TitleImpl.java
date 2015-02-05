@@ -26,7 +26,15 @@ public class TitleImpl implements Title
    @Override
    public String getFullTitle()
    {
-      return title.title + ": " + title.subtitle;
+      StringBuilder sb = new StringBuilder();
+
+      sb.append(title.title);
+
+      if (title.subtitle != null && !title.subtitle.trim().isEmpty()) {
+         sb.append(": ").append(title.subtitle);
+      }
+
+      return sb.toString();
    }
    @Override
    public String getType()
