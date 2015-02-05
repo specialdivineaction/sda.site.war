@@ -73,19 +73,9 @@ public class SolrRelationshipQuery
 
    void buildQuery(URI entry)
    {
+      // HACK: Currently returning all items until we create a query builder.
       query = new SolrQuery();
       query.setQuery("*:*");
    }
-
-   String removeVersionNum(String json)
-   {
-      // HACK: Removes "SolrDocument" and "_version_=... from the result
-      StringBuilder sb = new StringBuilder();
-      int version = json.lastIndexOf(",");
-      sb.append(json.substring(0, version));
-      sb.append("}");
-      return sb.toString();
-   }
-
 
 }
