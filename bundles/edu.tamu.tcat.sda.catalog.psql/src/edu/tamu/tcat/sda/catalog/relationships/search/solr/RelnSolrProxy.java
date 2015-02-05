@@ -1,17 +1,14 @@
 package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
-import java.net.URI;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.relationship.Anchor;
-import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
-import edu.tamu.tcat.sda.catalog.relationship.Provenance;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
+import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
+import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
 import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 /**
@@ -23,8 +20,6 @@ public class RelnSolrProxy
    // NOTE this is internal to the Solr search service. Probably/possibly add helper methods to retrieve
    //      the reln (using the repo owned by the service) and other data structures as needed.
 
-
-   private static final DateTimeFormatter iso8601Formatter = DateTimeFormatter.ISO_INSTANT;
    // Solr field names
    private final static String relnId = "id";
    private final static String description = "description";
@@ -44,15 +39,14 @@ public class RelnSolrProxy
       RelnSolrProxy proxy = new RelnSolrProxy();
       RelationshipDV relnDV = RelationshipDV.create(reln);
 
-      proxy.addDocumentId(reln.getId());
-      proxy.addDescription(reln.getDescription());
-      proxy.addMimeType(reln.getDescriptionFormat());
-      proxy.addRelnType(reln.getType().getTitle());
-      proxy.addRelatedEntities(reln.getRelatedEntities());
-      proxy.addTargetEntities(reln.getTargetEntities());
-      proxy.addProvenance(reln.getProvenance());
-      String asString = jsonMapper.asString(relnDV);
-      proxy.addRelationshipModel(asString);
+      proxy.addDocumentId(relnDV.id);
+      proxy.addDescription(relnDV.description);
+      proxy.addMimeType(relnDV.descriptionMimeType);
+      proxy.addRelnType(relnDV.typeId);
+      proxy.addRelatedEntities(relnDV.relatedEntities);
+      proxy.addTargetEntities(relnDV.targetEntities);
+      proxy.addProvenance(relnDV.provenance);
+      proxy.addRelationshipModel(jsonMapper.asString(relnDV));
 
       return proxy;
    }
@@ -92,38 +86,40 @@ public class RelnSolrProxy
       document.addField(relationshipType, relnType);
    }
 
-   void addRelatedEntities(AnchorSet set)
+   void addRelatedEntities(Set<AnchorDV> anchors)
    {
-      for (Anchor anchor : set.getAnchors())
+      for (AnchorDV anchor : anchors)
       {
-         for (URI uri : anchor.getEntryIds())
+
+         for (String uri : anchor.entryUris)
          {
-            document.addField(relatedEntities, uri.toString());
+            document.addField(relatedEntities, uri);
          }
       }
    }
 
-   void addTargetEntities(AnchorSet set)
+   void addTargetEntities(Set<AnchorDV> anchors)
    {
-      for (Anchor anchor : set.getAnchors())
+      for (AnchorDV anchor : anchors)
       {
-         for (URI uri : anchor.getEntryIds())
+
+         for (String uri : anchor.entryUris)
          {
-            document.addField(targetEntities, uri.toString());
+            document.addField(targetEntities, uri);
          }
       }
    }
 
-   void addProvenance(Provenance prov)
+   void addProvenance(ProvenanceDV prov)
    {
-      for (URI uri : prov.getCreators())
+      for (String uri : prov.creatorUris)
       {
-         document.addField(provCreators, uri.toString());
+         document.addField(provCreators, uri);
       }
-      Instant created = prov.getDateCreated();
-      Instant modified = prov.getDateModified();
-      document.addField(provCreateDate, (created != null) ? iso8601Formatter.format(created) : null);
-      document.addField(provModifiedDate, (modified != null) ? iso8601Formatter.format(modified) : null);
+      String dateCreated = prov.dateCreated;
+      String dateModified = prov.dateModified;
+      document.addField(provCreateDate, (dateCreated != null) ? dateCreated : null);
+      document.addField(provModifiedDate, (dateModified != null) ? dateModified : null);
    }
 
 }
