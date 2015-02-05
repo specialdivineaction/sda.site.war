@@ -51,8 +51,14 @@ public class EditionMutatorImpl implements EditionMutator
       setSummary(edition.summary);
       setSeries(edition.series);
 
+      setVolumes(edition.volumes);
+   }
 
-      for (VolumeDV volume : edition.volumes) {
+
+   private void setVolumes(List<VolumeDV> volumes)
+   {
+      edition.volumes.clear();
+      for (VolumeDV volume : volumes) {
          VolumeMutator mutator;
 
          try {

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.impl;
+package edu.tamu.tcat.sda.catalog.relationships.psql;
 
 import java.util.HashSet;
 import java.util.Objects;

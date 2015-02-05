@@ -48,7 +48,13 @@ public class EditWorkCommandImpl implements EditWorkCommand
       setOtherAuthors(work.otherAuthors);
       setTitles(work.titles);
 
-      for (EditionDV edition : work.editions) {
+      setEditions(work.editions);
+   }
+
+   private void setEditions(Collection<EditionDV> editions)
+   {
+      work.editions.clear();
+      for (EditionDV edition : editions) {
          EditionMutator mutator;
 
          try {
