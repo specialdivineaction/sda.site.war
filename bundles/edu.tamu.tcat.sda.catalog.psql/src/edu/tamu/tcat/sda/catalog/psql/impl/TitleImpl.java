@@ -26,7 +26,7 @@ public class TitleImpl implements Title
    @Override
    public String getFullTitle()
    {
-      return title.title + " " + title.subtitle;
+      return title.title + ": " + title.subtitle;
    }
    @Override
    public String getType()
