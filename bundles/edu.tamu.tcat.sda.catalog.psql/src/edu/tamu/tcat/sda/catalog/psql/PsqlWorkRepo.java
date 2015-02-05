@@ -17,7 +17,6 @@ import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlCreateWorkTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlListWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlUpdateWorksTask;
 import edu.tamu.tcat.sda.catalog.psql.tasks.PsqlWorkDbTasksProvider;
-import edu.tamu.tcat.sda.catalog.solr.WorksController;
 import edu.tamu.tcat.sda.catalog.works.AuthorReference;
 import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
 import edu.tamu.tcat.sda.catalog.works.Edition;
@@ -228,8 +227,6 @@ public class PsqlWorkRepo implements WorkRepository
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
          Future<String> submitWork = exec.submit(task);
-         WorksController controller = new WorksController();
-         controller.addDocument(workDv);
          return submitWork;
       });
 
@@ -255,9 +252,7 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, jsonMapper);
-         WorksController controller = new WorksController();
          Future<String> submitWork = exec.submit(task);
-         controller.addDocument(w);
          return submitWork;
       });
 
