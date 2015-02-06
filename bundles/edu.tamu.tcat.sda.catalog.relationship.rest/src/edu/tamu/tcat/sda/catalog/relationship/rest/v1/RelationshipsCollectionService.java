@@ -36,6 +36,8 @@ public class RelationshipsCollectionService
    {
    }
 
+   // /relationships?entity=<uri>      return all entities related to the supplied entity
+   // /relationships?entity=<uri>[&type=<type_id>][&direction=from|to|any]
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    public List<RelationshipDV> getRelationships()
@@ -55,7 +57,9 @@ public class RelationshipsCollectionService
       {
          createCommand = repo.create();
          createCommand.setAll(relationship);
-         return new RelationshipId(createCommand.execute().get());
+
+         RelationshipId result = new RelationshipId();
+         result.id = createCommand.execute().get();
       }
       catch (Exception e)
       {
