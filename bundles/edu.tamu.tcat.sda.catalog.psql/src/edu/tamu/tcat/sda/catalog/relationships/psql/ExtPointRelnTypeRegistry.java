@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.relationships.psql;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -91,6 +93,12 @@ public class ExtPointRelnTypeRegistry implements RelationshipTypeRegistry
          throw new RelationshipException("No relationship type is registered for '" + typeIdentifier + "'");
 
       return typeDefinitions.get(typeIdentifier);
+   }
+
+   @Override
+   public Set<String> list()
+   {
+      return new HashSet<>(typeDefinitions.keySet());
    }
 
    private class RegistryEventListener implements IRegistryEventListener
