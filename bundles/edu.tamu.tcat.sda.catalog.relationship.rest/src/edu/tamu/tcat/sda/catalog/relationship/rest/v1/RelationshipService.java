@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,6 +16,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipNotAvailableException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
@@ -41,23 +44,37 @@ public class RelationshipService
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public RelationshipDV get(@PathParam(value = "id") String id) throws RelationshipNotAvailableException, RelationshipPersistenceException
+   public RelationshipDV get(@PathParam(value = "id") String id)
    {
-      // TODO translate these into REST API exceptions
-      return RelationshipDV.create(repo.get(id));
+      logger.fine(() -> "Retrieving relationship [relationship/" + id + "]");
+      try {
+         Relationship reln = repo.get(id);
+         return RelationshipDV.create(reln);
+      }
+      catch (RelationshipNotAvailableException nae)
+      {
+         String msg = "Relationship does not exist [relationship/" + id + "]";
+         logger.info(msg);
+         throw new NotFoundException(msg);
+      }
+      catch (RelationshipPersistenceException perEx)
+      {
+         logger.log(Level.SEVERE, "Data access error trying to retrieve relationship [relationship/" + id + "]", perEx);
+         throw new InternalServerErrorException("Failed to retrive relationship [relationship/" + id + "]");
+      }
    }
 
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    public void update(@PathParam(value = "id") String id, RelationshipDV relationship)
    {
+      logger.fine(() -> "Updating relationship [relationship/" + id + "]\n" + relationship);
+
       checkRelationshipValidity(relationship, id);;
       try
       {
          EditRelationshipCommand updateCommand = repo.edit(id);
          updateCommand.setAll(relationship);
-
-         // NOTE: we call get here to ensure that
          updateCommand.execute().get();
       }
       catch (Exception e)
