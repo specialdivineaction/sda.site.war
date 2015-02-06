@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.catalog.relationship;
 
+import java.util.Set;
+
 /**
  *  A service to access defined relationship types.
  */
@@ -16,4 +18,6 @@ public interface RelationshipTypeRegistry
     *       registered with this registry.
     */
    RelationshipType resolve(String typeIdentifier) throws RelationshipException;
+
+   Set<String> list();
 }
