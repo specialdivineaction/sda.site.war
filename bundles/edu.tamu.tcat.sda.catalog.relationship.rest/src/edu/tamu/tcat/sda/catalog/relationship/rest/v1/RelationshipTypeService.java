@@ -1,7 +1,10 @@
 package edu.tamu.tcat.sda.catalog.relationship.rest.v1;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -29,7 +32,7 @@ public class RelationshipTypeService
       this.registry = registry;
    }
 
-   public void clearRegistry(RelationshipTypeRegistry registry)
+   public void clearRegistry(RelationshipTypeRegistry reg)
    {
       this.registry = null;
    }
@@ -67,7 +70,25 @@ public class RelationshipTypeService
    @Produces(MediaType.APPLICATION_JSON)
    public Collection<RelationshipTypeDTO> listDefinedTypes()
    {
-      throw new UnsupportedOperationException();
+      // NOTE: for now, we'll return the full list since we assume this is a fairly limited set
+      //       if/when that changes, we'll need a more fully featured paged listing and some
+      //       more advanced query options.
+
+      if (registry == null)
+         throw new ServiceUnavailableException("Relationship types are currently unavailable.");
+
+      Set<RelationshipTypeDTO> results = new HashSet<>();
+      Set<String> typeIds = registry.list();
+
+      typeIds.forEach((id) -> {
+         try {
+            results.add(getType(id));
+         } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error retrieving reln type [" + id + "]", ex);
+         }
+      });
+
+      return results;
    }
 
 }

@@ -19,5 +19,11 @@ public interface RelationshipTypeRegistry
     */
    RelationshipType resolve(String typeIdentifier) throws RelationshipException;
 
+   /**
+    * @return The identifiers of all currently registered relationship types. Note that
+    *       types may be registered or unregistered at any time. Consequently, the
+    *       results of a call to this method may be out of date as soon as they are
+    *       returned.
+    */
    Set<String> list();
 }
