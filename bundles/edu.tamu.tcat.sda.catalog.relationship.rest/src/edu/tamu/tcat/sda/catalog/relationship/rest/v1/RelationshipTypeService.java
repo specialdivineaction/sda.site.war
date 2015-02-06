@@ -29,7 +29,7 @@ public class RelationshipTypeService
       this.registry = registry;
    }
 
-   public void clearRegistry()
+   public void clearRegistry(RelationshipTypeRegistry registry)
    {
       this.registry = null;
    }
