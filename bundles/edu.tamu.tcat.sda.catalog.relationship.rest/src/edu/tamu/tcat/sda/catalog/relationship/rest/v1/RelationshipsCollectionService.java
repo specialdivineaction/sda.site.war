@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.relationship.rest.v1;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -12,9 +13,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
 import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 import edu.tamu.tcat.sda.catalog.relationship.rest.v1.model.RelationshipId;
+import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrRelationshipSearchService;
 
 @Path("/relationships")
 public class RelationshipsCollectionService
@@ -22,10 +25,17 @@ public class RelationshipsCollectionService
    private static final Logger logger = Logger.getLogger(RelationshipsCollectionService.class.getName());
 
    private RelationshipRepository repo;
+   private SolrRelationshipSearchService service;
 
    public void setRepository(RelationshipRepository repo)
    {
       this.repo = repo;
+   }
+
+   public void setRelationshipService(SolrRelationshipSearchService service)
+   {
+      this.service = service;
+
    }
 
    public void activate()
@@ -43,7 +53,13 @@ public class RelationshipsCollectionService
    public List<RelationshipDV> getRelationships()
    {
       // TODO - This will be taken care of on jira ticket https://issues.citd.tamu.edu/browse/RI-6
-      return new ArrayList<>();
+      List<RelationshipDV> relnDV = new ArrayList<>();
+      Iterable<Relationship> foundRelns = service.findRelationshipsFor(URI.create("works/2"));
+      for (Relationship reln : foundRelns)
+      {
+         relnDV.add(RelationshipDV.create(reln));
+      }
+      return relnDV;
    }
 
    @POST

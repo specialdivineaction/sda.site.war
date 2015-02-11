@@ -24,6 +24,7 @@ import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
 import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
 import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
+@SuppressWarnings("unused")
 public class WorksController
 {
 
@@ -95,7 +96,8 @@ public class WorksController
                query.setQuery(language + ":*" + first + "*");
                break;
             case numResults:
-               query.setRows(Integer.parseInt(first));
+               int num = Integer.parseInt(first);
+               query.setRows(Integer.valueOf(num));
                break;
             default:
                query.setQuery(titles +  ":*" + first + "*");

@@ -1,41 +1,98 @@
 package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+
+import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipChangeEvent;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchIndexManager;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService;
+import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
 
+/**
+ *  TODO include documentation about expected fields and format of the solr core.
+ *
+ */
 public class SolrRelationshipSearchService implements RelationshipSearchIndexManager, RelationshipSearchService
 {
+   /** Configuration property key that defines the URI for the Solr server. */
+   public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
+
+   /** Configuration property key that defines Solr core to be used for relationships. */
+   public static final String SOLR_CORE = "catalogentries.relationships.solr.core";
+
    private final static Logger logger = Logger.getLogger(SolrRelationshipSearchService.class.getName());
 
    private RelationshipRepository repo;
    private AutoCloseable registration;
 
+   private SolrServer solr;
+   private ConfigurationProperties config;
+   private JsonMapper jsonMapper;
+   private RelationshipTypeRegistry typeReg;
+
    public SolrRelationshipSearchService()
    {
-      // TODO Auto-generated constructor stub
    }
 
+   // HACK: Relationships are set to the db in an asynchronous matter. It can not be quarenteed that db operations will be
+   //       completed before the next operation starts, causing an error. The create/update/delete process "should" not have
+   //       that many requests to see this occur.
    public void setRelationshipRepo(RelationshipRepository repo)
    {
       this.repo = repo;
+   }
+
+   public void setConfiguration(ConfigurationProperties config)
+   {
+      this.config = config;
+   }
+
+   public void setTypeRegistry(RelationshipTypeRegistry typeReg)
+   {
+      this.typeReg = typeReg;
+   }
+
+   public void setJsonMapper(JsonMapper mapper)
+   {
+      this.jsonMapper = mapper;
    }
 
    public void activate()
    {
       logger.fine("Activating SolrRelationshipSearchService");
       registration = repo.addUpdateListener(this::onUpdate);
+
+      // construct Solr core
+      URI solrBaseUri = config.getPropertyValue(SOLR_API_ENDPOINT, URI.class);
+      String solrCore = config.getPropertyValue(SOLR_CORE, String.class);
+
+      URI coreUri = solrBaseUri.resolve(solrCore);
+      logger.info("Connecting to Solr Service [" + coreUri + "]");
+
+      solr = new HttpSolrServer(coreUri.toString());
    }
 
    public void deactivate()
    {
-      logger.fine("Deactivating SolrRelationshipSearchService");
+      logger.info("Deactivating SolrRelationshipSearchService");
+
+      unregisterRepoListener();
+      releaseSolrConnection();
+   }
+
+   private void unregisterRepoListener()
+   {
       if (registration != null)
       {
          try
@@ -48,6 +105,22 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
          }
          finally {
             registration = null;
+         }
+      }
+   }
+
+   private void releaseSolrConnection()
+   {
+      logger.fine("Releasing connection to Solr server");
+      if (solr != null)
+      {
+         try
+         {
+            solr.shutdown();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.WARNING, "Failed to cleanly shut down connection to Solr server.", e);
          }
       }
    }
@@ -80,23 +153,65 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
 
    private void onCreate(Relationship reln)
    {
-      // TODO implement me
+      try
+      {
+         RelnSolrProxy proxy = RelnSolrProxy.create(reln, jsonMapper);
+         solr.add(proxy.getDocument());
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit new relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
+      }
+      catch (JsonException je)
+      {
+         logger.log(Level.SEVERE, "Failed to parse relationship id:[" + reln.getId() + "] " + je);
+      }
    }
 
    private void onChange(Relationship reln)
    {
-      // TODO implement me
+      try
+      {
+         RelnSolrProxy proxy = RelnSolrProxy.create(reln, jsonMapper);
+         solr.add(proxy.getDocument());
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit the updated relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
+      }
+      catch (JsonException je)
+      {
+         logger.log(Level.SEVERE, "Failed to parse relationship id:[" + reln.getId() + "] " + je);
+      }
    }
 
    private void onDelete(String id)
    {
-      // TODO implement me
+      try
+      {
+         solr.deleteById(id);
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete relationship id:[" + id + "] to the SOLR server. " + e);
+      }
    }
 
    @Override
    public Iterable<Relationship> findRelationshipsFor(URI entry)
    {
-      // TODO Auto-generated method stub
+      SolrRelationshipQuery q = SolrRelationshipQuery.query(entry);
+      try
+      {
+         return q.getResults(solr.query(q.query), jsonMapper, typeReg);
+      }
+      catch (SolrServerException e)
+      {
+         logger.log(Level.SEVERE, "Query to SOLR server failed while searching for entry:[" + entry + "]. " + e);
+      }
       return null;
    }
 
@@ -108,3 +223,22 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    }
 
 }
+
+//Here is an example of how to do a partial update via Solr’s Java client, SolrJ:
+//
+//// create the SolrJ client
+//HttpSolrServer client = new HttpSolrServer("http://localhost:8983/solr");
+//
+//// create the document
+//SolrInputDocument sdoc = new SolrInputDocument();
+//sdoc.addField("id","book1");
+//Map<String,Object> fieldModifier = new HashMap<>(1);
+//fieldModifier.put("set","Cyberpunk"); set or replace a value, remove value if null is specified as the new value
+//fieldModifier.put("add","Cyberpunk"); adds a value to a list
+//fieldModifier.put("remove","Cyberpunk"); remove or list of values from a list
+//fieldModifier.put("inc",1); increment a number
+//sdoc.addField("cat", fieldModifier);  // add the map as the field value
+//
+//client.add( sdoc );  // send it to the solr server
+//
+//client.shutdown();

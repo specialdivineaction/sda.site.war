@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: edu.tamu.tcat.sda.catalog.relationship,
  edu.tamu.tcat.sda.catalog.relationship.model,
  javax.ws.rs;version="[2.0.0,2.0.0]",
- javax.ws.rs.core;version="[2.0.0,2.0.0]"
+ javax.ws.rs.core;version="[2.0.0,2.0.0]",
+ edu.tamu.tcat.sda.catalog.relationships.search.solr
 Export-Package: edu.tamu.tcat.sda.catalog.relationship.rest.v1,
  edu.tamu.tcat.sda.catalog.relationship.rest.v1.model
