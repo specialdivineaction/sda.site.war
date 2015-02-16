@@ -15,9 +15,9 @@ import javax.ws.rs.core.MediaType;
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
+import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService;
 import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 import edu.tamu.tcat.sda.catalog.relationship.rest.v1.model.RelationshipId;
-import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrRelationshipSearchService;
 
 @Path("/relationships")
 public class RelationshipsCollectionService
@@ -25,14 +25,14 @@ public class RelationshipsCollectionService
    private static final Logger logger = Logger.getLogger(RelationshipsCollectionService.class.getName());
 
    private RelationshipRepository repo;
-   private SolrRelationshipSearchService service;
+   private RelationshipSearchService service;
 
    public void setRepository(RelationshipRepository repo)
    {
       this.repo = repo;
    }
 
-   public void setRelationshipService(SolrRelationshipSearchService service)
+   public void setRelationshipService(RelationshipSearchService service)
    {
       this.service = service;
 
