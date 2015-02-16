@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
 import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
@@ -34,7 +34,7 @@ public class RelnSolrProxy
 
    private SolrInputDocument document;
 
-   public static RelnSolrProxy create(Relationship reln, JsonMapper jsonMapper) throws JsonException
+   public static RelnSolrProxy create(Relationship reln)
    {
       RelnSolrProxy proxy = new RelnSolrProxy();
       RelationshipDV relnDV = RelationshipDV.create(reln);
@@ -46,7 +46,15 @@ public class RelnSolrProxy
       proxy.addRelatedEntities(relnDV.relatedEntities);
       proxy.addTargetEntities(relnDV.targetEntities);
       proxy.addProvenance(relnDV.provenance);
-      proxy.addRelationshipModel(jsonMapper.asString(relnDV));
+
+      try
+      {
+         proxy.addRelationshipModel(SolrRelationshipSearchService.mapper.writeValueAsString(relnDV));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize relationship DV", e);
+      }
 
       return proxy;
    }

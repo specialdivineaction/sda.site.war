@@ -9,9 +9,10 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipChangeEvent;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
@@ -25,20 +26,28 @@ import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
  */
 public class SolrRelationshipSearchService implements RelationshipSearchIndexManager, RelationshipSearchService
 {
+   private final static Logger logger = Logger.getLogger(SolrRelationshipSearchService.class.getName());
+
    /** Configuration property key that defines the URI for the Solr server. */
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
 
    /** Configuration property key that defines Solr core to be used for relationships. */
    public static final String SOLR_CORE = "catalogentries.relationships.solr.core";
 
-   private final static Logger logger = Logger.getLogger(SolrRelationshipSearchService.class.getName());
+   // configured here for use by other classes in this package - these classes are effectively
+   // delegates of this service's responsibilities
+   static final ObjectMapper mapper;
+   static {
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+   }
+
 
    private RelationshipRepository repo;
    private AutoCloseable registration;
 
    private SolrServer solr;
    private ConfigurationProperties config;
-   private JsonMapper jsonMapper;
    private RelationshipTypeRegistry typeReg;
 
    public SolrRelationshipSearchService()
@@ -61,11 +70,6 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    public void setTypeRegistry(RelationshipTypeRegistry typeReg)
    {
       this.typeReg = typeReg;
-   }
-
-   public void setJsonMapper(JsonMapper mapper)
-   {
-      this.jsonMapper = mapper;
    }
 
    public void activate()
@@ -155,17 +159,13 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    {
       try
       {
-         RelnSolrProxy proxy = RelnSolrProxy.create(reln, jsonMapper);
+         RelnSolrProxy proxy = RelnSolrProxy.create(reln);
          solr.add(proxy.getDocument());
          solr.commit();
       }
       catch (SolrServerException | IOException e)
       {
-         logger.log(Level.SEVERE, "Failed to commit new relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
-      }
-      catch (JsonException je)
-      {
-         logger.log(Level.SEVERE, "Failed to parse relationship id:[" + reln.getId() + "] " + je);
+         logger.log(Level.SEVERE, "Failed to commit new relationship id: [" + reln.getId() + "] to the SOLR server. " + e);
       }
    }
 
@@ -173,17 +173,13 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    {
       try
       {
-         RelnSolrProxy proxy = RelnSolrProxy.create(reln, jsonMapper);
+         RelnSolrProxy proxy = RelnSolrProxy.create(reln);
          solr.add(proxy.getDocument());
          solr.commit();
       }
       catch (SolrServerException | IOException e)
       {
-         logger.log(Level.SEVERE, "Failed to commit the updated relationship id:[" + reln.getId() + "] to the SOLR server. " + e);
-      }
-      catch (JsonException je)
-      {
-         logger.log(Level.SEVERE, "Failed to parse relationship id:[" + reln.getId() + "] " + je);
+         logger.log(Level.SEVERE, "Failed to commit the updated relationship id: [" + reln.getId() + "] to the SOLR server. " + e);
       }
    }
 
@@ -196,7 +192,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
       }
       catch (SolrServerException | IOException e)
       {
-         logger.log(Level.SEVERE, "Failed to delete relationship id:[" + id + "] to the SOLR server. " + e);
+         logger.log(Level.SEVERE, "Failed to delete relationship id: [" + id + "] to the SOLR server. " + e);
       }
    }
 
@@ -206,11 +202,11 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
       SolrRelationshipQuery q = SolrRelationshipQuery.query(entry);
       try
       {
-         return q.getResults(solr.query(q.query), jsonMapper, typeReg);
+         return q.getResults(solr.query(q.query), typeReg);
       }
       catch (SolrServerException e)
       {
-         logger.log(Level.SEVERE, "Query to SOLR server failed while searching for entry:[" + entry + "]. " + e);
+         logger.log(Level.SEVERE, "Query to SOLR server failed while searching for entry: [" + entry + "]. " + e);
       }
       return null;
    }

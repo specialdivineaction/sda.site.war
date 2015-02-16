@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,8 +12,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipException;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
@@ -25,8 +24,6 @@ public class SolrRelationshipQuery
 
    public SolrQuery query;
    private Collection<Relationship> relationships;
-   private JsonMapper jsonMapper;
-   private RelationshipTypeRegistry typeReg;
 
    public SolrRelationshipQuery()
    {
@@ -40,10 +37,8 @@ public class SolrRelationshipQuery
       return solrRelnQuery;
    }
 
-   public Collection<Relationship> getResults(QueryResponse response, JsonMapper jsonMapper, RelationshipTypeRegistry typeReg)
+   public Collection<Relationship> getResults(QueryResponse response, RelationshipTypeRegistry typeReg)
    {
-      this.jsonMapper = jsonMapper;
-      this.typeReg = typeReg;
       relationships = new HashSet<>();
       String relationshipJson = null;
       RelationshipDV dv = new RelationshipDV();
@@ -54,16 +49,16 @@ public class SolrRelationshipQuery
          try
          {
             String relationship = result.getFieldValue("relationshipModel").toString();
-            dv = this.jsonMapper.parse(relationship, RelationshipDV.class);
-            relationships.add(RelationshipDV.instantiate(dv, this.typeReg));
+            dv = SolrRelationshipSearchService.mapper.readValue(relationship, RelationshipDV.class);
+            relationships.add(RelationshipDV.instantiate(dv, typeReg));
          }
-         catch (JsonException e)
+         catch (IOException e)
          {
-            logger.log(Level.SEVERE, "Failed to parse relationship record :[" + relationshipJson + "]. " + e);
+            logger.log(Level.SEVERE, "Failed to parse relationship record: [" + relationshipJson + "]. " + e);
          }
          catch (RelationshipException e)
          {
-            logger.log(Level.SEVERE, "Error occurred while instantiating the relationship :[" + dv.id + "]. " + e);
+            logger.log(Level.SEVERE, "Error occurred while instantiating the relationship: [" + dv.id + "]. " + e);
          }
 
       }
