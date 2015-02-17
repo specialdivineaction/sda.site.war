@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
+import edu.tamu.tcat.sda.catalog.relationship.RelationshipDirection;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService;
 import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
@@ -33,11 +34,6 @@ public class RelationshipsCollectionService
 
    private RelationshipRepository repo;
    private RelationshipSearchService service;
-
-   public enum RelnDirection
-   {
-      from, to, any;
-   }
 
    public void setRepository(RelationshipRepository repo)
    {
@@ -67,7 +63,7 @@ public class RelationshipsCollectionService
          @QueryParam(value="type") String type,
          @QueryParam(value="direction") String d)
    {
-      RelnDirection direction = parseDirection(d);
+      RelationshipDirection direction = parseDirection(d);
 
       // TODO - This will be taken care of on jira ticket https://issues.citd.tamu.edu/browse/RI-6
       List<RelationshipDV> relnDV = new ArrayList<>();
@@ -95,16 +91,16 @@ public class RelationshipsCollectionService
     * @param compareTo direction against which to compare
     * @return whether the direction of the relationship matches the {@code compareTo} parameter
     */
-   private boolean compareDirection(URI entity, Relationship reln, RelnDirection compareTo)
+   private boolean compareDirection(URI entity, Relationship reln, RelationshipDirection compareTo)
    {
-      if (compareTo == RelnDirection.any) {
+      if (compareTo == RelationshipDirection.any) {
          return true;
       }
 
       AnchorSet anchorSet;
-      if (compareTo == RelnDirection.to) {
+      if (compareTo == RelationshipDirection.to) {
          anchorSet = reln.getTargetEntities();
-      } else if (compareTo == RelnDirection.from) {
+      } else if (compareTo == RelationshipDirection.from) {
          anchorSet = reln.getRelatedEntities();
       } else {
          throw new IllegalStateException("Unexpected value for relation direction: " + compareTo.toString());
@@ -117,19 +113,19 @@ public class RelationshipsCollectionService
       return uris.contains(entity);
    }
 
-   private RelnDirection parseDirection(String d)
+   private RelationshipDirection parseDirection(String d)
    {
       if (d == null)
-         return RelnDirection.any;
+         return RelationshipDirection.any;
 
       try
       {
-         return RelnDirection.valueOf(d.toLowerCase());
+         return RelationshipDirection.valueOf(d.toLowerCase());
       }
       catch (IllegalArgumentException iea)
       {
          Joiner joiner = Joiner.on(", ");
-         throw new BadRequestException("Invalid value for query parameter 'direction' [" + d + "]. Must be one of the following: " + joiner.join(RelnDirection.values()));
+         throw new BadRequestException("Invalid value for query parameter 'direction' [" + d + "]. Must be one of the following: " + joiner.join(RelationshipDirection.values()));
       }
    }
 

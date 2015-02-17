@@ -11,7 +11,10 @@ public interface RelationshipSearchService
     * @return
     * FIXME belongs in search
     */
+   @Deprecated
    Iterable<Relationship> findRelationshipsFor(URI entry);
+
+   RelationshipQueryCommand createQueryCommand();
 
    Iterable<Relationship> findRelationshipsBy(URI creator);
 }
