@@ -3,7 +3,9 @@ package edu.tamu.tcat.sda.catalog.relationship.rest.v1;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -16,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.common.base.Joiner;
 
+import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
 import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
@@ -71,9 +74,47 @@ public class RelationshipsCollectionService
       Iterable<Relationship> foundRelns = service.findRelationshipsFor(entity);
       for (Relationship reln : foundRelns)
       {
-           relnDV.add(RelationshipDV.create(reln));
+         // HACK: querying by type should be part of the RelationshipSearchService API
+         if (type != null && !reln.getType().getIdentifier().equals(type)) {
+            continue;
+         }
+
+         // HACK: querying by direction should be part of the RelationshipSearchService API
+         if (compareDirection(entity, reln, direction)) {
+            relnDV.add(RelationshipDV.create(reln));
+         }
       }
       return relnDV;
+   }
+
+   /**
+    * Compares the direction of a relationship relative to an entity URI against a given direction.
+    *
+    * @param source reference entity
+    * @param reln relationship contain
+    * @param compareTo direction against which to compare
+    * @return whether the direction of the relationship matches the {@code compareTo} parameter
+    */
+   private boolean compareDirection(URI entity, Relationship reln, RelnDirection compareTo)
+   {
+      if (compareTo == RelnDirection.any) {
+         return true;
+      }
+
+      AnchorSet anchorSet;
+      if (compareTo == RelnDirection.to) {
+         anchorSet = reln.getTargetEntities();
+      } else if (compareTo == RelnDirection.from) {
+         anchorSet = reln.getRelatedEntities();
+      } else {
+         throw new IllegalStateException("Unexpected value for relation direction: " + compareTo.toString());
+      }
+
+      Set<URI> uris = anchorSet.getAnchors().parallelStream()
+         .flatMap(a -> a.getEntryIds().parallelStream())
+         .collect(Collectors.toSet());
+
+      return uris.contains(entity);
    }
 
    private RelnDirection parseDirection(String d)
