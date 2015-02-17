@@ -2,6 +2,7 @@ package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -14,6 +15,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import com.google.common.base.Joiner;
+
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipDirection;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipException;
@@ -24,17 +27,18 @@ import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
 {
    private final static Logger logger = Logger.getLogger(RelationshipSolrQueryCommand.class.getName());
-   private SolrQuery query;
-   private StringBuilder sb;
+
+   private SolrQuery query = new SolrQuery();
+   private Collection<String> criteria = new ArrayList<>();
+
    private RelationshipTypeRegistry typeReg;
    private SolrServer solr;
+
 
    public RelationshipSolrQueryCommand(SolrServer solr, RelationshipTypeRegistry typeReg)
    {
       this.solr = solr;
       this.typeReg = typeReg;
-      query = new SolrQuery();
-      sb = new StringBuilder();
 
       // HACK: Return all, until we build in a paging system.
       query.setRows(100);
@@ -84,7 +88,8 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
 
    public SolrQuery getQuery()
    {
-      query.setQuery(sb.toString().trim());
+      String queryString = Joiner.on(" AND ").join(criteria);
+      query.setQuery(queryString);
       return query;
    }
 
@@ -94,19 +99,18 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    @Override
    public RelationshipQueryCommand forEntity(URI entity, RelationshipDirection direction)
    {
+      String entityString = entity.toString();
 
       switch(direction)
       {
          case any:
-            sb.append(" (relatedEntities:" + entity.toString());
-            sb.append(" OR ");
-            sb.append("targetEntities:" + entity.toString() + ")");
+            criteria.add("(relatedEntities:\"" + entityString + "\" OR targetEntities:\"" + entityString + "\")");
             break;
          case to:
-            sb.append(" targetEntities:" + entity.toString());
+            criteria.add("targetEntities:\"" + entityString + "\"");
             break;
          case from:
-            sb.append(" relatedEntities:" + entity.toString());
+            criteria.add("relatedEntities:\"" + entityString + "\"");
             break;
          default:
             throw new IllegalStateException("Relationship direction not defined");
@@ -129,7 +133,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    @Override
    public RelationshipQueryCommand byType(String typeId)
    {
-      sb.append(" relationshipType:" + typeId);
+      criteria.add("relationshipType:\"" + typeId + "\"");
       return this;
    }
 
