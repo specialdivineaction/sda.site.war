@@ -41,7 +41,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
       this.typeReg = typeReg;
 
       // HACK: Return all, until we build in a paging system.
-      query.setRows(100);
+      query.setRows(Integer.valueOf(100));
    }
 
    /* (non-Javadoc)
