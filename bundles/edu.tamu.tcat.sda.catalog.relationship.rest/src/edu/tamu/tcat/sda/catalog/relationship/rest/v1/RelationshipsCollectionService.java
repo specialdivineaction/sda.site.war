@@ -41,7 +41,6 @@ public class RelationshipsCollectionService
    public void setRelationshipService(RelationshipSearchService service)
    {
       this.service = service;
-
    }
 
    public void activate()
@@ -61,6 +60,10 @@ public class RelationshipsCollectionService
          @QueryParam(value="type") String type,
          @QueryParam(value="direction") String d)
    {
+      if (entity == null) {
+         throw new BadRequestException("No \"entity\" parameter value was provided.");
+      }
+
       RelationshipDirection direction = parseDirection(d);
 
       RelationshipQueryCommand qcmd = service.createQueryCommand()
