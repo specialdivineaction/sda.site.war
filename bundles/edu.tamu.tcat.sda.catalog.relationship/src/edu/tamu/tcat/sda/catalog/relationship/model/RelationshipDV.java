@@ -71,7 +71,7 @@ public class RelationshipDV
       String descType = data.descriptionMimeType;
       Provenance prov = (data.provenance != null) ? ProvenanceDV.instantiate(data.provenance) : new BasicProvenance();
       AnchorSet related = createAnchorSet(data.relatedEntities);
-      AnchorSet target = createAnchorSet(data.relatedEntities);
+      AnchorSet target = createAnchorSet(data.targetEntities);
 
       return new BasicRelationship(id, type, desc, descType, prov, related, target);
    }
