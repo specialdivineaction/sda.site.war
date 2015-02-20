@@ -77,7 +77,7 @@ public class AuthorController
                query.setQuery(deathDate + ":*" + first + "*");
                break;
             case numResults:
-               query.setRows(Integer.parseInt(first));
+               query.setRows(Integer.valueOf(first));
                break;
             default:
                query.setQuery(syntheticName + ":*" + first + "*");

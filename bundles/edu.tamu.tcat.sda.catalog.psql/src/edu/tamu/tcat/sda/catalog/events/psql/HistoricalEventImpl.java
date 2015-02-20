@@ -19,6 +19,7 @@ public class HistoricalEventImpl implements HistoricalEvent
    private final String location;
    private final DateDescription eventDate;
 
+   @SuppressWarnings("deprecation")
    public HistoricalEventImpl(HistoricalEventDV src)
    {
       this.id = src.id;
@@ -27,6 +28,7 @@ public class HistoricalEventImpl implements HistoricalEvent
       this.location = src.location;
 
       if (src.date == null) {
+         // support legacy data
          if (src.eventDate != null) {
             Instant instant = Instant.ofEpochMilli(src.eventDate.getTime());
             LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.relationship.Relationship;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipChangeEvent;
+import edu.tamu.tcat.sda.catalog.relationship.RelationshipQueryCommand;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchIndexManager;
 import edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService;
@@ -199,16 +200,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    @Override
    public Iterable<Relationship> findRelationshipsFor(URI entry)
    {
-      SolrRelationshipQuery q = SolrRelationshipQuery.query(entry);
-      try
-      {
-         return q.getResults(solr.query(q.query), typeReg);
-      }
-      catch (SolrServerException e)
-      {
-         logger.log(Level.SEVERE, "Query to SOLR server failed while searching for entry: [" + entry + "]. " + e);
-      }
-      return null;
+      return createQueryCommand().forEntity(entry).getResults();
    }
 
    @Override
@@ -216,6 +208,12 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    {
       // TODO Auto-generated method stub
       return null;
+   }
+
+   @Override
+   public RelationshipQueryCommand createQueryCommand()
+   {
+      return new RelationshipSolrQueryCommand(solr, typeReg);
    }
 
 }
