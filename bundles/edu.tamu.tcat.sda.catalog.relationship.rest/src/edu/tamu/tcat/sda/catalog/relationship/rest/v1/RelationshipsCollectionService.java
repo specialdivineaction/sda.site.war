@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.catalog.relationship.rest.v1;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import javax.ws.rs.BadRequestException;
@@ -31,7 +32,7 @@ public class RelationshipsCollectionService
    private static final Logger logger = Logger.getLogger(RelationshipsCollectionService.class.getName());
 
    private RelationshipRepository repo;
-   private RelationshipSearchService service;
+   private RelationshipSearchService relnSearchService;
 
    public void setRepository(RelationshipRepository repo)
    {
@@ -40,7 +41,7 @@ public class RelationshipsCollectionService
 
    public void setRelationshipService(RelationshipSearchService service)
    {
-      this.service = service;
+      this.relnSearchService = service;
    }
 
    public void activate()
@@ -66,15 +67,16 @@ public class RelationshipsCollectionService
 
       RelationshipDirection direction = parseDirection(d);
 
-      RelationshipQueryCommand qcmd = service.createQueryCommand()
-            .forEntity(entity, direction);
+      Objects.requireNonNull(relnSearchService, "relationship search service is not defined");
+      RelationshipQueryCommand queryCommand = relnSearchService.createQueryCommand();
+      queryCommand.forEntity(entity, direction);
 
       if (type != null) {
-         qcmd.byType(type);
+         queryCommand.byType(type);
       }
 
       List<RelationshipDV> relnDV = new ArrayList<>();
-      for (Relationship reln : qcmd.getResults())
+      for (Relationship reln : queryCommand.getResults())
       {
          relnDV.add(RelationshipDV.create(reln));
       }
