@@ -41,9 +41,7 @@ public class TestSolrQueryBuilder
    @Test
    public void testQueryBuilder()
    {
-      List<String> fieldNames = new ArrayList<>();
-      fieldNames.add("source");
-      fieldNames.add("access");
+      String[] fieldNames = {"source", "access"};
 
       Date startDate = Date.valueOf("1700-01-01");
       Date endDate = Date.valueOf("1800-01-01");
