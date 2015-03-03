@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Postgres Backed Persistence for Bibliography Entries
+Bundle-SymbolicName: edu.tamu.tcat.catalogentries.bibliography.postgres
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Texas A&M Engineering Experiment Station
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: edu.tamu.tcat.catalogentries,
+ edu.tamu.tcat.catalogentries.bibliography,
+ edu.tamu.tcat.catalogentries.bibliography.dv,
+ edu.tamu.tcat.catalogentries.biography,
+ edu.tamu.tcat.catalogentries.events,
+ edu.tamu.tcat.catalogentries.events.dv,
+ edu.tamu.tcat.db.exec.sql;version="1.0.0",
+ edu.tamu.tcat.oss.json,
+ edu.tamu.tcat.sda.datastore,
+ org.postgresql.util
+Export-Package: edu.tamu.tcat.catalogentries.bibliography.postgres,
+ edu.tamu.tcat.catalogentries.bibliography.postgres.model
