@@ -2,7 +2,7 @@ package edu.tamu.tcat.catalogentries.works;
 
 import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.people.Person;
+import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.sda.datastore.DataStore;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;

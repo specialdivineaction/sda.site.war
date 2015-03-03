@@ -19,11 +19,11 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
+import edu.tamu.tcat.catalogentries.biography.dv.SimplePersonDV;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
-import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.people.dv.PersonNameDV;
-import edu.tamu.tcat.catalogentries.people.dv.SimplePersonDV;
 import edu.tamu.tcat.oss.json.JsonException;
 
 public class AuthorController

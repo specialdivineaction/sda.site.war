@@ -1,8 +1,8 @@
-package edu.tamu.tcat.catalogentries.people;
+package edu.tamu.tcat.catalogentries.biography;
 
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 /**

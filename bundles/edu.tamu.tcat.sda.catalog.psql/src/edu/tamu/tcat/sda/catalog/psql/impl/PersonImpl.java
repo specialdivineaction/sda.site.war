@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.tamu.tcat.catalogentries.biography.Person;
+import edu.tamu.tcat.catalogentries.biography.PersonName;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
 import edu.tamu.tcat.catalogentries.events.HistoricalEvent;
-import edu.tamu.tcat.catalogentries.people.Person;
-import edu.tamu.tcat.catalogentries.people.PersonName;
-import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.people.dv.PersonNameDV;
 import edu.tamu.tcat.sda.catalog.events.psql.HistoricalEventImpl;
 
 public class PersonImpl implements Person

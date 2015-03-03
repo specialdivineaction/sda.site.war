@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.people.dv;
+package edu.tamu.tcat.catalogentries.biography.dv;
 
 import java.util.ArrayList;
 import java.util.Date;

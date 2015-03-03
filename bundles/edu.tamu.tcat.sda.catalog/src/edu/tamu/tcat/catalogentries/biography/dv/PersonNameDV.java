@@ -1,6 +1,6 @@
-package edu.tamu.tcat.catalogentries.people.dv;
+package edu.tamu.tcat.catalogentries.biography.dv;
 
-import edu.tamu.tcat.catalogentries.people.PersonName;
+import edu.tamu.tcat.catalogentries.biography.PersonName;
 
 public class PersonNameDV
 {

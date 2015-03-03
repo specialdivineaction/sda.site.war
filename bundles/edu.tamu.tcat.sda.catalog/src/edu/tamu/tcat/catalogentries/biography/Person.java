@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.people;
+package edu.tamu.tcat.catalogentries.biography;
 
 import java.util.Set;
 

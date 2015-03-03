@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import edu.tamu.tcat.catalogentries.people.PersonName;
-import edu.tamu.tcat.catalogentries.people.dv.PersonNameDV;
+import edu.tamu.tcat.catalogentries.biography.PersonName;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
 
 public class PersonNameImpl implements PersonName
 {
