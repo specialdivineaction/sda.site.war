@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import edu.tamu.tcat.catalogentries.works.VolumeMutator;
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
-import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.bibliography.VolumeMutator;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
 
 public class VolumeMutatorImpl implements VolumeMutator
 {

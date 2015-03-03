@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
-import edu.tamu.tcat.catalogentries.works.AuthorReference;
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorReference;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
 
 public class AuthorReferenceImpl implements AuthorReference
 {

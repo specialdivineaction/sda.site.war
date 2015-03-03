@@ -2,8 +2,8 @@ package edu.tamu.tcat.sda.catalog.psql.tasks;
 
 import java.util.Objects;
 
-import edu.tamu.tcat.catalogentries.works.WorkRepository;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.WorkRepository;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonMapper;
 
 /**

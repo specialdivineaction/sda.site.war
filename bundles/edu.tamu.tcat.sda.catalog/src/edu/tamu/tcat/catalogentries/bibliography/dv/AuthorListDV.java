@@ -1,10 +1,10 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.tamu.tcat.catalogentries.works.AuthorList;
-import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorList;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorReference;
 
 
 public class AuthorListDV

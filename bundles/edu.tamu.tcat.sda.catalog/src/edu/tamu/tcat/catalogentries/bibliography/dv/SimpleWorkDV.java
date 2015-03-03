@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
 import java.util.List;
 

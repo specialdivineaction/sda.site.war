@@ -1,12 +1,12 @@
-package edu.tamu.tcat.catalogentries.works;
+package edu.tamu.tcat.catalogentries.bibliography;
 
 import java.util.Collection;
 import java.util.List;
 
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
-import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
 
 /**
  * Used to edit the properties of a {@link Volume}. A {@code VolumeMutator} is created

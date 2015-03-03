@@ -1,11 +1,11 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.catalogentries.works.Edition;
+import edu.tamu.tcat.catalogentries.bibliography.Edition;
 
 public class EditionDV
 {

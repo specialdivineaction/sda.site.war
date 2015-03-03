@@ -1,13 +1,13 @@
-package edu.tamu.tcat.catalogentries.works;
+package edu.tamu.tcat.catalogentries.bibliography;
 
 import java.util.Collection;
 import java.util.List;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
 
 /**
  * Used to edit the properties of an {@link Edition}. A {@code EditionMutator} is created

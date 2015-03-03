@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.AuthorList;
-import edu.tamu.tcat.catalogentries.works.Edition;
-import edu.tamu.tcat.catalogentries.works.PublicationInfo;
-import edu.tamu.tcat.catalogentries.works.TitleDefinition;
-import edu.tamu.tcat.catalogentries.works.Work;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorList;
+import edu.tamu.tcat.catalogentries.bibliography.Edition;
+import edu.tamu.tcat.catalogentries.bibliography.PublicationInfo;
+import edu.tamu.tcat.catalogentries.bibliography.TitleDefinition;
+import edu.tamu.tcat.catalogentries.bibliography.Work;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 
 public class WorkImpl implements Work
 {

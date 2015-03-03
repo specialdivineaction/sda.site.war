@@ -18,10 +18,10 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.works.dv.SimpleWorkDV;
-import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.SimpleWorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonException;
 
 @SuppressWarnings("unused")

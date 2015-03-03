@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.works;
+package edu.tamu.tcat.catalogentries.bibliography;
 
 /**
  * Defines a list of authors associated with a bibliographic work.

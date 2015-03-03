@@ -1,13 +1,13 @@
-package edu.tamu.tcat.catalogentries.works;
+package edu.tamu.tcat.catalogentries.bibliography;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 
 /**
  * Used to edit a {@link Work}. This class allows clients to make updates to a {@link Work}

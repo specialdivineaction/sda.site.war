@@ -23,11 +23,11 @@ import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.catalogentries.InvalidDataException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.EditWorkCommand;
-import edu.tamu.tcat.catalogentries.works.Work;
-import edu.tamu.tcat.catalogentries.works.WorkRepository;
-import edu.tamu.tcat.catalogentries.works.dv.CustomResultsDV;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.EditWorkCommand;
+import edu.tamu.tcat.catalogentries.bibliography.Work;
+import edu.tamu.tcat.catalogentries.bibliography.WorkRepository;
+import edu.tamu.tcat.catalogentries.bibliography.dv.CustomResultsDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.rest.model.WorkInfo;
 

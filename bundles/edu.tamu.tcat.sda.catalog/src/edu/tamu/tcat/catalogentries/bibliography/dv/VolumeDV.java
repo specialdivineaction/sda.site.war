@@ -1,10 +1,10 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.catalogentries.works.Volume;
+import edu.tamu.tcat.catalogentries.bibliography.Volume;
 
 public class VolumeDV
 {

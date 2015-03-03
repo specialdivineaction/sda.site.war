@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.postgresql.util.PGobject;
 
-import edu.tamu.tcat.catalogentries.works.Work;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.Work;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;

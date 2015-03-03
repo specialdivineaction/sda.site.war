@@ -4,5 +4,5 @@
    <service>
       <provide interface="edu.tamu.tcat.catalogentries.rest.VolumesResource"/>
    </service>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.works.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.bibliography.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>

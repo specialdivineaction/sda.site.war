@@ -1,6 +1,6 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
-import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorReference;
 
 public class AuthorRefDV
 {

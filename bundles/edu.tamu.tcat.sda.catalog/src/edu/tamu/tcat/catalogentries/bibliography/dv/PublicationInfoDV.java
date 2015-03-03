@@ -1,7 +1,7 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
+import edu.tamu.tcat.catalogentries.bibliography.PublicationInfo;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
-import edu.tamu.tcat.catalogentries.works.PublicationInfo;
 
 public class PublicationInfoDV
 {

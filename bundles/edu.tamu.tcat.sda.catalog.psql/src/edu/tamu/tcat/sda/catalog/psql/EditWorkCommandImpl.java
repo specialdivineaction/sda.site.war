@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.InvalidDataException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.EditWorkCommand;
-import edu.tamu.tcat.catalogentries.works.EditionMutator;
-import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
-import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.bibliography.EditWorkCommand;
+import edu.tamu.tcat.catalogentries.bibliography.EditionMutator;
+import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
 {

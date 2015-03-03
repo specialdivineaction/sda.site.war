@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.catalogentries.works.AuthorReference;
-import edu.tamu.tcat.catalogentries.works.Title;
-import edu.tamu.tcat.catalogentries.works.Work;
+import edu.tamu.tcat.catalogentries.bibliography.AuthorReference;
+import edu.tamu.tcat.catalogentries.bibliography.Title;
+import edu.tamu.tcat.catalogentries.bibliography.Work;
 
 
 /**

@@ -14,13 +14,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.works.EditWorkCommand;
-import edu.tamu.tcat.catalogentries.works.Edition;
-import edu.tamu.tcat.catalogentries.works.EditionMutator;
-import edu.tamu.tcat.catalogentries.works.Work;
-import edu.tamu.tcat.catalogentries.works.WorkRepository;
-import edu.tamu.tcat.catalogentries.works.dv.CustomResultsDV;
-import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.bibliography.EditWorkCommand;
+import edu.tamu.tcat.catalogentries.bibliography.Edition;
+import edu.tamu.tcat.catalogentries.bibliography.EditionMutator;
+import edu.tamu.tcat.catalogentries.bibliography.Work;
+import edu.tamu.tcat.catalogentries.bibliography.WorkRepository;
+import edu.tamu.tcat.catalogentries.bibliography.dv.CustomResultsDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
 
 @Path("/works/{workId}/editions")
 public class EditionsResource

@@ -1,9 +1,9 @@
 package edu.tamu.tcat.sda.catalog.psql.impl;
 
+import edu.tamu.tcat.catalogentries.bibliography.PublicationInfo;
+import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
 import edu.tamu.tcat.catalogentries.events.DateDescription;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
-import edu.tamu.tcat.catalogentries.works.PublicationInfo;
-import edu.tamu.tcat.catalogentries.works.dv.PublicationInfoDV;
 
 public class PublicationImpl implements PublicationInfo
 {

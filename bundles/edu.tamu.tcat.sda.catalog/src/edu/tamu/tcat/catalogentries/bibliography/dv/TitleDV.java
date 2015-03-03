@@ -1,6 +1,6 @@
-package edu.tamu.tcat.catalogentries.works.dv;
+package edu.tamu.tcat.catalogentries.bibliography.dv;
 
-import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.bibliography.Title;
 
 public class TitleDV
 {
