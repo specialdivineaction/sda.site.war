@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql;
+package edu.tamu.tcat.catalogentries.biography.postgres;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +23,6 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository
@@ -42,6 +41,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       this.exec = exec;
    }
 
+   @Deprecated // Create Jackson ObjectMapper directly
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;

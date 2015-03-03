@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.psql.impl;
+package edu.tamu.tcat.catalogentries.biography.postgres.model;
 
 import edu.tamu.tcat.catalogentries.biography.PersonName;
 import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
