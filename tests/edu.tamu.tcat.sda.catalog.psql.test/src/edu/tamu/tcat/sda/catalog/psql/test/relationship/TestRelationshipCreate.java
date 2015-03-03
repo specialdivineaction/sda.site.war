@@ -9,14 +9,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.tamu.tcat.catalogentries.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipPersistenceException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipRepository;
+import edu.tamu.tcat.catalogentries.relationship.model.AnchorDV;
+import edu.tamu.tcat.catalogentries.relationship.model.ProvenanceDV;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
-import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
-import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 public class TestRelationshipCreate
 {

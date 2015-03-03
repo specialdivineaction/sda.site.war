@@ -7,6 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
+import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
+import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
+
 
 public class People
 {

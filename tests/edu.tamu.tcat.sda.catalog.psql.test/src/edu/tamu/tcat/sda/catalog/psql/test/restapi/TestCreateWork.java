@@ -12,7 +12,16 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
+import edu.tamu.tcat.catalogentries.bibliography.dv.CustomResultsDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
+import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Works;
 
 

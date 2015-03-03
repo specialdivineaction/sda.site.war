@@ -18,6 +18,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
+import edu.tamu.tcat.catalogentries.relationship.rest.v1.model.RelationshipId;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
@@ -26,8 +28,6 @@ import edu.tamu.tcat.sda.catalog.psql.test.HTTPClient.RestHTTPClient;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanIdTableDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanRelationshipsDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Relationships;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
-import edu.tamu.tcat.sda.catalog.relationship.rest.v1.model.RelationshipId;
 
 public class TestRelationshipRESTApi
 {

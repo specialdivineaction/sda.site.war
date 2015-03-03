@@ -3,6 +3,10 @@ package edu.tamu.tcat.sda.catalog.psql.test.data;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.tamu.tcat.catalogentries.relationship.model.AnchorDV;
+import edu.tamu.tcat.catalogentries.relationship.model.ProvenanceDV;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
+
 public class Relationships
 {
    public Relationships(){}
