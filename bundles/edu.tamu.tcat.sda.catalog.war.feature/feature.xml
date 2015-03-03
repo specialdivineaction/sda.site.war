@@ -409,4 +409,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="edu.tamu.tcat.catalogentries.bibliography"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.catalogentries.biography"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
