@@ -19,7 +19,6 @@ public class HistoricalEventImpl implements HistoricalEvent
    private final String location;
    private final DateDescription eventDate;
 
-   @SuppressWarnings("deprecation")
    public HistoricalEventImpl(HistoricalEventDV src)
    {
       this.id = src.id;
