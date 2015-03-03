@@ -6,8 +6,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
-import edu.tamu.tcat.sda.catalog.IdFactory;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 
 public class DbIdFactoryTests

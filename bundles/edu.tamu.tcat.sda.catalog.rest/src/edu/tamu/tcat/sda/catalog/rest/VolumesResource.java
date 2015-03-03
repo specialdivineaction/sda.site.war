@@ -13,15 +13,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
-import edu.tamu.tcat.sda.catalog.works.Edition;
-import edu.tamu.tcat.sda.catalog.works.EditionMutator;
-import edu.tamu.tcat.sda.catalog.works.Volume;
-import edu.tamu.tcat.sda.catalog.works.VolumeMutator;
-import edu.tamu.tcat.sda.catalog.works.WorkRepository;
-import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
-import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.works.EditWorkCommand;
+import edu.tamu.tcat.catalogentries.works.Edition;
+import edu.tamu.tcat.catalogentries.works.EditionMutator;
+import edu.tamu.tcat.catalogentries.works.Volume;
+import edu.tamu.tcat.catalogentries.works.VolumeMutator;
+import edu.tamu.tcat.catalogentries.works.WorkRepository;
+import edu.tamu.tcat.catalogentries.works.dv.CustomResultsDV;
+import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
 
 @Path("/works/{workId}/editions/{editionId}/volumes")
 public class VolumesResource

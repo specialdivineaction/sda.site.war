@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
-import edu.tamu.tcat.sda.catalog.works.Title;
-import edu.tamu.tcat.sda.catalog.works.Volume;
-import edu.tamu.tcat.sda.catalog.works.dv.PublicationInfoDV;
-import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.works.PublicationInfo;
+import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.works.Volume;
+import edu.tamu.tcat.catalogentries.works.dv.PublicationInfoDV;
+import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
 
 public class VolumeImpl implements Volume
 {

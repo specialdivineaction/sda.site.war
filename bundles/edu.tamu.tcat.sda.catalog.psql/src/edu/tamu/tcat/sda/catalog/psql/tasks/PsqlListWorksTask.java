@@ -9,12 +9,12 @@ import java.util.List;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.catalogentries.works.Work;
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.impl.WorkImpl;
-import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterable<Work>>
 {

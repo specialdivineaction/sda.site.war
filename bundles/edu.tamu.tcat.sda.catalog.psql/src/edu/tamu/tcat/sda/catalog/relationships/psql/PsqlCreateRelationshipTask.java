@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 
 public class PsqlCreateRelationshipTask implements SqlExecutor.ExecutorTask<String>
 {

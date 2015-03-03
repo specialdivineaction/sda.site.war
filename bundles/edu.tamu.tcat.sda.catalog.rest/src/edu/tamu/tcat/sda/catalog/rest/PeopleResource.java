@@ -23,13 +23,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import edu.tamu.tcat.catalogentries.CatalogRepoException;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.people.PeopleRepository;
+import edu.tamu.tcat.catalogentries.people.Person;
+import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.sda.catalog.CatalogRepoException;
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
-import edu.tamu.tcat.sda.catalog.people.Person;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.rest.model.SimplePersonResultDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.tamu.tcat.sda.catalog.works.AuthorList;
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.works.AuthorList;
+import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
 
 public class AuthorListImpl implements AuthorList
 {

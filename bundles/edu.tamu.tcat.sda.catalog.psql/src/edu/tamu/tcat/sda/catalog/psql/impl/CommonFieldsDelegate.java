@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.Title;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
 
 /**
  * A helper class to manage fields that are common across different levels of the Work taxonomy.

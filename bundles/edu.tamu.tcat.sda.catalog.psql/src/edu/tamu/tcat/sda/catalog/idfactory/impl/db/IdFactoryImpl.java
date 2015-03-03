@@ -12,9 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.IdFactory;
 
 /**
  * An arbiter to hand out monotonically increasing numeric IDs unique to a particular (String)

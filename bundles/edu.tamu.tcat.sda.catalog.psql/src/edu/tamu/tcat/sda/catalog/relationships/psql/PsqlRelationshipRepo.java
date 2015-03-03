@@ -12,19 +12,19 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.tamu.tcat.catalogentries.IdFactory;
+import edu.tamu.tcat.catalogentries.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.catalogentries.relationship.Relationship;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipChangeEvent;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipChangeEvent.ChangeType;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipNotAvailableException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipPersistenceException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipRepository;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipTypeRegistry;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.IdFactory;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
-import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
-import edu.tamu.tcat.sda.catalog.relationship.Relationship;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipChangeEvent;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipChangeEvent.ChangeType;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipNotAvailableException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlRelationshipRepo implements RelationshipRepository

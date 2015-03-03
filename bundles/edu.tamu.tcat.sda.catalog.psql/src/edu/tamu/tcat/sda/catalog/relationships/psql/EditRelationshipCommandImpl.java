@@ -5,14 +5,14 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import edu.tamu.tcat.sda.catalog.IdFactory;
-import edu.tamu.tcat.sda.catalog.relationship.Anchor;
-import edu.tamu.tcat.sda.catalog.relationship.AnchorSet;
-import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipType;
-import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
+import edu.tamu.tcat.catalogentries.IdFactory;
+import edu.tamu.tcat.catalogentries.relationship.Anchor;
+import edu.tamu.tcat.catalogentries.relationship.AnchorSet;
+import edu.tamu.tcat.catalogentries.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipType;
+import edu.tamu.tcat.catalogentries.relationship.model.AnchorDV;
+import edu.tamu.tcat.catalogentries.relationship.model.ProvenanceDV;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 
 
 public class EditRelationshipCommandImpl implements EditRelationshipCommand

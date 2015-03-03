@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import edu.tamu.tcat.sda.catalog.works.AuthorList;
-import edu.tamu.tcat.sda.catalog.works.Title;
-import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
-import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.works.AuthorList;
+import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.works.TitleDefinition;
+import edu.tamu.tcat.catalogentries.works.Work;
+import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
 
 
 /**

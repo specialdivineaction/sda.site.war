@@ -19,16 +19,16 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
+import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
+import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.people.dv.PersonNameDV;
+import edu.tamu.tcat.catalogentries.people.dv.SimplePersonDV;
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
-import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonNameDV;
-import edu.tamu.tcat.sda.catalog.people.dv.SimplePersonDV;
 
 public class AuthorController
 {
-   Logger log = Logger.getLogger("edu.tamu.tcat.sda.catalog.solr.authorcontroller");
+   Logger log = Logger.getLogger("edu.tamu.tcat.catalogentries.solr.authorcontroller");
    private final SolrServer solr;
 
    private final static String personId = "id";

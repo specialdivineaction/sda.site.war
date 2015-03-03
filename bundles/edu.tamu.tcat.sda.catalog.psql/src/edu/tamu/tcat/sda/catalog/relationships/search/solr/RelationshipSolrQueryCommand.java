@@ -17,12 +17,12 @@ import org.apache.solr.common.SolrDocumentList;
 
 import com.google.common.base.Joiner;
 
-import edu.tamu.tcat.sda.catalog.relationship.Relationship;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipDirection;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipQueryCommand;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
+import edu.tamu.tcat.catalogentries.relationship.Relationship;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipDirection;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipQueryCommand;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipTypeRegistry;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 
 public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
 {
@@ -45,7 +45,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#getResults()
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#getResults()
     */
    @Override
    public Collection<Relationship> getResults()
@@ -94,7 +94,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI, edu.tamu.tcat.sda.catalog.relationship.RelationshipDirection)
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI, edu.tamu.tcat.catalogentries.relationship.RelationshipDirection)
     */
    @Override
    public RelationshipQueryCommand forEntity(URI entity, RelationshipDirection direction)
@@ -119,7 +119,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI)
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI)
     */
    @Override
    public RelationshipQueryCommand forEntity(URI entity)
@@ -128,7 +128,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#byType(java.lang.String)
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#byType(java.lang.String)
     */
    @Override
    public RelationshipQueryCommand byType(String typeId)
@@ -138,7 +138,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#setRowLimit(int)
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#setRowLimit(int)
     */
    @Override
    public RelationshipQueryCommand setRowLimit(int rows)
@@ -149,7 +149,7 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
 
    // TODO: decide on the proper way to organize the results
    /* (non-Javadoc)
-    * @see edu.tamu.tcat.sda.catalog.relationships.search.solr.RelationshipQueryCommand#oderBy()
+    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#oderBy()
     */
    @Override
    public RelationshipQueryCommand oderBy()

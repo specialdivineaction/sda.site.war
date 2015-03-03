@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.works.AuthorReference;
-import edu.tamu.tcat.sda.catalog.works.Edition;
-import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
-import edu.tamu.tcat.sda.catalog.works.Title;
-import edu.tamu.tcat.sda.catalog.works.Volume;
-import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.works.AuthorReference;
+import edu.tamu.tcat.catalogentries.works.Edition;
+import edu.tamu.tcat.catalogentries.works.PublicationInfo;
+import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.works.Volume;
+import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
 
 public class EditionImpl implements Edition
 {

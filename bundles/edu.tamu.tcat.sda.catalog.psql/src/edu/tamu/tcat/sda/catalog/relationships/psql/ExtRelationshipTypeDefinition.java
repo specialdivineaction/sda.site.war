@@ -2,7 +2,7 @@ package edu.tamu.tcat.sda.catalog.relationships.psql;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipType;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipType;
 
 public class ExtRelationshipTypeDefinition implements RelationshipType
 {

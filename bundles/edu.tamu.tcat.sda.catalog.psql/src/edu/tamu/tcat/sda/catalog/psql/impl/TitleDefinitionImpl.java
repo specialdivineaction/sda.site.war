@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import edu.tamu.tcat.sda.catalog.works.Title;
-import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.works.Title;
+import edu.tamu.tcat.catalogentries.works.TitleDefinition;
+import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
 
 public class TitleDefinitionImpl implements TitleDefinition
 {

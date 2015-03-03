@@ -396,13 +396,14 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.sda.catalog.relationship.rest"
+         id="edu.tamu.tcat.catalogentries.relationship"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.sda.catalog.relationship"
+         id="edu.tamu.tcat.catalogentries.relationship.rest"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -7,15 +7,15 @@ import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {
-   private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.sda.catalog.works.db.errors");
+   private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.catalogentries.works.db.errors");
    private final static String sql = "Update works "
                             + "   SET work = ?"
                             + "   WHERE id = ?";

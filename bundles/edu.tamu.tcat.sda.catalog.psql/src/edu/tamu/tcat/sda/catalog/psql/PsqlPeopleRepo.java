@@ -12,17 +12,17 @@ import java.util.concurrent.Future;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.catalogentries.CatalogRepoException;
+import edu.tamu.tcat.catalogentries.IdFactory;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.people.PeopleRepository;
+import edu.tamu.tcat.catalogentries.people.Person;
+import edu.tamu.tcat.catalogentries.people.PersonName;
+import edu.tamu.tcat.catalogentries.people.dv.PersonDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.CatalogRepoException;
-import edu.tamu.tcat.sda.catalog.IdFactory;
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.people.PeopleRepository;
-import edu.tamu.tcat.sda.catalog.people.Person;
-import edu.tamu.tcat.sda.catalog.people.PersonName;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.impl.PersonImpl;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 

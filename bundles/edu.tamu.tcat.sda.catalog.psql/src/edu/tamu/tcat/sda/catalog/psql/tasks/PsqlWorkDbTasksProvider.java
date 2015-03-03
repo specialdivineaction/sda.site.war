@@ -2,9 +2,9 @@ package edu.tamu.tcat.sda.catalog.psql.tasks;
 
 import java.util.Objects;
 
+import edu.tamu.tcat.catalogentries.works.WorkRepository;
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonMapper;
-import edu.tamu.tcat.sda.catalog.works.WorkRepository;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 /**
  * Provides access to database task implementations to support the {@link WorkRepository}.

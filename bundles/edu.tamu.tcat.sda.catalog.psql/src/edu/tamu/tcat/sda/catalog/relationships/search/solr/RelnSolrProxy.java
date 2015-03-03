@@ -6,10 +6,10 @@ import org.apache.solr.common.SolrInputDocument;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.tcat.sda.catalog.relationship.Relationship;
-import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
+import edu.tamu.tcat.catalogentries.relationship.Relationship;
+import edu.tamu.tcat.catalogentries.relationship.model.AnchorDV;
+import edu.tamu.tcat.catalogentries.relationship.model.ProvenanceDV;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
 
 /**
  *  A data structure for representing the searchable fields associated with a {@link Relationship}.

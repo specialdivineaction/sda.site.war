@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="122">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="130">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="jackson.feature.feature.group" version="2.3.1"/>
 <repository location="https://build.citd.tamu.edu/hudson/job/Jackson.P2/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.birt.feature.group" version="4.4.0.v201405191524-DPEp7FGixAot6DLz0hXcUqaHoLSX"/>
+<unit id="org.eclipse.birt.feature.group" version="4.4.1.v201408290142-DPEq8eGixAot6Wst_F1wRaIdN1Ls"/>
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
 <unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140606-1445"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140603-1326"/>
@@ -59,7 +59,7 @@
 <repository location="https://build.citd.tamu.edu/hudson/job/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.7.201411120958"/>
+<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.8.201411211217"/>
 <repository location="https://build.citd.tamu.edu/hudson/job/mirror.dependencies/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

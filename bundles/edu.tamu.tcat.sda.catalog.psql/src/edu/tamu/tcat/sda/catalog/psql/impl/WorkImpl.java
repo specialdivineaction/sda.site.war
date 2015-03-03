@@ -3,13 +3,13 @@ package edu.tamu.tcat.sda.catalog.psql.impl;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.works.AuthorList;
-import edu.tamu.tcat.sda.catalog.works.Edition;
-import edu.tamu.tcat.sda.catalog.works.PublicationInfo;
-import edu.tamu.tcat.sda.catalog.works.TitleDefinition;
-import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.works.AuthorList;
+import edu.tamu.tcat.catalogentries.works.Edition;
+import edu.tamu.tcat.catalogentries.works.PublicationInfo;
+import edu.tamu.tcat.catalogentries.works.TitleDefinition;
+import edu.tamu.tcat.catalogentries.works.Work;
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 
 public class WorkImpl implements Work
 {

@@ -3,15 +3,8 @@ package edu.tamu.tcat.sda.catalog.psql.test.restapi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -19,24 +12,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
-import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.osgi.services.util.ServiceHelper;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonTypeReference;
-import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Works;
-import edu.tamu.tcat.sda.catalog.solr.WorksController;
-import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
-import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
-import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 
 public class TestCreateWork

@@ -18,17 +18,17 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.works.dv.SimpleWorkDV;
+import edu.tamu.tcat.catalogentries.works.dv.VolumeDV;
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.SimpleWorkDV;
-import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 @SuppressWarnings("unused")
 public class WorksController
 {
 
-   Logger log = Logger.getLogger("edu.tamu.tcat.sda.catalog.solr.workcontroller");
+   Logger log = Logger.getLogger("edu.tamu.tcat.catalogentries.solr.workcontroller");
    private final String solrBaseUri = "https://sda-dev.citd.tamu.edu/solr/";
    private final SolrServer solr;
 

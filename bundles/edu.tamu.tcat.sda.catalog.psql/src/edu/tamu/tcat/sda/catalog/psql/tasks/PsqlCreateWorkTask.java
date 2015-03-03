@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
 
 public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String>
 {

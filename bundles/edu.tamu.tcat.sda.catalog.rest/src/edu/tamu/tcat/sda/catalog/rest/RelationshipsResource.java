@@ -14,18 +14,18 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipNotAvailableException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
-import edu.tamu.tcat.sda.catalog.works.dv.CustomResultsDV;
+import edu.tamu.tcat.catalogentries.relationship.EditRelationshipCommand;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipNotAvailableException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipPersistenceException;
+import edu.tamu.tcat.catalogentries.relationship.RelationshipRepository;
+import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
+import edu.tamu.tcat.catalogentries.works.dv.CustomResultsDV;
 
 @Path("/relationships")
 public class RelationshipsResource
 {
 
-   private Logger logger = Logger.getLogger("edu.tamu.tcat.sda.catalog.rest.relationshipsresource");
+   private Logger logger = Logger.getLogger("edu.tamu.tcat.catalogentries.rest.relationshipsresource");
  private RelationshipRepository repo;
 
  public void setRepository(RelationshipRepository repo)

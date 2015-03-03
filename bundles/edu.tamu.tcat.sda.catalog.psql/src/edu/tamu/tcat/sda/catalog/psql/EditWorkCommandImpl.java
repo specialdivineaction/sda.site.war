@@ -11,15 +11,15 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import edu.tamu.tcat.sda.catalog.IdFactory;
-import edu.tamu.tcat.sda.catalog.InvalidDataException;
-import edu.tamu.tcat.sda.catalog.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.catalog.works.EditWorkCommand;
-import edu.tamu.tcat.sda.catalog.works.EditionMutator;
-import edu.tamu.tcat.sda.catalog.works.dv.AuthorRefDV;
-import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.TitleDV;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+import edu.tamu.tcat.catalogentries.IdFactory;
+import edu.tamu.tcat.catalogentries.InvalidDataException;
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
+import edu.tamu.tcat.catalogentries.works.EditWorkCommand;
+import edu.tamu.tcat.catalogentries.works.EditionMutator;
+import edu.tamu.tcat.catalogentries.works.dv.AuthorRefDV;
+import edu.tamu.tcat.catalogentries.works.dv.EditionDV;
+import edu.tamu.tcat.catalogentries.works.dv.TitleDV;
+import edu.tamu.tcat.catalogentries.works.dv.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
 {
