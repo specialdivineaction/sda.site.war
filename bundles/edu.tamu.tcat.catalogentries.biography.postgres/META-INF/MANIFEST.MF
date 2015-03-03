@@ -12,5 +12,6 @@ Import-Package: edu.tamu.tcat.catalogentries,
  edu.tamu.tcat.db.exec.sql,
  edu.tamu.tcat.oss.json,
  edu.tamu.tcat.sda.catalog.events.psql,
+ edu.tamu.tcat.sda.catalog.psql,
  edu.tamu.tcat.sda.datastore,
  org.postgresql.util

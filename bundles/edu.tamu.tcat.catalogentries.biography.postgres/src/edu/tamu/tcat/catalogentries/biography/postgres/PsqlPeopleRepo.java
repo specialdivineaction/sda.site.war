@@ -19,10 +19,13 @@ import edu.tamu.tcat.catalogentries.biography.PeopleRepository;
 import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.catalogentries.biography.PersonName;
 import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.postgres.model.PersonImpl;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonMapper;
+import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
+import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlPeopleRepo implements PeopleRepository

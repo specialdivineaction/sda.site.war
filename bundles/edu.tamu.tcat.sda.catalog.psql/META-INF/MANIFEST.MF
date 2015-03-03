@@ -30,28 +30,14 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  org.apache.commons.logging;version="1.1.1",
  org.postgresql.util,
  org.slf4j;version="1.7.2"
-Export-Package: edu.tamu.tcat.sda.catalog.events.psql;uses:="edu.tamu.tcat.sda.catalog.events,edu.tamu.tcat.sda.catalog.events.dv",
- edu.tamu.tcat.sda.catalog.idfactory.impl.db;
-  uses:="edu.tamu.tcat.db.exec.sql,
-   edu.tamu.tcat.sda.catalog,
-   edu.tamu.tcat.osgi.config,
-   edu.tamu.tcat.oss.json",
+Export-Package: edu.tamu.tcat.sda.catalog.events.psql,
+ edu.tamu.tcat.sda.catalog.idfactory.impl.db,
  edu.tamu.tcat.sda.catalog.psql,
- edu.tamu.tcat.sda.catalog.psql.impl,
  edu.tamu.tcat.sda.catalog.psql.internal;x-internal:=true,
- edu.tamu.tcat.sda.catalog.psql.provider;uses:="edu.tamu.tcat.osgi.config,edu.tamu.tcat.db.provider,javax.sql",
- edu.tamu.tcat.sda.catalog.psql.tasks;
-  uses:="edu.tamu.tcat.sda.catalog.works.dv,
-   edu.tamu.tcat.db.exec.sql,
-   edu.tamu.tcat.sda.catalog.works,
-   edu.tamu.tcat.oss.json",
+ edu.tamu.tcat.sda.catalog.psql.provider,
  edu.tamu.tcat.sda.catalog.relationships.psql,
  edu.tamu.tcat.sda.catalog.relationships.search.solr,
- edu.tamu.tcat.sda.catalog.solr;
-  uses:="edu.tamu.tcat.sda.catalog.works.dv,
-   edu.tamu.tcat.sda.catalog.people.dv,
-   org.apache.solr.common,
-   javax.ws.rs.core"
+ edu.tamu.tcat.sda.catalog.solr
 Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
  lib/solr-core-4.9.0.jar,
  lib/solr-solrj-4.9.0.jar,
