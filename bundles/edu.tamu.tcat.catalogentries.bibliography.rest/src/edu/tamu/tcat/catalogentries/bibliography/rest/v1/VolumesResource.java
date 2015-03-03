@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.rest;
+package edu.tamu.tcat.catalogentries.bibliography.rest.v1;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
