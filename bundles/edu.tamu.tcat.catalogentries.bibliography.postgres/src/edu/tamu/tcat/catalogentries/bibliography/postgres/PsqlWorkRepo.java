@@ -30,12 +30,12 @@ public class PsqlWorkRepo implements WorkRepository
    public static final String WORK_CONTEXT = "works";
 
    private SqlExecutor exec;
+   @Deprecated
    private JsonMapper jsonMapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
 
    private IdFactory idFactory;
-
 
    public PsqlWorkRepo()
    {
@@ -51,6 +51,8 @@ public class PsqlWorkRepo implements WorkRepository
       this.peopleRepo = repo;
    }
 
+   // TODO configure Jackson ObjectMapper directly. This is an internal implementation detail
+   @Deprecated
    public void setJsonMapper(JsonMapper mapper)
    {
       this.jsonMapper = mapper;
