@@ -16,13 +16,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.catalogentries.bibliography.dv.CustomResultsDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Works;
+import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
+import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
 
 
 public class TestCreateWork

@@ -14,12 +14,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.catalogentries.bibliography.dv.CustomResultsDV;
 import edu.tamu.tcat.catalogentries.relationship.EditRelationshipCommand;
 import edu.tamu.tcat.catalogentries.relationship.RelationshipNotAvailableException;
 import edu.tamu.tcat.catalogentries.relationship.RelationshipPersistenceException;
 import edu.tamu.tcat.catalogentries.relationship.RelationshipRepository;
 import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
 
 @Path("/relationships")
 public class RelationshipsResource

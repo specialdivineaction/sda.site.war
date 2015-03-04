@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
+import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dv.PublicationInfoDV;
+import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
 
 public class WorkDocumentBuilder
 {

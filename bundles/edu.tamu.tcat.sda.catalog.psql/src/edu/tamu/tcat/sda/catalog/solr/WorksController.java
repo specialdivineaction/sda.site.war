@@ -18,11 +18,11 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.SimpleWorkDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dv.SimpleWorkDV;
+import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
 
 @SuppressWarnings("unused")
 public class WorksController

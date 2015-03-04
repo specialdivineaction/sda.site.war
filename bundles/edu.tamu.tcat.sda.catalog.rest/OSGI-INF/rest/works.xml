@@ -5,5 +5,5 @@
       <provide interface="edu.tamu.tcat.catalogentries.rest.WorksResource"/>
    </service>
    <reference bind="setConfigurationProperties" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.bibliography.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>

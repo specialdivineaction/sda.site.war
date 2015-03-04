@@ -9,13 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.tamu.tcat.catalogentries.bibliography.dv.AuthorRefDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.EditionDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.PublicationInfoDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.TitleDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.VolumeDV;
-import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
+import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dv.PublicationInfoDV;
+import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
 
 public class Works
 {

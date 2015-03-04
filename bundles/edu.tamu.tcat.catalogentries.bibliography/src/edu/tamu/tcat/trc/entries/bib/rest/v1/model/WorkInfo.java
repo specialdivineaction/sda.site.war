@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.rest.model;
+package edu.tamu.tcat.trc.entries.bib.rest.v1.model;
 
 import java.util.ArrayList;
 import java.util.List;
