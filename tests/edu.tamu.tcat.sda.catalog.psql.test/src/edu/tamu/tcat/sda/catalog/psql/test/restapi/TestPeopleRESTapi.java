@@ -35,12 +35,12 @@ import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.people.Person;
-import edu.tamu.tcat.sda.catalog.people.dv.PersonDV;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.psql.test.data.People;
 import edu.tamu.tcat.sda.catalog.rest.ResourceCreationException;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 
 public class TestPeopleRESTapi
 {

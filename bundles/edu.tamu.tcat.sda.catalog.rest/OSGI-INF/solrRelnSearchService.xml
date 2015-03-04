@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="edu.tamu.tcat.sda.catalog.reln.search.solr">
-   <implementation class="edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrRelationshipSearchService"/>
-   <reference bind="setRelationshipRepo" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository" name="RelationshipRepository" policy="static"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="edu.tamu.tcat.catalogentries.reln.search.solr">
+   <implementation class="edu.tamu.tcat.catalogentries.relationships.search.solr.SolrRelationshipSearchService"/>
+   <reference bind="setRelationshipRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.reln.RelationshipRepository" name="RelationshipRepository" policy="static"/>
    <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
-   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
+   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.reln.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.sda.catalog.relationship.RelationshipSearchService"/>
+      <provide interface="edu.tamu.tcat.trc.entries.reln.RelationshipSearchService"/>
    </service>
 </scr:component>

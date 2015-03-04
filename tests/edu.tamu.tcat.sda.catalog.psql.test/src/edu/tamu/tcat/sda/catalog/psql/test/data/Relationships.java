@@ -3,9 +3,9 @@ package edu.tamu.tcat.sda.catalog.psql.test.data;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
+import edu.tamu.tcat.trc.entries.reln.model.ProvenanceDV;
+import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
 
 public class Relationships
 {

@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import edu.tamu.tcat.sda.catalog.events.DateDescription;
-import edu.tamu.tcat.sda.catalog.events.HistoricalEvent;
-import edu.tamu.tcat.sda.catalog.events.dv.DateDescriptionDV;
-import edu.tamu.tcat.sda.catalog.events.dv.HistoricalEventDV;
+import edu.tamu.tcat.catalogentries.events.DateDescription;
+import edu.tamu.tcat.catalogentries.events.HistoricalEvent;
+import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
+import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
 
 public class HistoricalEventImpl implements HistoricalEvent
 {
@@ -19,7 +19,6 @@ public class HistoricalEventImpl implements HistoricalEvent
    private final String location;
    private final DateDescription eventDate;
 
-   @SuppressWarnings("deprecation")
    public HistoricalEventImpl(HistoricalEventDV src)
    {
       this.id = src.id;

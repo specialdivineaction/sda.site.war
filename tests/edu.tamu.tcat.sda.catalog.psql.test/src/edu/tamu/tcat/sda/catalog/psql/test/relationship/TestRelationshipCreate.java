@@ -11,12 +11,12 @@ import org.junit.Test;
 
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
-import edu.tamu.tcat.sda.catalog.relationship.EditRelationshipCommand;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipPersistenceException;
-import edu.tamu.tcat.sda.catalog.relationship.RelationshipRepository;
-import edu.tamu.tcat.sda.catalog.relationship.model.AnchorDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.ProvenanceDV;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.EditRelationshipCommand;
+import edu.tamu.tcat.trc.entries.reln.RelationshipPersistenceException;
+import edu.tamu.tcat.trc.entries.reln.RelationshipRepository;
+import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
+import edu.tamu.tcat.trc.entries.reln.model.ProvenanceDV;
+import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
 
 public class TestRelationshipCreate
 {

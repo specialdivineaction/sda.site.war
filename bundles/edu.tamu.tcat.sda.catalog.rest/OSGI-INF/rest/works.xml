@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.sda.catalog.rest.resource.works">
-   <implementation class="edu.tamu.tcat.sda.catalog.rest.WorksResource"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.rest.resource.works">
+   <implementation class="edu.tamu.tcat.catalogentries.rest.WorksResource"/>
    <service>
-      <provide interface="edu.tamu.tcat.sda.catalog.rest.WorksResource"/>
+      <provide interface="edu.tamu.tcat.catalogentries.rest.WorksResource"/>
    </service>
    <reference bind="setConfigurationProperties" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.works.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>

@@ -26,8 +26,8 @@ import edu.tamu.tcat.sda.catalog.psql.test.HTTPClient.RestHTTPClient;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanIdTableDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanRelationshipsDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Relationships;
-import edu.tamu.tcat.sda.catalog.relationship.model.RelationshipDV;
-import edu.tamu.tcat.sda.catalog.relationship.rest.v1.model.RelationshipId;
+import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.rest.v1.model.RelationshipId;
 
 public class TestRelationshipRESTApi
 {

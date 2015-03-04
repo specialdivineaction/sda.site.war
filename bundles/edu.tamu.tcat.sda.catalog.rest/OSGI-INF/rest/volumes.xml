@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.sda.catalog.rest.resource.volumes">
-   <implementation class="edu.tamu.tcat.sda.catalog.rest.VolumesResource"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.rest.resource.volumes">
+   <implementation class="edu.tamu.tcat.catalogentries.rest.VolumesResource"/>
    <service>
-      <provide interface="edu.tamu.tcat.sda.catalog.rest.VolumesResource"/>
+      <provide interface="edu.tamu.tcat.catalogentries.rest.VolumesResource"/>
    </service>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.sda.catalog.works.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>
