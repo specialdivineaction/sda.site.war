@@ -1,7 +1,6 @@
 package edu.tamu.tcat.sda.catalog.solr.test;
 
 import java.sql.Date;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.trc.entries.reln.solr.SolrQueryBuilder;
+import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrQueryBuilder;
 
 public class TestSolrQueryBuilder
 {
@@ -50,12 +49,11 @@ public class TestSolrQueryBuilder
       Integer countinueFrom = 0;
 
       SolrQuery sqBuilder = (new SolrQueryBuilder())
-                                   .newQuery()
                                    .setQueryString("title","\"Gilbert West\"")
-                                   .addFacetFields(Arrays.asList(fieldNames))
+                                   .addFacetFields(fieldNames)
                                    .addFacetRange("publicationDate", startDate, endDate, "+5YEARS")
-                                   .setNumRows(rowsToReturn.intValue())
-                                   .setStartRows(countinueFrom.intValue())
+                                   .setLimit(rowsToReturn.intValue())
+                                   .setStart(countinueFrom.intValue())
                                    .addHighLighting("title")
                                    .setSort("publicationDate", ORDER.asc)
                                    .build();

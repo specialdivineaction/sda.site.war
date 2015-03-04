@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.reln.solr;
+package edu.tamu.tcat.sda.catalog.relationships.search.solr;
 
 import java.util.Arrays;
 import java.util.Date;
