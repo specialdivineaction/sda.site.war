@@ -1,14 +1,14 @@
-package edu.tamu.tcat.sda.catalog.copies;
+package edu.tamu.tcat.trc.entries.bib.copy;
 
 import java.util.Collection;
 
 import edu.tamu.tcat.hathitrust.Record;
-import edu.tamu.tcat.sda.catalog.works.Edition;
-import edu.tamu.tcat.sda.catalog.works.Volume;
-import edu.tamu.tcat.sda.catalog.works.Work;
-import edu.tamu.tcat.sda.catalog.works.dv.EditionDV;
-import edu.tamu.tcat.sda.catalog.works.dv.VolumeDV;
-import edu.tamu.tcat.sda.catalog.works.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.Edition;
+import edu.tamu.tcat.trc.entries.bib.Volume;
+import edu.tamu.tcat.trc.entries.bib.Work;
+import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 /**
  *  This class provides the abilitiy to link a {@link DigitalContentProvider} and their digital content to a

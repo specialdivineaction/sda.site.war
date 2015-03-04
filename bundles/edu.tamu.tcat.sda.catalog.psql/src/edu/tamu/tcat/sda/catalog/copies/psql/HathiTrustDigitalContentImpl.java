@@ -1,8 +1,8 @@
 package edu.tamu.tcat.sda.catalog.copies.psql;
 
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentReference;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentReferenceDTO;
-import edu.tamu.tcat.sda.catalog.copies.DigitalCopyProvider;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReference;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReferenceDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyProvider;
 
 public class HathiTrustDigitalContentImpl implements DigitalContentReference
 {

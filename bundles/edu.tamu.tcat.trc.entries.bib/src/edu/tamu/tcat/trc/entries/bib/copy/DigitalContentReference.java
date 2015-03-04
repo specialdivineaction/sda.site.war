@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.copies;
+package edu.tamu.tcat.trc.entries.bib.copy;
 
 
 public interface DigitalContentReference

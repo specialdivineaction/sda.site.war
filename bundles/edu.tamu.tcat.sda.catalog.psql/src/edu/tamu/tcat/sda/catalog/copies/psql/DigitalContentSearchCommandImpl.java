@@ -9,7 +9,7 @@ import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BasicRecord;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BasicRecord.BasicRecordIdentifier;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BibAPIClientImpl;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentSearchCommand;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentSearchCommand;
 
 public class DigitalContentSearchCommandImpl implements DigitalContentSearchCommand
 {

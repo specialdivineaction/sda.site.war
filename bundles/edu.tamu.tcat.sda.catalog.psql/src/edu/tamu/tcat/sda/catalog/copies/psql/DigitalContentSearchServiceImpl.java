@@ -12,12 +12,12 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 
 import edu.tamu.tcat.hathitrust.Record;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentReference;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentReferenceDTO;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentSearchCommand;
-import edu.tamu.tcat.sda.catalog.copies.DigitalContentSearchService;
-import edu.tamu.tcat.sda.catalog.copies.DigitalCopyProvider;
 import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrQueryBuilder;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReference;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReferenceDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentSearchCommand;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentSearchService;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyProvider;
 
 public class DigitalContentSearchServiceImpl implements DigitalContentSearchService
 {
