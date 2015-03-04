@@ -2,6 +2,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.catalogentries.rest.relationship.type">
    <implementation class="edu.tamu.tcat.catalogentries.relationships.psql.ExtPointRelnTypeRegistry"/>
    <service>
-      <provide interface="edu.tamu.tcat.catalogentries.relationship.RelationshipTypeRegistry"/>
+      <provide interface="edu.tamu.tcat.trc.entries.reln.RelationshipTypeRegistry"/>
    </service>
 </scr:component>

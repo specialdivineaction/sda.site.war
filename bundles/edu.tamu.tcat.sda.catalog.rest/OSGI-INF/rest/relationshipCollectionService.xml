@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.relationship.rest.CollectionService">
-   <implementation class="edu.tamu.tcat.catalogentries.relationship.rest.v1.RelationshipsCollectionService"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.relationship.RelationshipRepository" name="RelationshipRepository" policy="static"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.trc.entries.reln.rest.CollectionService">
+   <implementation class="edu.tamu.tcat.trc.entries.reln.rest.v1.RelationshipsCollectionService"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.reln.RelationshipRepository" name="RelationshipRepository" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.catalogentries.relationship.rest.v1.RelationshipsCollectionService"/>
+      <provide interface="edu.tamu.tcat.trc.entries.reln.rest.v1.RelationshipsCollectionService"/>
    </service>
-   <reference bind="setRelationshipService" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.relationship.RelationshipSearchService" name="RelationshipSearchService" policy="static"/>
+   <reference bind="setRelationshipService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.reln.RelationshipSearchService" name="RelationshipSearchService" policy="static"/>
 </scr:component>

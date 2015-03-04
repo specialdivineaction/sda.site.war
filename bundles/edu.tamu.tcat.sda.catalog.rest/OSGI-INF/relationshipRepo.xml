@@ -5,7 +5,7 @@
    <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.IdFactory" name="IdFactory" policy="static"/>
    <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.catalogentries.relationship.RelationshipRepository"/>
+      <provide interface="edu.tamu.tcat.trc.entries.reln.RelationshipRepository"/>
    </service>
-   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.relationship.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
+   <reference bind="setTypeRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.reln.RelationshipTypeRegistry" name="RelationshipTypeRegistry" policy="static"/>
 </scr:component>
