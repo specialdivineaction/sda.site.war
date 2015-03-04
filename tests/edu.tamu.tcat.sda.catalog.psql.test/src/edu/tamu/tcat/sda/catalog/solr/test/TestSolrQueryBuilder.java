@@ -1,7 +1,7 @@
 package edu.tamu.tcat.sda.catalog.solr.test;
 
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,7 +52,7 @@ public class TestSolrQueryBuilder
       SolrQuery sqBuilder = new SolrQueryBuilder.Builder()
                                    .newQuery()
                                    .setQueryString("title","\"Gilbert West\"")
-                                   .addFacetFields(fieldNames)
+                                   .addFacetFields(Arrays.asList(fieldNames))
                                    .addFacetRange("publicationDate", startDate, endDate, "+5YEARS")
                                    .setNumRows(rowsToReturn.intValue())
                                    .setStartRows(countinueFrom.intValue())

@@ -8,6 +8,7 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.common.params.FacetParams;
 import org.apache.solr.common.params.HighlightParams;
 
+// TODO this seems to be getting used as a general purpose query builder.
 public class SolrQueryBuilder
 {
    //Fields
@@ -36,9 +37,9 @@ public class SolrQueryBuilder
        * Sets the maximum number of documents to be returned.
        * @param rows
        */
-      public Builder setNumRows(Integer rows)
+      public Builder setNumRows(int rows)
       {
-         builderQuery.setRows(rows);
+         builderQuery.setRows(Integer.valueOf(rows));
          return this;
       }
 
@@ -46,9 +47,10 @@ public class SolrQueryBuilder
        * Set the starting point of the next set of documents to be returned, default is 0.
        * @param begin
        */
-      public Builder setStartRows(Integer begin)
+      public Builder setStartRows(int begin)
       {
-         builderQuery.setStart(begin > 0 ? begin : 0);
+         Integer start = begin > 0 ? Integer.valueOf(begin) : Integer.valueOf(0);
+         builderQuery.setStart(start);
          return this;
       }
 
