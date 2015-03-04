@@ -19,7 +19,7 @@ import edu.tamu.tcat.catalogentries.relationship.RelationshipNotAvailableExcepti
 import edu.tamu.tcat.catalogentries.relationship.RelationshipPersistenceException;
 import edu.tamu.tcat.catalogentries.relationship.RelationshipRepository;
 import edu.tamu.tcat.catalogentries.relationship.model.RelationshipDV;
-import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
+import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 
 @Path("/relationships")
 public class RelationshipsResource

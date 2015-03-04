@@ -45,7 +45,7 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  edu.tamu.tcat.sda.catalog.solr,
  edu.tamu.tcat.sda.datastore,
  edu.tamu.tcat.trc.entries.bib,
- edu.tamu.tcat.trc.entries.bib.dv,
+ edu.tamu.tcat.trc.entries.bib.dto,
  javax.ws.rs;version="[2.0.0,2.0.0]",
  javax.ws.rs.core;version="[2.0.0,2.0.0]"
 Service-Component: OSGI-INF/rest/works.xml, 

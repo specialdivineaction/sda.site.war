@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.dv;
+package edu.tamu.tcat.trc.entries.bib.dto;
 
 import java.util.Collection;
 import java.util.List;

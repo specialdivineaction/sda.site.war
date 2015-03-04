@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.dv;
+package edu.tamu.tcat.trc.entries.bib.dto;
 
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 

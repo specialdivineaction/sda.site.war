@@ -20,8 +20,8 @@ import edu.tamu.tcat.trc.entries.bib.EditionMutator;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.VolumeMutator;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
-import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
+import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 
 @Path("/works/{workId}/editions/{editionId}/volumes")
 public class VolumesResource

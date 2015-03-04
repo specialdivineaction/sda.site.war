@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
-import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
-import edu.tamu.tcat.trc.entries.bib.dv.PublicationInfoDV;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 
 public class WorkDocumentBuilder
 {

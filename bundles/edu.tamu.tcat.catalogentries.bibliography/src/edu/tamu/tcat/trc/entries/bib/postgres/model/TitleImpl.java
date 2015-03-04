@@ -1,7 +1,7 @@
 package edu.tamu.tcat.trc.entries.bib.postgres.model;
 
 import edu.tamu.tcat.trc.entries.bib.Title;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 
 public class TitleImpl implements Title
 {

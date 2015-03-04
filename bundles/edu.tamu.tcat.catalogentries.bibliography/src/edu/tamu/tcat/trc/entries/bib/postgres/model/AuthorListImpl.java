@@ -6,7 +6,7 @@ import java.util.List;
 
 import edu.tamu.tcat.trc.entries.bib.AuthorList;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
-import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
 
 public class AuthorListImpl implements AuthorList
 {

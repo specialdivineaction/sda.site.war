@@ -8,7 +8,7 @@ import java.util.Set;
 
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 
 public class TitleDefinitionImpl implements TitleDefinition
 {

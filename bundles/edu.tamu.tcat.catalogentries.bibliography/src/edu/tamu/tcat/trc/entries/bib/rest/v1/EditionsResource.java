@@ -19,8 +19,8 @@ import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.EditionMutator;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
-import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
+import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 
 @Path("/works/{workId}/editions")
 public class EditionsResource

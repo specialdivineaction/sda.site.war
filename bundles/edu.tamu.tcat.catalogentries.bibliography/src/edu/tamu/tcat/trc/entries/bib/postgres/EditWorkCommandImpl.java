@@ -16,10 +16,10 @@ import edu.tamu.tcat.catalogentries.InvalidDataException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.EditionMutator;
-import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
-import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
 {

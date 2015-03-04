@@ -11,7 +11,7 @@ import org.postgresql.util.PGobject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {

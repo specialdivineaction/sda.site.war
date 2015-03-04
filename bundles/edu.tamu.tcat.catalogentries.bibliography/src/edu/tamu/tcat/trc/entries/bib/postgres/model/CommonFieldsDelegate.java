@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.Title;
-import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 
 /**
  * A helper class to manage fields that are common across different levels of the Work taxonomy.

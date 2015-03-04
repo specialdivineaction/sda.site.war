@@ -27,8 +27,8 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dv.CustomResultsDV;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bib.rest.v1.model.WorkInfo;
 
 @Path("/works")

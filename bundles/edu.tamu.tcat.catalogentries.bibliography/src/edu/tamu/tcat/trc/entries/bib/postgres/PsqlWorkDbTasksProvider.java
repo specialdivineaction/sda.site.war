@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 /**
  * Provides access to database task implementations to support the {@link WorkRepository}.

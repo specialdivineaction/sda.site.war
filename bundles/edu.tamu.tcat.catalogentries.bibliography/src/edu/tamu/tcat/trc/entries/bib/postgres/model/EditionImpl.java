@@ -10,7 +10,7 @@ import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.PublicationInfo;
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.Volume;
-import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 
 public class EditionImpl implements Edition
 {

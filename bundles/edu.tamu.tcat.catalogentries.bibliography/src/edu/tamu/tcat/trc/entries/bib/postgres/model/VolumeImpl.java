@@ -8,8 +8,8 @@ import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.PublicationInfo;
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.Volume;
-import edu.tamu.tcat.trc.entries.bib.dv.PublicationInfoDV;
-import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
+import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 
 public class VolumeImpl implements Volume
 {

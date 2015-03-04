@@ -5,7 +5,7 @@ import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.sda.datastore.DataStore;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 /**
  * Provides the main point of access for creating, editing and querying works.

@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import edu.tamu.tcat.trc.entries.bib.VolumeMutator;
-import edu.tamu.tcat.trc.entries.bib.dv.AuthorRefDV;
-import edu.tamu.tcat.trc.entries.bib.dv.PublicationInfoDV;
-import edu.tamu.tcat.trc.entries.bib.dv.TitleDV;
-import edu.tamu.tcat.trc.entries.bib.dv.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
+import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 
 public class VolumeMutatorImpl implements VolumeMutator
 {

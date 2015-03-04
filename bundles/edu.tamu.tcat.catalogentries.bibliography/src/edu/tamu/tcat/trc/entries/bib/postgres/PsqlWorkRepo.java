@@ -24,8 +24,8 @@ import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dv.EditionDV;
-import edu.tamu.tcat.trc.entries.bib.dv.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class PsqlWorkRepo implements WorkRepository
 {
