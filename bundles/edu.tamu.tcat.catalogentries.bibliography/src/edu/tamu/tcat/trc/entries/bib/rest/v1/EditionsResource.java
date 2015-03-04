@@ -1,7 +1,6 @@
 package edu.tamu.tcat.trc.entries.bib.rest.v1;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -72,7 +71,9 @@ public class EditionsResource
    @Path("{editionId}")
    @Produces(MediaType.APPLICATION_JSON)
    public CustomResultsDV updateEdition(@PathParam(value = "workId") String workId,
-                               @PathParam(value = "editionId") String editionId, EditionDV edition) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
+                                        @PathParam(value = "editionId") String editionId,
+                                        EditionDV edition)
+                                              throws NoSuchCatalogRecordException
    {
       EditWorkCommand command = repo.edit(workId);
       EditionMutator editionMutator = command.editEdition(editionId);
@@ -84,7 +85,7 @@ public class EditionsResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public CustomResultsDV createEdition(@PathParam(value = "workId") String workId, EditionDV edition) throws ExecutionException, NoSuchCatalogRecordException, InterruptedException
+   public CustomResultsDV createEdition(@PathParam(value = "workId") String workId, EditionDV edition) throws NoSuchCatalogRecordException
    {
       EditWorkCommand command = repo.edit(workId);
       EditionMutator editionMutator = command.createEdition();

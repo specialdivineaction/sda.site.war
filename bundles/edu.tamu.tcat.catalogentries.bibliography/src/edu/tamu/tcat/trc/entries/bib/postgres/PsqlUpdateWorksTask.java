@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
@@ -15,7 +14,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {
-   private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.trc.entries.bib.db.errors");
+//   private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.trc.entries.bib.db.errors");
    private final static String sql = "Update works "
                             + "   SET work = ?"
                             + "   WHERE id = ?";

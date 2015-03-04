@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.catalogentries.IdFactory;
@@ -23,7 +22,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
 {
-   private static final Logger logger = Logger.getLogger(EditWorkCommandImpl.class.getName());
+//   private static final Logger logger = Logger.getLogger(EditWorkCommandImpl.class.getName());
 
    private final WorkDV work;
    private final IdFactory idFactory;

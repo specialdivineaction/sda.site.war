@@ -1,7 +1,6 @@
 package edu.tamu.tcat.trc.entries.bib.rest.v1;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -68,9 +67,9 @@ public class VolumesResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    public CustomResultsDV updateVolume(@PathParam(value = "workId") String workId,
-                              @PathParam(value = "editionId") String editionId,
-                              @PathParam(value = "volumeId") String volumeId,
-                              VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
+                                       @PathParam(value = "editionId") String editionId,
+                                       @PathParam(value = "volumeId") String volumeId,
+                                       VolumeDV volume) throws NoSuchCatalogRecordException
    {
       EditWorkCommand editWorkCommand = repo.edit(workId);
       EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
@@ -84,8 +83,8 @@ public class VolumesResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    public CustomResultsDV createVolume(@PathParam(value = "workId") String workId,
-                              @PathParam(value = "editionId") String editionId,
-                              VolumeDV volume) throws NoSuchCatalogRecordException, InterruptedException, ExecutionException
+                                       @PathParam(value = "editionId") String editionId,
+                                       VolumeDV volume) throws NoSuchCatalogRecordException
    {
       EditWorkCommand editWorkCommand = repo.edit(workId);
       EditionMutator editionMutator = editWorkCommand.editEdition(editionId);
