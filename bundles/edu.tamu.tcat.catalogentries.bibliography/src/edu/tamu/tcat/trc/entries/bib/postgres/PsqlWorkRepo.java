@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.biography.PeopleRepository;
-import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
@@ -26,6 +24,8 @@ import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
+import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
+import edu.tamu.tcat.trc.entries.bio.Person;
 
 public class PsqlWorkRepo implements WorkRepository
 {

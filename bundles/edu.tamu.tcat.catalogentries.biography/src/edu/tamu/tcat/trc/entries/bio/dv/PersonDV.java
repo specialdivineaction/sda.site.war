@@ -1,11 +1,11 @@
-package edu.tamu.tcat.catalogentries.biography.dv;
+package edu.tamu.tcat.trc.entries.bio.dv;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.PersonName;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.PersonName;
 
 /**
  * Represents a Person

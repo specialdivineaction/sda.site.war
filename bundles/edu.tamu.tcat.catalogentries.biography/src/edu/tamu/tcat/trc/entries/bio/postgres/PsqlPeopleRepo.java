@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.biography.postgres;
+package edu.tamu.tcat.trc.entries.bio.postgres;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,11 +15,6 @@ import org.postgresql.util.PGobject;
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.biography.PeopleRepository;
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.PersonName;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.biography.postgres.model.PersonImpl;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.oss.json.JsonException;
@@ -27,6 +22,11 @@ import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
+import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.PersonName;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
+import edu.tamu.tcat.trc.entries.bio.postgres.model.PersonImpl;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {

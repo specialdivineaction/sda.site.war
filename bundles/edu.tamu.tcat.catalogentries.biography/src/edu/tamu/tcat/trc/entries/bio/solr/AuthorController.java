@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.biography.solr;
+package edu.tamu.tcat.trc.entries.bio.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
-import edu.tamu.tcat.catalogentries.biography.dv.SimplePersonDV;
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.oss.json.JsonException;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
+import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
 
 public class AuthorController
 {

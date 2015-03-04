@@ -1,15 +1,15 @@
-package edu.tamu.tcat.catalogentries.biography.postgres.model;
+package edu.tamu.tcat.trc.entries.bio.postgres.model;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.PersonName;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
 import edu.tamu.tcat.catalogentries.events.HistoricalEvent;
 import edu.tamu.tcat.sda.catalog.events.psql.HistoricalEventImpl;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.PersonName;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
 
 public class PersonImpl implements Person
 {

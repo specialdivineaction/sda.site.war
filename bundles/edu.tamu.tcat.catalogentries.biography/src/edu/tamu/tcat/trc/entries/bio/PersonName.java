@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.biography;
+package edu.tamu.tcat.trc.entries.bio;
 
 /**
  * A structured representation of a person's name.  

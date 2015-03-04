@@ -29,8 +29,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.osgi.services.util.ServiceHelper;
@@ -41,6 +39,8 @@ import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.psql.test.data.People;
 import edu.tamu.tcat.sda.catalog.rest.ResourceCreationException;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 
 public class TestPeopleRESTapi
 {

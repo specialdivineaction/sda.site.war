@@ -1,11 +1,11 @@
-package edu.tamu.tcat.catalogentries.biography.rest.v1.model;
+package edu.tamu.tcat.trc.entries.bio.rest.v1.model;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.PersonName;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.PersonName;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
 
 /**
  * HACK: this model is a HACK to get search results working with the autocomplete JS component

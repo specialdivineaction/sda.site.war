@@ -1,4 +1,4 @@
-package edu.tamu.tcat.catalogentries.biography.rest.v1;
+package edu.tamu.tcat.trc.entries.bio.rest.v1;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

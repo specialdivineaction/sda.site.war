@@ -15,11 +15,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
-import edu.tamu.tcat.catalogentries.biography.solr.AuthorController;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
+import edu.tamu.tcat.trc.entries.bio.solr.AuthorController;
 
 public class TestAuthorController
 {

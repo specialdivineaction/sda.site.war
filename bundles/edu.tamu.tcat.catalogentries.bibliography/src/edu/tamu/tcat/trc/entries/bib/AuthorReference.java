@@ -1,6 +1,6 @@
 package edu.tamu.tcat.trc.entries.bib;
 
-import edu.tamu.tcat.catalogentries.biography.Person;
+import edu.tamu.tcat.trc.entries.bio.Person;
 
 /**
  * The bibliographic name of the creator or other contributor to a work along with the role

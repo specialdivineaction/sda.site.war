@@ -25,13 +25,13 @@ import javax.ws.rs.core.Response;
 
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.biography.PeopleRepository;
-import edu.tamu.tcat.catalogentries.biography.Person;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.sda.catalog.rest.model.SimplePersonResultDV;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
+import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
+import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 
 
 @Path("/people")

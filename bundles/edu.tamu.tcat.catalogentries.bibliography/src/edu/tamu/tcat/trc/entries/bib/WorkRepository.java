@@ -2,10 +2,10 @@ package edu.tamu.tcat.trc.entries.bib;
 
 import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.sda.datastore.DataStore;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
+import edu.tamu.tcat.trc.entries.bio.Person;
 
 /**
  * Provides the main point of access for creating, editing and querying works.

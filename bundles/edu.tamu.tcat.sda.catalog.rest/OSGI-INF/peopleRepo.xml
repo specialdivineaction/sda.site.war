@@ -4,7 +4,7 @@
    <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.catalogentries.biography.PeopleRepository"/>
+      <provide interface="edu.tamu.tcat.trc.entries.bio.PeopleRepository"/>
    </service>
    <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.IdFactory" name="IdFactory" policy="static"/>
 </scr:component>

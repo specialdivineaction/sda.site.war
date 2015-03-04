@@ -1,7 +1,7 @@
-package edu.tamu.tcat.catalogentries.biography.postgres.model;
+package edu.tamu.tcat.trc.entries.bio.postgres.model;
 
-import edu.tamu.tcat.catalogentries.biography.PersonName;
-import edu.tamu.tcat.catalogentries.biography.dv.PersonNameDV;
+import edu.tamu.tcat.trc.entries.bio.PersonName;
+import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
 
 public class PersonNameImpl implements PersonName
 {
