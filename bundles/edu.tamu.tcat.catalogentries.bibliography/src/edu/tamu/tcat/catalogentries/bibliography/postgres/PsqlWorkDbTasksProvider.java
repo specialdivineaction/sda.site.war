@@ -2,9 +2,10 @@ package edu.tamu.tcat.catalogentries.bibliography.postgres;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.bibliography.WorkRepository;
 import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
-import edu.tamu.tcat.oss.json.JsonMapper;
 
 /**
  * Provides access to database task implementations to support the {@link WorkRepository}.
@@ -15,14 +16,14 @@ public class PsqlWorkDbTasksProvider
    //      tasks will be contain all PostgreSQL specific functionality and allow the
    //      logic in the core repo impl to be independent of the underlying DB layer.
 
-   private JsonMapper mapper;
+   private ObjectMapper mapper;
 
    public PsqlWorkDbTasksProvider()
    {
       // TODO Auto-generated constructor stub
    }
 
-   public void setJsonMapper(JsonMapper mapper)
+   public void setJsonMapper(ObjectMapper mapper)
    {
       this.mapper = mapper;
    }

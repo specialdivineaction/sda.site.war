@@ -6,19 +6,20 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 
 public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static String insertSql = "INSERT INTO works (id, work) VALUES(?, ?)";
 
    private final WorkDV work;
-   private final JsonMapper jsonMapper;
+   private final ObjectMapper jsonMapper;
 
-   public PsqlCreateWorkTask(WorkDV work, JsonMapper jsonMapper)
+   public PsqlCreateWorkTask(WorkDV work, ObjectMapper jsonMapper)
    {
       // TODO convert to form where these can be configured using plugins/task provider, etc.
       this.work = work;
@@ -29,9 +30,9 @@ public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String
    {
       try
       {
-         return jsonMapper.asString(work);
+         return jsonMapper.writeValueAsString(work);
       }
-      catch (JsonException jpe)
+      catch (JsonProcessingException jpe)
       {
          throw new IllegalArgumentException("Failed to serialize the supplied work [" + work + "]", jpe);
       }

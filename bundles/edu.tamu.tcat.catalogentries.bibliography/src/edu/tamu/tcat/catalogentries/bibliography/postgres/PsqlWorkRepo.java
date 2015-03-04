@@ -6,6 +6,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
@@ -22,7 +25,6 @@ import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.catalogentries.biography.PeopleRepository;
 import edu.tamu.tcat.catalogentries.biography.Person;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class PsqlWorkRepo implements WorkRepository
@@ -30,8 +32,7 @@ public class PsqlWorkRepo implements WorkRepository
    public static final String WORK_CONTEXT = "works";
 
    private SqlExecutor exec;
-   @Deprecated
-   private JsonMapper jsonMapper;
+   private ObjectMapper mapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
 
@@ -51,13 +52,6 @@ public class PsqlWorkRepo implements WorkRepository
       this.peopleRepo = repo;
    }
 
-   // TODO configure Jackson ObjectMapper directly. This is an internal implementation detail
-   @Deprecated
-   public void setJsonMapper(JsonMapper mapper)
-   {
-      this.jsonMapper = mapper;
-   }
-
    public void setIdFactory(IdFactory idFactory)
    {
       this.idFactory = idFactory;
@@ -66,16 +60,18 @@ public class PsqlWorkRepo implements WorkRepository
    public void activate()
    {
       Objects.requireNonNull(exec);
-      Objects.requireNonNull(jsonMapper);
+
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
       taskProvider = new PsqlWorkDbTasksProvider();
-      taskProvider.setJsonMapper(jsonMapper);
+      taskProvider.setJsonMapper(mapper);
    }
 
    public void dispose()
    {
       this.exec = null;
-      this.jsonMapper = null;
+      this.mapper = null;
    }
 
    @Override
@@ -223,7 +219,7 @@ public class PsqlWorkRepo implements WorkRepository
       Work work = getWork(asInteger(id));
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
-         PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, jsonMapper);
+         PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
          Future<String> submitWork = exec.submit(task);
          return submitWork;
       });
@@ -249,7 +245,7 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(work, idFactory);
 
       command.setCommitHook((w) -> {
-         PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, jsonMapper);
+         PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
          Future<String> submitWork = exec.submit(task);
          return submitWork;
       });

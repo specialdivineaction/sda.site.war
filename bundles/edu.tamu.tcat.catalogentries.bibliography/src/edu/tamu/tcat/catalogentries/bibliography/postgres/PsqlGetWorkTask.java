@@ -1,5 +1,6 @@
 package edu.tamu.tcat.catalogentries.bibliography.postgres;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,22 +8,22 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.catalogentries.bibliography.Work;
 import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.catalogentries.bibliography.postgres.model.WorkImpl;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 
 public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
 {
    private final static String sql = "SELECT work FROM works WHERE id=?";
 
-   private final JsonMapper jsonMapper;
+   private final ObjectMapper jsonMapper;
    private final String workId;
 
-   PsqlGetWorkTask(String id, JsonMapper jsonMapper)
+   PsqlGetWorkTask(String id, ObjectMapper jsonMapper)
    {
       this.jsonMapper = jsonMapper;
       this.workId = id;
@@ -43,10 +44,10 @@ public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
             String workJson = pgo.toString();
             try
             {
-               WorkDV dv = jsonMapper.parse(workJson, WorkDV.class);
+               WorkDV dv = jsonMapper.readValue(workJson, WorkDV.class);
                return new WorkImpl(dv);
             }
-            catch (JsonException e)
+            catch (IOException e)
             {
                throw new IllegalStateException("Failed to parse bibliographic record\n" + workJson, e);
             }

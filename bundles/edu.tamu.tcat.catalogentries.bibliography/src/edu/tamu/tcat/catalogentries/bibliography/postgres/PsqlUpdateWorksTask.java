@@ -1,5 +1,6 @@
 package edu.tamu.tcat.catalogentries.bibliography.postgres;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -7,10 +8,10 @@ import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.bibliography.dv.WorkDV;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 
 public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {
@@ -19,10 +20,10 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
                             + "   SET work = ?"
                             + "   WHERE id = ?";
 
-   private final JsonMapper jsonMapper;
+   private final ObjectMapper jsonMapper;
    private final WorkDV work;
 
-   public PsqlUpdateWorksTask(WorkDV work, JsonMapper jsonMapper)
+   public PsqlUpdateWorksTask(WorkDV work, ObjectMapper jsonMapper)
    {
       this.work = work;
       this.jsonMapper = jsonMapper;
@@ -32,9 +33,9 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
    {
       try
       {
-         return jsonMapper.asString(work);
+         return jsonMapper.writeValueAsString(work);
       }
-      catch (JsonException je)
+      catch (IOException je)
       {
          throw new IllegalArgumentException("Failed to serialize the supplied work [" + work + "]", je);
       }
