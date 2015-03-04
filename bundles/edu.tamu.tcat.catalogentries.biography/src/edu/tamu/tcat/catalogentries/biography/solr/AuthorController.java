@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.solr;
+package edu.tamu.tcat.catalogentries.biography.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;

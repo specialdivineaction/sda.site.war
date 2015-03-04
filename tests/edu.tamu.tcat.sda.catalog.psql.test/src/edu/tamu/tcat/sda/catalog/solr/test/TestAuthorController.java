@@ -16,10 +16,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.tamu.tcat.catalogentries.biography.dv.PersonDV;
+import edu.tamu.tcat.catalogentries.biography.solr.AuthorController;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.solr.AuthorController;
 
 public class TestAuthorController
 {

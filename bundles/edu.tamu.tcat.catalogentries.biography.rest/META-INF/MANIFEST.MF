@@ -5,11 +5,3 @@ Bundle-SymbolicName: edu.tamu.tcat.catalogentries.biography.rest
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: edu.tamu.tcat.catalogentries,
- edu.tamu.tcat.catalogentries.biography,
- edu.tamu.tcat.catalogentries.biography.dv,
- edu.tamu.tcat.catalogentries.events,
- edu.tamu.tcat.osgi.config,
- edu.tamu.tcat.sda.datastore,
- javax.ws.rs;version="2.0.0",
- javax.ws.rs.core;version="2.0.0"
