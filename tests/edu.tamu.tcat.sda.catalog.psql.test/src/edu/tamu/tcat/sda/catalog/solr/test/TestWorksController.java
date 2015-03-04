@@ -18,8 +18,8 @@ import org.junit.Test;
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
-import edu.tamu.tcat.sda.catalog.solr.WorksController;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.solr.WorksController;
 
 public class TestWorksController
 {
