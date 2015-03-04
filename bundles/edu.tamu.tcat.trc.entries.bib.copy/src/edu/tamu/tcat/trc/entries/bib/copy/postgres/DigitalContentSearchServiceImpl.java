@@ -27,8 +27,7 @@ public class DigitalContentSearchServiceImpl implements DigitalContentSearchServ
    private void searchHathiTrust()
    {
       SolrServer solr = new HttpSolrServer("http://localhost:8983/solr/HathiFiles");
-      SolrQuery sqBuilder = new SolrQueryBuilder.Builder()
-                                                .newQuery()
+      SolrQuery sqBuilder = (new SolrQueryBuilder())
                                                 // TODO: Modify search string to be optimized for this particular provider.
                                                 .setQueryString("title", searchString)
    //                                             .addFacetFields(fieldNames)
@@ -37,8 +36,7 @@ public class DigitalContentSearchServiceImpl implements DigitalContentSearchServ
    //                                             .setStartRows(countinueFrom.intValue())
                                                 .addHighLighting("title")
                                                 .setSort("publicationDate", ORDER.asc)
-                                                .build()
-                                                .getQuery();
+                                                .build();
       try
       {
          QueryResponse response = solr.query(sqBuilder);

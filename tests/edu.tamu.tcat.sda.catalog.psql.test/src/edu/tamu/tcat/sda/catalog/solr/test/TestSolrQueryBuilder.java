@@ -49,7 +49,7 @@ public class TestSolrQueryBuilder
       Integer rowsToReturn = 3;
       Integer countinueFrom = 0;
 
-      SolrQuery sqBuilder = new SolrQueryBuilder.Builder()
+      SolrQuery sqBuilder = (new SolrQueryBuilder())
                                    .newQuery()
                                    .setQueryString("title","\"Gilbert West\"")
                                    .addFacetFields(Arrays.asList(fieldNames))
@@ -58,8 +58,7 @@ public class TestSolrQueryBuilder
                                    .setStartRows(countinueFrom.intValue())
                                    .addHighLighting("title")
                                    .setSort("publicationDate", ORDER.asc)
-                                   .build()
-                                   .getQuery();
+                                   .build();
 
       try
       {

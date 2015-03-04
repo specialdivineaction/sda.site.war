@@ -1,134 +1,166 @@
 package edu.tamu.tcat.trc.entries.reln.solr;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.common.params.FacetParams;
 import org.apache.solr.common.params.HighlightParams;
 
 // TODO this seems to be getting used as a general purpose query builder.
 public class SolrQueryBuilder
 {
-   //Fields
-   private SolrQuery query;
+   // TODO design and test
+   // TODO Support:
+   //      serializable, repeatable, identifiable queries
+   //      result caching
+   //      auto-paging
+   //      define valid fields for this query at construction
+   //      more robust definition of fields
 
 
-   public static class Builder
+   private SolrQuery query = new SolrQuery();
+   private int start = 0;
+   private int limit = 10;
+
+   // TODO: We may want to separate this out depending on how the query params come through.
+   public SolrQueryBuilder setQueryString(String fieldName, String param)
    {
-      private SolrQuery builderQuery;
-      // methods returning Builder instantiating fields
-      public Builder newQuery()
-      {
-         builderQuery = new SolrQuery();
-         return this;
-      }
+      // TODO: if quotes are used in the search, then the result is exclusive
+      query.setQuery(fieldName + ":" + param);
+      return this;
+   }
 
-      // TODO: We may want to separate this out depending on how the query params come through.
-      public Builder setQueryString(String fieldName, String param)
-      {
-         // TODO: if quotes are used in the search, then the result is exclusive
-         builderQuery.setQuery(fieldName + ":" + param);
-         return this;
-      }
+   /**
+    * Set the starting point of the next set of documents to be returned, default is 0.
+    * @param begin
+    */
+   public SolrQueryBuilder setStart(int begin)
+   {
+      if (begin < 0)
+         throw new IllegalArgumentException("Start value must be greater than or equal to zero");
 
-      /**
-       * Sets the maximum number of documents to be returned.
-       * @param rows
-       */
-      public Builder setNumRows(int rows)
-      {
-         builderQuery.setRows(Integer.valueOf(rows));
-         return this;
-      }
+      this.start = begin;
+      query.setStart(Integer.valueOf(start));      // TODO move to build step
+      return this;
+   }
 
-      /**
-       * Set the starting point of the next set of documents to be returned, default is 0.
-       * @param begin
-       */
-      public Builder setStartRows(int begin)
-      {
-         Integer start = begin > 0 ? Integer.valueOf(begin) : Integer.valueOf(0);
-         builderQuery.setStart(start);
-         return this;
-      }
+   /**
+    * @param limit The maximum number of items to be returned.
+    * @throws IllegalArgumentException If the supplied limit is less than 0;
+    */
+   public SolrQueryBuilder setLimit(int limit)
+   {
+      if (limit < 0)
+         throw new IllegalArgumentException("Limit value must be greater than or equal to zero");
 
-      /**
-       * Enables the ability to facet multiple fields.
-       * @param fieldNames - Determines which field(s) a facet should be calculated upon.
-       * @param minCount - Sets a minimum number of documents in which a facet value must appear
-       *                   before it will be returned, default is set to 1
-       */
-      public Builder addFacetFields(List<String> fieldNames, Integer minCount)
-      {
-         builderQuery.setFacet(true);
-         builderQuery.setFacetMinCount(minCount > 1 ? minCount : 1);
+      this.limit = limit;
+      query.setRows(Integer.valueOf(limit));       // TODO move to build step
+      return this;
+   }
 
-         // HACK: need to find a better way to add N number of field names. If this method is called more
-         //       the one time, the last Facet_Field to be set is the only one.
-         builderQuery.set(FacetParams.FACET_FIELD, fieldNames.get(0), fieldNames.get(1));
-         return this;
-      }
+   private static class FacetField
+   {
+      public enum SortType { index, count, undefined };
 
-      /**
-       * Adds the ability to search multiple fields.
-       * @param fieldNames - Determines which field(s) a facet should be calculated upon.
-       */
-      public Builder addFacetFields(List<String> fieldNames)
-      {
-         int minCount = 1;
-         return addFacetFields(fieldNames, minCount);
-      }
+      public enum FacetMethod { enumerate, fc, fcs }
 
-      /**
-       * Added the ability to return a facet for a date range
-       * @param fieldName - The field a range facet should be calculated on.
-       * @param start - Specifies the lower bound of the date range.
-       * @param end - Specifies the upper bound of the date range.
-       * @param gap - The size of each range. Example(+1DAY, +2MONTHS, +5YEARS, etc...)
-       */
-      public Builder addFacetRange(String fieldName, Date start, Date end, String gap)
-      {
-         builderQuery.addDateRangeFacet(fieldName, start, end, gap);
-         return this;
-      }
+      /** The name of the field this describes */
+      public String fieldName;
+      /** The minimum number of items that must be present for a facet to be returned. */
+      public int minCount;
+      /** Indicates whether and how the facat values should be sorted. */
+      public SortType sort = SortType.undefined;
+      /** The maximum number of facet values that should be returned */
+      public int limit = Integer.MIN_VALUE;
+      public int offset = Integer.MIN_VALUE;
+      public FacetMethod method = null;
+      public int numThreads = Integer.MIN_VALUE;
+      public String prefix;
+      public boolean missing;
 
-      /**
-       * Enables the ability to return highlighted results from the specified field.
-       * @param fieldName
-       */
-      public Builder addHighLighting(String fieldName)
+      public String buildQuery()
       {
-         builderQuery.setHighlight(true);
-         builderQuery.set(HighlightParams.FIELDS, fieldName);
-         return this;
-      }
-
-      /**
-       * Set the ability to sort on a given fieldName.
-       * @param fieldName
-       * @param order
-       */
-      public Builder setSort(String fieldName, ORDER order)
-      {
-         builderQuery.setSort(fieldName, order);
-         return this;
-      }
-
-      public SolrQueryBuilder build()
-      {
-         return new SolrQueryBuilder(this);
+         throw new UnsupportedOperationException();
       }
    }
 
-   private SolrQueryBuilder(Builder builder)
+   Set<FacetField> facets = new HashSet<>();
+   /**
+    * Enables the ability to facet multiple fields.
+    * @param fieldNames - Determines which field(s) a facet should be calculated upon.
+    * @param minCount - Sets a minimum number of documents in which a facet value must appear
+    *                   before it will be returned, default is set to 1
+    */
+   public SolrQueryBuilder addFacetFields(String fieldNames, int minCount)
    {
-      this.query = builder.builderQuery;
+      FacetField field = new FacetField();
+      field.fieldName = fieldNames;
+      field.minCount = minCount;
+
+      // TODO build facet queries in #build()
+      return this;
+
+//      facets.add(e)
+//      query.setFacet(true);
+//      query.setFacetMinCount(minCount > 1 ? minCount : 1);
+//      query.addFacetField(fieldNames);
+//      query.addFacetQuery(f)
+//      return this;
    }
 
-   public SolrQuery getQuery()
+   /**
+    * Adds the ability to search multiple fields.
+    * @param fieldNames - Determines which field(s) a facet should be calculated upon.
+    */
+   public SolrQueryBuilder addFacetFields(String[] fieldNames)
+   {
+      // TODO set global facet field count?
+      Arrays.stream(fieldNames).forEach(field -> addFacetFields(field, 1));
+      return this;
+   }
+
+   /**
+    * Added the ability to return a facet for a date range
+    * @param fieldName - The field a range facet should be calculated on.
+    * @param start - Specifies the lower bound of the date range.
+    * @param end - Specifies the upper bound of the date range.
+    * @param gap - The size of each range. Example(+1DAY, +2MONTHS, +5YEARS, etc...)
+    */
+   public SolrQueryBuilder addFacetRange(String fieldName, Date start, Date end, String gap)
+   {
+      query.addDateRangeFacet(fieldName, start, end, gap);
+      return this;
+   }
+
+   /**
+    * Enables the ability to return highlighted results from the specified field.
+    * @param fieldName
+    */
+   public SolrQueryBuilder addHighLighting(String fieldName)
+   {
+      query.setHighlight(true);
+      query.set(HighlightParams.FIELDS, fieldName);
+      return this;
+   }
+
+   /**
+    * Set the ability to sort on a given fieldName.
+    * @param fieldName
+    * @param order
+    */
+   public SolrQueryBuilder setSort(String fieldName, ORDER order)
+   {
+      query.setSort(fieldName, order);
+      return this;
+   }
+
+   public SolrQuery build()
    {
       return query;
    }
+
+
 }
