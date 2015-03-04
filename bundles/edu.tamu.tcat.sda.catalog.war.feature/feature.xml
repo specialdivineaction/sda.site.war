@@ -396,28 +396,21 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.catalogentries.relationship"
+         id="edu.tamu.tcat.trc.entries.reln"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.catalogentries.relationship.rest"
+         id="edu.tamu.tcat.trc.entries.bib"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.catalogentries.bibliography"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="edu.tamu.tcat.catalogentries.biography"
+         id="edu.tamu.tcat.trc.entries.bio"
          download-size="0"
          install-size="0"
          version="0.0.0"
