@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.relationships.psql;
+package edu.tamu.tcat.catalogentries.relationship.postgres;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 

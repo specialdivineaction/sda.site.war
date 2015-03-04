@@ -20,7 +20,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrQueryBuilder;
+import edu.tamu.tcat.catalogentries.relationship.solr.SolrQueryBuilder;
 
 public class TestSolrQueryBuilder
 {

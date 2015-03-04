@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.catalog.rest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,6 +16,8 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
  */
 public class ErrorResponseData<T>
 {
+   // HACK should not perform logging!!
+   private final static Logger errorLogger = Logger.getLogger(ErrorResponseData.class.getName());
    public static final String PROP_ENABLE_ERR_DETAILS = "rest.err.details.enabled";
 
    public T resource;
@@ -64,7 +67,7 @@ public class ErrorResponseData<T>
       }
       catch (Exception e) {
          String msg = "Failed to generate exception details : " + e.getMessage();
-         PeopleResource.errorLogger.log(Level.SEVERE, msg, e);
+         errorLogger.log(Level.SEVERE, msg, e);
          return msg;
       }
    }

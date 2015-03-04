@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.relationships.search.solr;
+package edu.tamu.tcat.catalogentries.relationship.solr;
 
 import java.util.Set;
 

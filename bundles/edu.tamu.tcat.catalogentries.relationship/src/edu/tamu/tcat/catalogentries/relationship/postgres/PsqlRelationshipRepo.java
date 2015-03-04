@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.relationships.psql;
+package edu.tamu.tcat.catalogentries.relationship.postgres;
 
 import java.util.List;
 import java.util.Objects;
