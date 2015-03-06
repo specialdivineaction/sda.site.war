@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PostgreSQL Catalog Data Stores
-Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.psql
+Bundle-SymbolicName: edu.tamu.tcat.catalogentries.psql
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

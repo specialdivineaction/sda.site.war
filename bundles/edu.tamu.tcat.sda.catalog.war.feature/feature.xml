@@ -214,21 +214,14 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.sda.catalog"
+         id="edu.tamu.tcat.catalogentries.psql"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.sda.catalog.psql"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="edu.tamu.tcat.sda.catalog.rest"
+         id="edu.tamu.tcat.catalogentries.rest"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -411,6 +404,13 @@
 
    <plugin
          id="edu.tamu.tcat.trc.entries.bio"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.catalogentries"
          download-size="0"
          install-size="0"
          version="0.0.0"
