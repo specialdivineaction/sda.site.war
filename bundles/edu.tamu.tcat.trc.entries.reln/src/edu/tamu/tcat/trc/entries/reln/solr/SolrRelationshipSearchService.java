@@ -2,6 +2,7 @@ package edu.tamu.tcat.trc.entries.reln.solr;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,6 +77,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    public void activate()
    {
       logger.fine("Activating SolrRelationshipSearchService");
+      Objects.requireNonNull(repo, "No relationship repository supplied.");
       registration = repo.addUpdateListener(this::onUpdate);
 
       // construct Solr core

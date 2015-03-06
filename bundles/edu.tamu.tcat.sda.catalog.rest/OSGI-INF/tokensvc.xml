@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.catalogentries.rest.tokensvc">
-   <implementation class="edu.tamu.tcat.catalogentries.rest.internal.EncryptingUuidTokenService"/>
+   <implementation class="edu.tamu.tcat.sda.catalog.rest.internal.EncryptingUuidTokenService"/>
    <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.crypto.CryptoProvider" name="CryptoProvider" policy="static"/>
    <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <service>

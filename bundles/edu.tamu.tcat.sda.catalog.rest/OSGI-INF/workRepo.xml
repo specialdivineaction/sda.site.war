@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="edu.tamu.tcat.catalogentries.rest.repo.work">
-   <implementation class="edu.tamu.tcat.catalogentries.psql.PsqlWorkRepo"/>
-   <reference bind="setJsonMapper" cardinality="1..1" interface="edu.tamu.tcat.oss.json.JsonMapper" name="JsonMapper" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.entries.bib.postgres.PsqlWorkRepo"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.bib.WorkRepository"/>

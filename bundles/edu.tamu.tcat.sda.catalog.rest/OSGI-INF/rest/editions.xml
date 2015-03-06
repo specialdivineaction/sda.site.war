@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.rest.resource.editions">
-   <implementation class="edu.tamu.tcat.catalogentries.rest.EditionsResource"/>
+   <implementation class="edu.tamu.tcat.trc.entries.bib.rest.v1.EditionsResource"/>
    <service>
-      <provide interface="edu.tamu.tcat.catalogentries.rest.EditionsResource"/>
+      <provide interface="edu.tamu.tcat.trc.entries.bib.rest.v1.EditionsResource"/>
    </service>
    <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>

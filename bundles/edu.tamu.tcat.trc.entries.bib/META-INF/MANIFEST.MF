@@ -9,6 +9,7 @@ Export-Package: edu.tamu.tcat.trc.entries.bib,
  edu.tamu.tcat.trc.entries.bib.dto,
  edu.tamu.tcat.trc.entries.bib.postgres,
  edu.tamu.tcat.trc.entries.bib.postgres.model,
+ edu.tamu.tcat.trc.entries.bib.rest.v1,
  edu.tamu.tcat.trc.entries.bib.solr
 Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  com.fasterxml.jackson.databind;version="2.3.1",
