@@ -21,6 +21,7 @@ import edu.tamu.tcat.trc.entries.reln.RelationshipNotAvailableException;
 import edu.tamu.tcat.trc.entries.reln.RelationshipPersistenceException;
 import edu.tamu.tcat.trc.entries.reln.RelationshipRepository;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.rest.v1.model.RelationshipId;
 
 @Path("/relationships/{id}")
 public class RelationshipService
@@ -66,16 +67,21 @@ public class RelationshipService
 
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
-   public void update(@PathParam(value = "id") String id, RelationshipDV relationship)
+   @Produces(MediaType.APPLICATION_JSON)
+   public RelationshipId update(@PathParam(value = "id") String id, RelationshipDV relationship)
    {
       logger.fine(() -> "Updating relationship [relationship/" + id + "]\n" + relationship);
 
-      checkRelationshipValidity(relationship, id);;
+      checkRelationshipValidity(relationship, id);
       try
       {
          EditRelationshipCommand updateCommand = repo.edit(id);
          updateCommand.setAll(relationship);
          updateCommand.execute().get();
+
+         RelationshipId result = new RelationshipId();
+         result.id = id;
+         return result;
       }
       catch (Exception e)
       {
