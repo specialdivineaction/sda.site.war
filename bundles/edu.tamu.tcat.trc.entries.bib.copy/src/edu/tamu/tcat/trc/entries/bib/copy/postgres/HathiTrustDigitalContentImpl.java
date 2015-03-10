@@ -1,8 +1,8 @@
 package edu.tamu.tcat.trc.entries.bib.copy.postgres;
 
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReference;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalContentReferenceDTO;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyProvider;
+import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentReference;
+import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentReferenceDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalCopyProvider;
 
 public class HathiTrustDigitalContentImpl implements DigitalContentReference
 {

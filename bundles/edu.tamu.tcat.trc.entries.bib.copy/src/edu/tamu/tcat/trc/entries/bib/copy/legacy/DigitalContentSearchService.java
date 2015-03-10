@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy;
+package edu.tamu.tcat.trc.entries.bib.copy.legacy;
 
 import java.util.Collection;
 
@@ -10,6 +10,7 @@ public interface DigitalContentSearchService
    /**
     * Retrieves all digital content from each service that is currently registered in the application.
     * Currently we are implementing HathiTrust, but others will soon follow.
+    *
     * @param query
     * @return
     */
