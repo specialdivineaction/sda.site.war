@@ -36,8 +36,9 @@ public class WorkInfo
       result.id = w.getId();
       result.uri = "works/" + w.getId();
       result.title = constructLabel(w);
+      result.pubYear = getNormalizedYear(w);
 
-      result.summary = w.getSummary();    // TODO trim to first sentence
+      result.summary = w.getSummary();
 
       AuthorList authors = w.getAuthors();
       authors.forEach(author ->
@@ -79,6 +80,9 @@ public class WorkInfo
          name = trimToNull(ref.getLastName());
          if (name == null)
             name = trimToNull(ref.getFirstName());
+
+         if (name == null)
+            name = trimToNull(ref.getName());
       }
       return name;
    }
@@ -109,8 +113,10 @@ public class WorkInfo
    private static String getNormalizedYear(Work w)
    {
       LocalDate d = w.getEditions().stream()
-            .map(ed -> ed.getPublicationInfo().getPublicationDate().getCalendar())
-            .filter(pubDate -> pubDate != null)
+            .map(ed ->
+               ed.getPublicationInfo().getPublicationDate().getCalendar())
+            .filter(pubDate ->
+               pubDate != null)
             .min(LocalDate::compareTo)
             .orElse(null);
 

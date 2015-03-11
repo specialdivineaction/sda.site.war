@@ -37,14 +37,14 @@ public class AuthorRefDV
       {
          this.firstName = name.substring(ix + 1).trim();
          this.lastName = name.substring(0, ix).trim();
-      }
+      } else {
+         ix = this.name.lastIndexOf(" ");
+         if (ix > 0)
+         {
+            this.lastName = name.substring(ix + 1).trim();
+            this.firstName = name.substring(0, ix).trim();
 
-      ix = this.name.lastIndexOf(" ");
-      if (ix > 0)
-      {
-         this.lastName = name.substring(ix + 1).trim();
-         this.firstName = name.substring(0, ix).trim();
-
+         }
       }
    }
 
