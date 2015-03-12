@@ -176,7 +176,7 @@ public class SolrRelationshipSearchService implements RelationshipSearchIndexMan
    {
       try
       {
-         RelnSolrProxy proxy = RelnSolrProxy.create(reln);
+         RelnSolrProxy proxy = RelnSolrProxy.update(reln);
          solr.add(proxy.getDocument());
          solr.commit();
       }

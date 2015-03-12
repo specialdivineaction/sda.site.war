@@ -1,5 +1,8 @@
 package edu.tamu.tcat.trc.entries.reln.solr;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -33,28 +36,58 @@ public class RelnSolrProxy
    private final static String relationshipModel = "relationshipModel";
 
    private SolrInputDocument document;
+   private Map<String,Object> fieldModifier;
+   private final static String SET = "set";
 
    public static RelnSolrProxy create(Relationship reln)
    {
       RelnSolrProxy proxy = new RelnSolrProxy();
       RelationshipDV relnDV = RelationshipDV.create(reln);
 
-      proxy.addDocumentId(relnDV.id);
-      proxy.addDescription(relnDV.description);
-      proxy.addMimeType(relnDV.descriptionMimeType);
-      proxy.addRelnType(relnDV.typeId);
-      proxy.addRelatedEntities(relnDV.relatedEntities);
-      proxy.addTargetEntities(relnDV.targetEntities);
+
+      proxy.addField(relnId, relnDV.id);
+      proxy.addField(description, relnDV.description);
+      proxy.addField(descriptMimeType, relnDV.descriptionMimeType);
+      proxy.addField(relationshipType, relnDV.typeId);
+      proxy.addEntities(relatedEntities, relnDV.relatedEntities);
+      proxy.addEntities(targetEntities, relnDV.targetEntities);
       proxy.addProvenance(relnDV.provenance);
 
       try
       {
-         proxy.addRelationshipModel(SolrRelationshipSearchService.mapper.writeValueAsString(relnDV));
+         proxy.addField(relationshipModel, SolrRelationshipSearchService.mapper.writeValueAsString(relnDV));
       }
       catch (JsonProcessingException e)
       {
          throw new IllegalStateException("Failed to serialize relationship DV", e);
       }
+
+      return proxy;
+   }
+
+   public static RelnSolrProxy update(Relationship reln)
+   {
+      RelnSolrProxy proxy = new RelnSolrProxy();
+      RelationshipDV relnDV = RelationshipDV.create(reln);
+
+      proxy.addField(relnId, relnDV.id);
+
+      proxy.updateField(description, relnDV.description, SET);
+      proxy.updateField(descriptMimeType, relnDV.descriptionMimeType, SET);
+      proxy.updateField(relationshipType, relnDV.typeId, SET);
+      proxy.updateEntities(relatedEntities, relnDV.relatedEntities, SET);
+      proxy.updateEntities(targetEntities, relnDV.targetEntities, SET);
+      proxy.updateProvenance(relnDV.provenance, SET);
+
+      try
+      {
+         proxy.addField(relationshipModel, SolrRelationshipSearchService.mapper.writeValueAsString(relnDV));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize relationship DV", e);
+      }
+
 
       return proxy;
    }
@@ -69,63 +102,62 @@ public class RelnSolrProxy
       return document;
    }
 
-   void addRelationshipModel(String jsonReln)
+   void addField(String fieldName, String fieldValue)
    {
-      document.addField(relationshipModel, jsonReln);
+      document.addField(fieldName, fieldValue);
    }
 
-   void addDocumentId(String id)
+
+   void updateField(String fieldName, String value, String updateType)
    {
-      document.addField(relnId, id);
+      fieldModifier = new HashMap<>(1);
+      fieldModifier.put(updateType, value);
+      document.addField(fieldName, fieldModifier);
    }
 
-   void addDescription(String relnDescription)
-   {
-      document.addField(description, relnDescription);
-   }
-
-   void addMimeType(String mimeType)
-   {
-      document.addField(descriptMimeType, mimeType);
-   }
-
-   void addRelnType(String relnType)
-   {
-      document.addField(relationshipType, relnType);
-   }
-
-   void addRelatedEntities(Set<AnchorDV> anchors)
+   void addEntities(String fieldName, Set<AnchorDV> anchors)
    {
       for (AnchorDV anchor : anchors)
       {
-
          for (String uri : anchor.entryUris)
          {
-            document.addField(relatedEntities, uri);
+            document.addField(fieldName, uri);
          }
       }
    }
 
-   void addTargetEntities(Set<AnchorDV> anchors)
+   private void updateEntities(String fieldName, Set<AnchorDV> anchors, String updateType)
    {
+      Set<String> allEntities = new HashSet<>();
+      fieldModifier = new HashMap<>(1);
+
       for (AnchorDV anchor : anchors)
       {
-
-         for (String uri : anchor.entryUris)
-         {
-            document.addField(targetEntities, uri);
-         }
+         allEntities.addAll(anchor.entryUris);
       }
+      fieldModifier.put(updateType, allEntities);
+      document.addField(fieldName, fieldModifier);
    }
 
    void addProvenance(ProvenanceDV prov)
    {
-      for (String uri : prov.creatorUris)
-      {
-         document.addField(provCreators, uri);
-      }
       String dateCreated = prov.dateCreated;
       String dateModified = prov.dateModified;
+
+      document.addField(provCreators, prov.creatorUris);
+      document.addField(provCreateDate, (dateCreated != null) ? dateCreated : null);
+      document.addField(provModifiedDate, (dateModified != null) ? dateModified : null);
+   }
+
+   private void updateProvenance(ProvenanceDV prov, String updateType)
+   {
+      String dateCreated = prov.dateCreated;
+      String dateModified = prov.dateModified;
+
+      fieldModifier = new HashMap<>();
+      fieldModifier.put(updateType, prov.creatorUris);
+
+      document.addField(provCreators, fieldModifier);
       document.addField(provCreateDate, (dateCreated != null) ? dateCreated : null);
       document.addField(provModifiedDate, (dateModified != null) ? dateModified : null);
    }
