@@ -14,6 +14,7 @@ import edu.tamu.tcat.trc.entries.reln.RelationshipType;
 import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
 import edu.tamu.tcat.trc.entries.reln.model.ProvenanceDV;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.model.internal.BasicAnchorSet;
 
 
 public class EditRelationshipCommandImpl implements EditRelationshipCommand
@@ -39,8 +40,22 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
        setDescription(relationship.description);
        setDescriptionFormat(relationship.descriptionMimeType);
        setProvenance(relationship.provenance);
-       addTargetEntities(relationship.targetEntities);
-       addRelatedEntities(relationship.relatedEntities);
+       setTargetEntities(createAnchorSet(relationship.targetEntities));
+       setRelatedEntities(createAnchorSet(relationship.relatedEntities));
+   }
+
+   private static BasicAnchorSet createAnchorSet(Set<AnchorDV> entities)
+   {
+      if (entities.isEmpty())
+         return new BasicAnchorSet(new HashSet<>());
+
+      Set<Anchor> anchors = new HashSet<>();
+      for (AnchorDV anchorData : entities)
+      {
+         anchors.add(AnchorDV.instantiate(anchorData));
+      }
+
+      return new BasicAnchorSet(anchors);
    }
 
    @Override
