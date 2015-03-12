@@ -2,6 +2,7 @@ package edu.tamu.tcat.trc.entries.reln.postgres;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
@@ -38,14 +39,8 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
        setDescription(relationship.description);
        setDescriptionFormat(relationship.descriptionMimeType);
        setProvenance(relationship.provenance);
-       for (AnchorDV anchor : relationship.relatedEntities)
-       {
-          addRelatedEntity(anchor);
-       }
-       for (AnchorDV anchor : relationship.targetEntities)
-       {
-          addTargetEntity(anchor);
-       }
+       addTargetEntities(relationship.targetEntities);
+       addRelatedEntities(relationship.relatedEntities);
    }
 
    @Override
@@ -98,6 +93,12 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    }
 
    @Override
+   public void addRelatedEntities(Set<AnchorDV> anchor)
+   {
+      relationship.relatedEntities.addAll(anchor);
+   }
+
+   @Override
    public void removeRelatedEntity(AnchorDV anchor)
    {
       relationship.relatedEntities.remove(anchor);
@@ -120,6 +121,12 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    public void addTargetEntity(AnchorDV anchor)
    {
       relationship.targetEntities.add(anchor);
+   }
+
+   @Override
+   public void addTargetEntities(Set<AnchorDV> anchor)
+   {
+      relationship.targetEntities.addAll(anchor);
    }
 
    @Override
