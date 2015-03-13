@@ -69,15 +69,24 @@ public class WorksResource
    public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title, @QueryParam(value = "numResults") int numResults)
    {
       // TODO to be backed by search service, add more robust query API
-      List<WorkInfo> result = new ArrayList<WorkInfo>();
-      for (Work w : repo.listWorks(title)) {
-         if (result.size() == numResults) {
-            break;
+      try
+      {
+         List<WorkInfo> result = new ArrayList<WorkInfo>();
+         for (Work w : repo.listWorks(title)) {
+            if (result.size() == numResults) {
+               break;
+            }
+            result.add(WorkInfo.create(w));
          }
-         result.add(WorkInfo.create(w));
-      }
 
-      return result;
+         return result;
+      }
+      catch (RuntimeException e)
+      {
+         logger.log(Level.SEVERE, "Failed to find titles", e);
+         e.printStackTrace();    // HACK: print to std err since loggers seem to be hit and miss
+         throw e;
+      }
    }
 
 //   @GET
