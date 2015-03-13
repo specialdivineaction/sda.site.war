@@ -44,32 +44,14 @@ public class DigitalContentSearchServiceImpl implements DigitalContentSearchServ
          {
             DigitalContentReferenceDTO digitalContentRef = new DigitalContentReferenceDTO();
             digitalContentRef.provider = DigitalCopyProvider.HathiTrust;
-            for(String fieldName : document.getFieldNames())
-            {
-               switch(fieldName)
-               {
-                  case "recordNumber":
-                     digitalContentRef.recordNumber = document.getFieldValue(fieldName).toString();
-                     break;
-                  case "access":
-                     digitalContentRef.access = document.getFieldValue(fieldName).toString();
-                     break;
-                  case "rights":
-                     digitalContentRef.rights = document.getFieldValue(fieldName).toString();
-                     break;
-                  case "source":
-                     digitalContentRef.source= document.getFieldValue(fieldName).toString();
-                     break;
-                  case "sourceRecordNumber":
-                     digitalContentRef.sourceRecordNumber = document.getFieldValue(fieldName).toString();
-                     break;
-                  case "title":
-                     digitalContentRef.title = document.getFieldValue(fieldName).toString();
-                     break;
-                  default:
-                     break;
-               }
-            }
+
+            digitalContentRef.recordNumber = document.getFieldValue("recordNumber").toString();
+            digitalContentRef.access = document.getFieldValue("access").toString();
+            digitalContentRef.rights = document.getFieldValue("rights").toString();
+            digitalContentRef.source = document.getFieldValue("source").toString();
+            digitalContentRef.sourceRecordNumber = document.getFieldValue("sourceRecordNumber").toString();
+            digitalContentRef.title = document.getFieldValue("title").toString();
+
             digitalContent.add(new HathiTrustDigitalContentImpl(digitalContentRef));
          }
       }
@@ -106,9 +88,9 @@ public class DigitalContentSearchServiceImpl implements DigitalContentSearchServ
       Collection<Record> records = new HashSet<>();
       DigitalContentSearchCommandImpl digitalContentCommand = new DigitalContentSearchCommandImpl();
 
-      switch(provider.toString())
+      switch (provider)
       {
-         case "HahtiTrust":
+         case HathiTrust:
             records.addAll(digitalContentCommand.getHathiTrustContent(recordNumber));
             break;
          default:
