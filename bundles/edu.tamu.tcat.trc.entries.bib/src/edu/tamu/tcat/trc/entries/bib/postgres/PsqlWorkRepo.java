@@ -18,7 +18,6 @@ import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Title;
-import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
@@ -139,23 +138,22 @@ public class PsqlWorkRepo implements WorkRepository
 
       for (Work w : listWorks)
       {
-         TitleDefinition titleDef = w.getTitle();
-
-         for (Title t : titleDef.getAlternateTitles())
-         {
-            boolean titleFound = false;
-            titleFound = hasTitleName(t, titleName);
-            if (titleFound)
-            {
-               workResults.add(w);
-               continue;
-            }
-         }
+         if (hasTitle(w, titleName))
+            workResults.add(w);
       }
 
       return workResults;
    }
 
+   private boolean hasTitle(Work w, String name)
+   {
+      for (Title t : w.getTitle().getAlternateTitles())
+      {
+         return hasTitleName(t, name);
+      }
+
+      return false;
+   }
    @Override
    public Work getWork(int workId) throws NoSuchCatalogRecordException
    {
