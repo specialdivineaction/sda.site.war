@@ -4,6 +4,13 @@ import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
 
 public class HTCopyProxy implements DigitalCopyProxy
 {
+   public String ident;
+   public String title;
+   public String description;
+   public String copyProvider = "HathiTrust";
+   public String sourceSummary;
+   public String rights;
+   public String publicationDate;
 
    public HTCopyProxy()
    {

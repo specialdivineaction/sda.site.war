@@ -7,7 +7,9 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
+import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResult;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchService;
 import edu.tamu.tcat.trc.entries.bib.copy.hathitrust.HTFilesSearchService;
 
@@ -44,11 +46,24 @@ public class CopySearchServiceResource
    public SearchResult search(@PathParam(value = "q") String q,
                               @PathParam(value = "author") String author,
                               @DefaultValue("-9999") @PathParam(value = "before") int before,
-                              @DefaultValue("-9999") @PathParam(value = "before") int after,
-                              @DefaultValue("0") @PathParam(value = "before") int offset
-                              @DefaultValue("25") @PathParam(value = "before") int limit
+                              @DefaultValue("-9999") @PathParam(value = "after") int after,
+                              @DefaultValue("0") @PathParam(value = "offset") int offset,
+                              @DefaultValue("25") @PathParam(value = "limit") int limit
                               )
    {
+//      CopySearchService htSearch = new HTFilesSearchService();
+      try
+      {
+         CopyQueryImpl query = new CopyQueryImpl(q, author, before, after, offset, limit);
+         CopySearchResult result = searchService.find(query);
+         CopyQueryDTO copyDTO = new CopyQueryDTO(query);
+         return new SearchResult(result, copyDTO );
+      }
+      catch (ResourceAccessException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
 
       throw new UnsupportedOperationException();
    }
@@ -56,50 +71,63 @@ public class CopySearchServiceResource
 
    private static class CopyQueryImpl implements ContentQuery
    {
+      public String q;
+      public String author;
+      public int before;
+      public int after;
+      public int offset;
+      public int limit;
 
-      public CopyQueryImpl()
+      public CopyQueryImpl(String keyWords, String author, int before, int after, int offset, int limit)
       {
-
+         this.q = keyWords;
+         this.author = author;
+         this.before = before;
+         this.after = after;
+         this.offset = offset;
+         this.limit = limit;
       }
 
       @Override
       public String getKeyWordQuery()
       {
-         // TODO Auto-generated method stub
-         return null;
+         return q;
       }
 
       @Override
       public String getAuthorQuery()
       {
-         // TODO Auto-generated method stub
-         return null;
+         return author;
       }
 
       @Override
       public TemporalAccessor getDateRangeStart()
       {
-         // TODO Auto-generated method stub
-         return null;
+         if (before != -9999)
+            return  java.time.Year.of(before);
+         else
+            return null;
       }
 
       @Override
       public TemporalAccessor getDateRangeEnd()
       {
-         // TODO Auto-generated method stub
-         return null;
+         if (after != -9999)
+            return  java.time.Year.of(after);
+         else
+            return null;
       }
 
       @Override
       public int getOffset()
       {
-         return 0;
+         return offset;
       }
 
       @Override
       public int getLimit()
       {
-         return 20;
+         return limit;
       }
    }
 }

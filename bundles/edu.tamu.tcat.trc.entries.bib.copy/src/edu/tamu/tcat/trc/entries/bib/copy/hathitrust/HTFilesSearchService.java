@@ -6,6 +6,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,12 +17,16 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResult;
+import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResultImpl;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchService;
+import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
 
 /**
  *  Searches over the local SOLR index of Hathifiles data. Note that this index may be expanded
@@ -99,16 +105,26 @@ public class HTFilesSearchService implements CopySearchService
          SolrQuery solrQuery = new SolrQuery(queryString);
 
          QueryResponse response = solrServer.query(solrQuery);
-         // DO SOMETHING.
+         SolrDocumentList documents = response.getResults();
+         Collection<DigitalCopyProxy> digitalProxy = new HashSet<>();
+         for(SolrDocument doc : documents)
+         {
+            HTCopyProxy htProxy = new HTCopyProxy();
+            htProxy.ident = doc.getFieldValue("recordNumber").toString();
+            htProxy.sourceSummary = doc.getFieldValue("source").toString();
+            htProxy.title = doc.getFieldValue("title").toString();
+            htProxy.rights = doc.getFieldValue("rights").toString();
+            htProxy.publicationDate = doc.getFieldValue("publicationDate").toString();
 
+            digitalProxy.add(htProxy);
+         }
+         return new CopySearchResultImpl(digitalProxy);
       }
       catch (Exception ex)
       {
          throw new ResourceAccessException("", ex);
       }
 
-
-      throw new UnsupportedOperationException();
    }
 
    private String trimToNull(String str)
