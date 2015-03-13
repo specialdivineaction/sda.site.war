@@ -149,7 +149,9 @@ public class PsqlWorkRepo implements WorkRepository
    {
       for (Title t : w.getTitle().getAlternateTitles())
       {
-         return hasTitleName(t, name);
+         if (hasTitleName(t, name)) {
+            return true;
+         }
       }
 
       return false;
