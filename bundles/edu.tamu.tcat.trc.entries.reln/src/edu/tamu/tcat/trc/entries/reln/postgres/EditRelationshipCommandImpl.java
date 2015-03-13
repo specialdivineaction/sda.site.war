@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.trc.entries.reln.Anchor;
@@ -91,14 +92,12 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    @Override
    public void setRelatedEntities(AnchorSet related)
    {
-      if (related != null)
-      {
-         relationship.relatedEntities = new HashSet<>();
-         for (Anchor anchor : related.getAnchors())
-         {
-            relationship.relatedEntities.add(AnchorDV.create(anchor));
-         }
-      }
+      if (related == null)
+         return;
+
+      relationship.relatedEntities = related.getAnchors().parallelStream()
+                       .map(anchor -> AnchorDV.create(anchor))
+                       .collect(Collectors.toSet());
    }
 
    @Override
@@ -122,14 +121,12 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    @Override
    public void setTargetEntities(AnchorSet target)
    {
-      if (target != null)
-      {
-         relationship.targetEntities = new HashSet<>();
-         for (Anchor anchor : target.getAnchors())
-         {
-            relationship.targetEntities.add(AnchorDV.create(anchor));
-         }
-      }
+      if (target == null)
+         return;
+
+      relationship.targetEntities = target.getAnchors().parallelStream()
+            .map(anchor -> AnchorDV.create(anchor))
+            .collect(Collectors.toSet());
    }
 
    @Override
