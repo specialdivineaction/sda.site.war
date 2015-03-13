@@ -4,11 +4,8 @@ import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 
 
 /**
- *  Defines simple metadata for uniquely identifying a digital copy.
- *  presenting information abouta reference to a digital copy of a bibliographic object (for example, a PDF scan of a book,
- *  or a link to a book on HathiTrust).
- *
- *  <p>Since digital copies come from different sources, the specific data representation
+ *  Defines simple metadata for uniquely identifying a digital copy and presenting basic
+ *  information about that copy to aid in the discovery process.
  *
  */
 public interface DigitalCopyProxy
