@@ -38,9 +38,7 @@ Export-Package: edu.tamu.tcat.sda.catalog.events.psql,
  org.apache.solr.client.solrj.response,
  org.apache.solr.common,
  org.apache.solr.common.params
-Bundle-ClassPath: lib/org.apache.httpcomponents.httpclient_4.3.3.jar,
- lib/solr-core-4.9.0.jar,
- lib/solr-solrj-4.9.0.jar,
+Bundle-ClassPath: lib/solr-solrj-4.9.0.jar,
  .,
  lib/noggit-0.5.jar
 Bundle-ActivationPolicy: lazy

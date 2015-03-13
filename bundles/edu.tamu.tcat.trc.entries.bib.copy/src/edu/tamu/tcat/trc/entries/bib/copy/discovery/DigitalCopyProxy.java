@@ -1,12 +1,16 @@
 package edu.tamu.tcat.trc.entries.bib.copy.discovery;
 
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
+import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 
 
 /**
  *  Defines simple metadata for uniquely identifying a digital copy and presenting basic
- *  information about that copy to aid in the discovery process.
- *
+ *  information about that copy to aid in the discovery process. Note that this is maintained
+ *  separately from {@link DigitalCopy} since the full copy may require additional resources to
+ *  retrieve (e.g., a remote REST request) and will be handled by a client that is tightly
+ *  coupled to the {@code DigitalCopy} implementation. {@code DigitalCopyProxy} instances are
+ *  intended to be accessed via their interface.
  */
 public interface DigitalCopyProxy
 {
