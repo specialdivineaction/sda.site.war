@@ -42,7 +42,7 @@ public class TitleImpl implements Title
       return title.type;
    }
    @Override
-   public String getLanuguage()
+   public String getLanguage()
    {
       return title.lg;
    }

@@ -33,5 +33,5 @@ public interface Title
    /**
     * @return The language that the title is written in.
     */
-   String getLanuguage();
+   String getLanguage();
 }
