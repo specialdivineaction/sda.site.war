@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.apache.http.HttpResponse;
@@ -26,6 +28,7 @@ import edu.tamu.tcat.sda.catalog.psql.test.HTTPClient.RestHTTPClient;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanIdTableDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.PsqlTasks.CleanRelationshipsDBTask;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Relationships;
+import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
 import edu.tamu.tcat.trc.entries.reln.rest.v1.model.RelationshipId;
 
@@ -129,6 +132,10 @@ public class TestRelationshipRESTApi
          // Update Created Relationship
          createdReln.id = relnId.id;
          createdReln.typeId = "uk.ac.ox.bodleian.sda.relationships.provoked";
+         Set<String> anchorUris = new HashSet<>();
+         anchorUris.add("works/1");
+         anchorUris.add("works/10");
+         createdReln.targetEntities.add(createAnchorDV(anchorUris));
 
          URI putUri = uri.resolve("relationships/" + createdReln.id);
          client.createPut(putUri);
@@ -155,6 +162,13 @@ public class TestRelationshipRESTApi
       {
             fail("Exception Occured cause:" + e);
       }
+   }
+
+   private AnchorDV createAnchorDV(Set<String> uris)
+   {
+      AnchorDV anchor = new AnchorDV();
+      anchor.entryUris = uris;
+      return anchor;
    }
 
    @Test

@@ -2,8 +2,10 @@ package edu.tamu.tcat.trc.entries.reln.postgres;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.trc.entries.reln.Anchor;
@@ -13,6 +15,7 @@ import edu.tamu.tcat.trc.entries.reln.RelationshipType;
 import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
 import edu.tamu.tcat.trc.entries.reln.model.ProvenanceDV;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
+import edu.tamu.tcat.trc.entries.reln.model.internal.BasicAnchorSet;
 
 
 public class EditRelationshipCommandImpl implements EditRelationshipCommand
@@ -38,14 +41,22 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
        setDescription(relationship.description);
        setDescriptionFormat(relationship.descriptionMimeType);
        setProvenance(relationship.provenance);
-       for (AnchorDV anchor : relationship.relatedEntities)
-       {
-          addRelatedEntity(anchor);
-       }
-       for (AnchorDV anchor : relationship.targetEntities)
-       {
-          addTargetEntity(anchor);
-       }
+       setTargetEntities(createAnchorSet(relationship.targetEntities));
+       setRelatedEntities(createAnchorSet(relationship.relatedEntities));
+   }
+
+   private static BasicAnchorSet createAnchorSet(Set<AnchorDV> entities)
+   {
+      if (entities.isEmpty())
+         return new BasicAnchorSet(new HashSet<>());
+
+      Set<Anchor> anchors = new HashSet<>();
+      for (AnchorDV anchorData : entities)
+      {
+         anchors.add(AnchorDV.instantiate(anchorData));
+      }
+
+      return new BasicAnchorSet(anchors);
    }
 
    @Override
@@ -81,20 +92,24 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    @Override
    public void setRelatedEntities(AnchorSet related)
    {
-      if (related != null)
-      {
-         relationship.relatedEntities = new HashSet<>();
-         for (Anchor anchor : related.getAnchors())
-         {
-            relationship.relatedEntities.add(AnchorDV.create(anchor));
-         }
-      }
+      if (related == null)
+         return;
+
+      relationship.relatedEntities = related.getAnchors().parallelStream()
+                       .map(anchor -> AnchorDV.create(anchor))
+                       .collect(Collectors.toSet());
    }
 
    @Override
    public void addRelatedEntity(AnchorDV anchor)
    {
       relationship.relatedEntities.add(anchor);
+   }
+
+   @Override
+   public void addRelatedEntities(Set<AnchorDV> anchor)
+   {
+      relationship.relatedEntities.addAll(anchor);
    }
 
    @Override
@@ -106,20 +121,24 @@ public class EditRelationshipCommandImpl implements EditRelationshipCommand
    @Override
    public void setTargetEntities(AnchorSet target)
    {
-      if (target != null)
-      {
-         relationship.targetEntities = new HashSet<>();
-         for (Anchor anchor : target.getAnchors())
-         {
-            relationship.targetEntities.add(AnchorDV.create(anchor));
-         }
-      }
+      if (target == null)
+         return;
+
+      relationship.targetEntities = target.getAnchors().parallelStream()
+            .map(anchor -> AnchorDV.create(anchor))
+            .collect(Collectors.toSet());
    }
 
    @Override
    public void addTargetEntity(AnchorDV anchor)
    {
       relationship.targetEntities.add(anchor);
+   }
+
+   @Override
+   public void addTargetEntities(Set<AnchorDV> anchor)
+   {
+      relationship.targetEntities.addAll(anchor);
    }
 
    @Override

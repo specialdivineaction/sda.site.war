@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.psql.test">
-   <implementation class="edu.tamu.tcat.db.postgresql.exec.PostgreSqlExecutorService"/>
+   <implementation class="edu.tamu.tcat.sda.catalog.psql.provider.PsqlDataSourceProvider"/>
    <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.db.provider.DataSourceProvider" name="DataSourceProvider"/>
    <service>
-      <provide interface="edu.tamu.tcat.db.exec.sql.SqlExecutor"/>
+      <provide interface="edu.tamu.tcat.sda.catalog.psql.provider.PsqlDataSourceProvider"/>r"/>
    </service></scr:component>

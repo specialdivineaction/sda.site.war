@@ -1,5 +1,6 @@
 package edu.tamu.tcat.trc.entries.reln;
 
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.trc.entries.reln.model.AnchorDV;
@@ -55,6 +56,11 @@ public interface EditRelationshipCommand
    void setRelatedEntities(AnchorSet related);
 
    /**
+    * @param related
+    */
+   void addRelatedEntities(Set<AnchorDV> related);
+
+   /**
     *
     * @param anchor
     */
@@ -71,6 +77,11 @@ public interface EditRelationshipCommand
     * @param target
     */
    void setTargetEntities(AnchorSet target);
+
+   /**
+    * @param target
+    */
+   void addTargetEntities(Set<AnchorDV> target);
 
    /**
     *

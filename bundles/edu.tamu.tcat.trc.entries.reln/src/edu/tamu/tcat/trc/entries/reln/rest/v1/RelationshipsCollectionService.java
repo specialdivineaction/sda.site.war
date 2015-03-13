@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import com.google.common.base.Joiner;
@@ -89,22 +90,22 @@ public class RelationshipsCollectionService
    @Produces(MediaType.APPLICATION_JSON)
    public RelationshipId createRelationship(RelationshipDV relationship)
    {
-      RelationshipId results = new RelationshipId();
       EditRelationshipCommand createCommand;
       try
       {
+         RelationshipId result = new RelationshipId();
          createCommand = repo.create();
          createCommand.setAll(relationship);
 
-         RelationshipId result = new RelationshipId();
          result.id = createCommand.execute().get();
+         return result;
       }
       catch (Exception e)
       {
          logger.severe("An error occured during the creating relationship process. Exception: " + e);
+         throw new WebApplicationException("Failed to create a new relationship:", e.getCause(), 500);
       }
 
-      return results;
    }
 
    /**
