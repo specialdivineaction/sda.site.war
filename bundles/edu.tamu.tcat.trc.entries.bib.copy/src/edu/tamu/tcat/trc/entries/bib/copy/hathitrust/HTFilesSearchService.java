@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +67,7 @@ public class HTFilesSearchService implements CopySearchService
       try
       {
          SolrPingResponse pingResponse = solrServer.ping();
-         if (pingResponse == null || pingResponse.getStatus() > 299 || pingResponse.getStatus() < 200)
+         if (pingResponse == null || pingResponse.getStatus() > 299 && pingResponse.getStatus() < 200)
             throw new IllegalStateException("Failed to ping configured solr server [" + solrEndpoint.resolve(core) + "]: " + pingResponse);
       }
       catch (IOException | SolrServerException ex)
@@ -98,33 +101,40 @@ public class HTFilesSearchService implements CopySearchService
       {
          Objects.requireNonNull(solrServer, "No active connection to Solr Server");
 
-         // TODO build query
          String queryString = formatQueryString(query);
 
-
          SolrQuery solrQuery = new SolrQuery(queryString);
-
+         solrQuery.setRows(query.getLimit());
+         solrQuery.setStart(query.getOffset());
+         solrQuery.addFilterQuery(buildDateFilter(query));
          QueryResponse response = solrServer.query(solrQuery);
-         SolrDocumentList documents = response.getResults();
-         Collection<DigitalCopyProxy> digitalProxy = new HashSet<>();
-         for(SolrDocument doc : documents)
-         {
-            HTCopyProxy htProxy = new HTCopyProxy();
-            htProxy.ident = doc.getFieldValue("recordNumber").toString();
-            htProxy.sourceSummary = doc.getFieldValue("source").toString();
-            htProxy.title = doc.getFieldValue("title").toString();
-            htProxy.rights = doc.getFieldValue("rights").toString();
-            htProxy.publicationDate = doc.getFieldValue("publicationDate").toString();
-
-            digitalProxy.add(htProxy);
-         }
-         return new CopySearchResultImpl(digitalProxy);
+         return getSearchResults(response);
       }
       catch (Exception ex)
       {
          throw new ResourceAccessException("", ex);
       }
 
+   }
+
+   private CopySearchResult getSearchResults(QueryResponse response)
+   {
+      SolrDocumentList documents = response.getResults();
+      Collection<DigitalCopyProxy> digitalProxy = new ArrayList<>();
+      for(SolrDocument doc : documents)
+      {
+         HTCopyProxy htProxy = new HTCopyProxy();
+         htProxy.ident = doc.getFieldValue("recordNumber").toString();
+         htProxy.sourceSummary = doc.getFieldValue("source").toString();
+         htProxy.title = doc.getFieldValue("title").toString();
+         htProxy.rights = doc.getFieldValue("rights").toString();
+         if(doc.containsKey("publicationDate"))
+            htProxy.publicationDate = doc.getFieldValue("publicationDate").toString();
+         else
+            htProxy.publicationDate = "";
+         digitalProxy.add(htProxy);
+      }
+      return new CopySearchResultImpl(digitalProxy);
    }
 
    private String trimToNull(String str)
@@ -137,8 +147,7 @@ public class HTFilesSearchService implements CopySearchService
       StringBuilder qBuilder = new StringBuilder();
 
       buildMainQuery(query, qBuilder);
-      buildDateFilter(query, qBuilder);
-      buildPagingFilter(query, qBuilder);
+//      buildDateFilter(query, qBuilder);
 
       return qBuilder.toString();
    }
@@ -162,40 +171,31 @@ public class HTFilesSearchService implements CopySearchService
 
       //         ?q=title%3A(essay+hume)&fq=publicationDate%3A%5B1700-01-01T00%3A00%3A00Z+TO+1800-01-01T00%3A00%3A00Z%5D
       keyWordQuery = URLEncoder.encode(keyWordQuery, "UTF-8");    // UTF-8 required by standard
-      qBuilder.append("q=title").append(URLEncoder.encode(":", "UTF-8"))
-      .append("(").append(keyWordQuery).append(")");
+      qBuilder.append("title:").append("(").append(keyWordQuery).append(")");
    }
 
-   private void buildDateFilter(ContentQuery query, StringBuilder qBuilder) throws UnsupportedEncodingException
+   private String buildDateFilter(ContentQuery query) throws UnsupportedEncodingException
    {
+      StringBuilder qBuilder2 = new StringBuilder();
       // add filter for date range.
       //fq=publicationDate%3A%5B1700-01-01T00%3A00%3A00Z+TO+1800-01-01T00%3A00%3A00Z%5D
-
       TemporalAccessor rangeStart = query.getDateRangeStart();
       TemporalAccessor rangeEnd = query.getDateRangeEnd();
       if (rangeStart != null || rangeEnd != null)
       {
-         String start = (rangeStart == null) ? "*": dateFormatter.format(rangeStart) + "/YEAR";
-         String end = (rangeEnd == null) ? "*": dateFormatter.format(rangeEnd) + "/YEAR";
+         ZonedDateTime startDate = ZonedDateTime.of(rangeStart.get(ChronoField.YEAR), 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+         ZonedDateTime endDate = ZonedDateTime.of(rangeEnd.get(ChronoField.YEAR), 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
 
-         qBuilder.append("&fq=publicationDate")
-                 .append(URLEncoder.encode(":[", "UTF-8"))
-                 .append(URLEncoder.encode(start, "UTF-8"))
-                 .append("+TO+")
-                 .append(URLEncoder.encode(end, "UTF-8"))
-                 .append(URLEncoder.encode("]", "UTF-8"));
+         String start = (rangeStart == null) ? "*": dateFormatter.format(startDate);
+         String end = (rangeEnd == null) ? "*": dateFormatter.format(endDate);
+
+         qBuilder2.append("publicationDate:")
+                 .append("[")
+                 .append(start)
+                 .append(" TO ")
+                 .append(end)
+                 .append("]");
       }
+      return qBuilder2.toString();
    }
-
-   private void buildPagingFilter(ContentQuery query, StringBuilder qBuilder)
-   {
-      int offset = query.getOffset();
-      if (offset < 0)
-         qBuilder.append("&start=").append(offset);
-
-      int limit = query.getLimit();
-      qBuilder.append("&rows=").append(Math.min(limit, MAX_ROWS));
-   }
-
-
 }
