@@ -20,50 +20,43 @@ public class HTCopyProxy implements DigitalCopyProxy
    @Override
    public String getIdentifier()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.ident;
    }
 
    @Override
    public String getTitle()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.title;
    }
 
    @Override
    public String getDescription()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.description;
    }
 
    @Override
    public String getCopyProvider()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.copyProvider;
    }
 
    @Override
    public String getSourceSummary()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.sourceSummary;
    }
 
    @Override
    public String getRights()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.rights;
    }
 
    @Override
    public String getPublicationDate()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return this.publicationDate;
    }
 
 }
