@@ -20,6 +20,12 @@
             is_directed="false"
             title="Consonance">
       </relationship_type>
+      <relationship_type
+            description="Two (or more) works appear to be directly related but there is no explicitly stated dependency. "
+            identifier="uk.ac.ox.bodleian.sda.relationships.patternmatch"
+            is_directed="false"
+            title="Possible Pattern Match">
+      </relationship_type>
    </extension>
 
 </plugin>
