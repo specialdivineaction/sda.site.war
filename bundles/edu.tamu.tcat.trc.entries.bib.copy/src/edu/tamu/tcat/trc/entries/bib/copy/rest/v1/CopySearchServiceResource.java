@@ -4,8 +4,11 @@ import java.time.temporal.TemporalAccessor;
 import java.util.logging.Logger;
 
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
@@ -42,7 +45,9 @@ public class CopySearchServiceResource
    {
    }
 
-
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{q}/{author}/{before}/{after}/{offset}/{limit}")
    public SearchResult search(@PathParam(value = "q") String q,
                               @PathParam(value = "author") String author,
                               @DefaultValue("-9999") @PathParam(value = "before") int before,
