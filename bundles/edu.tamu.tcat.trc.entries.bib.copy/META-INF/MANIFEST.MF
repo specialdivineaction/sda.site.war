@@ -14,7 +14,16 @@ Import-Package: edu.tamu.tcat.hathitrust,
  edu.tamu.tcat.trc.entries.bib.dto,
  edu.tamu.tcat.trc.entries.reln.solr,
  javax.ws.rs;version="2.0.0",
+ javax.ws.rs.core;version="2.0.0",
+ org.apache.http.client.methods;version="4.2.6",
  org.apache.solr.client.solrj,
  org.apache.solr.client.solrj.impl,
  org.apache.solr.client.solrj.response,
- org.apache.solr.common
+ org.apache.solr.common,
+ org.apache.solr.common.params
+Export-Package: edu.tamu.tcat.trc.entries.bib.copy,
+ edu.tamu.tcat.trc.entries.bib.copy.discovery,
+ edu.tamu.tcat.trc.entries.bib.copy.hathitrust,
+ edu.tamu.tcat.trc.entries.bib.copy.legacy,
+ edu.tamu.tcat.trc.entries.bib.copy.postgres,
+ edu.tamu.tcat.trc.entries.bib.copy.rest.v1
