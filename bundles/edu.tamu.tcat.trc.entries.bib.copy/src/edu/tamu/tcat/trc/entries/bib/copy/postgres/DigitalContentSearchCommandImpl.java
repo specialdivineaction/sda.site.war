@@ -6,7 +6,6 @@ import java.util.HashSet;
 import edu.tamu.tcat.hathitrust.Record;
 import edu.tamu.tcat.hathitrust.Record.IdType;
 import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
-import edu.tamu.tcat.hathitrust.client.v1.basic.BasicRecord;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BasicRecord.BasicRecordIdentifier;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BibAPIClientImpl;
 import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentSearchCommand;
@@ -18,8 +17,7 @@ public class DigitalContentSearchCommandImpl implements DigitalContentSearchComm
    public Collection<Record> getHathiTrustContent(String recordNumber)
    {
       Collection<Record> records = new HashSet<>();
-      BasicRecord basicRecord = new BasicRecord();
-      BasicRecordIdentifier id = basicRecord.new BasicRecordIdentifier(IdType.RECORDNUMBER, recordNumber);
+      BasicRecordIdentifier id = new BasicRecordIdentifier(IdType.RECORDNUMBER, recordNumber);
       BibAPIClientImpl client = new BibAPIClientImpl();
       try
       {
