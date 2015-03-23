@@ -124,7 +124,7 @@ public class HTFilesSearchService implements CopySearchService
       for(SolrDocument doc : documents)
       {
          HTCopyProxy htProxy = new HTCopyProxy();
-         htProxy.ident = doc.getFieldValue("recordNumber").toString();
+         htProxy.identifier = doc.getFieldValue("recordNumber").toString();
          htProxy.sourceSummary = doc.getFieldValue("source").toString();
          htProxy.title = doc.getFieldValue("title").toString();
          htProxy.rights = doc.getFieldValue("rights").toString();
