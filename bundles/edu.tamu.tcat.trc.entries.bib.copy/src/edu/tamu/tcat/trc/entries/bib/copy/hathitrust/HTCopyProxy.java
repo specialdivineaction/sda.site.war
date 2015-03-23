@@ -4,7 +4,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
 
 public class HTCopyProxy implements DigitalCopyProxy
 {
-   public String ident;
+   public String identifier;
    public String title;
    public String description;
    public String copyProvider = "HathiTrust";
@@ -20,7 +20,7 @@ public class HTCopyProxy implements DigitalCopyProxy
    @Override
    public String getIdentifier()
    {
-      return this.ident;
+      return "htid:" + this.identifier;
    }
 
    @Override
