@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
@@ -47,13 +48,12 @@ public class CopySearchServiceResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("{q}/{author}/{before}/{after}/{offset}/{limit}")
-   public SearchResult search(@PathParam(value = "q") String q,
-                              @PathParam(value = "author") String author,
-                              @DefaultValue("-9999") @PathParam(value = "before") int before,
-                              @DefaultValue("-9999") @PathParam(value = "after") int after,
-                              @DefaultValue("0") @PathParam(value = "offset") int offset,
-                              @DefaultValue("25") @PathParam(value = "limit") int limit
+   public SearchResult search(@QueryParam(value = "q") String q,
+                              @QueryParam(value = "author") String author,
+                              @DefaultValue("-9999") @QueryParam(value = "before") int before,
+                              @DefaultValue("-9999") @QueryParam(value = "after") int after,
+                              @DefaultValue("0") @QueryParam(value = "offset") int offset,
+                              @DefaultValue("25") @QueryParam(value = "limit") int limit
                               )
    {
 //      CopySearchService htSearch = new HTFilesSearchService();
