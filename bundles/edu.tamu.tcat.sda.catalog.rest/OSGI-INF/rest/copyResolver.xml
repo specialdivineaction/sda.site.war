@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.catalogentries.rest.copy.resolver">
+   <implementation class="edu.tamu.tcat.trc.entries.bib.copy.rest.v1.CopyResolverServiceResource"/>
+   <service>
+      <provide interface="edu.tamu.tcat.trc.entries.bib.copy.rest.v1.CopyResolverServiceResource"/>
+   </service>
+</scr:component>
