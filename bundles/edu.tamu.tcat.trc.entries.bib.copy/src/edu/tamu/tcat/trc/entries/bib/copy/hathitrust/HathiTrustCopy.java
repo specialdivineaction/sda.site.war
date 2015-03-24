@@ -18,7 +18,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 public class HathiTrustCopy implements DigitalCopy
 {
 
-   private String id;
+   private String recordNumber;
    private List<String> titles;
    private List<TemporalAccessor> publishDates;
    private List<Item> items;
@@ -36,7 +36,7 @@ public class HathiTrustCopy implements DigitalCopy
 
    public HathiTrustCopy(Record record)
    {
-      id = record.getId();
+      recordNumber = record.getId();
       titles = record.getTitles();
       publishDates = record.getPublishDates();
       items = record.getItems();
@@ -51,7 +51,7 @@ public class HathiTrustCopy implements DigitalCopy
 
    public String getRecordId()
    {
-      return this.id;
+      return this.recordNumber;
    }
 
    public List<String> getTitles()
