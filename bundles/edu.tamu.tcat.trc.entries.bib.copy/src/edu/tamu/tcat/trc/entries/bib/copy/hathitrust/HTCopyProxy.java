@@ -20,7 +20,7 @@ public class HTCopyProxy implements DigitalCopyProxy
    @Override
    public String getIdentifier()
    {
-      return "htid:" + this.identifier;
+      return this.identifier;
    }
 
    @Override

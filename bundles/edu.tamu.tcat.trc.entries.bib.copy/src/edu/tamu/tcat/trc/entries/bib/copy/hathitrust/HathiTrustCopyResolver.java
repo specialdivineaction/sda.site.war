@@ -29,7 +29,7 @@ public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCo
       if(identifier == null )
          return false;
 
-      Matcher m = p.matcher(identifier);
+      Matcher m = p.matcher(identifier.substring(0, 14));
       return  m.matches() ;
 
    }

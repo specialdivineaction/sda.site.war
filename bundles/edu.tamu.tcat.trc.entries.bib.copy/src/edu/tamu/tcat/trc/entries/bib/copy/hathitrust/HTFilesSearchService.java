@@ -123,8 +123,11 @@ public class HTFilesSearchService implements CopySearchService
       Collection<DigitalCopyProxy> digitalProxy = new ArrayList<>();
       for(SolrDocument doc : documents)
       {
+         String htid = doc.getFieldValue("id").toString();
+         String recordId = doc.getFieldValue("recordNumber").toString();
+
          HTCopyProxy htProxy = new HTCopyProxy();
-         htProxy.identifier = doc.getFieldValue("recordNumber").toString();
+         htProxy.identifier = buildIdentifier(recordId, htid);
          htProxy.sourceSummary = doc.getFieldValue("source").toString();
          htProxy.title = doc.getFieldValue("title").toString();
          htProxy.rights = doc.getFieldValue("rights").toString();
@@ -132,9 +135,19 @@ public class HTFilesSearchService implements CopySearchService
             htProxy.publicationDate = doc.getFieldValue("publicationDate").toString();
          else
             htProxy.publicationDate = "";
+
          digitalProxy.add(htProxy);
       }
       return new CopySearchResultImpl(digitalProxy);
+   }
+
+   private String buildIdentifier(String recordId, String htid)
+   {
+      StringBuilder identifier = new StringBuilder("htid:");
+      identifier.append(recordId)
+                .append("#")
+                .append(htid);
+      return identifier.toString();
    }
 
    private String trimToNull(String str)
