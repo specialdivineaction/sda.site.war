@@ -54,23 +54,12 @@ public class CopySearchServiceResource
                               @DefaultValue("-9999") @QueryParam(value = "after") int after,
                               @DefaultValue("0") @QueryParam(value = "offset") int offset,
                               @DefaultValue("25") @QueryParam(value = "limit") int limit
-                              )
+                              ) throws ResourceAccessException
    {
-//      CopySearchService htSearch = new HTFilesSearchService();
-      try
-      {
-         CopyQueryImpl query = new CopyQueryImpl(q, author, before, after, offset, limit);
-         CopySearchResult result = searchService.find(query);
-         CopyQueryDTO copyDTO = new CopyQueryDTO(query);
-         return new SearchResult(result, copyDTO );
-      }
-      catch (ResourceAccessException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-
-      throw new UnsupportedOperationException();
+      CopyQueryImpl query = new CopyQueryImpl(q, author, before, after, offset, limit);
+      CopySearchResult result = searchService.find(query);
+      CopyQueryDTO copyDTO = new CopyQueryDTO(query);
+      return new SearchResult(result, copyDTO );
    }
 
 

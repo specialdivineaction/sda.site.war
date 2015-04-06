@@ -2,6 +2,8 @@ package edu.tamu.tcat.trc.entries.bib.copy.postgres;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.tamu.tcat.hathitrust.Record;
 import edu.tamu.tcat.hathitrust.Record.IdType;
@@ -12,7 +14,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentSearchCommand;
 
 public class DigitalContentSearchCommandImpl implements DigitalContentSearchCommand
 {
-
+   private final Logger logger = Logger.getLogger("edu.tamu.tcat.trc.entries.bib.copy.postgres");
 
    public Collection<Record> getHathiTrustContent(String recordNumber)
    {
@@ -25,8 +27,7 @@ public class DigitalContentSearchCommandImpl implements DigitalContentSearchComm
       }
       catch (HathiTrustClientException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         logger.log(Level.FINE, "An error occured while retrieving records from HathiTrust, record[" + recordNumber + "]");
       }
       return records;
    }

@@ -36,26 +36,10 @@ public class CopyResolverServiceResource
    @GET
    @Path("{identifier}")
    @Produces(MediaType.APPLICATION_JSON)
-   public DigitalCopy retrieve(@PathParam(value = "identifier") String id)
+   public DigitalCopy retrieve(@PathParam(value = "identifier") String id) throws ResourceAccessException, IllegalArgumentException
    {
-
       CopyResolverStrategy<?> strategy = copyImpl.getResolver(id);
-      try
-      {
-         return strategy.resolve(id);
-      }
-      catch (IllegalArgumentException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      catch (ResourceAccessException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      return null;
-
+      return strategy.resolve(id);
    }
 
    @POST

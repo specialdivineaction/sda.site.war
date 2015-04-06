@@ -2,6 +2,8 @@ package edu.tamu.tcat.trc.entries.bib.copy.postgres;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -21,6 +23,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalCopyProvider;
 
 public class DigitalContentSearchServiceImpl implements DigitalContentSearchService
 {
+   private final Logger logger = Logger.getLogger("edu.tamu.tcat.trc.entries.bib.copy.postgres");
    private Collection<DigitalContentReference> digitalContent;
    private String searchString;
 
@@ -57,7 +60,7 @@ public class DigitalContentSearchServiceImpl implements DigitalContentSearchServ
       }
       catch (SolrServerException e)
       {
-         e.printStackTrace();
+         logger.log(Level.FINE, "An error occured while sending a query to SOLR." + "/n Search String: " + searchString + "/n" + e);
       }
    }
 
