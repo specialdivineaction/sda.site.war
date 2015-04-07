@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -21,6 +22,7 @@ import edu.tamu.tcat.trc.entries.bib.VolumeMutator;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 @Path("/works/{workId}/editions/{editionId}/volumes")
 public class VolumesResource
@@ -92,5 +94,15 @@ public class VolumesResource
       volumeMutator.setAll(volume);
       editWorkCommand.execute();
       return new CustomResultsDV(volumeMutator.getId());
+   }
+
+   @DELETE
+   @Path("{volumeId}")
+   public void deleteWork(@PathParam(value = "workId") String workId,
+                          @PathParam(value = "volumeId") String volumeId) throws NoSuchCatalogRecordException
+   {
+      EditWorkCommand command = repo.edit(workId);
+      command.removeVolume(volumeId);
+      command.execute();
    }
 }
