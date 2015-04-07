@@ -114,20 +114,20 @@ public class PsqlWorkRepo implements WorkRepository
 
       return  iterable;
    }
-
-   @Override
-   public void create(final WorkDV work, DataUpdateObserver<String> observer)
-   {
-      PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
-      exec.submit(new ObservableTaskWrapper<>(task, observer));
-   }
-
-   @Override
-   public void update(WorkDV work, DataUpdateObserver<String> observer)
-   {
-      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
-      exec.submit(new ObservableTaskWrapper<>(task, observer));
-   }
+//
+//   @Override
+//   public void create(final WorkDV work, DataUpdateObserver<String> observer)
+//   {
+//      PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
+//      exec.submit(new ObservableTaskWrapper<>(task, observer));
+//   }
+//
+//   @Override
+//   public void update(WorkDV work, DataUpdateObserver<String> observer)
+//   {
+//      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
+//      exec.submit(new ObservableTaskWrapper<>(task, observer));
+//   }
 
    @Override
    public Iterable<Work> listWorks(String titleName)
@@ -246,6 +246,20 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
+         Future<String> submitWork = exec.submit(task);
+         return submitWork;
+      });
+
+      return command;
+   }
+
+   @Override
+   public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(asInteger(id));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
+      command.setCommitHook((workDv) -> {
+         PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
          Future<String> submitWork = exec.submit(task);
          return submitWork;
       });
