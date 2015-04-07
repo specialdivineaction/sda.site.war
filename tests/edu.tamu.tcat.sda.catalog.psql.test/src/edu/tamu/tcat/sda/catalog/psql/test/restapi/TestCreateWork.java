@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -30,6 +31,7 @@ public class TestCreateWork
    private static HttpPost post;
    private static HttpPut put;
    private static HttpGet  get;
+   private static HttpDelete delete;
    private static CloseableHttpClient client;
    private static URI uri;
    private static JacksonJsonMapper mapper = new JacksonJsonMapper();
@@ -54,6 +56,10 @@ public class TestCreateWork
       get = new HttpGet(uri);
       get.setHeader("User-Agent", "Mozilla/5.0");
       get.setHeader("Content-type", "application/json");
+
+      delete = new HttpDelete(uri);
+      delete.setHeader("User-Agent", "Mozilla/5.0");
+      delete.setHeader("Content-type", "application/json");
    }
 
 	@Test
@@ -69,6 +75,8 @@ public class TestCreateWork
          Assert.assertEquals(workOrig.series, workComp.series);
          Assert.assertEquals(workOrig.summary, workComp.summary);
       }
+
+      delete(URI.create("works/" + workId));
 	}
 
    @Test
@@ -88,6 +96,8 @@ public class TestCreateWork
          Assert.assertEquals(edition.series, createdEdition.series);
          Assert.assertEquals(edition.summary, createdEdition.summary);
       }
+
+      delete(URI.create("works/" + workId + "/editions/" + editionId));
    }
 
    @Test
@@ -111,6 +121,8 @@ public class TestCreateWork
          Assert.assertEquals(volume.series, createdVolume.series);
          Assert.assertEquals(volume.summary, createdVolume.summary);
       }
+
+      delete(URI.create("works/" + workId + "/editions/" + editionId + "/volumes/" + volumeId));
    }
 
 	String addWork(WorkDV original) throws JsonException, IOException
@@ -203,6 +215,24 @@ public class TestCreateWork
          e.printStackTrace();
       }
       return null;
+   }
+
+   void delete(URI deleteUri)
+   {
+
+      if (!deleteUri.equals(uri))
+         delete.setURI(uri.resolve(deleteUri));
+
+      HttpResponse response;
+      try
+      {
+         response = client.execute(delete);
+         checkResponse(response.getStatusLine().getStatusCode());
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
    }
 
    Boolean checkResponse(int statusCode)
