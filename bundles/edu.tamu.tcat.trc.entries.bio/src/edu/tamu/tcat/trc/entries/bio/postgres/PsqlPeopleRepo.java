@@ -254,7 +254,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private final class GetAllPeopleTask implements ExecutorTask<List<Person>>
    {
-      private final static String QUERY_SQL = "SELECT historical_figure FROM people";
+      private final static String QUERY_SQL = "SELECT historical_figure FROM people WHERE active = true";
 
       private GetAllPeopleTask()
       {

@@ -20,7 +20,7 @@ import edu.tamu.tcat.trc.entries.bib.postgres.model.WorkImpl;
 public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterable<Work>>
 {
 
-   private final static String sql = "SELECT work FROM works";
+   private final static String sql = "SELECT work FROM works WHERE active = true";
 
    private final ObjectMapper jsonMapper;
 
