@@ -42,7 +42,10 @@ public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCo
 
       BibAPIClientImpl bibClient = new BibAPIClientImpl();
       // Create a pattern to get the record number our of the identifier.
-      BasicRecordIdentifier recordIdent = new BasicRecordIdentifier(IdType.RECORDNUMBER, identifier.substring(5));
+      String[] idParts = identifier.split("#");
+      String recordNum = idParts[0];
+      String itemId = (idParts.length > 1) ? idParts[1] : null;
+      BasicRecordIdentifier recordIdent = new BasicRecordIdentifier(IdType.RECORDNUMBER, recordNum.substring(5), itemId);
       bibClient.setConfig(new ConfigurationPropertiesImpl());
 
       try

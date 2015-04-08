@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistryImpl;
@@ -33,10 +34,20 @@ public class CopyResolverServiceResource
    }
 
 
+   /**
+    * Retrieves information about a HathiFile record given an identifier.
+    *
+    * NOTE: path parameters do not work with the '#' character in the identifier,
+    *       so we are falling back on a URL-encoded query parameter for the moment
+    * @param id
+    * @return
+    * @throws ResourceAccessException
+    * @throws IllegalArgumentException
+    */
    @GET
-   @Path("{identifier}")
+//   @Path("{identifier}")
    @Produces(MediaType.APPLICATION_JSON)
-   public DigitalCopy retrieve(@PathParam(value = "identifier") String id) throws ResourceAccessException, IllegalArgumentException
+   public DigitalCopy retrieve(@QueryParam(value = "identifier") String id) throws ResourceAccessException, IllegalArgumentException
    {
       CopyResolverStrategy<?> strategy = copyImpl.getResolver(id);
       return strategy.resolve(id);
