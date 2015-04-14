@@ -2,7 +2,7 @@ package edu.tamu.tcat.trc.entries.bib.copy.legacy;
 
 import java.util.Collection;
 
-import edu.tamu.tcat.hathitrust.Record;
+import edu.tamu.tcat.hathitrust.model.Record;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;

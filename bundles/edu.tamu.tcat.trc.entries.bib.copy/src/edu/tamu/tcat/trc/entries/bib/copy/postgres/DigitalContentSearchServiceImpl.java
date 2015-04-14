@@ -13,7 +13,7 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 
-import edu.tamu.tcat.hathitrust.Record;
+import edu.tamu.tcat.hathitrust.model.Record;
 import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrQueryBuilder;
 import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentReference;
 import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentReferenceDTO;

@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.tamu.tcat.hathitrust.Record;
-import edu.tamu.tcat.hathitrust.Record.IdType;
 import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
-import edu.tamu.tcat.hathitrust.client.v1.basic.BasicRecord.BasicRecordIdentifier;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BibAPIClientImpl;
+import edu.tamu.tcat.hathitrust.model.BasicRecordIdentifier;
+import edu.tamu.tcat.hathitrust.model.Record;
+import edu.tamu.tcat.hathitrust.model.Record.IdType;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;

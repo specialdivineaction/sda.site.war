@@ -1,14 +1,13 @@
 package edu.tamu.tcat.trc.entries.bib.copy.hathitrust;
 
 import java.net.URI;
-import java.time.temporal.TemporalAccessor;
+import java.time.Year;
 import java.util.List;
 
-import edu.tamu.tcat.hathitrust.Item;
-import edu.tamu.tcat.hathitrust.MarcRecord;
-import edu.tamu.tcat.hathitrust.Record;
-import edu.tamu.tcat.hathitrust.Record.IdType;
-import edu.tamu.tcat.hathitrust.Record.RecordIdentifier;
+import edu.tamu.tcat.hathitrust.model.Item;
+import edu.tamu.tcat.hathitrust.model.Record;
+import edu.tamu.tcat.hathitrust.model.Record.IdType;
+import edu.tamu.tcat.hathitrust.model.Record.RecordIdentifier;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 
 /**
@@ -20,9 +19,9 @@ public class HathiTrustCopy implements DigitalCopy
 
    private String recordNumber;
    private List<String> titles;
-   private List<TemporalAccessor> publishDates;
+   private List<Year> publishDates;
    private List<Item> items;
-   private MarcRecord marcRecord;
+   private String marcRecord;
    private URI recordURL;
    private List<RecordIdentifier> isbns;
    private List<RecordIdentifier> issns;
@@ -40,7 +39,7 @@ public class HathiTrustCopy implements DigitalCopy
       titles = record.getTitles();
       publishDates = record.getPublishDates();
       items = record.getItems();
-      marcRecord = record.getMarcRecord();
+      marcRecord = record.getMarcRecordXML();
       recordURL = record.getRecordURL();
 
       isbns = record.getIdentifiers(IdType.ISBN);
@@ -59,7 +58,7 @@ public class HathiTrustCopy implements DigitalCopy
       return this.titles;
    }
 
-   public List<TemporalAccessor> getPublishDates()
+   public List<Year> getPublishDates()
    {
       return this.publishDates;
    }
@@ -69,7 +68,7 @@ public class HathiTrustCopy implements DigitalCopy
       return this.items;
    }
 
-   public MarcRecord getMarc()
+   public String getMarc()
    {
       return this.marcRecord;
    }
