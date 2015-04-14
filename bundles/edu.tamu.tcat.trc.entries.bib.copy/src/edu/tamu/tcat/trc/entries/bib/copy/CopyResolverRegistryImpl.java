@@ -4,6 +4,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.hathitrust.HathiTrustCopyResolver;
 
 public class CopyResolverRegistryImpl implements CopyResolverRegistry
 {
+   // HACK: this is a throw away impl to get things stitched together.
 
    @Override
    public <T extends DigitalCopy> T resolve(String identifier, Class<T> copyType) throws ResourceAccessException, UnsupportedCopyTypeException
@@ -20,15 +21,13 @@ public class CopyResolverRegistryImpl implements CopyResolverRegistry
    }
 
    @Override
-   public CopyResolverStrategy<? extends DigitalCopy> getResolver(String identifier)
+   public CopyResolverStrategy<? extends DigitalCopy> getResolver(String identifier) throws UnsupportedCopyTypeException
    {
       HathiTrustCopyResolver htCopyResolve = new HathiTrustCopyResolver();
-      if(htCopyResolve.canResolve(identifier))
-      {
+      if (htCopyResolve.canResolve(identifier))
          return htCopyResolve;
-      }
-      else
-         return htCopyResolve;
+
+      throw new UnsupportedCopyTypeException("Cannot resolve identifier [" + identifier + "]");
    }
 
    @Override

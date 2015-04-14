@@ -16,11 +16,13 @@ import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyLinkRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
+import edu.tamu.tcat.trc.entries.bib.copy.UnsupportedCopyTypeException;
 
 @Path("/copies")
 public class CopyResolverServiceResource
 {
    private static final Logger logger = Logger.getLogger(CopyResolverServiceResource.class.getName());
+
    CopyResolverRegistryImpl copyImpl = new CopyResolverRegistryImpl();
    private DigitalCopyLinkRepository dclRepo;
 
@@ -49,7 +51,16 @@ public class CopyResolverServiceResource
    @Produces(MediaType.APPLICATION_JSON)
    public DigitalCopy retrieve(@QueryParam(value = "identifier") String id) throws ResourceAccessException, IllegalArgumentException
    {
-      CopyResolverStrategy<?> strategy = copyImpl.getResolver(id);
+      CopyResolverStrategy<?> strategy;
+      try
+      {
+         strategy = copyImpl.getResolver(id);
+      }
+      catch (UnsupportedCopyTypeException e)
+      {
+         throw new IllegalArgumentException("Could not retrieve the digital copy [" + id + "]. No copy resolver has been registered that recognizes this type of copy.", e);
+      }
+
       return strategy.resolve(id);
    }
 
@@ -59,12 +70,18 @@ public class CopyResolverServiceResource
    @Produces(MediaType.APPLICATION_JSON)
    public void createLink(@PathParam("identifier") String identifier, DigitalCopyLinkDTO copy)
    {
-      CopyResolverStrategy<?> strategy = copyImpl.getResolver(identifier);
-
-      if(strategy.canResolve(identifier))
+      CopyResolverStrategy<?> strategy;
+      try
       {
+         strategy = copyImpl.getResolver(identifier);
          dclRepo.create(copy);
       }
+      catch (UnsupportedCopyTypeException e)
+      {
+         throw new IllegalArgumentException("Could not retrieve the digital copy [" + identifier + "]. No copy resolver has been registered that recognizes this type of copy.", e);
+      }
+
+
    }
 
 }
