@@ -1,10 +1,9 @@
 package edu.tamu.tcat.trc.entries.bib;
 
-import edu.tamu.tcat.catalogentries.CommandExecutionListener;
+import java.util.function.Consumer;
+
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.datastore.DataStore;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
-import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bio.Person;
 
 /**
@@ -84,9 +83,9 @@ public interface WorkRepository extends DataStore
 
    EditWorkCommand delete(String id) throws NoSuchCatalogRecordException;
 
-   AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears);
+   AutoCloseable addBeforeUpdateListener(Consumer<WorksChangeEvent> ears);
 
-   AutoCloseable addAfterUpdateListener(CommandExecutionListener ears);
+   AutoCloseable addAfterUpdateListener(Consumer<WorksChangeEvent> ears);
 //
 //   @Deprecated // use the EditWorkCommand methods
 //   void create(WorkDV work, DataUpdateObserver<String> observer);

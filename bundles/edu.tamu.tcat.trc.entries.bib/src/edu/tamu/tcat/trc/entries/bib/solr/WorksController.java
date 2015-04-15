@@ -181,80 +181,82 @@ public class WorksController
       return null;
    }
 
-
+   @Deprecated
    public void addDocument(WorkDV work)
    {
-      Collection<SolrInputDocument> documents = new HashSet<>();
-      WorkDocumentBuilder workDocument = new WorkDocumentBuilder();
-
-      workDocument.addDocumentId(work.id);
-      workDocument.addAuthors(work.authors);
-      workDocument.addTitle(work.titles);
-      workDocument.addSeries(work.series);
-      workDocument.addSummary(work.summary);
-      documents.add(workDocument.getDocument());
-      if (!work.editions.isEmpty())
-      {
-         WorkDocumentBuilder editionDocument = new WorkDocumentBuilder();
-         for (EditionDV edition : work.editions)
-         {
-            appendEdition(work, documents, editionDocument, edition);
-         }
-      }
-
-      try
-      {
-         solr.add(documents);
-         solr.commit();
-      }
-      catch (IOException e)
-      {
-         log.severe("An error occured in the transmition of the document:" + e);
-      }
-      catch (SolrServerException e)
-      {
-         log.severe("An error occured with Solr Server:" + e);
-      }
+//      Collection<SolrInputDocument> documents = new HashSet<>();
+//      WorkSolrProxy workDocument = new WorkSolrProxy();
+//
+//      workDocument.addDocumentId(work.id);
+//      workDocument.addAuthors(work.authors);
+//      workDocument.addTitle(work.titles);
+//      workDocument.addSeries(work.series);
+//      workDocument.addSummary(work.summary);
+//      documents.add(workDocument.getDocument());
+//      if (!work.editions.isEmpty())
+//      {
+//         WorkSolrProxy editionDocument = new WorkSolrProxy();
+//         for (EditionDV edition : work.editions)
+//         {
+//            appendEdition(work, documents, editionDocument, edition);
+//         }
+//      }
+//
+//      try
+//      {
+//         solr.add(documents);
+//         solr.commit();
+//      }
+//      catch (IOException e)
+//      {
+//         log.severe("An error occured in the transmition of the document:" + e);
+//      }
+//      catch (SolrServerException e)
+//      {
+//         log.severe("An error occured with Solr Server:" + e);
+//      }
    }
 
-   private void appendEdition(WorkDV work, Collection<SolrInputDocument> documents, WorkDocumentBuilder editionDocument, EditionDV edition)
+   @Deprecated
+   private void appendEdition(WorkDV work, Collection<SolrInputDocument> documents, WorkSolrProxy editionDocument, EditionDV edition)
    {
-      editionDocument.addDocumentId(work.id + ":" + edition.id);
-//            editionDocument.addEditionId(edition.id);
-      editionDocument.addEditionName(edition.editionName);
-      editionDocument.addAuthors(edition.authors);
-      editionDocument.addTitle(edition.titles);
-      editionDocument.addPublication(edition.publicationInfo);
-      editionDocument.addSeries(edition.series);
-      editionDocument.addSummary(edition.summary);
-      documents.add(editionDocument.getDocument());
-
-      if(!edition.volumes.isEmpty())
-      {
-         appendVolume(work, documents, edition);
-      }
+//      editionDocument.addDocumentId(work.id + ":" + edition.id);
+////            editionDocument.addEditionId(edition.id);
+//      editionDocument.addEditionName(edition.editionName);
+//      editionDocument.addAuthors(edition.authors);
+//      editionDocument.addTitle(edition.titles);
+//      editionDocument.addPublication(edition.publicationInfo);
+//      editionDocument.addSeries(edition.series);
+//      editionDocument.addSummary(edition.summary);
+//      documents.add(editionDocument.getDocument());
+//
+//      if(!edition.volumes.isEmpty())
+//      {
+//         appendVolume(work, documents, edition);
+//      }
    }
 
+   @Deprecated
    private void appendVolume(WorkDV work, Collection<SolrInputDocument> documents, EditionDV edition)
    {
-      for (VolumeDV volume : edition.volumes)
-      {
-         // HACK this is a document builder, not a document
-         WorkDocumentBuilder volumeDocument = new WorkDocumentBuilder();
-
-         volumeDocument.addDocumentId(work.id + ":" + edition.id + ":" + volume.id);
-//       volumeDocument.addEditionId(edition.id);
-         volumeDocument.addEditionName(edition.editionName);
-//       volumeDocument.addVolumeId(volume.id);
-         volumeDocument.addVolumeNumber(volume.volumeNumber);
-         volumeDocument.addAuthors(volume.authors);
-         volumeDocument.addTitle(volume.titles);
-         volumeDocument.addPublication(edition.publicationInfo); // Is there not a volume Publisher?
-         volumeDocument.addSeries(volume.series);
-         volumeDocument.addSummary(volume.summary);
-
-         documents.add(volumeDocument.getDocument());
-      }
+//      for (VolumeDV volume : edition.volumes)
+//      {
+//         // HACK this is a document builder, not a document
+//         WorkSolrProxy volumeDocument = new WorkSolrProxy();
+//
+//         volumeDocument.addDocumentId(work.id + ":" + edition.id + ":" + volume.id);
+////       volumeDocument.addEditionId(edition.id);
+//         volumeDocument.addEditionName(edition.editionName);
+////       volumeDocument.addVolumeId(volume.id);
+//         volumeDocument.addVolumeNumber(volume.volumeNumber);
+//         volumeDocument.addAuthors(volume.authors);
+//         volumeDocument.addTitle(volume.titles);
+//         volumeDocument.addPublication(edition.publicationInfo); // Is there not a volume Publisher?
+//         volumeDocument.addSeries(volume.series);
+//         volumeDocument.addSummary(volume.summary);
+//
+//         documents.add(volumeDocument.getDocument());
+//      }
    }
 
    public void clean()
