@@ -6,7 +6,9 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,12 +79,34 @@ public class PsqlWorkRepo implements WorkRepository
 
       taskProvider = new PsqlWorkDbTasksProvider();
       taskProvider.setJsonMapper(mapper);
+
+      notifications = Executors.newCachedThreadPool();
    }
 
    public void dispose()
    {
       this.exec = null;
       this.mapper = null;
+      shutdownNotificationsExec();
+   }
+
+   private void shutdownNotificationsExec()
+   {
+      try
+      {
+         notifications.shutdown();
+         notifications.awaitTermination(10, TimeUnit.SECONDS);    // HACK: make this configurable
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.WARNING, "Failed to shut down event notifications executor in a timely fashion.", ex);
+         try {
+            List<Runnable> pendingTasks = notifications.shutdownNow();
+            logger.info("Forcibly shutdown notifications executor. [" + pendingTasks.size() + "] pending tasks were aborted.");
+         } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred attempting to forcibly shutdown executor service", e);
+         }
+      }
    }
 
    @Override
@@ -226,7 +250,11 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.MODIFIED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
@@ -242,7 +270,11 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(w.id, ChangeType.CREATED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
@@ -256,7 +288,11 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.DELETED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
