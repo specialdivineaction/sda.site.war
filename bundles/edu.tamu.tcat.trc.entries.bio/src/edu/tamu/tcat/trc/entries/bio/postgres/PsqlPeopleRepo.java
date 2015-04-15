@@ -10,7 +10,9 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +75,8 @@ public class PsqlPeopleRepo implements PeopleRepository
       Objects.requireNonNull(exec);
       Objects.requireNonNull(jsonMapper);
       Objects.requireNonNull(idFactory);
+
+      notifications = Executors.newCachedThreadPool();
    }
 
    public void dispose()
@@ -80,6 +84,26 @@ public class PsqlPeopleRepo implements PeopleRepository
       this.exec = null;
       this.jsonMapper = null;
       this.idFactory = null;
+      shutdownNotificationsExec();
+   }
+
+   private void shutdownNotificationsExec()
+   {
+      try
+      {
+         notifications.shutdown();
+         notifications.awaitTermination(10, TimeUnit.SECONDS);    // HACK: make this configurable
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.WARNING, "Failed to shut down event notifications executor in a timely fashion.", ex);
+         try {
+            List<Runnable> pendingTasks = notifications.shutdownNow();
+            logger.info("Forcibly shutdown notifications executor. [" + pendingTasks.size() + "] pending tasks were aborted.");
+         } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred attempting to forcibly shutdown executor service", e);
+         }
+      }
    }
 
 
@@ -158,7 +182,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       histFigure.id = idFactory.getNextId(ID_CONTEXT);
 
       CreatePersonTask task = new CreatePersonTask(histFigure);
-      PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(histFigure.id, ChangeType.MODIFIED);
+      PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(histFigure.id, ChangeType.CREATED);
       ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
       Future<String> submit = exec.submit(wrappedTask);
