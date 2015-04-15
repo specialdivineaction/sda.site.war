@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
@@ -35,7 +37,7 @@ public class WorksIndexingService implements WorkIndexServiceManager
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
 
    /** Configuration property key that defines Solr core to be used for relationships. */
-   public static final String SOLR_CORE = "catalogentries.relationships.solr.core";
+   public static final String SOLR_CORE = "catalogentries.works.solr.core";
 
    // configured here for use by other classes in this package - these classes are effectively
    // delegates of this service's responsibilities
@@ -68,7 +70,7 @@ public class WorksIndexingService implements WorkIndexServiceManager
    public void activate()
    {
       logger.fine("Activating SolrRelationshipSearchService");
-      Objects.requireNonNull(repo, "No relationship repository supplied.");
+      Objects.requireNonNull(repo, "No work repository supplied.");
       registration = repo.addAfterUpdateListener(this::onUpdate);
 
       // construct Solr core
@@ -141,18 +143,19 @@ public class WorksIndexingService implements WorkIndexServiceManager
                onDelete(evt.getWorkEvt());
                break;
             default:
-               logger.log(Level.INFO, "Unexpected relationship change event [" + evt.getWorkId() +"]: " + evt.getChangeType());
+               logger.log(Level.INFO, "Unexpected work change event [" + evt.getWorkId() +"]: " + evt.getChangeType());
          }
 
       }
       catch(Exception e)
       {
-         logger.log(Level.WARNING, "Failed to update search indices following a change to relationship [" + evt.getWorkId() +"]: " + evt, e);
+         logger.log(Level.WARNING, "Failed to update search indices following a change to work [" + evt.getWorkId() +"]: " + evt, e);
       }
    }
 
    private void onCreate(Work workEvt)
    {
+      isIndexed(workEvt.getId());
       Collection<SolrInputDocument> solrDocs = new ArrayList<>();
       WorkSolrProxy workProxy = WorkSolrProxy.createWork(workEvt);
       solrDocs.add(workProxy.getDocument());
@@ -183,62 +186,19 @@ public class WorksIndexingService implements WorkIndexServiceManager
 
    private void onUpdate(Work workEvt)
    {
-      Collection<SolrInputDocument> solrDocs = new ArrayList<>();
-      WorkSolrProxy workProxy, editionProxy, volumeProxy;
-      if(isIndexed(workEvt.getId()))
-         workProxy = WorkSolrProxy.updateWork(workEvt);
-      else
-         workProxy = WorkSolrProxy.createWork(workEvt);
-
-      solrDocs.add(workProxy.getDocument());
-
-      for(Edition edition : workEvt.getEditions())
-      {
-         if(isIndexed(edition.getId()))
-            editionProxy = WorkSolrProxy.updateEdition(workEvt.getId(), edition);
-         else
-            editionProxy = WorkSolrProxy.createEdition(workEvt.getId(), edition);
-         solrDocs.add(editionProxy.getDocument());
-
-         for(Volume volume : edition.getVolumes())
-         {
-            if(isIndexed(volume.getId()))
-               volumeProxy = WorkSolrProxy.updateVolume(workEvt.getId(), edition, volume);
-            else
-               volumeProxy = WorkSolrProxy.createVolume(workEvt.getId(), edition, volume);
-
-            solrDocs.add(volumeProxy.getDocument());
-         }
-      }
-
-      try
-      {
-         solr.add(solrDocs);
-         solr.commit();
-      }
-      catch (SolrServerException | IOException e)
-      {
-         logger.log(Level.SEVERE, "Failed to commit the work id: [" + workEvt.getId() + "] to the SOLR server. " + e);
-      }
-
-
+      //HACK: Until Change notifications are implemented we will remove all works and corresponding editions / volumes.
+      //      Once removed we will re-add all entities from the work.
+      onCreate(workEvt);
    }
 
    private void onDelete(Work workEvt)
    {
-      //Query to find which part of the work has been deleted
-//      try
-//      {
-//         solr.deleteById(workEvt.getId());
-//         solr.commit();
-//      }
-//      catch (SolrServerException | IOException e)
-//      {
-//         logger.log(Level.SEVERE, "Failed to remove work id: [" + workEvt.getId() + "] from the SOLR server. " + e);
-//      }
+      //HACK: Until Change notifications are implemented we will remove all works and corresponding editions / volumes.
+      //      Once removed we will re-add all entities from the work.
+      onCreate(workEvt);
    }
 
-   private boolean isIndexed(String id)
+   private void isIndexed(String id)
    {
       SolrQuery query = new SolrQuery();
       query.setQuery("id:" + id);
@@ -247,15 +207,39 @@ public class WorksIndexingService implements WorkIndexServiceManager
       {
          response = solr.query(query);
          SolrDocumentList results = response.getResults();
-         return !results.isEmpty();
+         if (!results.isEmpty())
+            removeWorks(id);
       }
       catch (SolrServerException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         logger.log(Level.SEVERE, "Failed to query the work id: [" + id + "] from the SOLR server. " + e);
       }
 
-      return false;
+   }
+
+   private void removeWorks(String id)
+   {
+      List<String> deleteIds = new ArrayList<>();
+      deleteIds.add(id);
+
+      SolrQuery query = new SolrQuery();
+      query.setQuery("id:" + id + "\\:*");
+      try
+      {
+         QueryResponse response = solr.query(query);
+         SolrDocumentList results = response.getResults();
+         for(SolrDocument doc : results)
+         {
+            deleteIds.add(doc.getFieldValue("id").toString());
+         }
+         solr.deleteById(deleteIds);
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the the SOLR server. " + e);
+      }
+
    }
 
 }
