@@ -124,7 +124,7 @@ public class PeopleResource
       // TODO add mappers for exceptions.
       //       CatalogRepoException should map to internal error.
       //       NoSuchCatalogRecordException should map to 404
-      Person figure = repo.getPerson(personId);
+      Person figure = repo.get(personId);
       return getHistoricalFigureDV(figure);
    }
 

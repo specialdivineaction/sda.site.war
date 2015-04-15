@@ -7,8 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
@@ -22,18 +27,26 @@ import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
+import edu.tamu.tcat.trc.entries.bio.PeopleChangeEvent;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.PersonName;
+import edu.tamu.tcat.trc.entries.bio.PersonNotAvailableException;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 import edu.tamu.tcat.trc.entries.bio.postgres.model.PersonImpl;
+import edu.tamu.tcat.trc.entries.bio.PeopleChangeEvent.ChangeType;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
+   private static final Logger logger = Logger.getLogger(PsqlPeopleRepo.class.getName());
+
    private static final String ID_CONTEXT = "people";
    private SqlExecutor exec;
    private IdFactory idFactory;
    private JsonMapper jsonMapper;
+
+   private ExecutorService notifications;
+   private final CopyOnWriteArrayList<Consumer<PeopleChangeEvent>> listeners = new CopyOnWriteArrayList<>();
 
    public PsqlPeopleRepo()
    {
@@ -114,7 +127,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    }
 
    @Override
-   public Person getPerson(String personId) throws NoSuchCatalogRecordException
+   public Person get(String personId) throws NoSuchCatalogRecordException
    {
       ExecutorTask<Person> query = new GetPersonTask(personId);
 
@@ -144,8 +157,11 @@ public class PsqlPeopleRepo implements PeopleRepository
    {
       histFigure.id = idFactory.getNextId(ID_CONTEXT);
 
-      ExecutorTask<Person> createPersonTask = new CreatePersonTask(histFigure);
-      exec.submit(new ObservableTaskWrapper<>(createPersonTask, observer));
+      CreatePersonTask task = new CreatePersonTask(histFigure);
+      PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(histFigure.id, ChangeType.MODIFIED);
+      ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
+
+      Future<String> submit = exec.submit(wrappedTask);
    }
 
    @Override
@@ -316,7 +332,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
    }
 
-   private final class CreatePersonTask implements SqlExecutor.ExecutorTask<Person>
+   private final class CreatePersonTask implements SqlExecutor.ExecutorTask<String>
    {
       private static final String INSERT_SQL = "INSERT INTO people (id, historical_figure) VALUES(?, ?)";
 
@@ -328,7 +344,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
 
       @Override
-      public Person execute(Connection conn) throws InterruptedException, ExecutionFailedException
+      public String execute(Connection conn) throws InterruptedException, ExecutionFailedException
       {
          try (PreparedStatement ps = conn.prepareStatement(INSERT_SQL))
          {
@@ -340,8 +356,6 @@ public class PsqlPeopleRepo implements PeopleRepository
             int ct = ps.executeUpdate();
             if (ct != 1)
                throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-
-            return new PersonImpl(histFigure);
          }
          catch (JsonException e)
          {
@@ -353,6 +367,124 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             throw new ExecutionFailedException("Failed to save historical figure [" + histFigure + "]", sqle);
          }
+
+         return histFigure.id;
       }
+   }
+
+   @Override
+   public AutoCloseable addUpdateListener(Consumer<PeopleChangeEvent> ears)
+   {
+      listeners.add(ears);
+      return () -> listeners.remove(ears);
+   }
+
+   private class PeopleChangeEventImpl implements PeopleChangeEvent
+   {
+      private final ChangeType type;
+      private final String id;
+
+      public PeopleChangeEventImpl(ChangeType type, String id)
+      {
+         this.type = type;
+         this.id = id;
+      }
+
+      @Override
+      public ChangeType getChangeType()
+      {
+         return type;
+      }
+
+      @Override
+      public String getPersonId()
+      {
+         return id;
+      }
+
+      @Override
+      public Person getPerson() throws PersonNotAvailableException
+      {
+         try
+         {
+            return get(id);
+         }
+         catch (NoSuchCatalogRecordException e)
+         {
+            throw new PersonNotAvailableException("Internal error attempting to retrieve person [" + id + "]");
+         }
+      }
+
+   }
+
+   private final class PeopleChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
+   {
+      private final String id;
+      private final ChangeType type;
+
+      public PeopleChangeNotifier(String id, ChangeType type)
+      {
+         this.type = type;
+         this.id = id;
+      }
+
+      @Override
+      public boolean start()
+      {
+         return true;
+      }
+
+      @Override
+      public void finish(ResultType result)
+      {
+         notifyPersonUpdate(type, id);
+      }
+
+      @Override
+      public void aborted()
+      {
+         // no-op
+      }
+
+      @Override
+      public void error(String message, Exception ex)
+      {
+         // no-op
+      }
+
+      @Override
+      public boolean isCanceled()
+      {
+         return false;
+      }
+
+      @Override
+      public boolean isCompleted()
+      {
+         throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public edu.tamu.tcat.sda.datastore.DataUpdateObserver.State getState()
+      {
+         throw new UnsupportedOperationException();
+      }
+
+   }
+
+   private void notifyPersonUpdate(ChangeType type, String id)
+   {
+      PeopleChangeEventImpl evt = new PeopleChangeEventImpl(type, id);
+      listeners.forEach(ears -> {
+         notifications.submit(() -> {
+            try{
+               ears.accept(evt);
+            }
+            catch(Exception ex)
+            {
+               logger.log(Level.WARNING, "Call to update people listener failed.", ex);
+            }
+         });
+      });
    }
 }

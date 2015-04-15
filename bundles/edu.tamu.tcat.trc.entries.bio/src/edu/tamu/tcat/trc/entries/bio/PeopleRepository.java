@@ -1,5 +1,7 @@
 package edu.tamu.tcat.trc.entries.bio;
 
+import java.util.function.Consumer;
+
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
@@ -34,7 +36,7 @@ public interface PeopleRepository
     * @param personId
     * @return
     */
-   Person getPerson(String personId) throws NoSuchCatalogRecordException;
+   Person get(String personId) throws NoSuchCatalogRecordException;
 
    /**
     * Creates a new entry for the supplied historical figure. Note that no de-duplication will
@@ -78,4 +80,14 @@ public interface PeopleRepository
     *       {@link DataUpdateObserver#finish(Object)} with a {@code null} result object.
     */
    void delete(String personId, DataUpdateObserver<Void> observer);
+
+   /**
+    * Add listener to be notified whenever a biography has been modified (created, updated or deleted).
+    * Note that this will be fired after the change has taken place and the attached listener will not
+    * be able affect or modify the update action.
+    *
+    * @param ears The listener to be added.
+    * @return A registration handle that allows the listener to be removed.
+    */
+   AutoCloseable addUpdateListener(Consumer<PeopleChangeEvent> ears);
 }
