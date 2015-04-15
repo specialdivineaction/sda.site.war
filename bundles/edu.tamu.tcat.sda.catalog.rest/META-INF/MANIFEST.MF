@@ -51,6 +51,10 @@ Import-Package: com.fasterxml.jackson.jaxrs.base;version="2.3.1",
  javax.ws.rs.core;version="[2.0.0,2.0.0]",
  org.apache.solr.client.solrj
 Service-Component: 
+ OSGI-INF/rest/works.xml, 
+ OSGI-INF/rest/people.xml, 
+ OSGI-INF/rest/editions.xml, 
+ OSGI-INF/rest/volumes.xml, 
  OSGI-INF/rest/accounts.xml, 
  OSGI-INF/rest/copyResolver.xml,
  OSGI-INF/rest/digitalCopySearch.xml,
