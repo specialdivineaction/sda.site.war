@@ -1,101 +1,68 @@
 package edu.tamu.tcat.trc.entries.bib.copy.hathitrust;
 
 import java.net.URI;
-import java.time.Year;
-import java.util.List;
 
 import edu.tamu.tcat.hathitrust.model.Item;
 import edu.tamu.tcat.hathitrust.model.Record;
-import edu.tamu.tcat.hathitrust.model.Record.IdType;
-import edu.tamu.tcat.hathitrust.model.Record.RecordIdentifier;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 
 /**
  *  Represents a digital copy of a book from the HathiTrust digital library.
- *  TODO document where to look for the supported data formats
  */
 public class HathiTrustCopy implements DigitalCopy
 {
+   // FIXME at the moment, we're getting the bib info via bib records rather than item records
+   //       That means the titles, dates, etc. returned for this copy may not correspond to
+   //       the real values for this copy.
+   //  TODO document where to look for the supported data formats
 
-   private String recordNumber;
-   private List<String> titles;
-   private List<Year> publishDates;
-   private List<Item> items;
-   private String marcRecord;
-   private URI recordURL;
-   private List<RecordIdentifier> isbns;
-   private List<RecordIdentifier> issns;
-   private List<RecordIdentifier> lccns;
-   private List<RecordIdentifier> oclcs;
+   private final String title;
+   private String copyLabel;
 
-   public HathiTrustCopy()
+   private final String recordId;
+   private final String itemId;
+
+   private final URI recordUri;
+   private final URI itemUri;
+
+   public HathiTrustCopy(String copyId, Record record, Item item)
    {
+      // TODO should we get this from HathiFiles rather than bib API?
+      // TODO will build out additional detail as needed by the UI and other system tools
 
-   }
+      recordId = record.getId();
+      itemId = item.getItemId();
 
-   public HathiTrustCopy(Record record)
-   {
-      recordNumber = record.getId();
-      titles = record.getTitles();
-      publishDates = record.getPublishDates();
-      items = record.getItems();
-      marcRecord = record.getMarcRecordXML();
-      recordURL = record.getRecordURL();
+      title = record.getTitles().stream().findFirst().orElse("Unknown.");
+      copyLabel = item.getSortKey();
 
-      isbns = record.getIdentifiers(IdType.ISBN);
-      issns = record.getIdentifiers(IdType.ISSN);
-      lccns = record.getIdentifiers(IdType.LCCN);
-      oclcs = record.getIdentifiers(IdType.OCLC);
+      recordUri = record.getRecordURL();
+      itemUri = item.getItemURL();
    }
 
    public String getRecordId()
    {
-      return this.recordNumber;
+      return this.recordId;
    }
 
-   public List<String> getTitles()
+   public String getItemId()
    {
-      return this.titles;
+      return itemId;
    }
 
-   public List<Year> getPublishDates()
+   public String getTitle()
    {
-      return this.publishDates;
+      return this.title +
+            copyLabel != null && !copyLabel.trim().isEmpty() ? "(" + copyLabel+ ")" : "";
    }
 
-   public List<Item> getItems()
+   public URI getRecordUri()
    {
-      return this.items;
+      return this.recordUri;
    }
 
-   public String getMarc()
+   public URI getItemUri()
    {
-      return this.marcRecord;
+      return itemUri;
    }
-
-   public URI getRecordURL()
-   {
-      return this.recordURL;
-   }
-
-   public List<RecordIdentifier> getISBNs()
-   {
-      return this.isbns;
-   }
-
-   public List<RecordIdentifier> getISSNs()
-   {
-      return this.issns;
-   }
-
-   public List<RecordIdentifier> getLCCNs()
-   {
-      return this.lccns;
-   }
-
-   public List<RecordIdentifier> getOCLCs()
-   {
-      return this.oclcs;
-   }
-
 }

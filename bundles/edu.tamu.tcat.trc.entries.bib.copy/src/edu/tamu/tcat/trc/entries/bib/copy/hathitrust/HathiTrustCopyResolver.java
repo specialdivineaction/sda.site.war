@@ -4,23 +4,46 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.tamu.tcat.hathitrust.client.BibliographicAPIClient;
 import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
-import edu.tamu.tcat.hathitrust.client.v1.basic.BibAPIClientImpl;
 import edu.tamu.tcat.hathitrust.model.BasicRecordIdentifier;
+import edu.tamu.tcat.hathitrust.model.Item;
 import edu.tamu.tcat.hathitrust.model.Record;
 import edu.tamu.tcat.hathitrust.model.Record.IdType;
-import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 
 public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCopy>
 {
+   // Uses the HathiTrust SDK to construct references to DigitalCopies.
+   // Initially, all we need are fairly simple links to enable users to read the book and
+   // basic metadata. We can/will add additional support as needed (e.g., access to full text for indexing)
+
+   private final Pattern copyIdPattern = Pattern.compile("^htid:(\\d{9}#(.*)$");
+
    private final String identPattern = "^htid:[0-9]{9}$";
    private Pattern p;
+   private BibliographicAPIClient htBibliographyAPI;
 
    public HathiTrustCopyResolver()
    {
       p = Pattern.compile(identPattern);
+   }
+
+
+   public void setBibliographyAPI(BibliographicAPIClient htBibliographyAPI)
+   {
+      this.htBibliographyAPI = htBibliographyAPI;
+   }
+
+   public void activate()
+   {
+
+   }
+
+   public void dispose()
+   {
+
    }
 
    @Override
@@ -34,28 +57,31 @@ public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCo
 
    }
 
+   /**
+    * @param identifier Will be in the format {@code htid:<recordnumber>#itemId}.
+    */
    @Override
    public HathiTrustCopy resolve(String identifier) throws ResourceAccessException, IllegalArgumentException
    {
       if (!canResolve(identifier))
          throw new IllegalArgumentException("Unrecognized identifier format [" + identifier + "]");
 
-      BibAPIClientImpl bibClient = new BibAPIClientImpl();
-      // Create a pattern to get the record number our of the identifier.
-      String[] idParts = identifier.split("#");
-      String recordNum = idParts[0];
-      String itemId = (idParts.length > 1) ? idParts[1] : null;
-      BasicRecordIdentifier recordIdent = new BasicRecordIdentifier(IdType.RECORDNUMBER, recordNum.substring(5), itemId);
-      bibClient.setConfig(new ConfigurationPropertiesImpl());
+      Matcher matcher = copyIdPattern.matcher(identifier);
+      if (!matcher.find())
+         throw new IllegalArgumentException("Unrecognized identifier format [" + identifier + "]");
 
+      String itemId = matcher.group(2);
+
+      BasicRecordIdentifier recordId = new BasicRecordIdentifier(IdType.RECORDNUMBER, matcher.group(1));
+
+      // Create a pattern to get the record number our of the identifier.
       try
       {
-         Collection<Record> records = bibClient.lookup(recordIdent);
-         Record record = records.stream().findFirst().orElse(null);
+         Record record = getRecord(recordId);
+         Item item = record.getItem(itemId);
 
-         if(record == null)
-            throw new ResourceAccessException("Record not found [" + identifier +"]");
-         return new HathiTrustCopy(record);
+         // FIXME not a copy. This is a record.
+         return new HathiTrustCopy(record, item);
 
       }
       catch (HathiTrustClientException e)
@@ -65,33 +91,12 @@ public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCo
    }
 
 
-
-   private class ConfigurationPropertiesImpl implements ConfigurationProperties
+   private Record getRecord(BasicRecordIdentifier recordId) throws HathiTrustClientException, ResourceAccessException
    {
-
-      @Override
-      public <T> T getPropertyValue(String name, Class<T> type) throws IllegalStateException
-      {
-         if (!name.equalsIgnoreCase(BibAPIClientImpl.HATHI_TRUST))
-            throw new IllegalStateException("No value configured for property '" + name + "'");
-
-         if (type != String.class)
-            throw new IllegalStateException("Expected String type");
-
-         return (T)"http://catalog.hathitrust.org/api/";
-      }
-
-      @Override
-      public <T> T getPropertyValue(String name, Class<T> type, T defaultValue) throws IllegalStateException
-      {
-         if (!name.equalsIgnoreCase(BibAPIClientImpl.HATHI_TRUST))
-            throw new IllegalStateException("No value configured for property '" + name + "'");
-
-         if (type != String.class)
-            throw new IllegalStateException("Expected String type");
-
-         return (T)"http://catalog.hathitrust.org/api/";
-      }
-
+      Collection<Record> records = htBibliographyAPI.lookup(recordId);
+      Record record = records.stream().findFirst().orElse(null);
+      if (record == null)
+         throw new ResourceAccessException("Record not found [" + recordId +"]");
+      return record;
    }
 }

@@ -157,12 +157,6 @@ public class PsqlWorkRepo implements WorkRepository
    }
 
    @Override
-   public Work getWork(int workId) throws NoSuchCatalogRecordException
-   {
-      return getWork(String.valueOf(workId));
-   }
-
-   @Override
    public Work getWork(String workId) throws NoSuchCatalogRecordException
    {
       SqlExecutor.ExecutorTask<Work> task = taskProvider.makeGetWorkTask(workId);
@@ -216,7 +210,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
-      Work work = getWork(asInteger(id));
+      Work work = getWork(id);
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
@@ -225,16 +219,6 @@ public class PsqlWorkRepo implements WorkRepository
       });
 
       return command;
-   }
-
-   private int asInteger(String id)
-   {
-      try {
-         return Integer.parseInt(id);
-      }
-      catch (NumberFormatException e) {
-         throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
-      }
    }
 
    @Override
