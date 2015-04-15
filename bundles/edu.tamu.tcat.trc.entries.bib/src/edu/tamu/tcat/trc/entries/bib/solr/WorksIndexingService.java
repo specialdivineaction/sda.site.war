@@ -193,9 +193,17 @@ public class WorksIndexingService implements WorkIndexServiceManager
 
    private void onDelete(Work workEvt)
    {
-      //HACK: Until Change notifications are implemented we will remove all works and corresponding editions / volumes.
-      //      Once removed we will re-add all entities from the work.
-      onCreate(workEvt);
+      String id = workEvt.getId();
+      try
+      {
+         solr.deleteById(id);
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the SOLR server. " + e);
+      }
+
    }
 
    private void isIndexed(String id)
