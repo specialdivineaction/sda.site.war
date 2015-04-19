@@ -6,15 +6,13 @@ import java.util.UUID;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.sda.datastore.DataStore;
-import edu.tamu.tcat.trc.entries.bib.copy.rest.v1.DigitalCopyLinkDTO;
 import edu.tamu.tcat.trc.persist.UpdateListener;
 
 /**
  *  Provides support for creation, retrieval, update and deletion of references between a
  *  digital copy and a bibliographic entity (work, edition or volume).
  */
-public interface CopyReferenceRepository extends DataStore
+public interface CopyReferenceRepository
 {
    // NOTE authorization, auditing, etc will be handled separately.
 
@@ -33,10 +31,6 @@ public interface CopyReferenceRepository extends DataStore
     * @throws NoSuchCatalogRecordException If the identified copy does not exist.
     */
    EditCopyReferenceCommand edit(UUID id) throws NoSuchCatalogRecordException;
-
-
-   @Deprecated
-   void create(DigitalCopyLinkDTO dcl);
 
    /**
     * @param entity The URI of the bibliographic entity for which copies should be returned.
@@ -68,11 +62,4 @@ public interface CopyReferenceRepository extends DataStore
    Future<Boolean> remove(UUID id) throws CopyReferenceException;
 
    AutoCloseable register(UpdateListener<CopyReference> ears);
-
-
-   @Deprecated
-   Iterable<DigitalCopyLink> getLinks();
-
-   @Deprecated
-   Iterable<DigitalCopyLink> getLinks(String bibliography);
 }

@@ -25,9 +25,7 @@ import edu.tamu.tcat.trc.entries.bib.copy.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceException;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyLink;
 import edu.tamu.tcat.trc.entries.bib.copy.EditCopyReferenceCommand;
-import edu.tamu.tcat.trc.entries.bib.copy.rest.v1.DigitalCopyLinkDTO;
 import edu.tamu.tcat.trc.persist.BasicUpdateEvent;
 import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
 import edu.tamu.tcat.trc.persist.UpdateEvent;
@@ -55,7 +53,6 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 
    private SqlExecutor exec;
 
-   private PsqlDigitalCopyLinkTasksProvider taskProvider;
    private EntryUpdateHelper<CopyReference> listeners;
 
    private ObjectMapper mapper;
@@ -71,7 +68,6 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 
    public void activate()
    {
-      taskProvider = new PsqlDigitalCopyLinkTasksProvider();
       listeners = new EntryUpdateHelper<>();
 
       mapper = new ObjectMapper();
@@ -240,29 +236,5 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
    {
       Objects.requireNonNull(listeners, "Update registration is not available at this time.");
       return listeners.register(ears);
-   }
-
-
-   @Override
-   public void create(DigitalCopyLinkDTO dcl)
-   {
-      PsqlDigitalCopyCreateTask task = taskProvider.createDigitalCopyLink(dcl);
-      exec.submit(task);
-   }
-
-   @Override
-   public Iterable<DigitalCopyLink> getLinks()
-   {
-      PsqlDigitalCopyListTask task = taskProvider.listDigitalCopyLinks();
-      exec.submit(task);
-      return null;
-   }
-
-   @Override
-   public Iterable<DigitalCopyLink> getLinks(String bibliography)
-   {
-      PsqlDigitalCopyListTask task = taskProvider.listDigitalCopyLinks(bibliography);
-      exec.submit(task);
-      return null;
    }
 }
