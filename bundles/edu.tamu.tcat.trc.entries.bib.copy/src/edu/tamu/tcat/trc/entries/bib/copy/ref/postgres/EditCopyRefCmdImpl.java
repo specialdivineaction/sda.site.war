@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.postgres;
+package edu.tamu.tcat.trc.entries.bib.copy.ref.postgres;
 
 import java.net.URI;
 import java.sql.PreparedStatement;
@@ -12,10 +12,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyRefDTO;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.copy.EditCopyReferenceCommand;
-import edu.tamu.tcat.trc.entries.bib.copy.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
+import edu.tamu.tcat.trc.entries.bib.copy.postgres.ExecutionFailedException;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
 import edu.tamu.tcat.trc.persist.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
 import edu.tamu.tcat.trc.persist.ObservableTaskWrapper;

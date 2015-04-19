@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.postgres;
+package edu.tamu.tcat.trc.entries.bib.copy.ref.postgres;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyRefDTO;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceException;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.copy.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceException;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceRepository;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.persist.BasicUpdateEvent;
 import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
 import edu.tamu.tcat.trc.persist.UpdateEvent;

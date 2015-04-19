@@ -11,12 +11,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistryImpl;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.UnsupportedCopyTypeException;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceRepository;
 
 @Path("/copies")
 public class CopyResolverServiceResource
@@ -68,7 +69,7 @@ public class CopyResolverServiceResource
    @Path("{identifier}")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public void createLink(@PathParam("identifier") String identifier, DigitalCopyLinkDTO copy)
+   public void createLink(@PathParam("identifier") String identifier, CopyRefDTO ref)
    {
       throw new UnsupportedOperationException();
    }

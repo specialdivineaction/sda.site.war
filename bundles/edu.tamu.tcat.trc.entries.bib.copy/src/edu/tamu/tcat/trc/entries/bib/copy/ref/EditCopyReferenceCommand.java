@@ -1,7 +1,9 @@
-package edu.tamu.tcat.trc.entries.bib.copy;
+package edu.tamu.tcat.trc.entries.bib.copy.ref;
 
 import java.net.URI;
 import java.util.UUID;
+
+import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistry;
 
 public interface EditCopyReferenceCommand
 {
