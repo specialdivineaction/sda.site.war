@@ -81,5 +81,4 @@ Service-Component:
  OSGI-INF/solrRelnSearchService.xml,
  OSGI-INF/workRepo.xml
 Export-Package: edu.tamu.tcat.sda.catalog.rest,
- edu.tamu.tcat.sda.catalog.rest.internal;x-internal:=true,
- edu.tamu.tcat.sda.catalog.rest.model
+ edu.tamu.tcat.sda.catalog.rest.internal;x-internal:=true
