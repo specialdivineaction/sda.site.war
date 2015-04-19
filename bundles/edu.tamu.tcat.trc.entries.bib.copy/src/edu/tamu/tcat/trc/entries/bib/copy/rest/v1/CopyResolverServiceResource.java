@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistryImpl;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopyLinkRepository;
+import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.UnsupportedCopyTypeException;
 
@@ -24,9 +24,9 @@ public class CopyResolverServiceResource
    private static final Logger logger = Logger.getLogger(CopyResolverServiceResource.class.getName());
 
    CopyResolverRegistryImpl copyImpl = new CopyResolverRegistryImpl();
-   private DigitalCopyLinkRepository dclRepo;
+   private CopyReferenceRepository dclRepo;
 
-   public void setRepo(DigitalCopyLinkRepository dclRepo)
+   public void setRepo(CopyReferenceRepository dclRepo)
    {
       this.dclRepo = dclRepo;
    }
