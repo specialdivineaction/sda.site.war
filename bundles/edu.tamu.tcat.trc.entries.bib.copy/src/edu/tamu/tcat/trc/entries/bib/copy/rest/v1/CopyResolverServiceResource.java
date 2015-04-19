@@ -11,10 +11,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistryImpl;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 import edu.tamu.tcat.trc.entries.bib.copy.UnsupportedCopyTypeException;
 
@@ -70,18 +70,7 @@ public class CopyResolverServiceResource
    @Produces(MediaType.APPLICATION_JSON)
    public void createLink(@PathParam("identifier") String identifier, DigitalCopyLinkDTO copy)
    {
-      CopyResolverStrategy<?> strategy;
-      try
-      {
-         strategy = copyImpl.getResolver(identifier);
-         dclRepo.create(copy);
-      }
-      catch (UnsupportedCopyTypeException e)
-      {
-         throw new IllegalArgumentException("Could not retrieve the digital copy [" + identifier + "]. No copy resolver has been registered that recognizes this type of copy.", e);
-      }
-
-
+      throw new UnsupportedOperationException();
    }
 
 }
