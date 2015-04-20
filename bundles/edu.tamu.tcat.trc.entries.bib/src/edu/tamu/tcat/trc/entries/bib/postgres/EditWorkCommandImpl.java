@@ -18,6 +18,7 @@ import edu.tamu.tcat.trc.entries.bib.EditionMutator;
 import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
 import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
+import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 public class EditWorkCommandImpl implements EditWorkCommand
@@ -158,6 +159,48 @@ public class EditWorkCommandImpl implements EditWorkCommand
       }
 
       throw new NoSuchCatalogRecordException("Unable to find edition with id [" + id + "].");
+   }
+
+   @Override
+   public void removeEdition(String editionId) throws NoSuchCatalogRecordException
+   {
+      if (work.editions.isEmpty())
+         throw new NoSuchCatalogRecordException("This work does not contain any editons.");
+
+      for (EditionDV edition : work.editions)
+      {
+         if(edition.id.equals(editionId))
+         {
+            work.editions.remove(edition);
+            return;
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Could not find the edition [" + editionId + "]. The edition could not be removed.");
+   }
+
+   @Override
+   public void removeVolume(String volumeId) throws NoSuchCatalogRecordException
+   {
+      if (work.editions.isEmpty())
+         throw new NoSuchCatalogRecordException("This work does not contain any editons.");
+
+      for (EditionDV edition : work.editions)
+      {
+         if (edition.volumes.isEmpty())
+            throw new NoSuchCatalogRecordException("This edition does not contain any volumes.");
+
+         for(VolumeDV volume : edition.volumes)
+         {
+            if(volume.id.equals(volumeId))
+            {
+               edition.volumes.remove(volume);
+               return;
+            }
+         }
+      }
+
+      throw new NoSuchCatalogRecordException("Could not find the volume [" + volumeId + "]. The volume could not be removed.");
    }
 
    @Override

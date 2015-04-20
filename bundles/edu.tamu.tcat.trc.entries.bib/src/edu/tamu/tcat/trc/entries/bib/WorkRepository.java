@@ -82,14 +82,16 @@ public interface WorkRepository extends DataStore
     */
    EditWorkCommand create();
 
+   EditWorkCommand delete(String id) throws NoSuchCatalogRecordException;
+
    AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears);
 
    AutoCloseable addAfterUpdateListener(CommandExecutionListener ears);
-
-   @Deprecated // use the EditWorkCommand methods
-   void create(WorkDV work, DataUpdateObserver<String> observer);
-
-   // TODO might return a handle that allows for cancellation, and blocking
-   @Deprecated // use the EditWorkCommand methods
-   void update(WorkDV work, DataUpdateObserver<String> observer);
+//
+//   @Deprecated // use the EditWorkCommand methods
+//   void create(WorkDV work, DataUpdateObserver<String> observer);
+//
+//   // TODO might return a handle that allows for cancellation, and blocking
+//   @Deprecated // use the EditWorkCommand methods
+//   void update(WorkDV work, DataUpdateObserver<String> observer);
 }

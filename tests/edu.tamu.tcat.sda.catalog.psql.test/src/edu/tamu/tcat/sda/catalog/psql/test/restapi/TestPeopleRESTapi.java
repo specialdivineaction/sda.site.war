@@ -110,6 +110,31 @@ public class TestPeopleRESTapi
    }
 
    @Test
+   public void testDelete() throws Exception
+   {
+      post.setEntity(new StringEntity(providPerson()));
+
+      HttpResponse response = client.execute(post);
+      PersonDV createdPerson = null;
+      try(InputStream content = response.getEntity().getContent())
+      {
+         createdPerson = mapper.parse(content, PersonDV.class);
+      }
+      catch (IOException e)
+      {
+         throw new IOException("Could not retrieve response.");
+      }
+
+
+      URI personUri = uri.resolve("people/" + createdPerson.id);
+      delete.setURI(personUri);
+      HttpResponse putResponse = client.execute(delete);
+
+
+      Assert.assertEquals(putResponse.getStatusLine().getStatusCode(), 200);
+   }
+
+   @Test
    public void testPut() throws Exception
    {
       post.setEntity(new StringEntity(providPerson()));

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
@@ -144,6 +145,14 @@ public class WorksResource
          throw new InternalServerErrorException(msg);
 
       }
+   }
+
+   @DELETE
+   @Path("{workid}")
+   public void deleteWork(@PathParam(value = "workid") String workId) throws NoSuchCatalogRecordException
+   {
+      EditWorkCommand workcmd = repo.delete(workId);
+      workcmd.execute();
    }
 
    @GET

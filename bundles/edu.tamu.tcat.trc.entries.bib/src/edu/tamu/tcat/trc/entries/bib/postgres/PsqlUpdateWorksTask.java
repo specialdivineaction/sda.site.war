@@ -16,7 +16,8 @@ public class PsqlUpdateWorksTask implements SqlExecutor.ExecutorTask<String>
 {
 //   private final static Logger DbTaskLogger = Logger.getLogger("edu.tamu.tcat.trc.entries.bib.db.errors");
    private final static String sql = "Update works "
-                            + "   SET work = ?"
+                            + "   SET work = ?,"
+                            + "       modified = now()"
                             + "   WHERE id = ?";
 
    private final ObjectMapper jsonMapper;

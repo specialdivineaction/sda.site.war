@@ -18,7 +18,6 @@ import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Title;
-import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
@@ -115,20 +114,20 @@ public class PsqlWorkRepo implements WorkRepository
 
       return  iterable;
    }
-
-   @Override
-   public void create(final WorkDV work, DataUpdateObserver<String> observer)
-   {
-      PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
-      exec.submit(new ObservableTaskWrapper<>(task, observer));
-   }
-
-   @Override
-   public void update(WorkDV work, DataUpdateObserver<String> observer)
-   {
-      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
-      exec.submit(new ObservableTaskWrapper<>(task, observer));
-   }
+//
+//   @Override
+//   public void create(final WorkDV work, DataUpdateObserver<String> observer)
+//   {
+//      PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
+//      exec.submit(new ObservableTaskWrapper<>(task, observer));
+//   }
+//
+//   @Override
+//   public void update(WorkDV work, DataUpdateObserver<String> observer)
+//   {
+//      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
+//      exec.submit(new ObservableTaskWrapper<>(task, observer));
+//   }
 
    @Override
    public Iterable<Work> listWorks(String titleName)
@@ -139,23 +138,24 @@ public class PsqlWorkRepo implements WorkRepository
 
       for (Work w : listWorks)
       {
-         TitleDefinition titleDef = w.getTitle();
-
-         for (Title t : titleDef.getAlternateTitles())
-         {
-            boolean titleFound = false;
-            titleFound = hasTitleName(t, titleName);
-            if (titleFound)
-            {
-               workResults.add(w);
-               continue;
-            }
-         }
+         if (hasTitle(w, titleName))
+            workResults.add(w);
       }
 
       return workResults;
    }
 
+   private boolean hasTitle(Work w, String name)
+   {
+      for (Title t : w.getTitle().getAlternateTitles())
+      {
+         if (hasTitleName(t, name)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
    @Override
    public Work getWork(String workId) throws NoSuchCatalogRecordException
    {
@@ -230,6 +230,20 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
+         Future<String> submitWork = exec.submit(task);
+         return submitWork;
+      });
+
+      return command;
+   }
+
+   @Override
+   public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(asInteger(id));
+      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
+      command.setCommitHook((workDv) -> {
+         PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
          Future<String> submitWork = exec.submit(task);
          return submitWork;
       });

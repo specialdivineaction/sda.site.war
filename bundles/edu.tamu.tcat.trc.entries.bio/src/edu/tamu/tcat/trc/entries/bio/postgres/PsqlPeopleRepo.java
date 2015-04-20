@@ -158,21 +158,9 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public void delete(final String psrsonId, final DataUpdateObserver<Void> observer)
    {
-      // TODO IMPLEMENT
-      throw new UnsupportedOperationException();
-      // TODO: Add another column for active.
-//      final String updateSql = "";
-//      SqlExecutor.ExecutorTask<Void> deleteTask = new SqlExecutor.ExecutorTask<Void>()
-//      {
-//         @Override
-//         public Void execute(Connection conn) throws SQLException
-//         {
-//            observer.error("Not Implmented", new UnsupportedOperationException());
-//            return null;
-//         }
-//      };
-//
-//      exec.submit(new ObservableTaskWrapper<>(deleteTask, observer));
+
+      ExecutorTask<Void> deleteTask = new DeletePersonTask(psrsonId);
+      exec.submit(new ObservableTaskWrapper<>(deleteTask, observer));
    }
 
    private PGobject toPGobject(final PersonDV histFigure) throws SQLException, JsonException
@@ -181,6 +169,38 @@ public class PsqlPeopleRepo implements PeopleRepository
       jsonObject.setType("json");
       jsonObject.setValue(jsonMapper.asString(histFigure));
       return jsonObject;
+   }
+
+   private final class DeletePersonTask implements ExecutorTask<Void>
+   {
+      private final static String delete_sql =  "UPDATE people SET active = false WHERE id = ?";
+      private final String personId;
+
+      private DeletePersonTask(String personId)
+      {
+         this.personId = personId;
+      }
+
+      @Override
+      public Void execute(Connection conn) throws Exception
+      {
+         try (PreparedStatement ps = conn.prepareStatement(delete_sql))
+         {
+            ps.setString(1, personId);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new IllegalStateException("Failed to de-activate historical figure. Unexpected number of rows updates [" + ct + "]");
+         }
+         catch (SQLException e)
+         {
+            throw new IllegalStateException("Faield to de-activate personId:" + personId, e);
+         }
+
+         return null;
+
+      }
+
    }
 
    private final class GetPersonTask implements ExecutorTask<Person>
@@ -234,7 +254,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private final class GetAllPeopleTask implements ExecutorTask<List<Person>>
    {
-      private final static String QUERY_SQL = "SELECT historical_figure FROM people";
+      private final static String QUERY_SQL = "SELECT historical_figure FROM people WHERE active = true";
 
       private GetAllPeopleTask()
       {

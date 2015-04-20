@@ -25,28 +25,27 @@ public class WorkInfo
    public String uri;
    public List<AuthorRefDV> authors = new ArrayList<>();
    public String title;
+   public String label;
    public String summary;
    public String pubYear = null;
 
    public static WorkInfo create(Work w)
    {
-      // TODO make a more flexible tool for creating work identifiers
-
       WorkInfo result = new WorkInfo();
       result.id = w.getId();
-      result.uri = "works/" + w.getId();
-      result.title = constructLabel(w);
+      result.uri = "works/" + w.getId();        // TODO make a more flexible tool for creating work URIs
+
+      TitleDefinition titleDefn = w.getTitle();
+      Set<Title> titles = titleDefn.getAlternateTitles();
+      result.title = getWorkTitle(titles);
+
+      result.label = constructLabel(w);
       result.pubYear = getNormalizedYear(w);
 
       result.summary = w.getSummary();
 
       AuthorList authors = w.getAuthors();
-      authors.forEach(author ->
-      {
-         result.authors.add(new AuthorRefDV(author));
-      });
-
-      // TODO find earliest listed publication date (first edition)
+      authors.forEach(author -> result.authors.add(new AuthorRefDV(author)));
 
       return result;
    }

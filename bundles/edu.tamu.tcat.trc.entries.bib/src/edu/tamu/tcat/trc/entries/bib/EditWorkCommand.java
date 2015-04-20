@@ -80,6 +80,16 @@ public interface EditWorkCommand
    EditionMutator createEdition();
 
    /**
+    * Removes the specified edition from the work.
+    */
+   void removeEdition(String editionId) throws NoSuchCatalogRecordException;
+
+   /**
+    * Removed the specified volume from the work.
+    */
+   void removeVolume(String volumeId) throws NoSuchCatalogRecordException;
+
+   /**
     *
     * @return The id of the created or edited work.
     */

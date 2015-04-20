@@ -16,7 +16,7 @@ public class TitleDV
    public TitleDV(Title title)
    {
       this.type = title.getType();
-      this.lg = title.getLanuguage();
+      this.lg = title.getLanguage();
       this.title = title.getTitle();
       this.subtitle = title.getSubTitle();
    }
