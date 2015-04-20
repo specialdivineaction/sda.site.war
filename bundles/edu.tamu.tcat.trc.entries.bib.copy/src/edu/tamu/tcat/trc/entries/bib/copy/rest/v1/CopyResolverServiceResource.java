@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistryImpl;
+import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistry;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
@@ -24,12 +24,17 @@ public class CopyResolverServiceResource
 {
    private static final Logger logger = Logger.getLogger(CopyResolverServiceResource.class.getName());
 
-   CopyResolverRegistryImpl copyImpl = new CopyResolverRegistryImpl();
-   private CopyReferenceRepository dclRepo;
+   private CopyResolverRegistry copyResolverReg;
+   private CopyReferenceRepository copyRefRepo;
 
    public void setRepo(CopyReferenceRepository dclRepo)
    {
-      this.dclRepo = dclRepo;
+      this.copyRefRepo = dclRepo;
+   }
+
+   public void setResolverRegistry(CopyResolverRegistry registry)
+   {
+      this.copyResolverReg = registry;
    }
 
    public void activate()
@@ -55,7 +60,7 @@ public class CopyResolverServiceResource
       CopyResolverStrategy<?> strategy;
       try
       {
-         strategy = copyImpl.getResolver(id);
+         strategy = copyResolverReg.getResolver(id);
       }
       catch (UnsupportedCopyTypeException e)
       {
