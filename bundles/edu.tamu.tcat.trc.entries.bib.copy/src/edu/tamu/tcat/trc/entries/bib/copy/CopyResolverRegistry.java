@@ -16,6 +16,4 @@ public interface CopyResolverRegistry
    <T extends DigitalCopy> CopyResolverStrategy<T> getResolver(Class<T> resolverType);
 
    CopyResolverStrategy<? extends DigitalCopy> getResolver(String identifier) throws UnsupportedCopyTypeException;
-
-   CopyResolverStrategy<? extends DigitalCopy> getProvider(String id);
 }

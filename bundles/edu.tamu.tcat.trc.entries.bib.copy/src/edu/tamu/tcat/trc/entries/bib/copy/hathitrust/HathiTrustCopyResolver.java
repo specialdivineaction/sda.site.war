@@ -81,7 +81,8 @@ public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCo
          Item item = record.getItem(itemId);
 
          // FIXME not a copy. This is a record.
-         return new HathiTrustCopy(record, item);
+         throw new UnsupportedOperationException();
+//         return new HathiTrustCopy(record, item);
 
       }
       catch (HathiTrustClientException e)

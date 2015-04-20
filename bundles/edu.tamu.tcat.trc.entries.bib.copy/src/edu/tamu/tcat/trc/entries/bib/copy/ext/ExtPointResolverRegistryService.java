@@ -98,13 +98,6 @@ public class ExtPointResolverRegistryService implements CopyResolverRegistry
       return null;
    }
 
-   @Override
-   public CopyResolverStrategy<? extends DigitalCopy> getProvider(String id)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
    private class RegistryEventListener implements IRegistryEventListener
    {
 
