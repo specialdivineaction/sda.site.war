@@ -13,7 +13,6 @@ import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
@@ -157,12 +156,6 @@ public class PsqlWorkRepo implements WorkRepository
       return false;
    }
    @Override
-   public Work getWork(int workId) throws NoSuchCatalogRecordException
-   {
-      return getWork(String.valueOf(workId));
-   }
-
-   @Override
    public Work getWork(String workId) throws NoSuchCatalogRecordException
    {
       SqlExecutor.ExecutorTask<Work> task = taskProvider.makeGetWorkTask(workId);
@@ -216,7 +209,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
-      Work work = getWork(asInteger(id));
+      Work work = getWork(id);
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
@@ -225,16 +218,6 @@ public class PsqlWorkRepo implements WorkRepository
       });
 
       return command;
-   }
-
-   private int asInteger(String id)
-   {
-      try {
-         return Integer.parseInt(id);
-      }
-      catch (NumberFormatException e) {
-         throw new IllegalArgumentException("Malformed Work ID [" + id + "]", e);
-      }
    }
 
    @Override
@@ -256,7 +239,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
    {
-      Work work = getWork(asInteger(id));
+      Work work = getWork(id);
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);

@@ -44,9 +44,6 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
       query.setRows(Integer.valueOf(100));
    }
 
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#getResults()
-    */
    @Override
    public Collection<Relationship> getResults()
    {
@@ -93,9 +90,6 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
       return query;
    }
 
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI, edu.tamu.tcat.trc.entries.reln.RelationshipDirection)
-    */
    @Override
    public RelationshipQueryCommand forEntity(URI entity, RelationshipDirection direction)
    {
@@ -118,18 +112,12 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
       return this;
    }
 
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#forEntity(java.net.URI)
-    */
    @Override
    public RelationshipQueryCommand forEntity(URI entity)
    {
       return forEntity(entity, RelationshipDirection.any);
    }
 
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#byType(java.lang.String)
-    */
    @Override
    public RelationshipQueryCommand byType(String typeId)
    {
@@ -137,9 +125,6 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
       return this;
    }
 
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#setRowLimit(int)
-    */
    @Override
    public RelationshipQueryCommand setRowLimit(int rows)
    {
@@ -148,9 +133,6 @@ public class RelationshipSolrQueryCommand implements RelationshipQueryCommand
    }
 
    // TODO: decide on the proper way to organize the results
-   /* (non-Javadoc)
-    * @see edu.tamu.tcat.catalogentries.relationships.search.solr.RelationshipQueryCommand#oderBy()
-    */
    @Override
    public RelationshipQueryCommand oderBy()
    {

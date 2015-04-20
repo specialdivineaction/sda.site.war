@@ -7,6 +7,7 @@ import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
 public class ObservableTaskWrapper<ResultType> implements SqlExecutor.ExecutorTask<ResultType>
 {
+   // TODO should be moved into exec framework
    private final DataUpdateObserver<ResultType> observer;
    private final SqlExecutor.ExecutorTask<ResultType> task;
 

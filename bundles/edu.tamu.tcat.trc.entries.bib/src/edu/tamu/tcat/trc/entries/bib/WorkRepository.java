@@ -39,8 +39,6 @@ public interface WorkRepository extends DataStore
     * @return The record for a specific work.
     * @throws NoSuchCatalogRecordException If the requested work does not exist.
     */
-   @Deprecated
-   Work getWork(int workId) throws NoSuchCatalogRecordException;     // FIXME should be a string valued id
    Work getWork(String workId) throws NoSuchCatalogRecordException;
 
    /**

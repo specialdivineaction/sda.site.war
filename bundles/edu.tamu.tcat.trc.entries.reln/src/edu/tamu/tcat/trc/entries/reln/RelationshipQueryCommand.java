@@ -6,17 +6,17 @@ import java.util.Collection;
 public interface RelationshipQueryCommand
 {
 
-   public abstract Collection<Relationship> getResults();
+   Collection<Relationship> getResults();
 
-   public abstract RelationshipQueryCommand forEntity(URI entity, RelationshipDirection direction);
+   RelationshipQueryCommand forEntity(URI entity, RelationshipDirection direction);
 
-   public abstract RelationshipQueryCommand forEntity(URI entity);
+   RelationshipQueryCommand forEntity(URI entity);
 
-   public abstract RelationshipQueryCommand byType(String typeId);
+   RelationshipQueryCommand byType(String typeId);
 
-   public abstract RelationshipQueryCommand setRowLimit(int rows);
+   RelationshipQueryCommand setRowLimit(int rows);
 
    // TODO: decide on the proper way to organize the results
-   public abstract RelationshipQueryCommand oderBy();
+   RelationshipQueryCommand oderBy();
 
 }

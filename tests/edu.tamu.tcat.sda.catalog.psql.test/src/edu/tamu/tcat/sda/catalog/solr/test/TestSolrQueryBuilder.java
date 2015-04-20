@@ -1,7 +1,6 @@
 package edu.tamu.tcat.sda.catalog.solr.test;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.trc.entries.reln.solr.SolrQueryBuilder;
+import edu.tamu.tcat.sda.catalog.relationships.search.solr.SolrQueryBuilder;
 
 public class TestSolrQueryBuilder
 {
@@ -41,9 +40,7 @@ public class TestSolrQueryBuilder
    @Test
    public void testQueryBuilder()
    {
-      List<String> fieldNames = new ArrayList<>();
-      fieldNames.add("source");
-      fieldNames.add("access");
+      String[] fieldNames = {"source", "access"};
 
       Date startDate = Date.valueOf("1700-01-01");
       Date endDate = Date.valueOf("1800-01-01");
@@ -51,17 +48,15 @@ public class TestSolrQueryBuilder
       Integer rowsToReturn = 3;
       Integer countinueFrom = 0;
 
-      SolrQuery sqBuilder = new SolrQueryBuilder.Builder()
-                                   .newQuery()
+      SolrQuery sqBuilder = (new SolrQueryBuilder())
                                    .setQueryString("title","\"Gilbert West\"")
                                    .addFacetFields(fieldNames)
                                    .addFacetRange("publicationDate", startDate, endDate, "+5YEARS")
-                                   .setNumRows(rowsToReturn.intValue())
-                                   .setStartRows(countinueFrom.intValue())
+                                   .setLimit(rowsToReturn.intValue())
+                                   .setStart(countinueFrom.intValue())
                                    .addHighLighting("title")
                                    .setSort("publicationDate", ORDER.asc)
-                                   .build()
-                                   .getQuery();
+                                   .build();
 
       try
       {

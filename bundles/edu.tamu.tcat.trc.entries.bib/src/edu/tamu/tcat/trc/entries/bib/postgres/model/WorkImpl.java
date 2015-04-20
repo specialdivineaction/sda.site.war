@@ -11,6 +11,7 @@ import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
+@Deprecated // Use WorkDV.instantiate instead
 public class WorkImpl implements Work
 {
    private final String id;
