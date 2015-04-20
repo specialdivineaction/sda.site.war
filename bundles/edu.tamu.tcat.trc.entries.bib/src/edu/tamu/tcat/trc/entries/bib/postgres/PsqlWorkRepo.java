@@ -13,7 +13,6 @@ import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
@@ -240,7 +239,7 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
    {
-      Work work = getWork(asInteger(id));
+      Work work = getWork(id);
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
