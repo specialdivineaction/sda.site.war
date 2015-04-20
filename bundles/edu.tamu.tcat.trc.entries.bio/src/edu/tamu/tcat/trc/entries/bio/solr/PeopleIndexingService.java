@@ -16,10 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bio.PeopleChangeEvent;
 import edu.tamu.tcat.trc.entries.bio.PeopleIndexServiceManager;
+import edu.tamu.tcat.trc.entries.bio.PeopleQueryCommand;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
+import edu.tamu.tcat.trc.entries.bio.PeopleSearchService;
 import edu.tamu.tcat.trc.entries.bio.Person;
 
-public class PeopleIndexingService implements PeopleIndexServiceManager
+public class PeopleIndexingService implements PeopleIndexServiceManager, PeopleSearchService
 {
 
 
@@ -186,6 +188,12 @@ public class PeopleIndexingService implements PeopleIndexServiceManager
       {
          logger.log(Level.SEVERE, "Failed to delete the person id: [" + id + "] from the SOLR server. " + e);
       }
+   }
+
+   @Override
+   public PeopleQueryCommand createQueryCommand()
+   {
+      return new PeopleSolrQueryCommand(solr);
    }
 
 }
