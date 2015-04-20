@@ -153,7 +153,6 @@ public class PeopleIndexingService implements PeopleIndexServiceManager
       {
          solr.add(proxy.getDocument());
          solr.commit();
-         solr.commit();
       }
       catch (SolrServerException | IOException e)
       {
@@ -163,12 +162,30 @@ public class PeopleIndexingService implements PeopleIndexServiceManager
 
    private void onUpdate(Person person)
    {
-
+      PeopleSolrProxy proxy = PeopleSolrProxy.createPerson(person);
+      try
+      {
+         solr.add(proxy.getDocument());
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit the person id: [" + person.getId() + "] to the SOLR server. " + e);
+      }
    }
 
    private void onDelete(Person person)
    {
-
+      String id = person.getId();
+      try
+      {
+         solr.deleteById(id);
+         solr.commit();
+      }
+      catch(SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete the person id: [" + id + "] from the SOLR server. " + e);
+      }
    }
 
 }
