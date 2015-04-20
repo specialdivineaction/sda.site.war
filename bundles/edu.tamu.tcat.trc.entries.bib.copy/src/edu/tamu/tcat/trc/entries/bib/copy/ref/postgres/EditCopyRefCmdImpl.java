@@ -125,7 +125,6 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
       if (notifier.before(evt))
          return;
 
-
       String sql = isNew() ? CREATE_SQL : UPDATE_SQL;
       sqlExecutor.submit(new ObservableTaskWrapper<Void>(
             makeCreateTask(sql),

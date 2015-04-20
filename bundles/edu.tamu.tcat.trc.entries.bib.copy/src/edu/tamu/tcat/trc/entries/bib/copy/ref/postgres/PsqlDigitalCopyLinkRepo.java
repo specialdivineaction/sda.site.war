@@ -27,7 +27,9 @@ import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceException;
 import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.bib.copy.ref.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.persist.BasicUpdateEvent;
+import edu.tamu.tcat.trc.persist.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
+import edu.tamu.tcat.trc.persist.ObservableTaskWrapper;
 import edu.tamu.tcat.trc.persist.UpdateEvent;
 import edu.tamu.tcat.trc.persist.UpdateEvent.UpdateAction;
 import edu.tamu.tcat.trc.persist.UpdateListener;
@@ -114,29 +116,46 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
    @Override
    public Future<Boolean> remove(UUID id) throws CopyReferenceException
    {
-      return exec.submit((conn) -> {
-         UpdateEventFactory factory = new UpdateEventFactory();
-         UpdateEvent<CopyReference> evt = factory.makeDeleteEvent(id);
+      UpdateEventFactory factory = new UpdateEventFactory();
+      UpdateEvent<CopyReference> evt = factory.makeDeleteEvent(id);
 
-         if (listeners.before(evt))
+      boolean shouldExecute = listeners.before(evt);
+
+      return exec.submit(new ObservableTaskWrapper<Boolean>(
+            makeRemoveTask(id, shouldExecute),
+            new DataUpdateObserverAdapter<Boolean>()
+            {
+               @Override
+               protected void onFinish(Boolean result) {
+                  if (result.booleanValue())
+                     listeners.after(evt);
+               }
+            }));
+   }
+
+   private SqlExecutor.ExecutorTask<Boolean> makeRemoveTask(UUID id, boolean shouldExecute)
+   {
+      return (conn) -> {
+         if (!shouldExecute)
             return Boolean.valueOf(false);
 
          try (PreparedStatement ps = conn.prepareStatement(REMOVE_SQL))
          {
             ps.setString(1, id.toString());
             int ct = ps.executeUpdate();
-            if (ct != 1)
+            if (ct == 0)
+            {
                logger.log(Level.WARNING, "Failed to remove copy reference [" + id + "]. Reference may not exist.", id);
+               return Boolean.valueOf(false);
+            }
 
-            listeners.after(evt);
+            return Boolean.valueOf(true);
          }
          catch(SQLException e)
          {
             throw new IllegalStateException("Failed to remove copy reference [" + id + "]. ", e);
          }
-
-         return null;
-      });
+      };
    }
 
    public class UpdateEventFactory
