@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
@@ -370,6 +371,9 @@ public class PsqlWorkRepo implements WorkRepository
 
    }
 
+   // FIXME What is ResultType .. surely you know what this is?
+   //       Note that you should be using the adapter, not the observer. You aren't maintaining
+   //       the internal state as required by the update observer API.
    private final class WorkChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
    {
       private final String id;
