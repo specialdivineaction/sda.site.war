@@ -28,5 +28,4 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  org.apache.solr.client.solrj.impl,
  org.apache.solr.client.solrj.response,
  org.apache.solr.common,
- org.apache.solr.common.params,
  org.postgresql.util
