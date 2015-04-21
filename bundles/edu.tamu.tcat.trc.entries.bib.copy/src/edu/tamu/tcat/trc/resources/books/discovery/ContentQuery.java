@@ -1,11 +1,16 @@
-package edu.tamu.tcat.trc.entries.bib.copy.discovery;
+package edu.tamu.tcat.trc.resources.books.discovery;
 
 import java.time.temporal.TemporalAccessor;
 
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
+import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
 
+/**
+ * A structured representation of a query for use when searching for digital copies of a book.
+ */
 public interface ContentQuery
 {
+   // TODO supply default DTO (JSON serializable) and Adapter interface.
+
    /**
     *  Returns the query string supplied by the client. This query should be interpreted
     *  generally as a keyword query with no internal structure such as quotation marks for

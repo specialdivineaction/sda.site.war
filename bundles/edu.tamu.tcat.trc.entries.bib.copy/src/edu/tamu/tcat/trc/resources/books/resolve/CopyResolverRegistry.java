@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy;
+package edu.tamu.tcat.trc.resources.books.resolve;
 
 public interface CopyResolverRegistry
 {

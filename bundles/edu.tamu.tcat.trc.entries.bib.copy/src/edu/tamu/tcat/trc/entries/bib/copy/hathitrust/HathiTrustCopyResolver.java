@@ -10,8 +10,8 @@ import edu.tamu.tcat.hathitrust.bibliography.BibliographicAPIClient;
 import edu.tamu.tcat.hathitrust.bibliography.Item;
 import edu.tamu.tcat.hathitrust.bibliography.Record;
 import edu.tamu.tcat.hathitrust.bibliography.Record.IdType;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
-import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
+import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
+import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
 
 public class HathiTrustCopyResolver implements CopyResolverStrategy<HathiTrustCopy>
 {

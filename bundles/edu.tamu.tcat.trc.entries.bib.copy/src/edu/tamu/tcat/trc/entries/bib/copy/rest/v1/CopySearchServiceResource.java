@@ -11,11 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResult;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchService;
 import edu.tamu.tcat.trc.entries.bib.copy.hathitrust.HTFilesSearchService;
+import edu.tamu.tcat.trc.resources.books.discovery.ContentQuery;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchResult;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchService;
+import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
 
 
 @Path("/copies/search")

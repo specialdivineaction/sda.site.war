@@ -2,7 +2,7 @@ package edu.tamu.tcat.trc.entries.bib.copy.rest.v1;
 
 import java.time.temporal.TemporalAccessor;
 
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
+import edu.tamu.tcat.trc.resources.books.discovery.ContentQuery;
 
 public class CopyQueryDTO
 {

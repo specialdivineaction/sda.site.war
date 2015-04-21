@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.discovery;
+package edu.tamu.tcat.trc.resources.books.discovery;
 
 import java.util.Collection;
 

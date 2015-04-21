@@ -4,7 +4,7 @@ import java.net.URI;
 
 import edu.tamu.tcat.hathitrust.bibliography.Item;
 import edu.tamu.tcat.hathitrust.bibliography.Record;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
+import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
 
 /**
  *  Represents a digital copy of a book from the HathiTrust digital library.

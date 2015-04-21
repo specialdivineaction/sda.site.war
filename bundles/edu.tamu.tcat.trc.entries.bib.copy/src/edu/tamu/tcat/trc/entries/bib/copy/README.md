@@ -1,6 +1,6 @@
 Provides a mechanism to associate a bibliographic entry with one or more digital copies of that item.
 
-The role of the **Digital Copy Search Service** is to provide a unified REST API that allows clients to search across multiple data sources to identify potentially relevant digital copies of a bibliographic item. The search service accepts simple key word queries and also allows for date range and author filters. In general, the search implementation will prioritize results based on the date range and author filters but will not strictly remove non-matching entities since not all data sources provide this information.
+The role of the **Copy Search Service** is to provide a unified REST API that allows clients to search across multiple data sources to identify potentially relevant digital copies of a bibliographic item. The search service accepts simple key word queries and also allows for date range and author filters. In general, the search implementation will prioritize results based on the date range and author filters but will not strictly remove non-matching entities since not all data sources provide this information.
 
 The search service returns **Copy Proxy** objects with enough detail to support display and retrieval (an identifier, a title, a provider, and rights information if available). *TODO is there additional info that should be provided? Is there a way to supply optional info?*
 

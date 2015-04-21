@@ -11,11 +11,11 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryEventListener;
 import org.eclipse.core.runtime.Platform;
 
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverRegistry;
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
-import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
-import edu.tamu.tcat.trc.entries.bib.copy.UnsupportedCopyTypeException;
+import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverRegistry;
+import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
+import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
+import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
+import edu.tamu.tcat.trc.resources.books.resolve.UnsupportedCopyTypeException;
 
 /**
  * An extension point based {@link CopyResolverRegistry} intended to be registered via

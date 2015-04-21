@@ -24,12 +24,12 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.ContentQuery;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResult;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResultImpl;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchService;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
+import edu.tamu.tcat.trc.resources.books.discovery.ContentQuery;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchResult;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchResultImpl;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchService;
+import edu.tamu.tcat.trc.resources.books.discovery.DigitalCopyProxy;
+import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
 
 /**
  *  Searches over the local SOLR index of Hathifiles data. Note that this index may be expanded

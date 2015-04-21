@@ -1,8 +1,7 @@
-package edu.tamu.tcat.trc.entries.bib.copy.discovery;
+package edu.tamu.tcat.trc.resources.books.discovery;
 
-import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
-import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
-
+import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
+import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
 
 /**
  *  Defines simple metadata for uniquely identifying a digital copy and presenting basic

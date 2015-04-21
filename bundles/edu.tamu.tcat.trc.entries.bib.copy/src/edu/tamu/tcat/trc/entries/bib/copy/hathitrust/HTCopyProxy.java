@@ -1,6 +1,6 @@
 package edu.tamu.tcat.trc.entries.bib.copy.hathitrust;
 
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
+import edu.tamu.tcat.trc.resources.books.discovery.DigitalCopyProxy;
 
 public class HTCopyProxy implements DigitalCopyProxy
 {
