@@ -2,8 +2,8 @@ package edu.tamu.tcat.trc.entries.bib.copy.rest.v1;
 
 import java.util.Collection;
 
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchResult;
-import edu.tamu.tcat.trc.entries.bib.copy.discovery.DigitalCopyProxy;
+import edu.tamu.tcat.trc.resources.books.discovery.CopySearchResult;
+import edu.tamu.tcat.trc.resources.books.discovery.DigitalCopyProxy;
 
 public class SearchResult
 {
