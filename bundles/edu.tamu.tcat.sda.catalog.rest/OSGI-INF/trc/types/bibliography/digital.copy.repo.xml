@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.catalogentries.rest.digital.copy.repo">
-   <implementation class="edu.tamu.tcat.trc.entries.bib.copy.postgres.PsqlDigitalCopyLinkRepo"/>
-   <service>
-      <provide interface="edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository"/>
-   </service>
+   <implementation class="edu.tamu.tcat.trc.entries.bib.copy.ref.postgres.PsqlDigitalCopyLinkRepo"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <service>
+      <provide interface="edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceRepository"/>
+   </service>
 </scr:component>
