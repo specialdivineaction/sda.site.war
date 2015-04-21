@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.tamu.tcat.hathitrust.client.BibliographicAPIClient;
-import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
-import edu.tamu.tcat.hathitrust.model.BasicRecordIdentifier;
-import edu.tamu.tcat.hathitrust.model.Item;
-import edu.tamu.tcat.hathitrust.model.Record;
-import edu.tamu.tcat.hathitrust.model.Record.IdType;
+import edu.tamu.tcat.hathitrust.HathiTrustClientException;
+import edu.tamu.tcat.hathitrust.bibliography.BasicRecordIdentifier;
+import edu.tamu.tcat.hathitrust.bibliography.BibliographicAPIClient;
+import edu.tamu.tcat.hathitrust.bibliography.Item;
+import edu.tamu.tcat.hathitrust.bibliography.Record;
+import edu.tamu.tcat.hathitrust.bibliography.Record.IdType;
 import edu.tamu.tcat.trc.entries.bib.copy.CopyResolverStrategy;
 import edu.tamu.tcat.trc.entries.bib.copy.ResourceAccessException;
 
