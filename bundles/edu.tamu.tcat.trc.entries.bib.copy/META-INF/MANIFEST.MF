@@ -30,5 +30,8 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  org.eclipse.core.runtime;version="3.4.0",
  org.postgresql.util
 Export-Package: edu.tamu.tcat.trc.entries.bib.copy,
- edu.tamu.tcat.trc.entries.bib.copy.hathitrust,
- edu.tamu.tcat.trc.entries.bib.copy.rest.v1
+ edu.tamu.tcat.trc.entries.bib.copy.rest.v1,
+ edu.tamu.tcat.trc.resources.books.discovery,
+ edu.tamu.tcat.trc.resources.books.hathitrust,
+ edu.tamu.tcat.trc.resources.books.resolve,
+ edu.tamu.tcat.trc.resources.books.resolve.ext

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.hathitrust;
+package edu.tamu.tcat.trc.resources.books.hathitrust;
 
 import edu.tamu.tcat.trc.resources.books.discovery.DigitalCopyProxy;
 

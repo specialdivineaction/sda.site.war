@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.ext;
+package edu.tamu.tcat.trc.resources.books.resolve.ext;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
