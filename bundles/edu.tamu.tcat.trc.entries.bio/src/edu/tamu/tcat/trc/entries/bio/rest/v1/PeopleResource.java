@@ -41,10 +41,10 @@ public class PeopleResource
    private PeopleSearchService peopleSearchService;
 
    // called by DS
-   public void setConfigurationProperties(ConfigurationProperties properties)
-   {
-      this.properties = properties;
-   }
+//   public void setConfigurationProperties(ConfigurationProperties properties)
+//   {
+//      this.properties = properties;
+//   }
 
    // called by DS
    public void setRepository(PeopleRepository repo)

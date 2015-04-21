@@ -472,7 +472,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    }
 
-   private final class PeopleChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
+   private final class PeopleChangeNotifier<Person> implements DataUpdateObserver<Person>
    {
       private final String id;
       private final ChangeType type;
@@ -490,7 +490,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
 
       @Override
-      public void finish(ResultType result)
+      public void finish(Person result)
       {
          notifyPersonUpdate(type, id);
       }
