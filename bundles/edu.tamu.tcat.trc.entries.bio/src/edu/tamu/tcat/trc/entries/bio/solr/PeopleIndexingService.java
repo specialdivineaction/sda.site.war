@@ -71,7 +71,10 @@ public class PeopleIndexingService implements PeopleIndexServiceManager, PeopleS
       // construct Solr core
       URI solrBaseUri = config.getPropertyValue(SOLR_API_ENDPOINT, URI.class);
       String solrCore = config.getPropertyValue(SOLR_CORE, String.class);
-
+      
+      Objects.requireNonNull(solrBaseUri, "Failed to initialize PeopleIndexing Service. Solr API endpoint is not configured.");
+      Objects.requireNonNull(solrCore, "Failed to initialize PeopleIndexing Service. Solr core is not configured.");
+      
       URI coreUri = solrBaseUri.resolve(solrCore);
       logger.info("Connecting to Solr Service [" + coreUri + "]");
 
