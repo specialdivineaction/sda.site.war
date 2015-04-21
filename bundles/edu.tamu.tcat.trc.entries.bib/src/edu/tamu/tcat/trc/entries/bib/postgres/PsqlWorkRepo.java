@@ -3,23 +3,33 @@ package edu.tamu.tcat.trc.entries.bib.postgres;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.tcat.catalogentries.CommandExecutionListener;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
+import edu.tamu.tcat.trc.entries.bib.WorkNotAvailableException;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
+import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent;
+import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent.ChangeType;
 import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
@@ -27,12 +37,18 @@ import edu.tamu.tcat.trc.entries.bio.Person;
 
 public class PsqlWorkRepo implements WorkRepository
 {
+
+   private static final Logger logger = Logger.getLogger(PsqlWorkRepo.class.getName());
    public static final String WORK_CONTEXT = "works";
 
    private SqlExecutor exec;
    private ObjectMapper mapper;
    private PeopleRepository peopleRepo;
    private PsqlWorkDbTasksProvider taskProvider;
+
+   private ExecutorService notifications;
+
+   private final CopyOnWriteArrayList<Consumer<WorksChangeEvent>> listeners = new CopyOnWriteArrayList<>();
 
    private IdFactory idFactory;
 
@@ -64,12 +80,34 @@ public class PsqlWorkRepo implements WorkRepository
 
       taskProvider = new PsqlWorkDbTasksProvider();
       taskProvider.setJsonMapper(mapper);
+
+      notifications = Executors.newCachedThreadPool();
    }
 
    public void dispose()
    {
       this.exec = null;
       this.mapper = null;
+      shutdownNotificationsExec();
+   }
+
+   private void shutdownNotificationsExec()
+   {
+      try
+      {
+         notifications.shutdown();
+         notifications.awaitTermination(10, TimeUnit.SECONDS);    // HACK: make this configurable
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.WARNING, "Failed to shut down event notifications executor in a timely fashion.", ex);
+         try {
+            List<Runnable> pendingTasks = notifications.shutdownNow();
+            logger.info("Forcibly shutdown notifications executor. [" + pendingTasks.size() + "] pending tasks were aborted.");
+         } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred attempting to forcibly shutdown executor service", e);
+         }
+      }
    }
 
    @Override
@@ -77,7 +115,7 @@ public class PsqlWorkRepo implements WorkRepository
    {
       String id = ref.getId();
       try {
-         return peopleRepo.getPerson(id);
+         return peopleRepo.get(id);
       }
       catch (Exception ex)
       {
@@ -213,7 +251,11 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.MODIFIED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
@@ -229,7 +271,11 @@ public class PsqlWorkRepo implements WorkRepository
 
       command.setCommitHook((w) -> {
          PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(w.id, ChangeType.CREATED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
@@ -243,23 +289,144 @@ public class PsqlWorkRepo implements WorkRepository
       EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
-         Future<String> submitWork = exec.submit(task);
+
+         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.DELETED);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
          return submitWork;
       });
 
       return command;
    }
 
+   private void notifyRelationshipUpdate(ChangeType type, String relnId)
+   {
+      WorksChangeEventImpl evt = new WorksChangeEventImpl(type, relnId);
+      listeners.forEach(ears -> {
+         notifications.submit(() -> {
+            try {
+               ears.accept(evt);
+            } catch (Exception ex) {
+               logger.log(Level.WARNING, "Call to update listener failed.", ex);
+            }
+         });
+      });
+   }
+
    @Override
-   public AutoCloseable addBeforeUpdateListener(CommandExecutionListener ears)
+   public AutoCloseable addBeforeUpdateListener(Consumer<WorksChangeEvent> ears)
    {
       throw new UnsupportedOperationException("not impl");
    }
 
    @Override
-   public AutoCloseable addAfterUpdateListener(CommandExecutionListener ears)
+   public AutoCloseable addAfterUpdateListener(Consumer<WorksChangeEvent> ears)
    {
-      throw new UnsupportedOperationException("not impl");
+      listeners.add(ears);
+      return () -> listeners.remove(ears);
+   }
+
+   private class WorksChangeEventImpl implements WorksChangeEvent
+   {
+      private final ChangeType type;
+      private final String id;
+
+      public WorksChangeEventImpl(ChangeType type, String id)
+      {
+         this.type = type;
+         this.id = id;
+      }
+
+      @Override
+      public ChangeType getChangeType()
+      {
+         return type;
+      }
+
+      @Override
+      public String getWorkId()
+      {
+         return id;
+      }
+
+      @Override
+      public Work getWorkEvt() throws WorkNotAvailableException
+      {
+         try
+         {
+            return getWork(id);
+         }
+         catch (NoSuchCatalogRecordException e)
+         {
+            throw new WorkNotAvailableException("Internal error occured while retrieving work [" + id + "]");
+         }
+      }
+
+      @Override
+      public String toString()
+      {
+         return "Relationship Change Event: action = " + type + "; id = " + id;
+      }
+
+   }
+
+   // FIXME What is ResultType .. surely you know what this is?
+   //       Note that you should be using the adapter, not the observer. You aren't maintaining
+   //       the internal state as required by the update observer API.
+   private final class WorkChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
+   {
+      private final String id;
+      private final ChangeType type;
+
+      public WorkChangeNotifier(String id, ChangeType type)
+      {
+         this.id = id;
+         this.type = type;
+
+      }
+
+      @Override
+      public boolean start()
+      {
+         return true;
+      }
+
+      @Override
+      public void finish(ResultType result)
+      {
+         notifyRelationshipUpdate(type, id);
+      }
+
+      @Override
+      public void aborted()
+      {
+         // no-op
+      }
+
+      @Override
+      public void error(String message, Exception ex)
+      {
+         // no-op
+      }
+
+      @Override
+      public boolean isCanceled()
+      {
+         return false;
+      }
+
+      @Override
+      public boolean isCompleted()
+      {
+         throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public State getState()
+      {
+         throw new UnsupportedOperationException();
+      }
    }
 
    /**

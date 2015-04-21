@@ -26,5 +26,6 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  org.apache.solr.client.solrj.impl,
  org.apache.solr.client.solrj.response,
  org.apache.solr.common,
+ org.apache.solr.common.params,
  org.postgresql.util
 Require-Bundle: com.eclipsesource.jaxrs.jersey-all;bundle-version="2.10.1"

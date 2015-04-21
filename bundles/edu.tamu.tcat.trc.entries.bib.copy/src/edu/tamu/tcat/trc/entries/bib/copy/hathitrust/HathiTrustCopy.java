@@ -2,8 +2,8 @@ package edu.tamu.tcat.trc.entries.bib.copy.hathitrust;
 
 import java.net.URI;
 
-import edu.tamu.tcat.hathitrust.model.Item;
-import edu.tamu.tcat.hathitrust.model.Record;
+import edu.tamu.tcat.hathitrust.bibliography.Item;
+import edu.tamu.tcat.hathitrust.bibliography.Record;
 import edu.tamu.tcat.trc.entries.bib.copy.DigitalCopy;
 
 /**

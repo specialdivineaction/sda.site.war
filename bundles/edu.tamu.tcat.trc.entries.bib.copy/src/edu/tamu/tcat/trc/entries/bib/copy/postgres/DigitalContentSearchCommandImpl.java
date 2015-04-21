@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.tamu.tcat.hathitrust.client.HathiTrustClientException;
+import edu.tamu.tcat.hathitrust.HathiTrustClientException;
+import edu.tamu.tcat.hathitrust.bibliography.BasicRecordIdentifier;
+import edu.tamu.tcat.hathitrust.bibliography.Record;
+import edu.tamu.tcat.hathitrust.bibliography.Record.IdType;
 import edu.tamu.tcat.hathitrust.client.v1.basic.BibAPIClientImpl;
-import edu.tamu.tcat.hathitrust.model.BasicRecordIdentifier;
-import edu.tamu.tcat.hathitrust.model.Record;
-import edu.tamu.tcat.hathitrust.model.Record.IdType;
 import edu.tamu.tcat.trc.entries.bib.copy.legacy.DigitalContentSearchCommand;
 
 public class DigitalContentSearchCommandImpl implements DigitalContentSearchCommand

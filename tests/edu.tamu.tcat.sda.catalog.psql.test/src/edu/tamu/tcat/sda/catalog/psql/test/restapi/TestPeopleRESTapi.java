@@ -37,10 +37,11 @@ import edu.tamu.tcat.oss.json.JsonTypeReference;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.internal.Activator;
 import edu.tamu.tcat.sda.catalog.psql.test.data.People;
-import edu.tamu.tcat.sda.catalog.rest.ResourceCreationException;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
+import edu.tamu.tcat.trc.entries.bio.rest.v1.ResourceCreationException;
+import edu.tamu.tcat.trc.entries.bio.rest.v1.model.PersonId;
 
 public class TestPeopleRESTapi
 {
@@ -115,10 +116,10 @@ public class TestPeopleRESTapi
       post.setEntity(new StringEntity(providPerson()));
 
       HttpResponse response = client.execute(post);
-      PersonDV createdPerson = null;
+      PersonId createdPerson = null;
       try(InputStream content = response.getEntity().getContent())
       {
-         createdPerson = mapper.parse(content, PersonDV.class);
+         createdPerson = mapper.parse(content, PersonId.class);
       }
       catch (IOException e)
       {
@@ -137,37 +138,40 @@ public class TestPeopleRESTapi
    @Test
    public void testPut() throws Exception
    {
-      post.setEntity(new StringEntity(providPerson()));
+      People person = new People();
+      PersonDV buildPerson = person.buildPerson();
+      post.setEntity(new StringEntity(mapper.asString(buildPerson)));
 
       HttpResponse response = client.execute(post);
-      PersonDV createdPerson = null;
+      PersonId createdPerson = null;
       try(InputStream content = response.getEntity().getContent())
       {
-         createdPerson = mapper.parse(content, PersonDV.class);
+         createdPerson = mapper.parse(content, PersonId.class);
       }
       catch (IOException e)
       {
          throw new IOException("Could not retrieve response.");
       }
 
-      createdPerson.summary = "The old summary was just not working";
+      buildPerson.id = createdPerson.id;
+      buildPerson.summary = "The old summary was just not working";
 
-      URI personUri = uri.resolve("people/" + createdPerson.id);
+      URI personUri = uri.resolve("people/" + buildPerson.id);
       put.setURI(personUri);
-      String updatedJson = mapper.asString(createdPerson);
+      String updatedJson = mapper.asString(buildPerson);
       put.setEntity(new StringEntity(updatedJson));
       HttpResponse putResponse = client.execute(put);
-      PersonDV updatedPerson = null;
+      PersonId updatedPerson = null;
       try(InputStream updatedContent = putResponse.getEntity().getContent())
       {
-         updatedPerson = mapper.parse(updatedContent, PersonDV.class);
+         updatedPerson = mapper.parse(updatedContent, PersonId.class);
       }
       catch (IOException e)
       {
          throw new IOException("Could not retrieve response.");
       }
 
-      Assert.assertEquals(createdPerson.summary, updatedPerson.summary);
+      Assert.assertEquals(createdPerson.id, updatedPerson.id);
 
    }
 
@@ -187,20 +191,6 @@ public class TestPeopleRESTapi
          Assert.fail("Client Error: " + statusCode);
       else
          Assert.fail("Server Error: " + statusCode);
-
-      try (InputStream content = response.getEntity().getContent())
-      {
-         PersonDV createdPerson = mapper.parse(content, PersonDV.class);
-
-         Assert.assertEquals(createdPerson.names, createdPerson.names);
-         Assert.assertEquals(createdPerson.birth, createdPerson.birth);
-         Assert.assertEquals(createdPerson.death, createdPerson.death);
-         Assert.assertEquals(createdPerson.summary, createdPerson.summary);
-      }
-      catch(IOException e)
-      {
-         throw new IOException("Could not retrieve the post response");
-      }
    }
 
    @Test

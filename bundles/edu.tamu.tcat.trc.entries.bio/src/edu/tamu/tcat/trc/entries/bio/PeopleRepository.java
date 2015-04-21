@@ -1,5 +1,7 @@
 package edu.tamu.tcat.trc.entries.bio;
 
+import java.util.function.Consumer;
+
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
@@ -34,7 +36,7 @@ public interface PeopleRepository
     * @param personId
     * @return
     */
-   Person getPerson(String personId) throws NoSuchCatalogRecordException;
+   Person get(String personId) throws NoSuchCatalogRecordException;
 
    /**
     * Creates a new entry for the supplied historical figure. Note that no de-duplication will
@@ -49,7 +51,7 @@ public interface PeopleRepository
     * @param observer An optional observer that will be notified upon success or failure of
     *       this operation.
     */
-   void create(PersonDV histFigure, DataUpdateObserver<Person> observer);
+   EditPeopleCommand create();
 
    /**
     * Updates the entry for the supplied historical figure. Note that this assumes that the
@@ -63,8 +65,9 @@ public interface PeopleRepository
     * @param histFigure A data vehicle containing the information for the person to update.
     * @param observer An optional observer that will be notified upon success or failure of
     *       this operation.
+    * @throws NoSuchCatalogRecordException
     */
-   void update(PersonDV histFigure, DataUpdateObserver<Person> observer);
+   EditPeopleCommand update(PersonDV personId) throws NoSuchCatalogRecordException;
 
    /**
     * Marks the entry for the identified person as having been deleted. References to this
@@ -76,6 +79,18 @@ public interface PeopleRepository
     *       this operation. Note that in the case of deletion, failure will result in an
     *       exception, while successful deletion will be indicated by a call to
     *       {@link DataUpdateObserver#finish(Object)} with a {@code null} result object.
+    * @return
+    * @throws NoSuchCatalogRecordException
     */
-   void delete(String personId, DataUpdateObserver<Void> observer);
+   EditPeopleCommand delete(String personId) throws NoSuchCatalogRecordException;
+
+   /**
+    * Add listener to be notified whenever a biography has been modified (created, updated or deleted).
+    * Note that this will be fired after the change has taken place and the attached listener will not
+    * be able affect or modify the update action.
+    *
+    * @param ears The listener to be added.
+    * @return A registration handle that allows the listener to be removed.
+    */
+   AutoCloseable addUpdateListener(Consumer<PeopleChangeEvent> ears);
 }

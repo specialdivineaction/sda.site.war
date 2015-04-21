@@ -74,8 +74,9 @@ public class People
        author.suffix = suffix[num];
        author.title = title[num];
 
-       Set<PersonNameDV> authNames = new HashSet<PersonNameDV>();
+       histFig.displayName = author;
 
+       Set<PersonNameDV> authNames = new HashSet<PersonNameDV>();
        authNames.add(author);
 
        // histFig.id - is created by the DB and then set

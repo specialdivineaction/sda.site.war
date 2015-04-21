@@ -5,6 +5,7 @@ import java.sql.Connection;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 
+@Deprecated // need to use variant from common location
 public class ObservableTaskWrapper<ResultType> implements SqlExecutor.ExecutorTask<ResultType>
 {
    private final DataUpdateObserver<ResultType> observer;
