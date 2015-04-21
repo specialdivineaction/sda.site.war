@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.ref;
+package edu.tamu.tcat.trc.entries.bib;
 
 import java.net.URI;
 import java.util.Set;
@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.trc.persist.UpdateListener;
 
 /**
  *  Provides support for creation, retrieval, update and deletion of references between a

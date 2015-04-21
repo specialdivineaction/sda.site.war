@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyRefDTO;
-import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceException;
-import edu.tamu.tcat.trc.entries.bib.copy.ref.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.copy.ref.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.CopyReferenceException;
+import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
+import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.persist.BasicUpdateEvent;
 import edu.tamu.tcat.trc.persist.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
