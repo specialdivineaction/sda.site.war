@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.persist;
+package edu.tamu.tcat.trc.entries.notification;
 
 
 /**
@@ -14,7 +14,9 @@ package edu.tamu.tcat.trc.persist;
  * Implementations should be thread-safe.
  *
  * @param <R>
+ * @deprecated Use the version in citd.db once that has been released
  */
+@Deprecated
 public interface DataUpdateObserver<R>
 {
    // NOTE initially, this was intended to be supplied with the object being updated to monitor

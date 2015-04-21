@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.persist;
+package edu.tamu.tcat.trc.entries.notification;
 
 
 public class FieldUpdate<T>

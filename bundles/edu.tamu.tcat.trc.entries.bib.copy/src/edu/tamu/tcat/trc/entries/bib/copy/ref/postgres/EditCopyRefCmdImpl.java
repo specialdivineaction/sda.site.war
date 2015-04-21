@@ -17,10 +17,10 @@ import edu.tamu.tcat.trc.entries.bib.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.entries.bib.copy.postgres.ExecutionFailedException;
 import edu.tamu.tcat.trc.entries.bib.copy.ref.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
-import edu.tamu.tcat.trc.persist.DataUpdateObserverAdapter;
-import edu.tamu.tcat.trc.persist.EntryUpdateHelper;
-import edu.tamu.tcat.trc.persist.ObservableTaskWrapper;
-import edu.tamu.tcat.trc.persist.UpdateEvent;
+import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
+import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
+import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
+import edu.tamu.tcat.trc.entries.notification.UpdateEvent;
 
 public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
 {

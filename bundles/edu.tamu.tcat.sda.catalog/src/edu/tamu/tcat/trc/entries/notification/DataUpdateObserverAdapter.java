@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.persist;
+package edu.tamu.tcat.trc.entries.notification;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,8 +11,9 @@ import java.util.logging.Logger;
  * these methods to allow sub-classes to selectively override the methods they are interested in.
  *
  * @param <R> The result type of the database task.
+ * @deprecated Use the version in citd.db once that has been released
  */
-
+@Deprecated
 public class DataUpdateObserverAdapter<R> implements DataUpdateObserver<R>
 {
    private static final Logger logger = Logger.getLogger("org.tamu.tcat.sda.datastore.errors");

@@ -1,9 +1,13 @@
-package edu.tamu.tcat.trc.persist;
+package edu.tamu.tcat.trc.entries.notification;
 
 import java.sql.Connection;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 
+/**
+ * @deprecated Use the version in citd.db once that has been released
+ */
+@Deprecated
 public class ObservableTaskWrapper<ResultType> implements SqlExecutor.ExecutorTask<ResultType>
 {
    // TODO should be moved into exec framework
