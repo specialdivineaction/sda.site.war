@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.ref.postgres;
+package edu.tamu.tcat.trc.entries.bib.postgres;
 
 import java.io.IOException;
 import java.net.URI;
