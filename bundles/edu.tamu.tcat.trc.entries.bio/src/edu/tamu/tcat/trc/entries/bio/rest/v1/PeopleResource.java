@@ -34,17 +34,10 @@ public class PeopleResource
    // TODO create PersonResource
 
    // records internal errors accessing the REST
-   static final Logger errorLogger = Logger.getLogger("sda.catalog.rest.people");
+   static final Logger errorLogger = Logger.getLogger(PeopleResource.class.getName());
 
-   private ConfigurationProperties properties;
    private PeopleRepository repo;
    private PeopleSearchService peopleSearchService;
-
-   // called by DS
-   public void setConfigurationProperties(ConfigurationProperties properties)
-   {
-      this.properties = properties;
-   }
 
    // called by DS
    public void setRepository(PeopleRepository repo)

@@ -374,7 +374,7 @@ public class PsqlWorkRepo implements WorkRepository
    // FIXME What is ResultType .. surely you know what this is?
    //       Note that you should be using the adapter, not the observer. You aren't maintaining
    //       the internal state as required by the update observer API.
-   private final class WorkChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
+   private final class WorkChangeNotifier<Work> implements DataUpdateObserver<Work>
    {
       private final String id;
       private final ChangeType type;
@@ -393,7 +393,7 @@ public class PsqlWorkRepo implements WorkRepository
       }
 
       @Override
-      public void finish(ResultType result)
+      public void finish(Work result)
       {
          notifyRelationshipUpdate(type, id);
       }

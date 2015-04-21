@@ -1,5 +1,6 @@
 package edu.tamu.tcat.trc.entries.bio.postgres;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,16 +20,17 @@ import java.util.logging.Logger;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
+import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.bio.EditPeopleCommand;
 import edu.tamu.tcat.trc.entries.bio.PeopleChangeEvent;
 import edu.tamu.tcat.trc.entries.bio.PeopleChangeEvent.ChangeType;
@@ -46,7 +48,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    private static final String ID_CONTEXT = "people";
    private SqlExecutor exec;
    private IdFactory idFactory;
-   private JsonMapper jsonMapper;
+   private ObjectMapper mapper;
 
    private ExecutorService notifications;
    private final CopyOnWriteArrayList<Consumer<PeopleChangeEvent>> listeners = new CopyOnWriteArrayList<>();
@@ -60,12 +62,6 @@ public class PsqlPeopleRepo implements PeopleRepository
       this.exec = exec;
    }
 
-   @Deprecated // Create Jackson ObjectMapper directly
-   public void setJsonMapper(JsonMapper mapper)
-   {
-      this.jsonMapper = mapper;
-   }
-
    public void setIdFactory(IdFactory factory)
    {
       this.idFactory = factory;
@@ -74,16 +70,18 @@ public class PsqlPeopleRepo implements PeopleRepository
    public void activate()
    {
       Objects.requireNonNull(exec);
-      Objects.requireNonNull(jsonMapper);
       Objects.requireNonNull(idFactory);
+
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
       notifications = Executors.newCachedThreadPool();
    }
 
    public void dispose()
    {
+      this.mapper = null;
       this.exec = null;
-      this.jsonMapper = null;
       this.idFactory = null;
       shutdownNotificationsExec();
    }
@@ -186,7 +184,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       EditPeopleCommandImpl command = new EditPeopleCommandImpl(person, idFactory);
       command.setCommitHook((p) -> {
          CreatePersonTask task = new CreatePersonTask(person);
-         PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(person.id, ChangeType.CREATED);
+         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(person.id, ChangeType.CREATED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
          return exec.submit(wrappedTask);
@@ -202,7 +200,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       EditPeopleCommandImpl command = new EditPeopleCommandImpl(personDV, idFactory);
       command.setCommitHook((p) -> {
          UpdatePersonTask task = new UpdatePersonTask(p);
-         PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(personDV.id, ChangeType.MODIFIED);
+         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personDV.id, ChangeType.MODIFIED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
          return exec.submit(wrappedTask);
@@ -218,7 +216,7 @@ public class PsqlPeopleRepo implements PeopleRepository
       EditPeopleCommandImpl command = new EditPeopleCommandImpl(new PersonDV(get(personId)), idFactory);
       command.setCommitHook((p) -> {
          DeletePersonTask task = new DeletePersonTask(personId);
-         PeopleChangeNotifier<String> peopleChangeNotifier = new PeopleChangeNotifier<>(personId, ChangeType.DELETED);
+         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personId, ChangeType.DELETED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
          return exec.submit(wrappedTask);
@@ -228,11 +226,11 @@ public class PsqlPeopleRepo implements PeopleRepository
       return command;
    }
 
-   private PGobject toPGobject(final PersonDV histFigure) throws SQLException, JsonException
+   private PGobject toPGobject(final PersonDV histFigure) throws SQLException, IOException
    {
       PGobject jsonObject = new PGobject();
       jsonObject.setType("json");
-      jsonObject.setValue(jsonMapper.asString(histFigure));
+      jsonObject.setValue(mapper.writeValueAsString(histFigure));
       return jsonObject;
    }
 
@@ -301,10 +299,10 @@ public class PsqlPeopleRepo implements PeopleRepository
                String json = pgo.toString();
                try
                {
-                  PersonDV dv = jsonMapper.parse(json, PersonDV.class);
+                  PersonDV dv = mapper.readValue(json, PersonDV.class);
                   result = new PersonImpl(dv);
                }
-               catch (JsonException je)
+               catch (IOException je)
                {
                   // NOTE: possible data leak. If this exception is propagated to someone who isn't authorized to see this record...
                   throw new IllegalStateException("Cannot parse person from JSON:\n" + json, je);
@@ -340,7 +338,7 @@ public class PsqlPeopleRepo implements PeopleRepository
             {
                PGobject pgo = (PGobject)rs.getObject("historical_figure");
 
-               PersonDV parse = jsonMapper.parse(pgo.toString(), PersonDV.class);
+               PersonDV parse = mapper.readValue(pgo.toString(), PersonDV.class);
                PersonImpl person = new PersonImpl(parse);
                people.add(person);
             }
@@ -378,7 +376,7 @@ public class PsqlPeopleRepo implements PeopleRepository
             if (ct != 1)
                throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
          }
-         catch (JsonException e)
+         catch (IOException e)
          {
             throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
          }
@@ -412,7 +410,7 @@ public class PsqlPeopleRepo implements PeopleRepository
             if (ct != 1)
                throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
          }
-         catch (JsonException e)
+         catch (IOException e)
          {
             // NOTE this is an internal configuration error. The JsonMapper should be configured to
             //      serialize HistoricalFigureDV instances correctly.
@@ -472,7 +470,7 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    }
 
-   private final class PeopleChangeNotifier<ResultType> implements DataUpdateObserver<ResultType>
+   private final class PeopleChangeNotifier extends DataUpdateObserverAdapter<String>
    {
       private final String id;
       private final ChangeType type;
@@ -484,47 +482,10 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
 
       @Override
-      public boolean start()
-      {
-         return true;
-      }
-
-      @Override
-      public void finish(ResultType result)
+      public void onFinish(String result)
       {
          notifyPersonUpdate(type, id);
       }
-
-      @Override
-      public void aborted()
-      {
-         // no-op
-      }
-
-      @Override
-      public void error(String message, Exception ex)
-      {
-         // no-op
-      }
-
-      @Override
-      public boolean isCanceled()
-      {
-         return false;
-      }
-
-      @Override
-      public boolean isCompleted()
-      {
-         throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public edu.tamu.tcat.sda.datastore.DataUpdateObserver.State getState()
-      {
-         throw new UnsupportedOperationException();
-      }
-
    }
 
    private void notifyPersonUpdate(ChangeType type, String id)
