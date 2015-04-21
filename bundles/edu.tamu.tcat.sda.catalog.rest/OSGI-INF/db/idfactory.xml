@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.psql.idfactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.sda.idfactory.db.postgres">
    <implementation class="edu.tamu.tcat.sda.catalog.idfactory.impl.db.DbBackedObfuscatingIdFactory"/>
    <service>
       <provide interface="edu.tamu.tcat.catalogentries.IdFactory"/>

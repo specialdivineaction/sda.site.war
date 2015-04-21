@@ -36,4 +36,5 @@ Export-Package: edu.tamu.tcat.trc.entries.bib.copy,
  edu.tamu.tcat.trc.entries.bib.copy.postgres,
  edu.tamu.tcat.trc.entries.bib.copy.ref,
  edu.tamu.tcat.trc.entries.bib.copy.ref.postgres,
- edu.tamu.tcat.trc.entries.bib.copy.rest.v1
+ edu.tamu.tcat.trc.entries.bib.copy.rest.v1,
+ edu.tamu.tcat.trc.persist
