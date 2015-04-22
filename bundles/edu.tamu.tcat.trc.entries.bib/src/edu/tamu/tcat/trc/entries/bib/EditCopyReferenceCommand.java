@@ -2,6 +2,7 @@ package edu.tamu.tcat.trc.entries.bib;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.Future;
 
 public interface EditCopyReferenceCommand
 {
@@ -53,6 +54,7 @@ public interface EditCopyReferenceCommand
 
    /**
     * Attempts to executed the provided updates.
+    * @throws UpdateCanceledException
     */
-   void execute();      // TODO need a response handler of some form
+   Future<CopyReference> execute() throws UpdateCanceledException;
 }

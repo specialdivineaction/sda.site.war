@@ -4,6 +4,7 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.postgresql.util.PGobject;
@@ -15,6 +16,7 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
 import edu.tamu.tcat.trc.entries.bib.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
 import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
@@ -115,22 +117,22 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
    }
 
    @Override
-   public synchronized void execute()
+   public synchronized Future<CopyReference> execute() throws UpdateCanceledException
    {
       if (executed.compareAndSet(false, true))
          throw new IllegalStateException("This edit copy command has already been invoked.");
 
       UpdateEvent<CopyReference> evt = constructEvent();
       if (notifier.before(evt))
-         return;
+         throw new UpdateCanceledException();
 
       String sql = isNew() ? CREATE_SQL : UPDATE_SQL;
-      sqlExecutor.submit(new ObservableTaskWrapper<Void>(
+      return sqlExecutor.submit(new ObservableTaskWrapper<CopyReference>(
             makeCreateTask(sql),
-            new DataUpdateObserverAdapter<Void>()
+            new DataUpdateObserverAdapter<CopyReference>()
             {
                @Override
-               protected void onFinish(Void result) {
+               protected void onFinish(CopyReference result) {
                   notifier.after(evt);
                }
             }));
@@ -151,7 +153,7 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
    }
 
 
-   private SqlExecutor.ExecutorTask<Void> makeCreateTask(String sql)
+   private SqlExecutor.ExecutorTask<CopyReference> makeCreateTask(String sql)
    {
       ObjectMapper mapper = new ObjectMapper();
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -169,6 +171,8 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
             int cnt = ps.executeUpdate();
             if (cnt != 1)
                throw new ExecutionFailedException("Failed to update copy reference [" + dto.id +"]");
+
+            return CopyRefDTO.instantiate(dto);
          }
          catch(SQLException e)
          {
@@ -176,8 +180,6 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
                   + "\n\tEntry [" + dto.associatedEntry + "]"
                   + "\n\tCopy  [" + dto.copyId + "]", e);
          }
-
-         return null;
       };
    }
 }
