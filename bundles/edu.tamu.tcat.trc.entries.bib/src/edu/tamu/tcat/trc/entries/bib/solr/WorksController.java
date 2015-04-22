@@ -3,7 +3,6 @@ package edu.tamu.tcat.trc.entries.bib.solr;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -18,16 +17,14 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
-import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.SimpleWorkDV;
-import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 @SuppressWarnings("unused")
 public class WorksController
 {
-
+   // FIXME needs to be named correctly
    Logger log = Logger.getLogger("edu.tamu.tcat.catalogentries.solr.workcontroller");
    private final String solrBaseUri = "https://sda-dev.citd.tamu.edu/solr/";
    private final SolrServer solr;
@@ -114,7 +111,7 @@ public class WorksController
    }
 
    @SuppressWarnings("unchecked")
-   public List<SimpleWorkDV> query(MultivaluedMap<String, String> queryParams) throws JsonException
+   public List<SimpleWorkDV> query(MultivaluedMap<String, String> queryParams)
    {
 
       try

@@ -12,19 +12,21 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.reln.EditRelationshipCommand;
 import edu.tamu.tcat.trc.entries.reln.Relationship;
 import edu.tamu.tcat.trc.entries.reln.RelationshipChangeEvent;
+import edu.tamu.tcat.trc.entries.reln.RelationshipChangeEvent.ChangeType;
 import edu.tamu.tcat.trc.entries.reln.RelationshipNotAvailableException;
 import edu.tamu.tcat.trc.entries.reln.RelationshipPersistenceException;
 import edu.tamu.tcat.trc.entries.reln.RelationshipRepository;
 import edu.tamu.tcat.trc.entries.reln.RelationshipTypeRegistry;
-import edu.tamu.tcat.trc.entries.reln.RelationshipChangeEvent.ChangeType;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
 
 public class PsqlRelationshipRepo implements RelationshipRepository
@@ -39,7 +41,7 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    private static final String ID_CONTEXT = "relationships";
    private SqlExecutor exec;
    private IdFactory idFactory;
-   private JsonMapper jsonMapper;
+   private ObjectMapper mapper;
    private RelationshipTypeRegistry typeReg;
 
    private ExecutorService notifications;
@@ -50,11 +52,6 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    public void setDatabaseExecutor(SqlExecutor exec)
    {
       this.exec = exec;
-   }
-
-   public void setJsonMapper(JsonMapper mapper)
-   {
-      this.jsonMapper = mapper;
    }
 
    public void setIdFactory(IdFactory factory)
@@ -70,8 +67,10 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    public void activate()
    {
       Objects.requireNonNull(exec);
-      Objects.requireNonNull(jsonMapper);
       Objects.requireNonNull(idFactory);
+
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
       // TODO evalutate choice of executor
       notifications = Executors.newCachedThreadPool();
@@ -80,7 +79,7 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    public void dispose()
    {
       this.exec = null;
-      this.jsonMapper = null;
+      this.mapper = null;
       this.idFactory = null;
 
       shutdownNotificationsExec();
@@ -110,7 +109,7 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    @Override
    public Relationship get(String id) throws RelationshipNotAvailableException, RelationshipPersistenceException
    {
-      PsqlGetRelationshipTask task = new PsqlGetRelationshipTask(id, jsonMapper, typeReg);
+      PsqlGetRelationshipTask task = new PsqlGetRelationshipTask(id, mapper, typeReg);
       try
       {
          return exec.submit(task).get();
@@ -138,7 +137,7 @@ public class PsqlRelationshipRepo implements RelationshipRepository
 
       EditRelationshipCommandImpl command = new EditRelationshipCommandImpl(relationship, idFactory);
       command.setCommitHook((r) -> {
-         PsqlCreateRelationshipTask task = new PsqlCreateRelationshipTask(r, jsonMapper);
+         PsqlCreateRelationshipTask task = new PsqlCreateRelationshipTask(r, mapper);
 
          WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(r.id, ChangeType.CREATED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
@@ -154,7 +153,7 @@ public class PsqlRelationshipRepo implements RelationshipRepository
    {
       EditRelationshipCommandImpl command = new EditRelationshipCommandImpl(RelationshipDV.create(get(id)) , idFactory);
       command.setCommitHook((r) -> {
-         PsqlUpdateRelationshipTask task = new PsqlUpdateRelationshipTask(r, jsonMapper);
+         PsqlUpdateRelationshipTask task = new PsqlUpdateRelationshipTask(r, mapper);
 
          WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(id, ChangeType.MODIFIED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);

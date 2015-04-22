@@ -1,14 +1,15 @@
 package edu.tamu.tcat.trc.entries.reln.postgres;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
 
@@ -20,9 +21,9 @@ public class PsqlUpdateRelationshipTask implements SqlExecutor.ExecutorTask<Stri
                                       + "  WHERE id = ?";
 
    private final RelationshipDV relationship;
-   private final JsonMapper jsonMapper;
+   private final ObjectMapper jsonMapper;
 
-   public PsqlUpdateRelationshipTask(RelationshipDV relationship, JsonMapper jsonMapper)
+   public PsqlUpdateRelationshipTask(RelationshipDV relationship, ObjectMapper jsonMapper)
    {
       this.relationship = relationship;
       this.jsonMapper = jsonMapper;
@@ -32,9 +33,9 @@ public class PsqlUpdateRelationshipTask implements SqlExecutor.ExecutorTask<Stri
    {
       try
       {
-         return jsonMapper.asString(relationship);
+         return jsonMapper.writeValueAsString(relationship);
       }
-      catch (JsonException jpe)
+      catch (IOException jpe)
       {
          throw new IllegalArgumentException("Failed to serialize the supplied relationship [" + relationship + "]", jpe);
       }

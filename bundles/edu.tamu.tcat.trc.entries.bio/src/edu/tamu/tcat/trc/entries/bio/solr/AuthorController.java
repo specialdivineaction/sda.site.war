@@ -21,13 +21,13 @@ import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
-import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
 import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
 
 public class AuthorController
 {
+   // FIXME this needs to be named correctly.
    Logger log = Logger.getLogger("edu.tamu.tcat.catalogentries.solr.authorcontroller");
    private final SolrServer solr;
 
@@ -45,7 +45,6 @@ public class AuthorController
 
    private String collectionName = "authors";
    private String rootSolrEndpoint = "https://sda-dev.citd.tamu.edu/solr/";
-//   private static JacksonJsonMapper mapper = new JacksonJsonMapper();
 
    public AuthorController()
    {
@@ -93,7 +92,7 @@ public class AuthorController
       return query;
    }
 
-   public List<SimplePersonDV> query(MultivaluedMap<String, String> queryParams) throws JsonException
+   public List<SimplePersonDV> query(MultivaluedMap<String, String> queryParams)
    {
 
       try

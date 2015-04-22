@@ -1,5 +1,6 @@
 package edu.tamu.tcat.trc.entries.reln.postgres;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,10 +8,10 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PGobject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonMapper;
 import edu.tamu.tcat.trc.entries.reln.Relationship;
 import edu.tamu.tcat.trc.entries.reln.RelationshipTypeRegistry;
 import edu.tamu.tcat.trc.entries.reln.model.RelationshipDV;
@@ -20,11 +21,11 @@ public class PsqlGetRelationshipTask implements SqlExecutor.ExecutorTask<Relatio
    private final static String select = "SELECT relationship FROM relationships"
                                       + "  WHERE id=? AND active=true";
 
-   private final JsonMapper jsonMapper;
+   private final ObjectMapper jsonMapper;
    private final String id;
    private final RelationshipTypeRegistry typeReg;
 
-   public PsqlGetRelationshipTask(String id, JsonMapper jsonMapper, RelationshipTypeRegistry typeReg)
+   public PsqlGetRelationshipTask(String id, ObjectMapper jsonMapper, RelationshipTypeRegistry typeReg)
    {
       this.id = id;
       this.jsonMapper = jsonMapper;
@@ -46,10 +47,10 @@ public class PsqlGetRelationshipTask implements SqlExecutor.ExecutorTask<Relatio
             String relationshipJson = pgo.toString();
             try
             {
-               RelationshipDV dv = jsonMapper.parse(relationshipJson, RelationshipDV.class);
+               RelationshipDV dv = jsonMapper.readValue(relationshipJson, RelationshipDV.class);
                return RelationshipDV.instantiate(dv, typeReg);
             }
-            catch (JsonException e)
+            catch (IOException e)
             {
                throw new IllegalStateException("Failed to parse relationship record\n" + relationshipJson, e);
             }

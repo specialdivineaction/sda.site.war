@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.catalogentries.rest.json.jackson">
-   <implementation class="edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper"/>
-   <service>
-      <provide interface="edu.tamu.tcat.oss.json.JsonMapper"/>
-   </service>
-</scr:component>
