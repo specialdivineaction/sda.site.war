@@ -54,7 +54,8 @@ public interface EditCopyReferenceCommand
 
    /**
     * Attempts to executed the provided updates.
-    * @throws UpdateCanceledException
+    * @throws UpdateCanceledException If the update was cancelled.
     */
    Future<CopyReference> execute() throws UpdateCanceledException;
+   // TODO cancellation needs a review
 }
