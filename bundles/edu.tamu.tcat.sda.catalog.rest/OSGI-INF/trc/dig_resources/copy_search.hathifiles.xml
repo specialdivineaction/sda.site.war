@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.digital_resources.copy_search.hathifiles">
-   <implementation class="edu.tamu.tcat.trc.entries.bib.copy.hathitrust.HTFilesSearchService"/>
+   <implementation class="edu.tamu.tcat.trc.resources.books.hathitrust.HTFilesSearchService"/>
    <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.bib.copy.discovery.CopySearchService"/>
-   </service>
+      <provide interface="edu.tamu.tcat.trc.resources.books.discovery.CopySearchService"/>
+   </service>  
 </scr:component>

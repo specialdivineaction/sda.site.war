@@ -4,5 +4,5 @@
    <service>
       <provide interface="edu.tamu.tcat.account.store.AccountStore"/>
    </service>
-   <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.oss.db.DbExecutor" name="DbExecutor" policy="static"/>
+   <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
 </scr:component>

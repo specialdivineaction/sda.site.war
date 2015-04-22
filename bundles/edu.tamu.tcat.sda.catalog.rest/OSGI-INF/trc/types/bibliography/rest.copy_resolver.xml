@@ -4,5 +4,6 @@
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.bib.copy.rest.v1.CopyResolverServiceResource"/>
    </service>
-   <reference bind="setRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.copy.CopyReferenceRepository" name="DigitalCopyLinkRepository" policy="static"/>
+   <reference bind="setRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository" name="CopyReferenceRepository" policy="static"/>
+   <reference bind="setResolverRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.resources.books.resolve.CopyResolverRegistry" name="CopyResolverRegistry" policy="static"/>
 </scr:component>
