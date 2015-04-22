@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
@@ -67,16 +68,21 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title, @QueryParam(value = "numResults") int numResults)
+   public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title,
+                                     @DefaultValue("100") @QueryParam(value = "numResults") int numResults)
    {
       // TODO to be backed by search service, add more robust query API
       try
       {
          List<WorkInfo> result = new ArrayList<WorkInfo>();
-         for (Work w : repo.listWorks(title)) {
-            if (result.size() == numResults) {
+         if (title == null)
+            throw new BadRequestException("No title query supplied.");
+
+         for (Work w : repo.listWorks(title))
+         {
+            if (result.size() == numResults)
                break;
-            }
+
             result.add(WorkInfo.create(w));
          }
 
