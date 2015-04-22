@@ -19,9 +19,10 @@ import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
 import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
 import edu.tamu.tcat.trc.resources.books.resolve.UnsupportedCopyTypeException;
 
-@Path("/copies")
+@Path("/resources/books")
 public class CopyResolverServiceResource
 {
+   // TODO split into logical services
    private static final Logger logger = Logger.getLogger(CopyResolverServiceResource.class.getName());
 
    private CopyResolverRegistry copyResolverReg;
@@ -34,13 +35,18 @@ public class CopyResolverServiceResource
 
    public void setResolverRegistry(CopyResolverRegistry registry)
    {
+      // TODO make dynamic
       this.copyResolverReg = registry;
    }
+
 
    public void activate()
    {
    }
 
+   public void dispose()
+   {
+   }
 
    /**
     * Retrieves information about a HathiFile record given an identifier.
