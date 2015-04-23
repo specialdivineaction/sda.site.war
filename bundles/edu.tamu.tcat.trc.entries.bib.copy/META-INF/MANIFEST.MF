@@ -20,6 +20,7 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  edu.tamu.tcat.trc.resources.books.discovery,
  edu.tamu.tcat.trc.resources.books.resolve,
  edu.tamu.tcat.trc.resources.books.resolve.ext,
+ edu.tamu.tcat.trc.resources.books.hathitrust,
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0",
  org.apache.http.params;version="4.2.5",
@@ -31,5 +32,4 @@ Import-Package: com.fasterxml.jackson.databind;version="2.3.1",
  org.eclipse.core.runtime;version="3.4.0",
  org.postgresql.util
 Export-Package: edu.tamu.tcat.trc.entries.bib.copy,
- edu.tamu.tcat.trc.entries.bib.copy.rest.v1,
- edu.tamu.tcat.trc.resources.books.hathitrust
+ edu.tamu.tcat.trc.entries.bib.copy.rest.v1

@@ -40,6 +40,7 @@ import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
  */
 public class HTFilesSearchService implements CopySearchService
 {
+   // FIXME move to hathitrust SDK
    private static final Logger logger = Logger.getLogger(HTFilesSearchService.class.getName());
    private static final int MAX_ROWS = 100;
 
@@ -187,7 +188,7 @@ public class HTFilesSearchService implements CopySearchService
       qBuilder.append("title:").append("(").append(keyWordQuery).append(")");
    }
 
-   private String buildDateFilter(ContentQuery query) throws UnsupportedEncodingException
+   private String buildDateFilter(ContentQuery query)
    {
       StringBuilder qBuilder2 = new StringBuilder();
       // add filter for date range.
@@ -196,6 +197,7 @@ public class HTFilesSearchService implements CopySearchService
       TemporalAccessor rangeEnd = query.getDateRangeEnd();
       if (rangeStart != null || rangeEnd != null)
       {
+         // FIXME prevent null pointer access
          ZonedDateTime startDate = ZonedDateTime.of(rangeStart.get(ChronoField.YEAR), 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
          ZonedDateTime endDate = ZonedDateTime.of(rangeEnd.get(ChronoField.YEAR), 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
 
