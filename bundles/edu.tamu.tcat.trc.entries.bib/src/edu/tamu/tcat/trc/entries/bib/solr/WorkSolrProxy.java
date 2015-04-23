@@ -56,7 +56,7 @@ public class WorkSolrProxy
    public static WorkSolrProxy createWork(Work work)
    {
       WorkSolrProxy proxy = new WorkSolrProxy();
-      WorkDV workDV = new WorkDV(work);
+      WorkDV workDV = WorkDV.create(work);
 
       proxy.addField(id, workDV.id);
       proxy.addAuthors(workDV.authors);
@@ -68,7 +68,7 @@ public class WorkSolrProxy
 
    public static WorkSolrProxy createEdition(String workId, Edition edition)
    {
-      EditionDV editionDV = new EditionDV(edition);
+      EditionDV editionDV = EditionDV.create(edition);
       StringBuilder editionId = new StringBuilder(workId)
                                .append(":")
                                .append(editionDV.id);
@@ -86,7 +86,7 @@ public class WorkSolrProxy
 
    public static WorkSolrProxy createVolume(String workId, Edition edition, Volume volume)
    {
-      VolumeDV volumeDV = new VolumeDV(volume);
+      VolumeDV volumeDV = VolumeDV.create(volume);
       StringBuilder volumeId = new StringBuilder(workId)
                               .append(":")
                               .append(editionId)
@@ -108,7 +108,7 @@ public class WorkSolrProxy
    public static WorkSolrProxy updateWork(Work work)
    {
       WorkSolrProxy proxy = new WorkSolrProxy();
-      WorkDV workDV = new WorkDV(work);
+      WorkDV workDV = WorkDV.create(work);
 
       proxy.updateField(id, workDV.id, SET);
       proxy.addAuthors(workDV.authors);
@@ -120,7 +120,7 @@ public class WorkSolrProxy
 
    public static WorkSolrProxy updateEdition(String workId, Edition edition)
    {
-      EditionDV editionDV = new EditionDV(edition);
+      EditionDV editionDV = EditionDV.create(edition);
       StringBuilder editionId = new StringBuilder(workId)
                                .append(":")
                                .append(editionDV.id);
@@ -138,7 +138,7 @@ public class WorkSolrProxy
 
    public static WorkSolrProxy updateVolume(String workId, Edition edition, Volume volume)
    {
-      VolumeDV volumeDV = new VolumeDV(volume);
+      VolumeDV volumeDV = VolumeDV.create(volume);
       StringBuilder volumeId = new StringBuilder(workId)
                               .append(":")
                               .append(editionId)

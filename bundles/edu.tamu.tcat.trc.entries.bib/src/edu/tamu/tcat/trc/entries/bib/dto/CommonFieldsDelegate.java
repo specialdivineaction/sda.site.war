@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.postgres.model;
+package edu.tamu.tcat.trc.entries.bib.dto;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.Title;
-import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
-import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 
 /**
  * A helper class to manage fields that are common across different levels of the Work taxonomy.
@@ -33,15 +31,15 @@ public class CommonFieldsDelegate
    {
 
       this.authors = authors.stream()
-            .map((a) -> new AuthorReferenceImpl(a))
+            .map(AuthorRefDV::instantiate)
             .collect(Collectors.toList());
 
       this.titles = titles.parallelStream()
-            .map((t) -> new TitleImpl(t))
+            .map(TitleDV::instantiate)
             .collect(Collectors.toSet());
 
       this.otherAuthors = others.stream()
-            .map((a) -> new AuthorReferenceImpl(a))
+            .map(AuthorRefDV::instantiate)
             .collect(Collectors.toList());
 
       this.summary = summary;

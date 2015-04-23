@@ -1,5 +1,9 @@
 package edu.tamu.tcat.trc.entries.bib.postgres;
 
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,13 +17,14 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.postgresql.util.PGobject;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.sda.datastore.DataUpdateObserver;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
@@ -34,11 +39,15 @@ import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
 import edu.tamu.tcat.trc.entries.bio.Person;
+import edu.tamu.tcat.trc.entries.notification.DataUpdateObserver;
+import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
 
 public class PsqlWorkRepo implements WorkRepository
 {
-
    private static final Logger logger = Logger.getLogger(PsqlWorkRepo.class.getName());
+
+   private final static String GET_SQL = "SELECT work FROM works WHERE id=?";
+
    public static final String WORK_CONTEXT = "works";
 
    private SqlExecutor exec;
@@ -196,10 +205,9 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public Work getWork(String workId) throws NoSuchCatalogRecordException
    {
-      SqlExecutor.ExecutorTask<Work> task = taskProvider.makeGetWorkTask(workId);
       try
       {
-         return exec.submit(task).get();
+         return exec.submit(makeGetWorkTask(workId)).get();
       }
       catch (ExecutionException e)
       {
@@ -214,6 +222,37 @@ public class PsqlWorkRepo implements WorkRepository
       catch (InterruptedException e) {
          throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
       }
+   }
+
+   private SqlExecutor.ExecutorTask<Work> makeGetWorkTask(String workId)
+   {
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(GET_SQL))
+         {
+            ps.setString(1, workId);
+            try (ResultSet rs = ps.executeQuery())
+            {
+               if (!rs.next())
+                  throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + workId);
+
+               PGobject pgo = (PGobject)rs.getObject("work");
+               String workJson = pgo.toString();
+               try
+               {
+                  WorkDV dv = mapper.readValue(workJson, WorkDV.class);
+                  return WorkDV.instantiate(dv);
+               }
+               catch (IOException e)
+               {
+                  throw new IllegalStateException("Failed to parse bibliographic record\n" + workJson, e);
+               }
+            }
+         }
+         catch (SQLException e)
+         {
+            throw new IllegalStateException("Failed to retrieve bibliographic entry [entry id = " + workId + "]", e);
+         }
+      };
    }
 
    @Override
@@ -248,7 +287,7 @@ public class PsqlWorkRepo implements WorkRepository
    public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
    {
       Work work = getWork(id);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
 
@@ -286,7 +325,7 @@ public class PsqlWorkRepo implements WorkRepository
    public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
    {
       Work work = getWork(id);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(new WorkDV(work), idFactory);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
       command.setCommitHook((workDv) -> {
          PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
 

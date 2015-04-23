@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.postgres.model.WorkImpl;
 
 public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterable<Work>>
 {
@@ -30,7 +29,7 @@ public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterabl
    }
 
    @Override
-   public Iterable<Work> execute(Connection conn)// throws Exception
+   public Iterable<Work> execute(Connection conn) // throws Exception
    {
       List<Work> works = new ArrayList<>();
       try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -43,7 +42,7 @@ public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterabl
             try
             {
                WorkDV dv = jsonMapper.readValue(workJson, WorkDV.class);
-               works.add(new WorkImpl(dv));
+               works.add(WorkDV.instantiate(dv));
             }
             catch (IOException e)
             {

@@ -13,9 +13,6 @@ import edu.tamu.tcat.trc.entries.bib.PublicationInfo;
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Work;
-import edu.tamu.tcat.trc.entries.bib.postgres.model.AuthorListImpl;
-import edu.tamu.tcat.trc.entries.bib.postgres.model.EditionImpl;
-import edu.tamu.tcat.trc.entries.bib.postgres.model.TitleDefinitionImpl;
 
 
 /**
@@ -35,63 +32,54 @@ public class WorkDV
 
    public static Work instantiate(WorkDV dto)
    {
-      return new WorkImpl(dto);
+      BasicWorkImpl work = new BasicWorkImpl();
+      work.id = dto.id;
+
+      work.authors = AuthorListDV.instantiate(dto.authors);
+      work.title = new TitleDefinitionImpl(dto.titles);
+      work.otherAuthors = AuthorListDV.instantiate(dto.otherAuthors);
+      work.series = dto.series;
+      work.summary = dto.summary;
+      work.editions = dto.editions.parallelStream()
+            .map(EditionDV::instantiate)
+            .collect(Collectors.toSet());
+
+      return work;
    }
 
    public static WorkDV create(Work work)
    {
-      return new WorkDV(work);
-   }
+      WorkDV dto = new WorkDV();
 
-   public WorkDV()
-   {
-   }
+      dto.id = work.getId();
+      dto.authors = new ArrayList<>();
+      work.getAuthors().forEach(ref -> dto.authors.add(AuthorRefDV.create(ref)));
 
-   public WorkDV(Work work)
-   {
-      this.id = work.getId();
-      this.authors = new ArrayList<>();
-      work.getAuthors().forEach(ref -> authors.add(new AuthorRefDV(ref)));
-
-      this.otherAuthors = new ArrayList<>();
-      work.getOtherAuthors().forEach(ref -> otherAuthors.add(new AuthorRefDV(ref)));
+      dto.otherAuthors = new ArrayList<>();
+      work.getOtherAuthors().forEach(ref -> dto.otherAuthors.add(AuthorRefDV.create(ref)));
 
       Collection<Title> altTitles = work.getTitle().getAlternateTitles();
-      titles = altTitles.stream().map(title -> new TitleDV(title)).collect(Collectors.toSet());
+      dto.titles = altTitles.stream().map(TitleDV::create).collect(Collectors.toSet());
 
-      this.series = work.getSeries();
-      this.summary = work.getSummary();
+      dto.series = work.getSeries();
+      dto.summary = work.getSummary();
 
-      this.editions = work.getEditions().parallelStream()
-            .map((e) -> new EditionDV(e))
+      dto.editions = work.getEditions().parallelStream()
+            .map(EditionDV::create)
             .collect(Collectors.toSet());
+
+      return dto;
    }
 
-
-
-   private static class WorkImpl implements Work
+   public static class BasicWorkImpl implements Work
    {
-         private final String id;
-         private final AuthorListImpl authors;
-         private final AuthorListImpl otherAuthors;
-         private final TitleDefinitionImpl title;
-         private final String series;
-         private final String summary;
-         private final Collection<Edition> editions;
-
-         public WorkImpl(WorkDV workDV)
-         {
-            this.id = workDV.id;
-
-            this.authors = new AuthorListImpl(workDV.authors);
-            this.title = new TitleDefinitionImpl(workDV.titles);
-            this.otherAuthors = new AuthorListImpl(workDV.otherAuthors);
-            this.series = workDV.series;
-            this.summary = workDV.summary;
-            this.editions = workDV.editions.parallelStream()
-                  .map((e) -> new EditionImpl(e))
-                  .collect(Collectors.toSet());
-         }
+         private String id;
+         private AuthorList authors;
+         private AuthorList otherAuthors;
+         private TitleDefinitionImpl title;
+         private String series;
+         private String summary;
+         private Collection<Edition> editions;
 
          @Override
          public String getId()

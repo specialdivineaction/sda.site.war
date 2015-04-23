@@ -167,7 +167,7 @@ public class WorksResource
    public WorkDV getWork(@PathParam(value = "workid") String id) throws NoSuchCatalogRecordException
    {
       Work w = repo.getWork(id);
-      return new WorkDV(w);
+      return WorkDV.create(w);
    }
 
    @GET

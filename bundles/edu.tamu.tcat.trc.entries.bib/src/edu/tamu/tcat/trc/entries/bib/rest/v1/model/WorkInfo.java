@@ -45,7 +45,7 @@ public class WorkInfo
       result.summary = w.getSummary();
 
       AuthorList authors = w.getAuthors();
-      authors.forEach(author -> result.authors.add(new AuthorRefDV(author)));
+      authors.forEach(author -> result.authors.add(AuthorRefDV.create(author)));
 
       return result;
    }

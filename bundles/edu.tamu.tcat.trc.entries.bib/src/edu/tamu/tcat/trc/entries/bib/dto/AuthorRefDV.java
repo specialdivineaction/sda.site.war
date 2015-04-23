@@ -10,20 +10,35 @@ public class AuthorRefDV
    public String lastName;
    public String role;
 
-   public AuthorRefDV(AuthorReference author)
+   public static AuthorRefDV create(AuthorReference author)
    {
-      this.authorId = author.getId();
-      this.name = author.getName();
-      if (this.name != null)
-         parseLegacyName();
+      AuthorRefDV dto = new AuthorRefDV();
+      dto.authorId = author.getId();
+      dto.name = author.getName();
+      if (dto.name != null)
+         dto.parseLegacyName();
 
       String fName = author.getFirstName();
       String lName = author.getLastName();
 
-      this.firstName = ((fName != null) && !fName.trim().isEmpty()) ? fName : this.firstName;
-      this.lastName = ((lName != null) && !lName.trim().isEmpty()) ? lName : this.lastName;
+      dto.firstName = ((fName != null) && !fName.trim().isEmpty()) ? fName : dto.firstName;
+      dto.lastName = ((lName != null) && !lName.trim().isEmpty()) ? lName : dto.lastName;
 
-      this.role = author.getRole();
+      dto.role = author.getRole();
+
+      return dto;
+   }
+
+   public static AuthorReference instantiate(AuthorRefDV authorRef)
+   {
+      AuthorReferenceImpl ref = new AuthorReferenceImpl();
+      ref.id = authorRef.authorId;
+      ref.name = authorRef.name;
+      ref.lastName = authorRef.lastName;
+      ref.firstName = authorRef.firstName;
+      ref.role = authorRef.role;
+
+      return ref;
    }
 
    private void parseLegacyName()
@@ -48,7 +63,42 @@ public class AuthorRefDV
       }
    }
 
-   public AuthorRefDV()
+   public static class AuthorReferenceImpl implements AuthorReference
    {
+      private String id;
+      private String name;
+      private String firstName;
+      private String lastName;
+      private String role;
+
+      @Override
+      public String getId()
+      {
+         return id;
+      }
+
+      @Override
+      public String getName()
+      {
+         return name;
+      }
+
+      @Override
+      public String getFirstName()
+      {
+         return firstName;
+      }
+
+      @Override
+      public String getLastName()
+      {
+         return lastName;
+      }
+
+      @Override
+      public String getRole()
+      {
+         return role;
+      }
    }
 }

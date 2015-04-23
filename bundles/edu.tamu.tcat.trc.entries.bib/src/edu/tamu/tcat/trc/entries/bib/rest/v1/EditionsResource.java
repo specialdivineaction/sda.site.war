@@ -21,7 +21,6 @@ import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
-import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 @Path("/works/{workId}/editions")
 public class EditionsResource
@@ -55,7 +54,7 @@ public class EditionsResource
       Collection<Edition> editions = work.getEditions();
 
       return editions.parallelStream()
-            .map((e) -> new EditionDV(e))
+            .map(EditionDV::create)
             .collect(Collectors.toSet());
    }
 
@@ -66,7 +65,7 @@ public class EditionsResource
                                  @PathParam(value = "editionId") String editionId) throws NumberFormatException, NoSuchCatalogRecordException
    {
       Edition edition = repo.getEdition(workId, editionId);
-      return new EditionDV(edition);
+      return EditionDV.create(edition);
    }
 
    @PUT

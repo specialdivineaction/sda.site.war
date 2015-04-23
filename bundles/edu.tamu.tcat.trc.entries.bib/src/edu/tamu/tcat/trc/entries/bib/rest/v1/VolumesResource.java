@@ -22,7 +22,6 @@ import edu.tamu.tcat.trc.entries.bib.VolumeMutator;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
-import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
 @Path("/works/{workId}/editions/{editionId}/volumes")
 public class VolumesResource
@@ -49,7 +48,7 @@ public class VolumesResource
    {
       Edition edition = repo.getEdition(workId, editionId);
       return edition.getVolumes().stream()
-            .map(v -> new VolumeDV(v))
+            .map(VolumeDV::create)
             .collect(Collectors.toSet());
    }
 
@@ -61,7 +60,7 @@ public class VolumesResource
                              @PathParam(value = "volumeId") String volumeId) throws NumberFormatException, NoSuchCatalogRecordException
    {
       Volume volume = repo.getVolume(workId, editionId, volumeId);
-      return new VolumeDV(volume);
+      return VolumeDV.create(volume);
    }
 
    @PUT
