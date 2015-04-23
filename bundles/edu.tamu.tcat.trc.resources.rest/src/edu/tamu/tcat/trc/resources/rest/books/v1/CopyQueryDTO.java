@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.copy.rest.v1;
+package edu.tamu.tcat.trc.resources.rest.books.v1;
 
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;

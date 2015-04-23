@@ -1,18 +1,14 @@
-package edu.tamu.tcat.trc.entries.bib.copy.rest.v1;
+package edu.tamu.tcat.trc.resources.rest.books.v1;
 
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverRegistry;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
 import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
@@ -76,13 +72,6 @@ public class CopyResolverServiceResource
       return strategy.resolve(id);
    }
 
-   @POST
-   @Path("{identifier}")
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   public void createLink(@PathParam("identifier") String identifier, CopyRefDTO ref)
-   {
-      throw new UnsupportedOperationException();
-   }
+
 
 }
