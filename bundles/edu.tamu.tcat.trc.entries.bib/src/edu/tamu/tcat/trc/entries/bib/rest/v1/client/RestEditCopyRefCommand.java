@@ -4,10 +4,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.BaseEditCopyRefCmd;
-import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
+import edu.tamu.tcat.trc.entries.bib.dto.BaseEditCopyRefCmd;
+import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 

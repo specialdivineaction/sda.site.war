@@ -11,8 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
+import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverRegistry;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
 import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;

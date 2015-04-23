@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
+import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
+
 public interface EditCopyReferenceCommand
 {
    /**
