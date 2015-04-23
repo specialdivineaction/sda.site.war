@@ -116,7 +116,7 @@ public class EditCopyRefCmdImpl extends BaseEditCopyRefCmd implements EditCopyRe
 
             int cnt = ps.executeUpdate();
             if (cnt != 1)
-               throw new ExecutionFailedException("Failed to update copy reference [" + dto.id +"]");
+               throw new IllegalStateException("Failed to update copy reference [" + dto.id +"]");
 
             return CopyRefDTO.instantiate(dto);
          }

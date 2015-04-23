@@ -66,6 +66,13 @@ public interface WorkRepository extends DataStore
    Person getAuthor(AuthorReference ref);
 
    /**
+    * Construct an {@link EditWorkCommand} to be used to create a new work.
+    *
+    * @return
+    */
+   EditWorkCommand create();
+
+   /**
     * Construct an {@link EditWorkCommand} to be used to modify an existing work.
     *
     * @param id
@@ -74,17 +81,12 @@ public interface WorkRepository extends DataStore
     */
    EditWorkCommand edit(String id) throws NoSuchCatalogRecordException;
 
-   /**
-    * Construct an {@link EditWorkCommand} to be used to create a new work.
-    *
-    * @return
-    */
-   EditWorkCommand create();
-
    EditWorkCommand delete(String id) throws NoSuchCatalogRecordException;
 
+   @Deprecated
    AutoCloseable addBeforeUpdateListener(Consumer<WorksChangeEvent> ears);
 
+   @Deprecated
    AutoCloseable addAfterUpdateListener(Consumer<WorksChangeEvent> ears);
 //
 //   @Deprecated // use the EditWorkCommand methods

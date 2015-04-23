@@ -39,7 +39,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.EditionDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
 import edu.tamu.tcat.trc.entries.bio.Person;
-import edu.tamu.tcat.trc.entries.notification.DataUpdateObserver;
+import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
 
 public class PsqlWorkRepo implements WorkRepository
@@ -47,14 +47,20 @@ public class PsqlWorkRepo implements WorkRepository
    private static final Logger logger = Logger.getLogger(PsqlWorkRepo.class.getName());
 
    private final static String GET_SQL = "SELECT work FROM works WHERE id=?";
+   private final static String LIST_WORKS_SQL = "SELECT work FROM works WHERE active = true";
+   private final static String UPDATE_WORK_SQL = "UPDATE works SET work = ?, modified = now() WHERE id = ?";
+   private final static String CREATE_WORK_SQL = "INSERT INTO works (work, id) VALUES(?, ?)";
+   private final static String DELETE_SQL = "UPDATE works SET active = false WHERE id = ?";
+
+
 
    public static final String WORK_CONTEXT = "works";
 
    private SqlExecutor exec;
    private ObjectMapper mapper;
    private PeopleRepository peopleRepo;
-   private PsqlWorkDbTasksProvider taskProvider;
 
+   // FIXME replace with listener service
    private ExecutorService notifications;
 
    private final CopyOnWriteArrayList<Consumer<WorksChangeEvent>> listeners = new CopyOnWriteArrayList<>();
@@ -86,9 +92,6 @@ public class PsqlWorkRepo implements WorkRepository
 
       mapper = new ObjectMapper();
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-      taskProvider = new PsqlWorkDbTasksProvider();
-      taskProvider.setJsonMapper(mapper);
 
       notifications = Executors.newCachedThreadPool();
    }
@@ -135,45 +138,25 @@ public class PsqlWorkRepo implements WorkRepository
    @Override
    public Iterable<Work> listWorks()
    {
-      PsqlListWorksTask task = taskProvider.makeListWorksTask();
-
-      Future<Iterable<Work>> submit = exec.submit(task);
-      Iterable<Work> iterable = null;
+      Future<Iterable<Work>> submit = exec.submit(makeListWorksTask());
       try
       {
-         // HACK: could block forever.
-         iterable = submit.get();
+         return submit.get();
       }
       catch (ExecutionException e)
       {
-//         Throwable cause = e.getCause();
-//         if (cause instanceof NoSuchCatalogRecordException)
-//            throw (NoSuchCatalogRecordException)cause;
-//         if (cause instanceof RuntimeException)
-//            throw (RuntimeException)cause;
+         Throwable cause = e.getCause();
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException)cause;
 
          throw new IllegalStateException("Unexpected problems while attempting to retrieve work records " , e);
       }
-      catch (InterruptedException e) {
+      catch (InterruptedException e)
+      {
          throw new IllegalStateException("Failed to retrieve work records", e);
       }
-
-      return  iterable;
    }
-//
-//   @Override
-//   public void create(final WorkDV work, DataUpdateObserver<String> observer)
-//   {
-//      PsqlCreateWorkTask task = taskProvider.makeCreateWorkTask(work);
-//      exec.submit(new ObservableTaskWrapper<>(task, observer));
-//   }
-//
-//   @Override
-//   public void update(WorkDV work, DataUpdateObserver<String> observer)
-//   {
-//      PsqlUpdateWorksTask task = taskProvider.makeUpdateWorksTask(work);
-//      exec.submit(new ObservableTaskWrapper<>(task, observer));
-//   }
+
 
    @Override
    public Iterable<Work> listWorks(String titleName)
@@ -202,6 +185,20 @@ public class PsqlWorkRepo implements WorkRepository
 
       return false;
    }
+
+   private boolean hasTitleName(Title title, String titleName)
+   {
+      String test = title.getFullTitle();
+      if (test != null && test.toLowerCase().contains(titleName))
+         return true;
+
+      test = title.getTitle();
+      if (test != null && test.toLowerCase().contains(titleName))
+         return true;
+
+      return false;
+   }
+
    @Override
    public Work getWork(String workId) throws NoSuchCatalogRecordException
    {
@@ -222,6 +219,98 @@ public class PsqlWorkRepo implements WorkRepository
       catch (InterruptedException e) {
          throw new IllegalStateException("Failed to retrieve bibliographic entry [" + workId +"]", e);
       }
+   }
+
+   @Override
+   public Edition getEdition(String workId, String editionId) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(workId);
+      return work.getEdition(editionId);
+   }
+
+   @Override
+   public Volume getVolume(String workId, String editionId, String volumeId) throws NoSuchCatalogRecordException
+   {
+      // TODO pull from DB directly
+      Work work = getWork(workId);
+      Edition edition = work.getEdition(editionId);
+      return edition.getVolume(volumeId);
+   }
+
+   @Override
+   public EditWorkCommand create()
+   {
+      WorkDV work = new WorkDV();
+      work.id = idFactory.getNextId(WORK_CONTEXT);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(work, idFactory);
+      command.setCommitHook(dto -> updateWork(dto, ChangeType.CREATED));
+      return command;
+   }
+
+   @Override
+   public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(id);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
+      command.setCommitHook(dto -> updateWork(dto, ChangeType.MODIFIED));
+      return command;
+   }
+
+   public Future<String> updateWork(WorkDV workDv, ChangeType changeType)
+   {
+      String sql = getUpdateSql(changeType);
+
+      try
+      {
+         String json = mapper.writeValueAsString(workDv);
+         SqlExecutor.ExecutorTask<String> task = makeUpdateTask(workDv.id, json, sql);
+
+         WorkUpdateNotifier updateNotifier = new WorkUpdateNotifier(changeType);
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, updateNotifier);
+
+         Future<String> workId = exec.submit(wrapTask);
+         return workId;
+      }
+      catch (Exception e)
+      {
+         if (e instanceof RuntimeException)
+            throw (RuntimeException)e;
+
+         throw new IllegalStateException("Failed to update work [" + workDv.id + "]", e);
+      }
+   }
+
+   private final WorkUpdateNotifier deleteNotifier = new WorkUpdateNotifier(ChangeType.DELETED);
+   @Override
+   public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
+   {
+      Work work = getWork(id);
+      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
+      command.setCommitHook((workDv) -> {
+         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(makeDeleteTask(id), deleteNotifier);
+
+         Future<String> submitWork = exec.submit(wrapTask);
+         return submitWork;
+      });
+
+      return command;
+   }
+
+   private String getUpdateSql(ChangeType changeType)
+   {
+      String sql;
+      switch (changeType)
+      {
+         case MODIFIED:
+            sql = UPDATE_WORK_SQL;
+            break;
+         case CREATED:
+            sql = CREATE_WORK_SQL;
+            break;
+         default:
+            throw new IllegalArgumentException("Change type must be created or modified [" + changeType + "]");
+      }
+      return sql;
    }
 
    private SqlExecutor.ExecutorTask<Work> makeGetWorkTask(String workId)
@@ -255,88 +344,80 @@ public class PsqlWorkRepo implements WorkRepository
       };
    }
 
-   @Override
-   public Edition getEdition(String workId, String editionId) throws NoSuchCatalogRecordException
+   private SqlExecutor.ExecutorTask<Iterable<Work>> makeListWorksTask()
    {
-      Work work = getWork(workId);
-      return work.getEdition(editionId);
+      return (conn) -> {
+         List<Work> works = new ArrayList<>();
+         try (PreparedStatement ps = conn.prepareStatement(LIST_WORKS_SQL);
+              ResultSet rs = ps.executeQuery())
+         {
+            while(rs.next())
+            {
+               PGobject pgo = (PGobject)rs.getObject("work");
+               String workJson = pgo.toString();
+               try
+               {
+                  WorkDV dv = mapper.readValue(workJson, WorkDV.class);
+                  works.add(WorkDV.instantiate(dv));
+               }
+               catch (IOException e)
+               {
+                  throw new IllegalStateException("Failed to parse bibliographic record\n" + workJson, e);
+               }
+            }
+
+            return works;
+         }
+         catch (SQLException e)
+         {
+            throw new IllegalStateException("Failed to list bibliographic entries", e);
+         }
+      };
    }
 
-   @Override
-   public Volume getVolume(String workId, String editionId, String volumeId) throws NoSuchCatalogRecordException
+   private SqlExecutor.ExecutorTask<String> makeUpdateTask(String id, String json, String sql)
    {
-      Work work = getWork(workId);
-      Edition edition = work.getEdition(editionId);
-      return edition.getVolume(volumeId);
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(sql))
+         {
+            PGobject jsonObject = new PGobject();
+            jsonObject.setType("json");
+            jsonObject.setValue(json);
+
+            ps.setObject(1, jsonObject);
+            ps.setString(2, id);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new IllegalStateException("Failed to update work. Unexpected number of rows updates [" + ct + "]");
+
+            return id;
+         }
+         catch(SQLException e)
+         {
+            throw new IllegalStateException("Failed to update work: [" + id + "].\n" + json);
+         }
+      };
    }
 
-   private boolean hasTitleName(Title title, String titleName)
+   private SqlExecutor.ExecutorTask<String> makeDeleteTask(String id)
    {
-      String test = title.getFullTitle();
-      if (test != null && test.toLowerCase().contains(titleName))
-         return true;
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareCall(DELETE_SQL))
+         {
+            ps.setString(1, id);
 
-      test = title.getTitle();
-      if (test != null && test.toLowerCase().contains(titleName))
-         return true;
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new IllegalStateException("Failed to de-activate work, id: [" + id + "]. Unexpected number of rows updated [" + ct + "]");
 
-      return false;
-   }
-
-   @Override
-   public EditWorkCommand edit(String id) throws NoSuchCatalogRecordException
-   {
-      Work work = getWork(id);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
-      command.setCommitHook((workDv) -> {
-         PsqlUpdateWorksTask task = new PsqlUpdateWorksTask(workDv, mapper);
-
-         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.MODIFIED);
-         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
-
-         Future<String> submitWork = exec.submit(wrapTask);
-         return submitWork;
-      });
-
-      return command;
-   }
-
-   @Override
-   public EditWorkCommand create()
-   {
-      WorkDV work = new WorkDV();
-      work.id = idFactory.getNextId(WORK_CONTEXT);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(work, idFactory);
-
-      command.setCommitHook((w) -> {
-         PsqlCreateWorkTask task = new PsqlCreateWorkTask(w, mapper);
-
-         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(w.id, ChangeType.CREATED);
-         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
-
-         Future<String> submitWork = exec.submit(wrapTask);
-         return submitWork;
-      });
-
-      return command;
-   }
-
-   @Override
-   public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
-   {
-      Work work = getWork(id);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
-      command.setCommitHook((workDv) -> {
-         PsqlDeleteWorkTask task = new PsqlDeleteWorkTask(workDv);
-
-         WorkChangeNotifier<String> workChangeNotifier = new WorkChangeNotifier<>(workDv.id, ChangeType.DELETED);
-         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(task, workChangeNotifier);
-
-         Future<String> submitWork = exec.submit(wrapTask);
-         return submitWork;
-      });
-
-      return command;
+            return id;
+         }
+         catch(SQLException e)
+         {
+            throw new IllegalStateException("Failed to de-activate work: [" + id + "]");
+         }
+      };
    }
 
    private void notifyRelationshipUpdate(ChangeType type, String relnId)
@@ -410,61 +491,19 @@ public class PsqlWorkRepo implements WorkRepository
 
    }
 
-   // FIXME What is ResultType .. surely you know what this is?
-   //       Note that you should be using the adapter, not the observer. You aren't maintaining
-   //       the internal state as required by the update observer API.
-   private final class WorkChangeNotifier<Work> implements DataUpdateObserver<Work>
+   private final class WorkUpdateNotifier extends DataUpdateObserverAdapter<String>
    {
-      private final String id;
       private final ChangeType type;
 
-      public WorkChangeNotifier(String id, ChangeType type)
+      public WorkUpdateNotifier(ChangeType type)
       {
-         this.id = id;
          this.type = type;
-
       }
 
       @Override
-      public boolean start()
-      {
-         return true;
-      }
-
-      @Override
-      public void finish(Work result)
+      public void onFinish(String id)
       {
          notifyRelationshipUpdate(type, id);
-      }
-
-      @Override
-      public void aborted()
-      {
-         // no-op
-      }
-
-      @Override
-      public void error(String message, Exception ex)
-      {
-         // no-op
-      }
-
-      @Override
-      public boolean isCanceled()
-      {
-         return false;
-      }
-
-      @Override
-      public boolean isCompleted()
-      {
-         throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public State getState()
-      {
-         throw new UnsupportedOperationException();
       }
    }
 
