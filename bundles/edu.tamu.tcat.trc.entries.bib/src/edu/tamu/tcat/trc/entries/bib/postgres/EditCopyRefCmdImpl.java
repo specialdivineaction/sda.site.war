@@ -1,6 +1,5 @@
 package edu.tamu.tcat.trc.entries.bib.postgres;
 
-import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -13,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.trc.entries.bib.BaseEditCopyRefCmd;
 import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
 import edu.tamu.tcat.trc.entries.bib.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
@@ -23,7 +23,7 @@ import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
 import edu.tamu.tcat.trc.entries.notification.UpdateEvent;
 
-public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
+public class EditCopyRefCmdImpl extends BaseEditCopyRefCmd implements EditCopyReferenceCommand
 {
    //  NOTE: table needs date_created, active
    private static String CREATE_SQL =
@@ -39,8 +39,6 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
    private final EntryUpdateHelper<CopyReference> notifier;
    private final UpdateEventFactory factory;
 
-   private final CopyReference original;
-   private CopyRefDTO dto;
    private final AtomicBoolean executed = new AtomicBoolean(false);
 
    public EditCopyRefCmdImpl(SqlExecutor sqlExecutor,
@@ -48,72 +46,23 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
                              UpdateEventFactory factory,
                              CopyRefDTO dto)
    {
+      super(dto);
+
       this.sqlExecutor = sqlExecutor;
       this.notifier = notifier;
       this.factory = factory;
-
-      this.original = CopyRefDTO.instantiate(dto);
-      this.dto = dto;
    }
 
    public EditCopyRefCmdImpl(SqlExecutor sqlExecutor,
                              EntryUpdateHelper<CopyReference> notifier,
                              UpdateEventFactory factory)
    {
+      super();
+
       this.sqlExecutor = sqlExecutor;
       this.notifier = notifier;
       this.factory = factory;
 
-      this.original = null;
-      this.dto = new CopyRefDTO();
-      this.dto.id = UUID.randomUUID();
-   }
-
-   @Override
-   public CopyReference getCurrentState()
-   {
-      return CopyRefDTO.instantiate(dto);
-   }
-
-   @Override
-   public UUID getId()
-   {
-      return dto.id;
-   }
-
-   @Override
-   public EditCopyReferenceCommand setAssociatedEntry(URI uri)
-   {
-      dto.associatedEntry = uri;
-      return this;
-   }
-
-   @Override
-   public EditCopyReferenceCommand setCopyId(String id)
-   {
-      dto.copyId = id;
-      return this;
-   }
-
-   @Override
-   public EditCopyReferenceCommand setTitle(String value)
-   {
-      dto.title = value;
-      return this;
-   }
-
-   @Override
-   public EditCopyReferenceCommand setSummary(String value)
-   {
-      dto.summary = value;
-      return this;
-   }
-
-   @Override
-   public EditCopyReferenceCommand setRights(String description)
-   {
-      dto.rights = description;
-      return this;
    }
 
    @Override
@@ -127,6 +76,9 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
          throw new UpdateCanceledException();
 
       String sql = isNew() ? CREATE_SQL : UPDATE_SQL;
+      if (dto.id == null)
+         dto.id = UUID.randomUUID();
+
       return sqlExecutor.submit(new ObservableTaskWrapper<CopyReference>(
             makeCreateTask(sql),
             new DataUpdateObserverAdapter<CopyReference>()
@@ -146,12 +98,6 @@ public class EditCopyRefCmdImpl implements EditCopyReferenceCommand
             : factory.edit(original, updated);
       return evt;
    }
-
-   private boolean isNew()
-   {
-      return original == null;
-   }
-
 
    private SqlExecutor.ExecutorTask<CopyReference> makeCreateTask(String sql)
    {

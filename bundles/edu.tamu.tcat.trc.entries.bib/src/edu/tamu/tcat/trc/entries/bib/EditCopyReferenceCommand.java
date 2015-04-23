@@ -17,6 +17,17 @@ public interface EditCopyReferenceCommand
    UUID getId();
 
    /**
+    * Updates this edit command to reflect the supplied DTO. Note that {@code null} valued
+    * fields will not be applied.
+    *
+    * @param dto Values to apply to this edit command.
+    * @throws IllegalArgumentException If the supplied command is not valid. Notably, this
+    *       will happen if the supplied dto has an id defined that does not match the id
+    *       for this edit copy reference and if this is not a new copy reference.
+    */
+   void update(CopyRefDTO dto) throws IllegalArgumentException;
+
+   /**
     * @param uri The URI of the associated bibliographic entry. Note that digital copies may be
     *       attached to works, editions or volumes.
     */
@@ -58,4 +69,5 @@ public interface EditCopyReferenceCommand
     */
    Future<CopyReference> execute() throws UpdateCanceledException;
    // TODO cancellation needs a review
+
 }
