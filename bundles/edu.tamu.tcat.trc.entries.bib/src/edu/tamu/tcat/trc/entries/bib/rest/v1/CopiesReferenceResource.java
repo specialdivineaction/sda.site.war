@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -17,6 +18,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.trc.entries.bib.CopyRefDTO;
@@ -31,6 +37,7 @@ public class CopiesReferenceResource
 {
    private WorkRepository repo;
    private CopyReferenceRepository copiesRepo;
+   private ObjectMapper mapper;
 
    // Called by DS
    public void setRepository(WorkRepository repo)
@@ -48,6 +55,9 @@ public class CopiesReferenceResource
    {
       Objects.requireNonNull(repo, "No bibliographic work repository configured");
       Objects.requireNonNull(copiesRepo, "No copy reference repository configured");
+
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    }
 
    // called by DS
@@ -55,6 +65,7 @@ public class CopiesReferenceResource
    {
       repo = null;
       copiesRepo = null;
+      mapper = null;
    }
 
    @GET
@@ -98,24 +109,41 @@ public class CopiesReferenceResource
    @Path("{refId : [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}}")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public String updateRef(@PathParam(value = "refId") String refId, CopyRefDTO dto)
+   public Response updateRef(@PathParam(value = "refId") String refId, CopyRefDTO dto)
    {
-      // TODO extract IDs
+      // FIXME fix error handling!!
       try
       {
          UUID id = UUID.fromString(refId);
+         if (dto.id != null && !dto.id.equals(id))
+            throw new BadRequestException("Copy reference id [" + dto.id + "] does not match resource id [" + id + "]");
+         else if (dto.id == null)
+            dto.id = id;
+
          EditCopyReferenceCommand command = copiesRepo.edit(id);
+         command.update(dto);
+
+         CopyReference ref = command.execute().get(10, TimeUnit.SECONDS);
+
+         // things that could go wrong. general Exception, timeout, illegal arg updating command
+         String json = mapper.writeValueAsString(CopyRefDTO.create(ref));
+         ResponseBuilder builder = Response.ok(json, MediaType.APPLICATION_JSON);
+
+         return builder.build();
       }
-      catch (IllegalArgumentException | NoSuchCatalogRecordException arg)
+      catch (NoSuchCatalogRecordException arg)
       {
          throw new NotFoundException("Invalid reference id [" + refId + "]");
       }
-
-      return refId;
+      catch (Exception e)
+      {
+         throw new IllegalStateException("Failed to update reference [" + refId + "].", e);
+      }
    }
 
    /**
     * Add a new copy reference
+    *
     * @param entityId
     * @return
     * @throws UpdateCanceledException
@@ -124,24 +152,36 @@ public class CopiesReferenceResource
    @Path("{entityId : works/.+}")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public String createByWorkId(@PathParam(value = "entityId") String entityId, CopyRefDTO dto) throws UpdateCanceledException
+   public Response createByWorkId(@PathParam(value = "entityId") String entityId, CopyRefDTO dto) throws UpdateCanceledException
    {
-      URI entityUri = URI.create(entityId);
-      if (!entityUri.equals(dto.associatedEntry))
-         throw new IllegalArgumentException();     // TODO document why
+      // FIXME fix error handling!!
+      // TODO response should supply URL of resource
+      try
+      {
+         URI entityUri = URI.create(entityId);
+         if (!entityUri.equals(dto.associatedEntry))
+            throw new BadRequestException("Copy reference id [" + dto.associatedEntry + "] does not match resource id [" + entityId + "]");
 
-      // TODO verify valid copy id
+         if (dto.id == null)
+            dto.id = UUID.randomUUID();
 
-      EditCopyReferenceCommand command = copiesRepo.create();
-      command.setAssociatedEntry(entityUri);
-      command.setCopyId(dto.copyId);
-      command.setTitle(dto.title);
-      command.setSummary(dto.summary);
-      command.setRights(dto.rights);
+         // TODO verify valid copy id
 
-      // TODO requires better error handling
-      Future<CopyReference> future = command.execute();
-      return entityId;
+         EditCopyReferenceCommand command = copiesRepo.create();
+         command.update(dto);
+
+         CopyReference ref = command.execute().get(10, TimeUnit.SECONDS);
+
+         // things that could go wrong. general Exception, timeout, illegal arg updating command
+         String json = mapper.writeValueAsString(CopyRefDTO.create(ref));
+         ResponseBuilder builder = Response.ok(json, MediaType.APPLICATION_JSON);
+
+         return builder.build();
+      }
+      catch (Exception e)
+      {
+         throw new IllegalStateException("Failed to update reference [" + entityId + "].", e);
+      }
    }
 
 
