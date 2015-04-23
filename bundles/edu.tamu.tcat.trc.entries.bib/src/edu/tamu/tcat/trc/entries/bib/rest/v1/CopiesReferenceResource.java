@@ -120,6 +120,7 @@ public class CopiesReferenceResource
          else if (dto.id == null)
             dto.id = id;
 
+         // TODO check to see if this reference exists - if not, create it
          EditCopyReferenceCommand command = copiesRepo.edit(id);
          command.update(dto);
 
