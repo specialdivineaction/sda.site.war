@@ -16,7 +16,6 @@ import edu.tamu.tcat.trc.resources.books.discovery.ContentQuery;
 import edu.tamu.tcat.trc.resources.books.discovery.CopySearchResult;
 import edu.tamu.tcat.trc.resources.books.discovery.CopySearchService;
 import edu.tamu.tcat.trc.resources.books.hathitrust.HTFilesSearchService;
-import edu.tamu.tcat.trc.resources.books.resolve.ResourceAccessException;
 
 
 @Path("/resources/books/search")
@@ -55,15 +54,28 @@ public class CopySearchServiceResource
                               @DefaultValue("-9999") @QueryParam(value = "before") int before,
                               @DefaultValue("0") @QueryParam(value = "offset") int offset,
                               @DefaultValue("25") @QueryParam(value = "limit") int limit
-                              ) throws ResourceAccessException
+                              )
    {
       Year beforeYr = (before != -9999) ?  Year.of(before) : null;
       Year afterYr = (after != -9999) ?  Year.of(after) : null;
       CopyQueryImpl query = new CopyQueryImpl(q, author, afterYr, beforeYr, offset, limit);
-      CopySearchResult result = searchService.find(query);
 
-      CopyQueryDTO qdto = CopyQueryDTO.create(query, DateTimeFormatter.ofPattern("yyyy"));
-      return new SearchResult(result, qdto);
+      return executeQuery(query);
+   }
+
+   private SearchResult executeQuery(CopyQueryImpl query)
+   {
+      try
+      {
+         CopySearchResult result = searchService.find(query);
+
+         CopyQueryDTO qdto = CopyQueryDTO.create(query, DateTimeFormatter.ofPattern("yyyy"));
+         return new SearchResult(result, qdto);
+      }
+      catch (Exception ex)
+      {
+         throw new IllegalStateException("Failed to execute query [" + query + "]", ex);
+      }
    }
 
    public static class CopyQueryImpl implements ContentQuery

@@ -105,9 +105,9 @@ public class HTFilesSearchService implements CopySearchService
          String queryString = formatQueryString(query);
 
          SolrQuery solrQuery = new SolrQuery(queryString);
-         solrQuery.setRows(query.getLimit());
-         solrQuery.setStart(query.getOffset());
-         solrQuery.addFilterQuery(buildDateFilter(query));
+         solrQuery.setRows(Integer.valueOf(query.getLimit()));
+         solrQuery.setStart(Integer.valueOf(query.getOffset()));
+//         solrQuery.addFilterQuery(buildDateFilter(query));
          QueryResponse response = solrServer.query(solrQuery);
          return getSearchResults(response);
       }
@@ -190,7 +190,7 @@ public class HTFilesSearchService implements CopySearchService
 
    private String buildDateFilter(ContentQuery query)
    {
-      StringBuilder qBuilder2 = new StringBuilder();
+      StringBuilder sb = new StringBuilder();
       // add filter for date range.
       //fq=publicationDate%3A%5B1700-01-01T00%3A00%3A00Z+TO+1800-01-01T00%3A00%3A00Z%5D
       TemporalAccessor rangeStart = query.getDateRangeStart();
@@ -204,13 +204,13 @@ public class HTFilesSearchService implements CopySearchService
          String start = (rangeStart == null) ? "*": dateFormatter.format(startDate);
          String end = (rangeEnd == null) ? "*": dateFormatter.format(endDate);
 
-         qBuilder2.append("publicationDate:")
+         sb.append("publicationDate:")
                  .append("[")
                  .append(start)
                  .append(" TO ")
                  .append(end)
                  .append("]");
       }
-      return qBuilder2.toString();
+      return sb.toString();
    }
 }
