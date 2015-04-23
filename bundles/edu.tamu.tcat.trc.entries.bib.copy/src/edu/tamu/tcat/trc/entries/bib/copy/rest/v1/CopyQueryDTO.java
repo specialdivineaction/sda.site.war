@@ -29,8 +29,8 @@ public class CopyQueryDTO
       TemporalAccessor start = copyImpl.getDateRangeStart();
       TemporalAccessor end = copyImpl.getDateRangeEnd();
 
-      dto.after = (start == null) ? formatter.format(start) : null;
-      dto.before = (end == null) ? formatter.format(end) : null;
+      dto.after = (start == null) ? null : formatter.format(start);
+      dto.before = (end == null) ? null : formatter.format(end);
       dto.offset = copyImpl.getOffset();
       dto.limit = copyImpl.getLimit();
 
