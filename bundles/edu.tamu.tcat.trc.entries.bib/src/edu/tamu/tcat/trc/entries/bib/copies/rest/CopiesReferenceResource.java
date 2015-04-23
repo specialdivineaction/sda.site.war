@@ -3,7 +3,6 @@ package edu.tamu.tcat.trc.entries.bib.copies.rest;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -75,7 +74,7 @@ public class CopiesReferenceResource
    {
       // FIXME requires error handling
       URI uri = URI.create(entityId);
-      Set<CopyReference> matchedCopies = copiesRepo.getCopies(uri);
+      List<CopyReference> matchedCopies = copiesRepo.getCopies(uri);
       return matchedCopies.parallelStream()
                           .map(CopyRefDTO::create)
                           .collect(Collectors.toList());

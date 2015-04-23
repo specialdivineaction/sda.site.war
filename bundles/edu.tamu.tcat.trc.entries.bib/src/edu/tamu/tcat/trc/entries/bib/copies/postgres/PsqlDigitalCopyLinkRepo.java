@@ -2,12 +2,12 @@ package edu.tamu.tcat.trc.entries.bib.copies.postgres;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -31,8 +31,8 @@ import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
 import edu.tamu.tcat.trc.entries.notification.UpdateEvent;
-import edu.tamu.tcat.trc.entries.notification.UpdateListener;
 import edu.tamu.tcat.trc.entries.notification.UpdateEvent.UpdateAction;
+import edu.tamu.tcat.trc.entries.notification.UpdateListener;
 
 public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 {
@@ -41,7 +41,13 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
    private static final String GET_SQL =
          "SELECT reference "
         +  "FROM copy_references "
-        + "WHERE ref_id = ? AND active = true";
+        + "WHERE reference->'associatedEntry' LIKE ? AND active = true"
+        + "ORDER BY reference->'associatedEntry'";
+
+   private static final String GET_ALL_SQL =
+         "SELECT reference "
+               +  "FROM copy_references "
+               + "WHERE ref_id = ? AND active = true";
    private static final String GET_ANY_SQL =
          "SELECT reference "
         +  "FROM copy_references "
@@ -101,10 +107,40 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
    }
 
    @Override
-   public Set<CopyReference> getCopies(URI entity)
+   public List<CopyReference> getCopies(URI entity)
    {
-      // TODO Auto-generated method stub
-      return null;
+      Future<List<CopyReference>> results = exec.submit(conn -> {
+         try (PreparedStatement ps = conn.prepareStatement(GET_ALL_SQL))
+         {
+            ps.setString(1, entity.toString() + "%");
+            try (ResultSet rs = ps.executeQuery())
+            {
+               List<CopyReference> copies = new ArrayList<>();
+               while (rs.next())
+               {
+                  PGobject pgo = (PGobject)rs.getObject("reference");
+                  CopyRefDTO copy = parseCopyRefJson(pgo.toString());
+                  copies.add(CopyRefDTO.instantiate(copy));
+               }
+
+               return copies;
+            }
+         }
+         catch(SQLException e)
+         {
+            throw new IllegalStateException("Failed to retrive copy reference [" + entity + "]. ", e);
+         }
+      });
+
+      try
+      {
+         return unwrapGetResults(results, entity.toString());
+      }
+      catch (NoSuchCatalogRecordException e)
+      {
+         // should not happen
+         throw new IllegalStateException("Unexpected internal error", e);
+      }
    }
 
    @Override
@@ -191,26 +227,6 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
       }
    }
 
-   private CopyRefDTO executeGetQuery(String sql, Connection conn, UUID id) throws NoSuchCatalogRecordException
-   {
-      try (PreparedStatement ps = conn.prepareStatement(sql))
-      {
-         ps.setString(1, id.toString());
-         try (ResultSet rs = ps.executeQuery())
-         {
-            if (!rs.next())
-               throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + id);
-
-            PGobject pgo = (PGobject)rs.getObject("reference");
-            return parseCopyRefJson(pgo.toString());
-         }
-      }
-      catch(SQLException e)
-      {
-         throw new IllegalStateException("Failed to retrive copy reference [" + id + "]. ", e);
-      }
-   }
-
    private CopyRefDTO parseCopyRefJson(String json)
    {
       try
@@ -225,8 +241,37 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 
    private CopyRefDTO getCopyDTO(String sql, UUID id) throws NoSuchCatalogRecordException
    {
-      Future<CopyRefDTO> result = exec.submit((conn) -> executeGetQuery(sql, conn, id));
+      Future<CopyRefDTO> result = exec.submit((conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(sql))
+         {
+            ps.setString(1, id.toString());
+            try (ResultSet rs = ps.executeQuery())
+            {
+               if (!rs.next())
+                  throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + id);
 
+               PGobject pgo = (PGobject)rs.getObject("reference");
+               return parseCopyRefJson(pgo.toString());
+            }
+         }
+         catch(SQLException e)
+         {
+            throw new IllegalStateException("Failed to retrive copy reference [" + id + "]. ", e);
+         }
+      });
+
+      return unwrapGetResults(result, id.toString());
+   }
+
+   /**
+    *
+    * @param result The future to unwrap
+    * @param id For error messaging purposes
+    * @return
+    * @throws NoSuchCatalogRecordException
+    */
+   private <T> T unwrapGetResults(Future<T> result, String id) throws NoSuchCatalogRecordException
+   {
       try
       {
          return result.get();

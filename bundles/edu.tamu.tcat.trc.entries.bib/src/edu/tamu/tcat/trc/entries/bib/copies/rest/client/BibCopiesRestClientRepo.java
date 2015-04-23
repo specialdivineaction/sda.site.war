@@ -2,7 +2,7 @@ package edu.tamu.tcat.trc.entries.bib.copies.rest.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -74,7 +74,7 @@ public class BibCopiesRestClientRepo implements CopyReferenceRepository
    }
 
    @Override
-   public Set<CopyReference> getCopies(URI entity)
+   public List<CopyReference> getCopies(URI entity)
    {
       // TODO Auto-generated method stub
       return null;

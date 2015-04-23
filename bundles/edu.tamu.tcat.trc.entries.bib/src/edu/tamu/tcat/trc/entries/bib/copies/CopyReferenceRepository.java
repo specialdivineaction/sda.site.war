@@ -1,7 +1,7 @@
 package edu.tamu.tcat.trc.entries.bib.copies;
 
 import java.net.URI;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
@@ -38,7 +38,7 @@ public interface CopyReferenceRepository
     *       the identified object and all component entities as well.
     * @return The
     */
-   Set<CopyReference> getCopies(URI entity);
+   List<CopyReference> getCopies(URI entity);
 
    /**
     * Retries a specific {@link CopyReference}
