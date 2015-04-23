@@ -10,6 +10,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 /**
  * Provides access to database task implementations to support the {@link WorkRepository}.
  */
+@Deprecated // no need to provide separate impl
 public class PsqlWorkDbTasksProvider
 {
    // TODO This should be made to extend an interface. This class and the associated

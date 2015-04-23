@@ -16,6 +16,7 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
+@Deprecated // no need to provide separate impl
 public final class PsqlListWorksTask implements SqlExecutor.ExecutorTask<Iterable<Work>>
 {
 

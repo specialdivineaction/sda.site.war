@@ -15,6 +15,7 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
+@Deprecated // no need to provide separate impl
 public class PsqlGetWorkTask implements SqlExecutor.ExecutorTask<Work>
 {
    private final static String sql = "SELECT work FROM works WHERE id=?";

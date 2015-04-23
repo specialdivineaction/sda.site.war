@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
+@Deprecated // no need to provide separate impl
 public class PsqlDeleteWorkTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static String deleteSql = "UPDATE works SET active = false WHERE id = ?";

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 
+@Deprecated // no need to provide separate impl
 public final class PsqlCreateWorkTask implements SqlExecutor.ExecutorTask<String>
 {
    private final static String insertSql = "INSERT INTO works (id, work) VALUES(?, ?)";
