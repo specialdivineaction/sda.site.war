@@ -16,7 +16,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bio.EditPeopleCommand;
 import edu.tamu.tcat.trc.entries.bio.PeopleQueryCommand;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
@@ -91,7 +90,7 @@ public class PeopleResource
       //       CatalogRepoException should map to internal error.
       //       NoSuchCatalogRecordException should map to 404
       Person figure = repo.get(personId);
-      return getHistoricalFigureDV(figure);
+      return PersonDV.create(figure);
    }
 
    @POST
@@ -128,10 +127,5 @@ public class PeopleResource
    {
       EditPeopleCommand deleteCommand = repo.delete(personId);
       deleteCommand.execute();
-   }
-
-   private PersonDV getHistoricalFigureDV(Person figure)
-   {
-      return new PersonDV(figure);
    }
 }

@@ -41,8 +41,7 @@ public class PeopleSolrProxy
    public static PeopleSolrProxy createPerson(Person person)
    {
       PeopleSolrProxy proxy = new PeopleSolrProxy();
-      PersonDV personDV = new PersonDV(person);
-      Set<PersonNameDV> names = personDV.names;
+      PersonDV personDV = PersonDV.create(person);
 
       document.addField(personId, personDV.id);
       document.addField(syntheticName, constructSyntheticName(personDV.names));

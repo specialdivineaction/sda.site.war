@@ -39,7 +39,6 @@ import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.PersonName;
 import edu.tamu.tcat.trc.entries.bio.PersonNotAvailableException;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
-import edu.tamu.tcat.trc.entries.bio.postgres.model.PersonImpl;
 
 public class PsqlPeopleRepo implements PeopleRepository
 {
@@ -213,7 +212,8 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public EditPeopleCommand delete(final String personId) throws NoSuchCatalogRecordException
    {
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(new PersonDV(get(personId)), idFactory);
+      PersonDV dto = PersonDV.create(get(personId));
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto, idFactory);
       command.setCommitHook((p) -> {
          DeletePersonTask task = new DeletePersonTask(personId);
          PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personId, ChangeType.DELETED);
@@ -269,9 +269,12 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    }
 
+   private final static String GET_PERSON_SQL = "SELECT historical_figure FROM people WHERE id = ?";
+   private final static String GET_ALL_SQL = "SELECT historical_figure FROM people WHERE active = true";
+   private static final String UPDATE_SQL = "UPDATE people SET historical_figure = ?, modified = now() WHERE id = ?";
+
    private final class GetPersonTask implements ExecutorTask<Person>
    {
-      private final static String SQL = "SELECT historical_figure FROM people WHERE id = ?";
 
       private final String personId;
 
@@ -286,9 +289,8 @@ public class PsqlPeopleRepo implements PeopleRepository
          if (Thread.interrupted())
             throw new InterruptedException();
 
-         try (PreparedStatement ps = conn.prepareStatement(SQL))
+         try (PreparedStatement ps = conn.prepareStatement(GET_PERSON_SQL))
          {
-            PersonImpl result;
             ps.setString(1, personId);
             try (ResultSet rs = ps.executeQuery())
             {
@@ -296,20 +298,8 @@ public class PsqlPeopleRepo implements PeopleRepository
                   throw new NoSuchCatalogRecordException("Could not find record for person [" + personId + "]");
 
                PGobject pgo = (PGobject)rs.getObject("historical_figure");
-               String json = pgo.toString();
-               try
-               {
-                  PersonDV dv = mapper.readValue(json, PersonDV.class);
-                  result = new PersonImpl(dv);
-               }
-               catch (IOException je)
-               {
-                  // NOTE: possible data leak. If this exception is propagated to someone who isn't authorized to see this record...
-                  throw new IllegalStateException("Cannot parse person from JSON:\n" + json, je);
-               }
+               return parseJson(pgo.toString(), mapper);
             }
-
-            return result;
          }
          catch (SQLException e)
          {
@@ -318,9 +308,22 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
    }
 
+   private static Person parseJson(String json, ObjectMapper mapper)
+   {
+      try
+      {
+         PersonDV dv = mapper.readValue(json, PersonDV.class);
+         return PersonDV.instantiate(dv);
+      }
+      catch (IOException je)
+      {
+         // NOTE: possible data leak. If this exception is propagated to someone who isn't authorized to see this record...
+         throw new IllegalStateException("Cannot parse person from JSON:\n" + json, je);
+      }
+   }
+
    private final class GetAllPeopleTask implements ExecutorTask<List<Person>>
    {
-      private final static String QUERY_SQL = "SELECT historical_figure FROM people WHERE active = true";
 
       private GetAllPeopleTask()
       {
@@ -330,17 +333,14 @@ public class PsqlPeopleRepo implements PeopleRepository
       public List<Person> execute(Connection conn) throws Exception
       {
          List<Person> people = new ArrayList<Person>();
-         try (PreparedStatement ps = conn.prepareStatement(QUERY_SQL);
+         try (PreparedStatement ps = conn.prepareStatement(GET_ALL_SQL);
               ResultSet rs = ps.executeQuery())
          {
 
             while (rs.next())
             {
                PGobject pgo = (PGobject)rs.getObject("historical_figure");
-
-               PersonDV parse = mapper.readValue(pgo.toString(), PersonDV.class);
-               PersonImpl person = new PersonImpl(parse);
-               people.add(person);
+               people.add(parseJson(pgo.toString(), mapper));
             }
          }
 
@@ -351,10 +351,6 @@ public class PsqlPeopleRepo implements PeopleRepository
    private final class UpdatePersonTask implements SqlExecutor.ExecutorTask<String>
    {
 
-      private static final String UPDATE_SQL = "UPDATE people " +
-                                                    " SET historical_figure = ?," +
-                                                    "     modified = now()" +
-                                                    " WHERE id = ?";
 
       private final PersonDV histFigure;
 

@@ -103,11 +103,10 @@ public class SimplePersonResultDV
       // fall back to first element of alternate names
       if (name == null) {
          Set<PersonName> names = person.getAlternativeNames();
-         if (!names.isEmpty()) {
+         if (!names.isEmpty())
             name = names.iterator().next();
-         }
       }
 
-      return new PersonNameDV(name);
+      return PersonNameDV.create(name);
    }
 }
