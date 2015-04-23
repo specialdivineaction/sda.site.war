@@ -1,7 +1,6 @@
 package edu.tamu.tcat.trc.entries.bio.postgres;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +26,6 @@ import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.sda.catalog.psql.ExecutionFailedException;
 import edu.tamu.tcat.sda.catalog.psql.ObservableTaskWrapper;
 import edu.tamu.tcat.sda.datastore.DataUpdateObserverAdapter;
@@ -43,6 +41,16 @@ import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 public class PsqlPeopleRepo implements PeopleRepository
 {
    private static final Logger logger = Logger.getLogger(PsqlPeopleRepo.class.getName());
+
+   private final static String GET_PERSON_SQL = "SELECT historical_figure FROM people WHERE id = ?";
+   private final static String GET_ALL_SQL = "SELECT historical_figure FROM people WHERE active = true";
+   private static final String INSERT_SQL = "INSERT INTO people (historical_figure, id) VALUES(?, ?)";
+   private static final String UPDATE_SQL = "UPDATE people SET historical_figure = ?, modified = now() WHERE id = ?";
+   private final static String DELETE_SQL =  "UPDATE people SET active = false, modified = now() WHERE id = ?";
+
+   private final PeopleChangeNotifier createdNotifier = new PeopleChangeNotifier(ChangeType.CREATED);
+   private final PeopleChangeNotifier modifiedNotifier = new PeopleChangeNotifier(ChangeType.MODIFIED);
+   private final PeopleChangeNotifier deletedNotifier = new PeopleChangeNotifier(ChangeType.DELETED);
 
    private static final String ID_CONTEXT = "people";
    private SqlExecutor exec;
@@ -108,8 +116,22 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Iterable<Person> findPeople() throws CatalogRepoException
    {
-      ExecutorTask<List<Person>> task = new GetAllPeopleTask();
-      Future<List<Person>> future = exec.submit(task);
+      Future<List<Person>> future = exec.submit((conn) -> {
+         List<Person> people = new ArrayList<Person>();
+         try (PreparedStatement ps = conn.prepareStatement(GET_ALL_SQL);
+              ResultSet rs = ps.executeQuery())
+         {
+
+            while (rs.next())
+            {
+               PGobject pgo = (PGobject)rs.getObject("historical_figure");
+               people.add(parseJson(pgo.toString(), mapper));
+            }
+         }
+
+         return people;
+      });
+
       try
       {
          return future.get();
@@ -151,141 +173,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public Person get(String personId) throws NoSuchCatalogRecordException
    {
-      ExecutorTask<Person> query = new GetPersonTask(personId);
-
-      try
-      {
-         return exec.submit(query).get();
-      }
-      catch (ExecutionException e)
-      {
-         Throwable cause = e.getCause();
-         if (cause instanceof NoSuchCatalogRecordException)
-            throw (NoSuchCatalogRecordException)cause;
-         if (cause instanceof RuntimeException)
-            throw (RuntimeException)cause;
-
-         throw new IllegalStateException("Unexpected problems while attempting to retrieve biographical record [" + personId + "]", e);
-      }
-      catch (InterruptedException e) {
-         throw new IllegalStateException("Failed to retrieve biographical record [" + personId + "]", e);
-      }
-   }
-
-   // TODO implement PersonBuilder pattern
-
-   @Override
-   public EditPeopleCommand create()
-   {
-      PersonDV dto = new PersonDV();
-      dto.id = idFactory.getNextId(ID_CONTEXT);
-
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
-      command.setCommitHook((p) -> {
-         CreatePersonTask task = new CreatePersonTask(dto);
-         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(dto.id, ChangeType.CREATED);
-         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
-
-         return exec.submit(wrappedTask);
-      });
-
-
-      return command;
-   }
-
-   @Override
-   public EditPeopleCommand update(PersonDV dto) throws NoSuchCatalogRecordException
-   {
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
-      command.setCommitHook((p) -> {
-         UpdatePersonTask task = new UpdatePersonTask(p);
-         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(dto.id, ChangeType.MODIFIED);
-         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
-
-         return exec.submit(wrappedTask);
-      });
-
-
-      return command;
-   }
-
-   @Override
-   public EditPeopleCommand delete(final String personId) throws NoSuchCatalogRecordException
-   {
-      PersonDV dto = PersonDV.create(get(personId));
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
-      command.setCommitHook((p) -> {
-         DeletePersonTask task = new DeletePersonTask(personId);
-         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personId, ChangeType.DELETED);
-         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
-
-         return exec.submit(wrappedTask);
-      });
-
-
-      return command;
-   }
-
-   private PGobject toPGobject(final PersonDV histFigure) throws SQLException, IOException
-   {
-      PGobject jsonObject = new PGobject();
-      jsonObject.setType("json");
-      jsonObject.setValue(mapper.writeValueAsString(histFigure));
-      return jsonObject;
-   }
-
-   private final class DeletePersonTask implements SqlExecutor.ExecutorTask<String>
-   {
-      private final static String delete_sql =  "UPDATE people " +
-                                                    "SET active = false, " +
-                                                    "  modified = now()  " +
-                                                    "WHERE id = ?";
-      private final String personId;
-
-      private DeletePersonTask(String personId)
-      {
-         this.personId = personId;
-      }
-
-      @Override
-      public String execute(Connection conn) throws Exception
-      {
-         try (PreparedStatement ps = conn.prepareStatement(delete_sql))
-         {
-            ps.setString(1, personId);
-
-            int ct = ps.executeUpdate();
-            if (ct != 1)
-               throw new IllegalStateException("Failed to de-activate historical figure. Unexpected number of rows updates [" + ct + "]");
-         }
-         catch (SQLException e)
-         {
-            throw new IllegalStateException("Faield to de-activate personId:" + personId, e);
-         }
-
-         return personId;
-
-      }
-
-   }
-
-   private final static String GET_PERSON_SQL = "SELECT historical_figure FROM people WHERE id = ?";
-   private final static String GET_ALL_SQL = "SELECT historical_figure FROM people WHERE active = true";
-   private static final String UPDATE_SQL = "UPDATE people SET historical_figure = ?, modified = now() WHERE id = ?";
-
-   private final class GetPersonTask implements ExecutorTask<Person>
-   {
-
-      private final String personId;
-
-      private GetPersonTask(String personId)
-      {
-         this.personId = personId;
-      }
-
-      @Override
-      public Person execute(Connection conn) throws NoSuchCatalogRecordException, InterruptedException
-      {
+      Future<Person> future = exec.submit((conn) -> {
          if (Thread.interrupted())
             throw new InterruptedException();
 
@@ -305,7 +193,153 @@ public class PsqlPeopleRepo implements PeopleRepository
          {
             throw new IllegalStateException("Faield to retrieve person.", e);
          }
+      });
+
+      try
+      {
+         return future.get();
       }
+      catch (ExecutionException e)
+      {
+         Throwable cause = e.getCause();
+         if (cause instanceof NoSuchCatalogRecordException)
+            throw (NoSuchCatalogRecordException)cause;
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException)cause;
+
+         throw new IllegalStateException("Unexpected problems while attempting to retrieve biographical record [" + personId + "]", e);
+      }
+      catch (InterruptedException e) {
+         throw new IllegalStateException("Failed to retrieve biographical record [" + personId + "]", e);
+      }
+   }
+
+   @Override
+   public EditPeopleCommand create()
+   {
+      PersonDV dto = new PersonDV();
+      dto.id = idFactory.getNextId(ID_CONTEXT);
+
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
+      command.setCommitHook((p) -> {
+         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(makeCreateTask(p), createdNotifier);
+
+         return exec.submit(wrappedTask);
+      });
+
+
+      return command;
+   }
+
+   @Override
+   public EditPeopleCommand update(PersonDV dto) throws NoSuchCatalogRecordException
+   {
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
+      command.setCommitHook((p) -> {
+         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(makeUpdateTask(p), modifiedNotifier);
+
+         return exec.submit(wrappedTask);
+      });
+
+
+      return command;
+   }
+
+   @Override
+   public EditPeopleCommand delete(final String personId) throws NoSuchCatalogRecordException
+   {
+      PersonDV dto = PersonDV.create(get(personId));
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
+      command.setCommitHook((p) -> {
+         ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(makeDeleteTask(personId), deletedNotifier);
+
+         return exec.submit(wrappedTask);
+      });
+
+
+      return command;
+   }
+
+   private SqlExecutor.ExecutorTask<String> makeDeleteTask(final String personId)
+   {
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(DELETE_SQL))
+         {
+            ps.setString(1, personId);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new IllegalStateException("Failed to de-activate historical figure. Unexpected number of rows updates [" + ct + "]");
+         }
+         catch (SQLException e)
+         {
+            throw new IllegalStateException("Faield to de-activate personId:" + personId, e);
+         }
+
+         return personId;
+      };
+   }
+
+   private SqlExecutor.ExecutorTask<String> makeCreateTask(final PersonDV histFigure)
+   {
+      String id = histFigure.id;
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(INSERT_SQL))
+         {
+            PGobject jsonObject = toPGobject(histFigure);
+
+            ps.setObject(1, jsonObject);
+            ps.setString(2, id);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
+         }
+         catch (IOException e)
+         {
+            // NOTE this is an internal configuration error. The JsonMapper should be configured to
+            //      serialize HistoricalFigureDV instances correctly.
+            throw new ExecutionFailedException("Failed to serialize the supplied historical figure [" + id + "]", e);
+         }
+         catch (SQLException sqle)
+         {
+            throw new ExecutionFailedException("Failed to save historical figure [" + id + "]", sqle);
+         }
+
+         return histFigure.id;
+      };
+   }
+
+   private SqlExecutor.ExecutorTask<String> makeUpdateTask(final PersonDV histFigure)
+   {
+      return (conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(UPDATE_SQL))
+         {
+            PGobject json = toPGobject(histFigure);
+            ps.setObject(1, json);
+            ps.setString(2, histFigure.id);
+
+            int ct = ps.executeUpdate();
+            if (ct != 1)
+               throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
+         }
+         catch (IOException e)
+         {
+            throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
+         }
+
+         return histFigure.id;
+      };
+   }
+
+
+   private PGobject toPGobject(PersonDV dto) throws SQLException, IOException
+   {
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(mapper.writeValueAsString(dto));
+
+      return jsonObject;
    }
 
    private static Person parseJson(String json, ObjectMapper mapper)
@@ -322,103 +356,20 @@ public class PsqlPeopleRepo implements PeopleRepository
       }
    }
 
-   private final class GetAllPeopleTask implements ExecutorTask<List<Person>>
+   private void notifyPersonUpdate(ChangeType type, String id)
    {
-
-      private GetAllPeopleTask()
-      {
-      }
-
-      @Override
-      public List<Person> execute(Connection conn) throws Exception
-      {
-         List<Person> people = new ArrayList<Person>();
-         try (PreparedStatement ps = conn.prepareStatement(GET_ALL_SQL);
-              ResultSet rs = ps.executeQuery())
-         {
-
-            while (rs.next())
-            {
-               PGobject pgo = (PGobject)rs.getObject("historical_figure");
-               people.add(parseJson(pgo.toString(), mapper));
+      PeopleChangeEventImpl evt = new PeopleChangeEventImpl(type, id);
+      listeners.forEach(ears -> {
+         notifications.submit(() -> {
+            try{
+               ears.accept(evt);
             }
-         }
-
-         return people;
-      }
-   }
-
-   private final class UpdatePersonTask implements SqlExecutor.ExecutorTask<String>
-   {
-
-
-      private final PersonDV histFigure;
-
-      private UpdatePersonTask(PersonDV histFigure)
-      {
-         this.histFigure = histFigure;
-      }
-
-      @Override
-      public String execute(Connection conn) throws SQLException
-      {
-         try (PreparedStatement ps = conn.prepareStatement(UPDATE_SQL))
-         {
-            PGobject jsonObject = toPGobject(histFigure);
-            ps.setObject(1, jsonObject);
-            ps.setString(2, histFigure.id);
-
-            int ct = ps.executeUpdate();
-            if (ct != 1)
-               throw new IllegalStateException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-         }
-         catch (IOException e)
-         {
-            throw new IllegalArgumentException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
-         }
-
-         return histFigure.id;
-      }
-   }
-
-   private final class CreatePersonTask implements SqlExecutor.ExecutorTask<String>
-   {
-      private static final String INSERT_SQL = "INSERT INTO people (id, historical_figure) VALUES(?, ?)";
-
-      private final PersonDV histFigure;
-
-      private CreatePersonTask(PersonDV histFigure)
-      {
-         this.histFigure = histFigure;
-      }
-
-      @Override
-      public String execute(Connection conn) throws InterruptedException, ExecutionFailedException
-      {
-         try (PreparedStatement ps = conn.prepareStatement(INSERT_SQL))
-         {
-            PGobject jsonObject = toPGobject(histFigure);
-
-            ps.setString(1, histFigure.id);
-            ps.setObject(2, jsonObject);
-
-            int ct = ps.executeUpdate();
-            if (ct != 1)
-               throw new ExecutionFailedException("Failed to create historical figure. Unexpected number of rows updates [" + ct + "]");
-         }
-         catch (IOException e)
-         {
-            // NOTE this is an internal configuration error. The JsonMapper should be configured to
-            //      serialize HistoricalFigureDV instances correctly.
-            throw new ExecutionFailedException("Failed to serialize the supplied historical figure [" + histFigure + "]", e);
-         }
-         catch (SQLException sqle)
-         {
-            throw new ExecutionFailedException("Failed to save historical figure [" + histFigure + "]", sqle);
-         }
-
-         return histFigure.id;
-      }
+            catch(Exception ex)
+            {
+               logger.log(Level.WARNING, "Call to update people listener failed.", ex);
+            }
+         });
+      });
    }
 
    @Override
@@ -468,35 +419,17 @@ public class PsqlPeopleRepo implements PeopleRepository
 
    private final class PeopleChangeNotifier extends DataUpdateObserverAdapter<String>
    {
-      private final String id;
       private final ChangeType type;
 
-      public PeopleChangeNotifier(String id, ChangeType type)
+      public PeopleChangeNotifier(ChangeType type)
       {
          this.type = type;
-         this.id = id;
       }
 
       @Override
-      public void onFinish(String result)
+      public void onFinish(String id)
       {
          notifyPersonUpdate(type, id);
       }
-   }
-
-   private void notifyPersonUpdate(ChangeType type, String id)
-   {
-      PeopleChangeEventImpl evt = new PeopleChangeEventImpl(type, id);
-      listeners.forEach(ears -> {
-         notifications.submit(() -> {
-            try{
-               ears.accept(evt);
-            }
-            catch(Exception ex)
-            {
-               logger.log(Level.WARNING, "Call to update people listener failed.", ex);
-            }
-         });
-      });
    }
 }
