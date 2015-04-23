@@ -5,11 +5,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import edu.tamu.tcat.catalogentries.IdFactory;
-import edu.tamu.tcat.catalogentries.events.HistoricalEvent;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.trc.entries.bio.EditPeopleCommand;
-import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
 
@@ -17,14 +14,12 @@ public class EditPeopleCommandImpl implements EditPeopleCommand
 {
 
    private final PersonDV person;
-   private final IdFactory idFactory;
 
    private Function<PersonDV, Future<String>> commitHook;
 
-   EditPeopleCommandImpl(PersonDV person, IdFactory idFactory)
+   EditPeopleCommandImpl(PersonDV person)
    {
       this.person = person;
-      this.idFactory = idFactory;
    }
 
    public void setCommitHook(Function<PersonDV, Future<String>> hook)

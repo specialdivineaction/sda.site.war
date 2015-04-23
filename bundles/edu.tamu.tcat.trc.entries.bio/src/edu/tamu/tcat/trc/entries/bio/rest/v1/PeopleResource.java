@@ -23,7 +23,6 @@ import edu.tamu.tcat.trc.entries.bio.PeopleSearchService;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
-import edu.tamu.tcat.trc.entries.bio.rest.v1.model.PersonId;
 
 
 @Path("/people")
@@ -127,5 +126,14 @@ public class PeopleResource
    {
       EditPeopleCommand deleteCommand = repo.delete(personId);
       deleteCommand.execute();
+   }
+
+
+   /**
+    * Wrapper to format JSON results
+    */
+   public class PersonId
+   {
+      public String id;
    }
 }

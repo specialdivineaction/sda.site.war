@@ -177,13 +177,13 @@ public class PsqlPeopleRepo implements PeopleRepository
    @Override
    public EditPeopleCommand create()
    {
-      PersonDV person = new PersonDV();
-      person.id = idFactory.getNextId(ID_CONTEXT);
+      PersonDV dto = new PersonDV();
+      dto.id = idFactory.getNextId(ID_CONTEXT);
 
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(person, idFactory);
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
       command.setCommitHook((p) -> {
-         CreatePersonTask task = new CreatePersonTask(person);
-         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(person.id, ChangeType.CREATED);
+         CreatePersonTask task = new CreatePersonTask(dto);
+         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(dto.id, ChangeType.CREATED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
          return exec.submit(wrappedTask);
@@ -194,12 +194,12 @@ public class PsqlPeopleRepo implements PeopleRepository
    }
 
    @Override
-   public EditPeopleCommand update(PersonDV personDV) throws NoSuchCatalogRecordException
+   public EditPeopleCommand update(PersonDV dto) throws NoSuchCatalogRecordException
    {
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(personDV, idFactory);
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
       command.setCommitHook((p) -> {
          UpdatePersonTask task = new UpdatePersonTask(p);
-         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personDV.id, ChangeType.MODIFIED);
+         PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(dto.id, ChangeType.MODIFIED);
          ObservableTaskWrapper<String> wrappedTask = new ObservableTaskWrapper<String>(task, peopleChangeNotifier);
 
          return exec.submit(wrappedTask);
@@ -213,7 +213,7 @@ public class PsqlPeopleRepo implements PeopleRepository
    public EditPeopleCommand delete(final String personId) throws NoSuchCatalogRecordException
    {
       PersonDV dto = PersonDV.create(get(personId));
-      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto, idFactory);
+      EditPeopleCommandImpl command = new EditPeopleCommandImpl(dto);
       command.setCommitHook((p) -> {
          DeletePersonTask task = new DeletePersonTask(personId);
          PeopleChangeNotifier peopleChangeNotifier = new PeopleChangeNotifier(personId, ChangeType.DELETED);
