@@ -1,7 +1,9 @@
-package edu.tamu.tcat.trc.entries.bib;
+package edu.tamu.tcat.trc.entries.bib.copies;
 
 import java.net.URI;
 import java.util.UUID;
+
+import edu.tamu.tcat.trc.entries.bib.Work;
 
 /**
  * Associates a {@link DigitalCopy} with a bibliographic {@link Work} or portion of a work

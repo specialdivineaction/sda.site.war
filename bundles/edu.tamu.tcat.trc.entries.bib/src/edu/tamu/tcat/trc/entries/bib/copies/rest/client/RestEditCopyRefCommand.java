@@ -1,14 +1,14 @@
-package edu.tamu.tcat.trc.entries.bib.rest.v1.client;
+package edu.tamu.tcat.trc.entries.bib.copies.rest.client;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
-import edu.tamu.tcat.trc.entries.bib.dto.BaseEditCopyRefCmd;
-import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
-import edu.tamu.tcat.trc.entries.bib.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.model.BaseEditCopyRefCmd;
+import edu.tamu.tcat.trc.entries.bib.copies.model.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copies.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 
 public class RestEditCopyRefCommand extends BaseEditCopyRefCmd

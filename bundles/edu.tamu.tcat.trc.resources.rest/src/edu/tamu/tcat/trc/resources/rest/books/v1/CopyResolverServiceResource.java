@@ -8,7 +8,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverRegistry;
 import edu.tamu.tcat.trc.resources.books.resolve.CopyResolverStrategy;
 import edu.tamu.tcat.trc.resources.books.resolve.DigitalCopy;
@@ -22,12 +21,6 @@ public class CopyResolverServiceResource
    private static final Logger logger = Logger.getLogger(CopyResolverServiceResource.class.getName());
 
    private CopyResolverRegistry copyResolverReg;
-   private CopyReferenceRepository copyRefRepo;
-
-   public void setRepo(CopyReferenceRepository dclRepo)
-   {
-      this.copyRefRepo = dclRepo;
-   }
 
    public void setResolverRegistry(CopyResolverRegistry registry)
    {

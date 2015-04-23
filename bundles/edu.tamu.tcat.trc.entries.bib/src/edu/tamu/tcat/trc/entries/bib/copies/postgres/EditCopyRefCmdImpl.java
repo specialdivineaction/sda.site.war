@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.postgres;
+package edu.tamu.tcat.trc.entries.bib.copies.postgres;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,12 +12,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
-import edu.tamu.tcat.trc.entries.bib.dto.BaseEditCopyRefCmd;
-import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
-import edu.tamu.tcat.trc.entries.bib.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copies.model.BaseEditCopyRefCmd;
+import edu.tamu.tcat.trc.entries.bib.copies.model.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copies.postgres.PsqlDigitalCopyLinkRepo.UpdateEventFactory;
 import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;

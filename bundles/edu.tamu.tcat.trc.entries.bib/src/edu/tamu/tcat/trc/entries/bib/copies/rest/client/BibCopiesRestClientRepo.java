@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.rest.v1.client;
+package edu.tamu.tcat.trc.entries.bib.copies.rest.client;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.CopyReferenceException;
-import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReferenceException;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReferenceRepository;
+import edu.tamu.tcat.trc.entries.bib.copies.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 import edu.tamu.tcat.trc.entries.notification.UpdateListener;
 

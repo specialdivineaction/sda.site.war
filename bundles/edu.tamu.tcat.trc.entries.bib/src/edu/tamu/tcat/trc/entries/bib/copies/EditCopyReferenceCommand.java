@@ -1,10 +1,11 @@
-package edu.tamu.tcat.trc.entries.bib;
+package edu.tamu.tcat.trc.entries.bib.copies;
 
 import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
+import edu.tamu.tcat.trc.entries.bib.copies.model.CopyRefDTO;
 
 public interface EditCopyReferenceCommand
 {

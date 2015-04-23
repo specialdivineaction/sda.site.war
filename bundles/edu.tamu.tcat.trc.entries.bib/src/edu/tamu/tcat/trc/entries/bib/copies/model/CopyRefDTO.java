@@ -1,9 +1,9 @@
-package edu.tamu.tcat.trc.entries.bib.dto;
+package edu.tamu.tcat.trc.entries.bib.copies.model;
 
 import java.net.URI;
 import java.util.UUID;
 
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
 
 public class CopyRefDTO
 {

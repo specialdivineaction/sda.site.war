@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Texas A&M Engineering Experiment Station
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: edu.tamu.tcat.trc.entries.bib,
+ edu.tamu.tcat.trc.entries.bib.copies,
  edu.tamu.tcat.trc.entries.bib.dto,
  edu.tamu.tcat.trc.entries.bib.postgres,
  edu.tamu.tcat.trc.entries.bib.rest.v1,

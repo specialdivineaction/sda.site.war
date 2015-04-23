@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.rest.v1;
+package edu.tamu.tcat.trc.entries.bib.copies.rest;
 
 import java.net.URI;
 import java.util.List;
@@ -25,12 +25,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.CopyReferenceRepository;
-import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.dto.CopyRefDTO;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReferenceRepository;
+import edu.tamu.tcat.trc.entries.bib.copies.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copies.model.CopyRefDTO;
 
 @Path("/copies")
 public class CopiesReferenceResource

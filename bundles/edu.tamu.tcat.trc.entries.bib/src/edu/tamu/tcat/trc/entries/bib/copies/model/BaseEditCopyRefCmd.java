@@ -1,11 +1,11 @@
-package edu.tamu.tcat.trc.entries.bib.dto;
+package edu.tamu.tcat.trc.entries.bib.copies.model;
 
 import java.net.URI;
 import java.util.Objects;
 import java.util.UUID;
 
-import edu.tamu.tcat.trc.entries.bib.CopyReference;
-import edu.tamu.tcat.trc.entries.bib.EditCopyReferenceCommand;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
+import edu.tamu.tcat.trc.entries.bib.copies.EditCopyReferenceCommand;
 
 public abstract class BaseEditCopyRefCmd implements EditCopyReferenceCommand
 {

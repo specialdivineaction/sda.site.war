@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib;
+package edu.tamu.tcat.trc.entries.bib.copies;
 
 public class CopyReferenceException extends Exception
 {
