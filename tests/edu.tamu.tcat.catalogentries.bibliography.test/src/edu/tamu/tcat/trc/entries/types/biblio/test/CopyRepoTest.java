@@ -1,6 +1,7 @@
 package edu.tamu.tcat.trc.entries.types.biblio.test;
 
 import java.net.URI;
+import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -62,8 +63,18 @@ public class CopyRepoTest
    }
 
    @After
-   public void tearDownTest()
+   public void tearDownTest() throws InterruptedException, ExecutionException
    {
+      String sql = "DELETE FROM copy_reference WHERE reference->>'associatedEntry' LIKE 'test%'";
+      Future<Void> future = exec.submit((conn) -> {
+         try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+            return null;
+         }
+      });
+
+      future.get();
+
       repo.dispose();
       exec.close();
       dsp.dispose();
@@ -71,10 +82,10 @@ public class CopyRepoTest
    }
 
    @Test
-   public void doSomething() throws UpdateCanceledException, InterruptedException, ExecutionException
+   public void testReferenceCreation() throws UpdateCanceledException, InterruptedException, ExecutionException
    {
       EditCopyReferenceCommand editor = repo.create();
-      editor.setAssociatedEntry(URI.create("works/1"));
+      editor.setAssociatedEntry(URI.create("test/works/1"));
       String id = "htid:000000000#ark+=13960=t00z72x8w";
       editor.setCopyId(id);
       editor.setTitle("Copy from my harddrive");
@@ -83,6 +94,5 @@ public class CopyRepoTest
 
       Future<CopyReference> future = editor.execute();
       CopyReference ref = future.get();
-
    }
 }
