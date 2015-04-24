@@ -38,13 +38,13 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 {
    private static final Logger logger = Logger.getLogger(PsqlDigitalCopyLinkRepo.class.getName());
 
-   private static final String GET_SQL =
+   private static final String GET_ALL_SQL =
          "SELECT reference "
         +  "FROM copy_references "
-        + "WHERE reference->>'associatedEntry' LIKE ? AND active = true"
-        + "ORDER BY reference->'associatedEntry'";
+        + "WHERE reference->>'associatedEntry' LIKE ? AND active = true "
+        + "ORDER BY reference->>'associatedEntry'";
 
-   private static final String GET_ALL_SQL =
+   private static final String GET_SQL =
          "SELECT reference "
                +  "FROM copy_references "
                + "WHERE ref_id = ? AND active = true";
