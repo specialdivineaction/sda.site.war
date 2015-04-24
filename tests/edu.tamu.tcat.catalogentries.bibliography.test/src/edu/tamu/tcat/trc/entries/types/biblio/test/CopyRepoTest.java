@@ -1,7 +1,10 @@
 package edu.tamu.tcat.trc.entries.types.biblio.test;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,6 +16,8 @@ import edu.tamu.tcat.db.core.DataSourceException;
 import edu.tamu.tcat.db.postgresql.exec.PostgreSqlExecutor;
 import edu.tamu.tcat.osgi.config.file.SimpleFileConfigurationProperties;
 import edu.tamu.tcat.sda.catalog.psql.provider.PsqlDataSourceProvider;
+import edu.tamu.tcat.trc.entries.bib.UpdateCanceledException;
+import edu.tamu.tcat.trc.entries.bib.copies.CopyReference;
 import edu.tamu.tcat.trc.entries.bib.copies.EditCopyReferenceCommand;
 import edu.tamu.tcat.trc.entries.bib.copies.postgres.PsqlDigitalCopyLinkRepo;
 
@@ -53,6 +58,7 @@ public class CopyRepoTest
 
       repo = new PsqlDigitalCopyLinkRepo();
       repo.setDatabaseExecutor(exec);
+      repo.activate();
    }
 
    @After
@@ -65,8 +71,18 @@ public class CopyRepoTest
    }
 
    @Test
-   public void doSomething()
+   public void doSomething() throws UpdateCanceledException, InterruptedException, ExecutionException
    {
-      EditCopyReferenceCommand create = repo.create();
+      EditCopyReferenceCommand editor = repo.create();
+      editor.setAssociatedEntry(URI.create("works/1"));
+      String id = "htid:000000000#ark+=13960=t00z72x8w";
+      editor.setCopyId(id);
+      editor.setTitle("Copy from my harddrive");
+      editor.setSummary("A copy reference example.");
+      editor.setRights("full view");
+
+      Future<CopyReference> future = editor.execute();
+      CopyReference ref = future.get();
+
    }
 }

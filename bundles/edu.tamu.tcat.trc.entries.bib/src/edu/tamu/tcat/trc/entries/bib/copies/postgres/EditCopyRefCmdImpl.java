@@ -68,11 +68,11 @@ public class EditCopyRefCmdImpl extends BaseEditCopyRefCmd implements EditCopyRe
    @Override
    public synchronized Future<CopyReference> execute() throws UpdateCanceledException
    {
-      if (executed.compareAndSet(false, true))
+      if (!executed.compareAndSet(false, true))
          throw new IllegalStateException("This edit copy command has already been invoked.");
 
       UpdateEvent<CopyReference> evt = constructEvent();
-      if (notifier.before(evt))
+      if (!notifier.before(evt))
          throw new UpdateCanceledException();
 
       String sql = isNew() ? CREATE_SQL : UPDATE_SQL;
