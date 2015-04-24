@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.core.DataSourceException;
 import edu.tamu.tcat.db.postgresql.exec.PostgreSqlExecutor;
 import edu.tamu.tcat.osgi.config.file.SimpleFileConfigurationProperties;
@@ -65,7 +66,7 @@ public class CopyRepoTest
    @After
    public void tearDownTest() throws InterruptedException, ExecutionException
    {
-      String sql = "DELETE FROM copy_reference WHERE reference->>'associatedEntry' LIKE 'test%'";
+      String sql = "DELETE FROM copy_references WHERE reference->>'associatedEntry' LIKE 'test%'";
       Future<Void> future = exec.submit((conn) -> {
          try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.executeUpdate();
@@ -88,11 +89,40 @@ public class CopyRepoTest
       editor.setAssociatedEntry(URI.create("test/works/1"));
       String id = "htid:000000000#ark+=13960=t00z72x8w";
       editor.setCopyId(id);
-      editor.setTitle("Copy from my harddrive");
+      editor.setTitle("Copy from my hard drive");
       editor.setSummary("A copy reference example.");
       editor.setRights("full view");
 
       Future<CopyReference> future = editor.execute();
       CopyReference ref = future.get();
    }
+
+   @Test
+   public void testReferenceRetrevial() throws UpdateCanceledException, InterruptedException, ExecutionException, NoSuchCatalogRecordException
+   {
+      EditCopyReferenceCommand editor = repo.create();
+      URI workOneUri = URI.create("test/works/1/");
+
+      editor.setAssociatedEntry(workOneUri);
+      String id = "htid:000000000#ark+=13960=t00z72x8w";
+      editor.setCopyId(id);
+      editor.setTitle("Copy from my harddrive");
+      editor.setSummary("A copy reference example.");
+      editor.setRights("full view");
+
+      Future<CopyReference> future = editor.execute();
+      CopyReference ref = future.get();
+      ref.getId();
+
+      CopyReference retrieved = repo.get(ref.getId());
+      repo.getCopies(workOneUri);
+
+
+   }
+
+   // TODO make sure we can get one copy back.
+   // TODO make sure we can get all copies for a work back
+   //       -- insert for test/works/1, test/works/1/edition/2, test/works/1/edition/3, test/works/1/edition/2/volume/1
+   //       -- make sure all come back
+   // TODO edit ref, save, make sure results come back OK
 }
