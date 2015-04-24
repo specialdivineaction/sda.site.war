@@ -155,10 +155,10 @@ public class WorksResource
 
    @DELETE
    @Path("{workid}")
-   public void deleteWork(@PathParam(value = "workid") String workId) throws NoSuchCatalogRecordException
+   public void deleteWork(@PathParam(value = "workid") String workId)
    {
-      EditWorkCommand workcmd = repo.delete(workId);
-      workcmd.execute();
+      // FIXME handle response correctly
+      repo.delete(workId);
    }
 
    @GET

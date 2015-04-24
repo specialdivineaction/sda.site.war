@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.db.exec.sql.SqlExecutor.ExecutorTask;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Edition;
@@ -53,8 +54,9 @@ public class PsqlWorkRepo implements WorkRepository
    private final static String DELETE_SQL = "UPDATE works SET active = false WHERE id = ?";
 
 
-
    public static final String WORK_CONTEXT = "works";
+
+   private final WorkUpdateNotifier deleteNotifier = new WorkUpdateNotifier(ChangeType.DELETED);
 
    private SqlExecutor exec;
    private ObjectMapper mapper;
@@ -280,20 +282,11 @@ public class PsqlWorkRepo implements WorkRepository
       }
    }
 
-   private final WorkUpdateNotifier deleteNotifier = new WorkUpdateNotifier(ChangeType.DELETED);
    @Override
-   public EditWorkCommand delete(String id) throws NoSuchCatalogRecordException
+   public void delete(String id)
    {
-      Work work = getWork(id);
-      EditWorkCommandImpl command = new EditWorkCommandImpl(WorkDV.create(work), idFactory);
-      command.setCommitHook((workDv) -> {
-         ObservableTaskWrapper<String> wrapTask = new ObservableTaskWrapper<String>(makeDeleteTask(id), deleteNotifier);
-
-         Future<String> submitWork = exec.submit(wrapTask);
-         return submitWork;
-      });
-
-      return command;
+      ExecutorTask<String> task = makeDeleteTask(id);
+      exec.submit(new ObservableTaskWrapper<String>(task, deleteNotifier));
    }
 
    private String getUpdateSql(ChangeType changeType)

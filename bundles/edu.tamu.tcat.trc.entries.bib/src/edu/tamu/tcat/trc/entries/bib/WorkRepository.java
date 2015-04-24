@@ -81,7 +81,7 @@ public interface WorkRepository extends DataStore
     */
    EditWorkCommand edit(String id) throws NoSuchCatalogRecordException;
 
-   EditWorkCommand delete(String id) throws NoSuchCatalogRecordException;
+   void delete(String id);
 
    @Deprecated
    AutoCloseable addBeforeUpdateListener(Consumer<WorksChangeEvent> ears);
