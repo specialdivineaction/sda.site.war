@@ -41,7 +41,7 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
    private static final String GET_SQL =
          "SELECT reference "
         +  "FROM copy_references "
-        + "WHERE reference->'associatedEntry' LIKE ? AND active = true"
+        + "WHERE reference->>'associatedEntry' LIKE ? AND active = true"
         + "ORDER BY reference->'associatedEntry'";
 
    private static final String GET_ALL_SQL =
