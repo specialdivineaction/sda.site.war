@@ -65,9 +65,14 @@
     <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.bib</module>
     <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.bio</module>
     <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.reln</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.books.hathitrust</module>
+    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.rest</module>
     
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json</module>
     <module>${repo-ed-path}/edu.tamu.tcat.oss.json.jackson</module>
+    
+    <module>${repo-ed-path}/edu.tamu.tcat.osgi.solr</module>
   </modules>
 
   <repositories>
@@ -76,6 +81,7 @@
       <layout>p2</layout>
       <url>${repo-base-url}/Eclipse.Repository.Mirror.Luna/lastSuccessfulBuild/artifact/target/repository/</url>
     </repository>
+    
     <repository>
       <id>Eclipse Orbit</id>
       <layout>p2</layout>
@@ -99,11 +105,19 @@
       <layout>p2</layout>
       <url>${repo-base-url}/oss.auth-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
+    
+    <repository>
+      <id>HT</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/oss.hathitrust-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
+    
     <repository>
       <id>CITD Releases</id>
       <layout>p2</layout>
       <url>https://download.citd.tamu.edu/sdk</url>
     </repository>
+    
     <repository>
       <id>Core Deps</id>
       <layout>p2</layout>

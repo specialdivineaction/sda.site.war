@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SDA Catalog REST API
-Bundle-SymbolicName: edu.tamu.tcat.catalogentries.rest;singleton:=true
+Bundle-SymbolicName: edu.tamu.tcat.sda.catalog.rest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: edu.tamu.tcat.sda.catalog.rest.internal.Activator
 Bundle-Vendor: Texas A&M Engineering Experiment Station
