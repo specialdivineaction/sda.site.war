@@ -29,9 +29,10 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
+import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.rest.v1.model.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 @Path("/works")
 public class WorksResource
@@ -39,6 +40,7 @@ public class WorksResource
    private static final Logger logger = Logger.getLogger(WorksResource.class.getName());
 //   private ConfigurationProperties properties;
    private WorkRepository repo;
+   private WorkSearchService workSearchService;
 
    public WorksResource()
    {
@@ -54,6 +56,12 @@ public class WorksResource
    public void setRepository(WorkRepository repo)
    {
       this.repo = repo;
+   }
+
+   public void setWorkService(WorkSearchService svc)
+   {
+      this.workSearchService = svc;
+
    }
 
    // called by DS
