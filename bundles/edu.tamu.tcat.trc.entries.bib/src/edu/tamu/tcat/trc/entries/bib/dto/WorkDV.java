@@ -58,8 +58,9 @@ public class WorkDV
       dto.otherAuthors = new ArrayList<>();
       work.getOtherAuthors().forEach(ref -> dto.otherAuthors.add(AuthorRefDV.create(ref)));
 
-      Collection<Title> altTitles = work.getTitle().getAlternateTitles();
-      dto.titles = altTitles.stream().map(TitleDV::create).collect(Collectors.toSet());
+      Collection<Title> titles = work.getTitle().getAlternateTitles();
+      titles.add(work.getTitle().getCanonicalTitle());
+      dto.titles = titles.stream().map(TitleDV::create).collect(Collectors.toSet());
 
       dto.series = work.getSeries();
       dto.summary = work.getSummary();
