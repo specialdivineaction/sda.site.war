@@ -1,11 +1,13 @@
 package edu.tamu.tcat.trc.entries.bio.rest.v1;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -15,14 +17,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.catalogentries.CatalogRepoException;
 import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.trc.entries.bio.EditPeopleCommand;
-import edu.tamu.tcat.trc.entries.bio.PeopleQueryCommand;
 import edu.tamu.tcat.trc.entries.bio.PeopleRepository;
 import edu.tamu.tcat.trc.entries.bio.PeopleSearchService;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
-import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
 
 
 @Path("/people")
@@ -62,19 +63,29 @@ public class PeopleResource
    }
 
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public Collection<SimplePersonDV> listPeople(@QueryParam(value="syntheticName") String prefix,
-                                                @QueryParam(value="numResults") int numResults,
-                                                @QueryParam(value="familyName") String familyName)
-   {
-      PeopleQueryCommand command = peopleSearchService.createQueryCommand();
-      if(familyName != null)
-         command.byFamilyName(familyName);
-      command.search(prefix);
-      command.setRowLimit(numResults);
+   @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+   public List<SimplePersonResultDV> listPeople(@QueryParam(value="syntheticName") String prefix,
+                                                @DefaultValue("50") @QueryParam(value="numResults") int numResults)
 
-      Collection<SimplePersonDV> results2 = command.getResults();
-      return Collections.unmodifiableCollection(results2);
+   {
+      try {
+         List<SimplePersonResultDV> results = new ArrayList<>();
+
+         Iterable<Person> people = (prefix == null) ? repo.findPeople() : repo.findByName(prefix);
+         for (Person person : people) {
+            results.add(new SimplePersonResultDV(person));
+
+            if (results.size() == numResults) {
+               break;
+            }
+         }
+
+         return results;
+      }
+      catch (CatalogRepoException e) {
+         e.printStackTrace();
+         return Collections.emptyList();
+      }
    }
 
    @GET
