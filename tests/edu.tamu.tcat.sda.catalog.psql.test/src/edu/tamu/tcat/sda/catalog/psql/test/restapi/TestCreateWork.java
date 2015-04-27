@@ -17,6 +17,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.oss.json.JsonException;
 import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
 import edu.tamu.tcat.sda.catalog.psql.test.data.Works;
@@ -34,13 +37,17 @@ public class TestCreateWork
    private static HttpDelete delete;
    private static CloseableHttpClient client;
    private static URI uri;
-   private static JacksonJsonMapper mapper = new JacksonJsonMapper();
+
+   static final ObjectMapper mapper;
+   static {
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+   }
 
    @BeforeClass
    public static void initHTTPConnection()
    {
 
-      mapper.activate();      // might ought to load as OSGi service?
 
       uri = URI.create("http://localhost:9999/catalog/services/works");
       client = HttpClientBuilder.create().build();

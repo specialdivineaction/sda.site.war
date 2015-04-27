@@ -15,9 +15,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.tamu.tcat.oss.json.JsonException;
-import edu.tamu.tcat.oss.json.JsonTypeReference;
-import edu.tamu.tcat.oss.json.jackson.JacksonJsonMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bib.solr.WorksController;
 
@@ -26,12 +27,14 @@ public class TestWorksController
    private static HttpGet  get;
    private static CloseableHttpClient client;
    private static URI uri;
-   private static JacksonJsonMapper mapper = new JacksonJsonMapper();
+   private static ObjectMapper mapper;
 
    @BeforeClass
    public static void initHTTPConnection()
    {
-      mapper.activate();      // might ought to load as OSGi service?
+      mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
       uri = URI.create("http://localhost:9999/catalog/services/works");
       client = HttpClientBuilder.create().build();
 
@@ -72,10 +75,10 @@ public class TestWorksController
          {
             try
             {
-               works = mapper.fromJSON(content, new JsonTypeReference<List<WorkDV>>(){});
+               works = mapper.readValue(content, new TypeReference<List<WorkDV>>(){});
                content.close();
             }
-            catch (JsonException e)
+            catch (IOException e)
             {
                e.printStackTrace();
             }
