@@ -3,12 +3,14 @@ package edu.tamu.tcat.trc.entries.types.biblio.test;
 import java.net.URI;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -100,24 +102,38 @@ public class CopyRepoTest
    @Test
    public void testReferenceRetrevial() throws UpdateCanceledException, InterruptedException, ExecutionException, NoSuchCatalogRecordException
    {
-      EditCopyReferenceCommand editor = repo.create();
-      URI workOneUri = URI.create("test/works/1/");
+      URI workOneUri = URI.create("test/works/1");
+      CopyReference ref1 = createReference("test/works/1", "htid:001383874#mdp.39015003847145");
+      createReference("test/works/1/edition/2", "htid:001383874#mdp.39015003847145");
+      createReference("test/works/1/edition/3", "htid:001383874#mdp.39015003847145");
+      createReference("test/works/1/edition/3/volume/1", "htid:001383874#mdp.39015003847145");
 
-      editor.setAssociatedEntry(workOneUri);
-      String id = "htid:000000000#ark+=13960=t00z72x8w";
-      editor.setCopyId(id);
+      CopyReference retrieved = repo.get(ref1.getId());
+      List<CopyReference> copies = repo.getCopies(workOneUri);
+
+      Assert.assertEquals(4, copies.size());
+
+      EditCopyReferenceCommand edit = repo.edit(retrieved.getId());
+      edit.setSummary("A copy reference example that further illistrates the need for updating information.");
+      Future<CopyReference> future = edit.execute();
+      CopyReference updatedRef = future.get();
+
+      Assert.assertNotEquals(updatedRef.getSummary(), retrieved.getSummary());
+
+   }
+
+   private CopyReference createReference(String workUri, String htid) throws UpdateCanceledException, InterruptedException, ExecutionException
+   {
+      EditCopyReferenceCommand editor = repo.create();
+
+      editor.setAssociatedEntry(URI.create(workUri));
+      editor.setCopyId(htid);
       editor.setTitle("Copy from my harddrive");
       editor.setSummary("A copy reference example.");
       editor.setRights("full view");
 
       Future<CopyReference> future = editor.execute();
-      CopyReference ref = future.get();
-      ref.getId();
-
-      CopyReference retrieved = repo.get(ref.getId());
-      repo.getCopies(workOneUri);
-
-
+      return future.get();
    }
 
    // TODO make sure we can get one copy back.
