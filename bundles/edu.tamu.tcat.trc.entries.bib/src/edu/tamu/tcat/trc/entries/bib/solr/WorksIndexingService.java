@@ -26,10 +26,12 @@ import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkIndexServiceManager;
+import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
+import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent;
 
-public class WorksIndexingService implements WorkIndexServiceManager
+public class WorksIndexingService implements WorkIndexServiceManager, WorkSearchService
 {
    private final static Logger logger = Logger.getLogger(WorksIndexingService.class.getName());
 
@@ -248,6 +250,12 @@ public class WorksIndexingService implements WorkIndexServiceManager
          logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the the SOLR server. " + e);
       }
 
+   }
+
+   @Override
+   public WorkQueryCommand createQueryCommand()
+   {
+      return new WorkSolrQueryCommand(solr);
    }
 
 }
