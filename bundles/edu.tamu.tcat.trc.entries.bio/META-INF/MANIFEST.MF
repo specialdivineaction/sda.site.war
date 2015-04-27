@@ -27,4 +27,5 @@ Import-Package: com.fasterxml.jackson.core;version="2.3.1",
  org.apache.solr.client.solrj.impl,
  org.apache.solr.client.solrj.response,
  org.apache.solr.common,
+ org.apache.solr.common.params;version="4.9.0",
  org.postgresql.util
