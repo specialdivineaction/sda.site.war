@@ -69,9 +69,6 @@
     <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.books.hathitrust</module>
     <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.rest</module>
     
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.json</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.oss.json.jackson</module>
-    
     <module>${repo-ed-path}/edu.tamu.tcat.osgi.solr</module>
   </modules>
 
