@@ -31,7 +31,7 @@ public class EditCopyRefCmdImpl extends BaseEditCopyRefCmd implements EditCopyRe
    private static String UPDATE_SQL =
          "UPDATE copy_references "
          + " SET reference = ?, "
-         +     " date_modified = now() "
+         +     " modified = now() "
          +"WHERE ref_id = ?";
 
 
