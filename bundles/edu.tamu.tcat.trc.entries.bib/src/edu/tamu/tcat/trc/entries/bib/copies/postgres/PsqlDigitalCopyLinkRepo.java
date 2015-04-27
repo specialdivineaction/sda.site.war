@@ -2,6 +2,7 @@ package edu.tamu.tcat.trc.entries.bib.copies.postgres;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,8 +32,8 @@ import edu.tamu.tcat.trc.entries.notification.DataUpdateObserverAdapter;
 import edu.tamu.tcat.trc.entries.notification.EntryUpdateHelper;
 import edu.tamu.tcat.trc.entries.notification.ObservableTaskWrapper;
 import edu.tamu.tcat.trc.entries.notification.UpdateEvent;
-import edu.tamu.tcat.trc.entries.notification.UpdateEvent.UpdateAction;
 import edu.tamu.tcat.trc.entries.notification.UpdateListener;
+import edu.tamu.tcat.trc.entries.notification.UpdateEvent.UpdateAction;
 
 public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 {
@@ -241,25 +242,7 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
 
    private CopyRefDTO getCopyDTO(String sql, UUID id) throws NoSuchCatalogRecordException
    {
-      Future<CopyRefDTO> result = exec.submit((conn) -> {
-         try (PreparedStatement ps = conn.prepareStatement(sql))
-         {
-            ps.setString(1, id.toString());
-            try (ResultSet rs = ps.executeQuery())
-            {
-               if (!rs.next())
-                  throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + id);
-
-               PGobject pgo = (PGobject)rs.getObject("reference");
-               return parseCopyRefJson(pgo.toString());
-            }
-         }
-         catch(SQLException e)
-         {
-            throw new IllegalStateException("Failed to retrive copy reference [" + id + "]. ", e);
-         }
-      });
-
+      Future<CopyRefDTO> result = exec.submit((conn) -> executeGetQuery(sql, conn, id));
       return unwrapGetResults(result, id.toString());
    }
 
@@ -295,6 +278,26 @@ public class PsqlDigitalCopyLinkRepo implements CopyReferenceRepository
       }
    }
 
+   private CopyRefDTO executeGetQuery(String sql, Connection conn, UUID id) throws NoSuchCatalogRecordException
+   {
+      try (PreparedStatement ps = conn.prepareStatement(sql))
+      {
+         ps.setString(1, id.toString());
+         try (ResultSet rs = ps.executeQuery())
+         {
+            if (!rs.next())
+               throw new NoSuchCatalogRecordException("No catalog record exists for work id=" + id);
+
+            PGobject pgo = (PGobject)rs.getObject("reference");
+            return parseCopyRefJson(pgo.toString());
+         }
+      }
+      catch(SQLException e)
+      {
+         throw new IllegalStateException("Failed to retrive copy reference [" + id + "]. ", e);
+      }
+   }
+   
    @Override
    public AutoCloseable register(UpdateListener<CopyReference> ears)
    {
