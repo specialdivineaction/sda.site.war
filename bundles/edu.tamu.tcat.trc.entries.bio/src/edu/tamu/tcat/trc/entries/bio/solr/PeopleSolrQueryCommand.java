@@ -62,9 +62,14 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
             simplePerson.familyName = (ArrayList<String>)result.getFieldValue(familyName);
             simplePerson.displayName = (ArrayList<String>)result.getFieldValue(displayName);
             simplePerson.birthLocation = result.getFieldValue(birthLocation).toString();
-            simplePerson.birthDate = result.getFieldValue(birthDate).toString();
+
+            Collection<String> personFields = result.getFieldNames();
+            if (personFields.contains(birthDate))
+               simplePerson.birthDate = result.getFieldValue(birthDate).toString();
             simplePerson.deathLocation = result.getFieldValue(deathLocation).toString();
-            simplePerson.deathDate = result.getFieldValue(deathDate).toString();
+
+            if (personFields.contains(deathDate))
+               simplePerson.deathDate = result.getFieldValue(deathDate).toString();
             simplePerson.summary = result.getFieldValue(summary).toString();
 
             people.add(simplePerson);
@@ -77,6 +82,7 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
 
       return people;
    }
+
 
    public SolrQuery getQuery()
    {
