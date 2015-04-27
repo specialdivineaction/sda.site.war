@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
@@ -19,6 +21,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
 import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
+import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 public class WorkSolrProxy
 {
@@ -43,6 +46,7 @@ public class WorkSolrProxy
    private final static String volumeId = "volumeId";
    private final static String volumeNumber = "volumeNumber";
 
+   private final static String workInfo = "workInfo";
 
    private SolrInputDocument document;
    private Map<String,Object> fieldModifier;
@@ -63,6 +67,15 @@ public class WorkSolrProxy
       proxy.addTitle(workDV.titles);
       proxy.addField(docSeries, workDV.series);
       proxy.addField(docSummary, workDV.summary);
+
+      try
+      {
+         proxy.addField(workInfo, WorksIndexingService.mapper.writeValueAsString(WorkInfo.create(work)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkInfo data", e);
+      }
       return proxy;
    }
 
