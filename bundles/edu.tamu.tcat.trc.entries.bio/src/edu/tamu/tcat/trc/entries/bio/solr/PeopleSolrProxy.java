@@ -24,47 +24,47 @@ public class PeopleSolrProxy
    private final static String deathDate = "deathDate";
    private final static String summary = "summary";
 
-   private static SolrInputDocument document;
+   private SolrInputDocument document;
    private Map<String,Object> fieldModifier;
    private final static String SET = "set";
 
    public PeopleSolrProxy()
    {
-      document = new SolrInputDocument();
+      this.document = new SolrInputDocument();
    }
 
-   public static SolrInputDocument getDocument()
+   public SolrInputDocument getDocument()
    {
       return document;
    }
 
-   public static PeopleSolrProxy createPerson(Person person)
+   public static PeopleSolrProxy create(Person person)
    {
       PeopleSolrProxy proxy = new PeopleSolrProxy();
       PersonDV personDV = PersonDV.create(person);
 
-      document.addField(personId, personDV.id);
-      document.addField(syntheticName, constructSyntheticName(personDV.names));
+      proxy.document.addField(personId, personDV.id);
+      proxy.document.addField(syntheticName, constructSyntheticName(personDV.names));
       for(PersonNameDV name : personDV.names)
       {
-         document.addField(familyName, guardNull(name.familyName));
-         document.addField(displayName, guardNull(name.displayName));
+         proxy.document.addField(familyName, guardNull(name.familyName));
+         proxy.document.addField(displayName, guardNull(name.displayName));
       }
 
       HistoricalEventDV birth = personDV.birth;
-      document.addField(birthLocation, guardNull(birth.location));
+      proxy.document.addField(birthLocation, guardNull(birth.location));
       DateDescriptionDV bDate = birth.date;
       if (bDate != null)
-         document.addField(birthDate, convertDate(bDate));
+         proxy.document.addField(birthDate, convertDate(bDate));
 
       HistoricalEventDV death = personDV.birth;
-      document.addField(deathLocation, guardNull(death.location));
+      proxy.document.addField(deathLocation, guardNull(death.location));
       if (death.date != null)
-         document.addField(deathDate, convertDate(death.date));
+         proxy.document.addField(deathDate, convertDate(death.date));
 
-      document.addField(summary, guardNull(personDV.summary));
+      proxy.document.addField(summary, guardNull(personDV.summary));
 
-      return proxy;
+      return new PeopleSolrProxy();
    }
 
 

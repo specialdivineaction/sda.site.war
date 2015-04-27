@@ -153,7 +153,7 @@ public class PeopleIndexingService implements PeopleIndexServiceManager, PeopleS
 
    private void onCreate(Person person)
    {
-      PeopleSolrProxy proxy = PeopleSolrProxy.createPerson(person);
+      PeopleSolrProxy proxy = PeopleSolrProxy.create(person);
       try
       {
          solr.add(proxy.getDocument());
@@ -167,7 +167,7 @@ public class PeopleIndexingService implements PeopleIndexServiceManager, PeopleS
 
    private void onUpdate(Person person)
    {
-      PeopleSolrProxy proxy = PeopleSolrProxy.createPerson(person);
+      PeopleSolrProxy proxy = PeopleSolrProxy.create(person);
       try
       {
          solr.add(proxy.getDocument());
