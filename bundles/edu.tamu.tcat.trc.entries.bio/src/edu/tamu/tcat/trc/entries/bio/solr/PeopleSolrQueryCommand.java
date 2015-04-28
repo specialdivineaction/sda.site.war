@@ -1,8 +1,10 @@
 package edu.tamu.tcat.trc.entries.bio.solr;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,21 +19,13 @@ import com.google.common.base.Joiner;
 
 import edu.tamu.tcat.trc.entries.bio.PeopleQueryCommand;
 import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
+import edu.tamu.tcat.trc.entries.bio.rest.v1.SimplePersonResultDV;
 
 public class PeopleSolrQueryCommand implements PeopleQueryCommand
 {
    private final static Logger logger = Logger.getLogger(PeopleSolrQueryCommand.class.getName());
 
-   //Solr fields
-   private final static String personId = "id";
-   private final static String familyName = "familyName";
-   private final static String syntheticName = "syntheticName";
-   private final static String displayName = "displayName";
-   private final static String birthLocation = "birthLocation";
-   private final static String birthDate = "birthDate";
-   private final static String deathLocation = "deathLocation";
-   private final static String deathDate = "deathDate";
-   private final static String summary = "summary";
+   private final static String peopleInfo = "peopleInfo";
 
    private SolrQuery query = new SolrQuery();
    private Collection<String> criteria = new ArrayList<>();
@@ -44,10 +38,12 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
    }
 
    @Override
-   public Collection<SimplePersonDV> getResults()
+   public List<SimplePersonResultDV> getResults()
    {
-      Collection<SimplePersonDV> people = new HashSet<>();
+      List<SimplePersonResultDV> people = new ArrayList<>();
       QueryResponse response;
+      String personInfo = "";
+      SimplePersonResultDV simplePerson = new SimplePersonResultDV();
 
       try
       {
@@ -56,26 +52,12 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
 
          for (SolrDocument result : results)
          {
-            SimplePersonDV simplePerson = new SimplePersonDV();
-            simplePerson.id = result.getFieldValue(personId).toString();
-            simplePerson.syntheticName = result.getFieldValue(syntheticName).toString();
-            simplePerson.familyName = (ArrayList<String>)result.getFieldValue(familyName);
-            simplePerson.displayName = (ArrayList<String>)result.getFieldValue(displayName);
-            simplePerson.birthLocation = result.getFieldValue(birthLocation).toString();
-
-            Collection<String> personFields = result.getFieldNames();
-            if (personFields.contains(birthDate))
-               simplePerson.birthDate = result.getFieldValue(birthDate).toString();
-            simplePerson.deathLocation = result.getFieldValue(deathLocation).toString();
-
-            if (personFields.contains(deathDate))
-               simplePerson.deathDate = result.getFieldValue(deathDate).toString();
-            simplePerson.summary = result.getFieldValue(summary).toString();
-
+            personInfo = result.getFieldValue(peopleInfo).toString();
+            simplePerson = PeopleIndexingService.mapper.readValue(personInfo, SimplePersonResultDV.class);
             people.add(simplePerson);
          }
       }
-      catch (SolrServerException sse)
+      catch (SolrServerException | IOException sse)
       {
          logger.log(Level.SEVERE, "The following error occurred while querying the author core :" + sse);
       }

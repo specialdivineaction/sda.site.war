@@ -3,17 +3,24 @@ package edu.tamu.tcat.trc.entries.bio.solr;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.solr.common.SolrInputDocument;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.tamu.tcat.catalogentries.events.dv.DateDescriptionDV;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonDV;
 import edu.tamu.tcat.trc.entries.bio.dv.PersonNameDV;
+import edu.tamu.tcat.trc.entries.bio.rest.v1.SimplePersonResultDV;
 
 public class PeopleSolrProxy
 {
+   private final static Logger logger = Logger.getLogger(PeopleSolrProxy.class.getName());
+
    private final static String personId = "id";
    private final static String familyName = "familyName";
    private final static String syntheticName = "syntheticName";
@@ -23,6 +30,8 @@ public class PeopleSolrProxy
    private final static String deathLocation = "deathLocation";
    private final static String deathDate = "deathDate";
    private final static String summary = "summary";
+
+   private final static String peopleInfo = "peopleInfo";
 
    private SolrInputDocument document;
    private Map<String,Object> fieldModifier;
@@ -42,6 +51,16 @@ public class PeopleSolrProxy
    {
       PeopleSolrProxy proxy = new PeopleSolrProxy();
       PersonDV personDV = PersonDV.create(person);
+      SimplePersonResultDV simplePerson = new SimplePersonResultDV(person);
+
+      try
+      {
+         proxy.document.addField(peopleInfo, PeopleIndexingService.mapper.writeValueAsString(simplePerson));
+      }
+      catch (JsonProcessingException e)
+      {
+         logger.log(Level.SEVERE, "An error occurred when processing the SimplePersonResultDV to json" + e);
+      }
 
       proxy.document.addField(personId, personDV.id);
       proxy.document.addField(syntheticName, constructSyntheticName(personDV.names));

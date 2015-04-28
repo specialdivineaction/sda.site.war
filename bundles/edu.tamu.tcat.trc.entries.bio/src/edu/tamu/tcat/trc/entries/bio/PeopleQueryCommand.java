@@ -1,12 +1,12 @@
 package edu.tamu.tcat.trc.entries.bio;
 
-import java.util.Collection;
+import java.util.List;
 
-import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
+import edu.tamu.tcat.trc.entries.bio.rest.v1.SimplePersonResultDV;
 
 public interface PeopleQueryCommand
 {
-   public abstract Collection<SimplePersonDV> getResults();
+   public abstract List<SimplePersonResultDV> getResults();
 
    public abstract PeopleQueryCommand search(String syntheticName);
 
