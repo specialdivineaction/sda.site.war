@@ -21,5 +21,6 @@ Import-Package: edu.tamu.tcat.catalogentries,
  edu.tamu.tcat.trc.entries.bib.solr,
  edu.tamu.tcat.trc.entries.bio,
  org.apache.solr.client.solrj;version="4.9.0",
+ org.apache.solr.client.solrj.impl;version="4.9.0",
  org.apache.solr.common;version="4.9.0",
  org.junit

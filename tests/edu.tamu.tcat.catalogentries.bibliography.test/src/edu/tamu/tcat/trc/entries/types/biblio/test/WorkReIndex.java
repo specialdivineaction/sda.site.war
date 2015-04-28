@@ -2,23 +2,20 @@ package edu.tamu.tcat.trc.entries.types.biblio.test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -70,6 +67,8 @@ public class WorkReIndex
 
       URI coreUri = solrBaseUri.resolve(solrCore);
       logger.info("Connecting to Solr Service [" + coreUri + "]");
+
+      solr = new HttpSolrServer(coreUri.toString());
    }
 
    @After
