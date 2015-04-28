@@ -6,8 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.solr.common.SolrInputDocument;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -25,6 +29,8 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 public class WorkSolrProxy
 {
+   private final static Logger logger = Logger.getLogger(WorkSolrProxy.class.getName());
+
    private final static String id = "id";
    private final static String authorIds = "authorIds";
    private final static String authorNames = "authorNames";
