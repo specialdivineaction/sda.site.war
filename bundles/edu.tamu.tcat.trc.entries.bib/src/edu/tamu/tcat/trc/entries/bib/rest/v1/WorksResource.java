@@ -1,6 +1,5 @@
 package edu.tamu.tcat.trc.entries.bib.rest.v1;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Work;
+import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
@@ -79,29 +79,11 @@ public class WorksResource
    public List<WorkInfo> findByTitle(@QueryParam(value = "title") String title,
                                      @DefaultValue("100") @QueryParam(value = "numResults") int numResults)
    {
-      // TODO to be backed by search service, add more robust query API
-      try
-      {
-         List<WorkInfo> result = new ArrayList<WorkInfo>();
-         if (title == null)
-            throw new BadRequestException("No title query supplied.");
 
-         for (Work w : repo.listWorks(title))
-         {
-            if (result.size() == numResults)
-               break;
-
-            result.add(WorkInfo.create(w));
-         }
-
-         return result;
-      }
-      catch (RuntimeException e)
-      {
-         logger.log(Level.SEVERE, "Failed to find titles", e);
-         e.printStackTrace();    // HACK: print to std err since loggers seem to be hit and miss
-         throw e;
-      }
+      WorkQueryCommand workCommand = workSearchService.createQueryCommand();
+      workCommand.searchWorks(title);
+      workCommand.setResults(numResults);
+      return workCommand.getResults();
    }
 
 //   @GET
