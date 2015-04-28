@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,9 +37,9 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    }
 
    @Override
-   public Collection<WorkInfo> getResults()
+   public List<WorkInfo> getResults()
    {
-      Collection<WorkInfo> works = new HashSet<>();
+      List<WorkInfo> works = new ArrayList<>();
       String workInfo = null;
       WorkInfo wi = new WorkInfo();
       QueryResponse response;
@@ -102,6 +103,13 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    public WorkQueryCommand byPublishedLocation(String location)
    {
       criteria.add("publisherLocation\"" + location + "\"");
+      return this;
+   }
+
+   @Override
+   public WorkQueryCommand setResults(int numResults)
+   {
+      query.setRows(numResults);
       return this;
    }
 }

@@ -1,16 +1,18 @@
 package edu.tamu.tcat.trc.entries.bib;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 
 public interface WorkQueryCommand
 {
-   public abstract Collection<WorkInfo> getResults();
+   public abstract List<WorkInfo> getResults();
 
    public abstract WorkQueryCommand searchWorks(String title);
+
+   public abstract WorkQueryCommand setResults(int numResults);
 
    public abstract WorkQueryCommand byAuthor(String authorName);
 
