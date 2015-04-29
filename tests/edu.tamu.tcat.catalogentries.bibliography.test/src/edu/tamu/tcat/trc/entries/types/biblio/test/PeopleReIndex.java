@@ -109,7 +109,7 @@ public class PeopleReIndex
          Iterable<Person> people = repo.findPeople();
          for (Person person : people)
          {
-            PeopleSolrProxy peopleProxy = PeopleSolrProxy.createPerson(person);
+            PeopleSolrProxy peopleProxy = PeopleSolrProxy.create(person);
             solrDocs.add(peopleProxy.getDocument());
          }
       }

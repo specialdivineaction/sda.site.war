@@ -25,7 +25,7 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
 {
    private final static Logger logger = Logger.getLogger(PeopleSolrQueryCommand.class.getName());
 
-   private final static String peopleInfo = "peopleInfo";
+   private final static String personInfo = "personInfo";
 
    private SolrQuery query = new SolrQuery();
    private Collection<String> criteria = new ArrayList<>();
@@ -42,7 +42,7 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
    {
       List<SimplePersonResultDV> people = new ArrayList<>();
       QueryResponse response;
-      String personInfo = "";
+      String person = "";
       SimplePersonResultDV simplePerson = new SimplePersonResultDV();
 
       try
@@ -52,8 +52,8 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
 
          for (SolrDocument result : results)
          {
-            personInfo = result.getFieldValue(peopleInfo).toString();
-            simplePerson = PeopleIndexingService.mapper.readValue(personInfo, SimplePersonResultDV.class);
+            person = result.getFieldValue(personInfo).toString();
+            simplePerson = PeopleIndexingService.mapper.readValue(person, SimplePersonResultDV.class);
             people.add(simplePerson);
          }
       }

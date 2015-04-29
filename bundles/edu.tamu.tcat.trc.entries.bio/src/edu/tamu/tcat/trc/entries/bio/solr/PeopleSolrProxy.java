@@ -31,7 +31,7 @@ public class PeopleSolrProxy
    private final static String deathDate = "deathDate";
    private final static String summary = "summary";
 
-   private final static String peopleInfo = "peopleInfo";
+   private final static String personInfo = "personInfo";
 
    private SolrInputDocument document;
    private Map<String,Object> fieldModifier;
@@ -55,7 +55,7 @@ public class PeopleSolrProxy
 
       try
       {
-         proxy.document.addField(peopleInfo, PeopleIndexingService.mapper.writeValueAsString(simplePerson));
+         proxy.document.addField(personInfo, PeopleIndexingService.mapper.writeValueAsString(simplePerson));
       }
       catch (JsonProcessingException e)
       {
@@ -83,7 +83,7 @@ public class PeopleSolrProxy
 
       proxy.document.addField(summary, guardNull(personDV.summary));
 
-      return new PeopleSolrProxy();
+      return proxy;
    }
 
 
@@ -95,7 +95,9 @@ public class PeopleSolrProxy
 
    private static String convertDate(DateDescriptionDV date)
    {
-      return date.calendar + "T00:00:00Z";
+      if (date.calendar != null)
+         return date.calendar + "T00:00:00Z";
+      return null;
    }
 
    /**
