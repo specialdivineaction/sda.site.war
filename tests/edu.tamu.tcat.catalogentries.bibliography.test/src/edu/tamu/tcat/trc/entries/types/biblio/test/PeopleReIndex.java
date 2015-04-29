@@ -20,9 +20,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.tamu.tcat.catalogentries.CatalogRepoException;
+import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.db.core.DataSourceException;
 import edu.tamu.tcat.db.postgresql.exec.PostgreSqlExecutor;
 import edu.tamu.tcat.osgi.config.file.SimpleFileConfigurationProperties;
+import edu.tamu.tcat.sda.catalog.idfactory.impl.db.DbBackedObfuscatingIdFactory;
 import edu.tamu.tcat.sda.catalog.psql.provider.PsqlDataSourceProvider;
 import edu.tamu.tcat.trc.entries.bio.Person;
 import edu.tamu.tcat.trc.entries.bio.postgres.PsqlPeopleRepo;
@@ -36,6 +38,7 @@ public class PeopleReIndex
    private SimpleFileConfigurationProperties config;
    private PsqlDataSourceProvider dsp;
    private PsqlPeopleRepo repo;
+   private DbBackedObfuscatingIdFactory factory;
 
    private SolrServer solr;
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
@@ -56,8 +59,13 @@ public class PeopleReIndex
       exec = new PostgreSqlExecutor();
       exec.init(dsp);
 
+      factory = new DbBackedObfuscatingIdFactory();
+      factory.setDatabaseExecutor(exec);
+      factory.activate();
+
       repo = new PsqlPeopleRepo();
       repo.setDatabaseExecutor(exec);
+      repo.setIdFactory(factory);
       repo.activate();
 
       // construct Solr core
@@ -102,15 +110,13 @@ public class PeopleReIndex
          for (Person person : people)
          {
             PeopleSolrProxy peopleProxy = PeopleSolrProxy.createPerson(person);
-            solrDocs.add(PeopleSolrProxy.getDocument());
+            solrDocs.add(peopleProxy.getDocument());
          }
       }
       catch (CatalogRepoException e)
       {
          logger.log(Level.SEVERE, "Failed to pull people from the db. " + e);
       }
-
-
 
       try
       {
