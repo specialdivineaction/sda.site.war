@@ -81,8 +81,8 @@ public class WorksResource
    {
 
       WorkQueryCommand workCommand = workSearchService.createQueryCommand();
-      workCommand.searchWorks(title);
-      workCommand.setResults(numResults);
+      workCommand.setTitleQuery(title);
+      workCommand.setMaxResults(numResults);
       return workCommand.getResults();
    }
 

@@ -1,10 +1,9 @@
 package edu.tamu.tcat.trc.entries.bib.solr;
 
 import java.io.IOException;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,14 +21,24 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 public class WorkSolrQueryCommand implements WorkQueryCommand
 {
-   private final static Logger logger = Logger.getLogger(WorkQueryCommand.class.getName());
+   private final static Logger logger = Logger.getLogger(WorkSolrQueryCommand.class.getName());
 
    // Solr field name values for works
 
-   private SolrQuery query = new SolrQuery();
    private Collection<String> criteria = new ArrayList<>();
 
    private SolrServer solr;
+
+   private String q;
+   private String titleQuery;
+   private String[] authorIds;
+   private String authorName;
+   private Year after;
+   private Year before;
+   private int start = 0;
+   private int maxResults = 25;
+
+   private String location;
 
    public WorkSolrQueryCommand(SolrServer solr)
    {
@@ -73,43 +82,79 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
 
    private SolrParams getQuery()
    {
+      SolrQuery query = new SolrQuery();
+
+      query.setStart(Integer.valueOf(start));
+      query.setRows(Integer.valueOf(this.maxResults));
+      // NOTE this looks like a bad idea. probably set internal state and build based on that state
 //      String queryString = Joiner.on(" AND ").join(criteria);
 //      query.setQuery(queryString);
+
+
       return query;
    }
 
    @Override
-   public WorkQueryCommand searchWorks(String title)
+   public WorkQueryCommand setQuery(String q)
    {
-      criteria.add("titles\"" + title + "\"");
+      this.q = q;
+      // NOTE query against all fields, boosted appropriately, free text
+      //      I think that means *:(q)
+      // NOTE in general, if this is applied, the other query params are unlikely to be applied
+      return null;
+   }
+
+   @Override
+   public WorkQueryCommand setTitleQuery(String q)
+   {
+      this.titleQuery = q;
+      return null;
+   }
+
+   @Override
+   public WorkQueryCommand setAuthorName(String authorName)
+   {
+      this.authorName = authorName;
+//      criteria.add("authorNames\"" + authorName + "\"");
       return this;
    }
 
    @Override
-   public WorkQueryCommand byAuthor(String authorName)
+   public WorkQueryCommand filterByAuthor(String... ids)
    {
-      criteria.add("authorNames\"" + authorName + "\"");
+      // NOTE these should be joined by OR's
+      this.authorIds = ids;
+      return null;
+   }
+
+   @SuppressWarnings("hiding")
+   @Override
+   public WorkQueryCommand filterByDate(Year after, Year before)
+   {
+      this.after = after;
+      this.before = before;
+
+      return null;
+   }
+
+   @Override
+   public WorkQueryCommand setStartIndex(int start)
+   {
+      this.start = start;
+      return null;
+   }
+
+   @Override
+   public WorkQueryCommand filterByLocation(String location)
+   {
+      this.location = location;
       return this;
    }
 
    @Override
-   public WorkQueryCommand byPublishedDate(Date publishedDate)
+   public WorkQueryCommand setMaxResults(int max)
    {
-      // TODO Auto-generated method stub
-      return this;
-   }
-
-   @Override
-   public WorkQueryCommand byPublishedLocation(String location)
-   {
-      criteria.add("publisherLocation\"" + location + "\"");
-      return this;
-   }
-
-   @Override
-   public WorkQueryCommand setResults(int numResults)
-   {
-      query.setRows(numResults);
+      this.maxResults = max;
       return this;
    }
 }
