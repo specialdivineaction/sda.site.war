@@ -116,6 +116,55 @@ public class BiblioEntriesSearchService implements WorkSearchService
       releaseSolrConnection();
    }
 
+   @Override
+   public WorkQueryCommand createQueryCommand()
+   {
+      return new WorkSolrQueryCommand(solr);
+   }
+
+   public boolean isIndexed(String id)
+   {
+      Objects.requireNonNull(solr, "The connection to Solr server is not available.");
+   
+      SolrQuery query = new SolrQuery();
+      query.setQuery("id:" + id);
+      try
+      {
+         QueryResponse response = solr.query(query);
+         return  !response.getResults().isEmpty();
+      }
+      catch (SolrServerException e)
+      {
+         logger.log(Level.SEVERE, "Failed to query the work id: [" + id + "] from the SOLR server. " + e);
+         return false;
+      }
+   }
+
+   public void removeWork(String id)
+   {
+      List<String> deleteIds = new ArrayList<>();
+      deleteIds.add(id);
+   
+      SolrQuery query = new SolrQuery();
+      query.setQuery("id:" + id + "\\:*");
+      try
+      {
+         QueryResponse response = solr.query(query);
+         SolrDocumentList results = response.getResults();
+         for(SolrDocument doc : results)
+         {
+            deleteIds.add(doc.getFieldValue("id").toString());
+         }
+         solr.deleteById(deleteIds);
+         solr.commit();
+      }
+      catch (SolrServerException | IOException e)
+      {
+         logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the the SOLR server. " + e);
+      }
+   
+   }
+
    private void unregisterRepoListener()
    {
       if (registration == null)
@@ -222,55 +271,6 @@ public class BiblioEntriesSearchService implements WorkSearchService
    {
       if (isIndexed(id))
          removeWork(id);
-   }
-
-   public boolean isIndexed(String id)
-   {
-      Objects.requireNonNull(solr, "The connection to Solr server is not available.");
-
-      SolrQuery query = new SolrQuery();
-      query.setQuery("id:" + id);
-      try
-      {
-         QueryResponse response = solr.query(query);
-         return  !response.getResults().isEmpty();
-      }
-      catch (SolrServerException e)
-      {
-         logger.log(Level.SEVERE, "Failed to query the work id: [" + id + "] from the SOLR server. " + e);
-         return false;
-      }
-   }
-
-   public void removeWork(String id)
-   {
-      List<String> deleteIds = new ArrayList<>();
-      deleteIds.add(id);
-
-      SolrQuery query = new SolrQuery();
-      query.setQuery("id:" + id + "\\:*");
-      try
-      {
-         QueryResponse response = solr.query(query);
-         SolrDocumentList results = response.getResults();
-         for(SolrDocument doc : results)
-         {
-            deleteIds.add(doc.getFieldValue("id").toString());
-         }
-         solr.deleteById(deleteIds);
-         solr.commit();
-      }
-      catch (SolrServerException | IOException e)
-      {
-         logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the the SOLR server. " + e);
-      }
-
-   }
-
-   @Override
-   public WorkQueryCommand createQueryCommand()
-   {
-      return new WorkSolrQueryCommand(solr);
    }
 
    private static class EntryChangeHandlers<EVENT extends WorksChangeEvent>
