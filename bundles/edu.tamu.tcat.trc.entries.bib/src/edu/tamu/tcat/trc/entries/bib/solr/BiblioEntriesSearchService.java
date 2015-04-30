@@ -47,7 +47,7 @@ public class BiblioEntriesSearchService implements WorkSearchService
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
 
    /** Configuration property key that defines Solr core to be used for relationships. */
-   public static final String SOLR_CORE = "catalogentries.works.solr.core";
+   public static final String SOLR_CORE = "catalogentries.works.solr.core";      // TODO rename to trc.biblio.works.solr.core
 
    // configured here for use by other classes in this package - these classes are effectively
    // delegates of this service's responsibilities
@@ -220,24 +220,29 @@ public class BiblioEntriesSearchService implements WorkSearchService
 
    private void removeIfPresent(String id)
    {
+      if (isIndexed(id))
+         removeWork(id);
+   }
+
+   public boolean isIndexed(String id)
+   {
+      Objects.requireNonNull(solr, "The connection to Solr server is not available.");
+
       SolrQuery query = new SolrQuery();
       query.setQuery("id:" + id);
-      QueryResponse response;
       try
       {
-         response = solr.query(query);
-         SolrDocumentList results = response.getResults();
-         if (!results.isEmpty())
-            removeWorks(id);
+         QueryResponse response = solr.query(query);
+         return  !response.getResults().isEmpty();
       }
       catch (SolrServerException e)
       {
          logger.log(Level.SEVERE, "Failed to query the work id: [" + id + "] from the SOLR server. " + e);
+         return false;
       }
-
    }
 
-   private void removeWorks(String id)
+   public void removeWork(String id)
    {
       List<String> deleteIds = new ArrayList<>();
       deleteIds.add(id);
@@ -272,13 +277,13 @@ public class BiblioEntriesSearchService implements WorkSearchService
    {
       // TODO to make this more general purpose, change to ChangeEvent.
       Map<WorksChangeEvent.ChangeType, Function<EVENT, Void>> changeHandlers = new HashMap<>();
-   
+
       public void register(WorksChangeEvent.ChangeType type, Function<EVENT, Void> handler)
       {
          changeHandlers.put(type, handler);
       }
-   
-      private void handle(EVENT event)
+
+      public synchronized void handle(EVENT event)
       {
          ChangeType type = event.getChangeType();
          Function<EVENT, Void> handler = changeHandlers.get(type);
@@ -287,7 +292,7 @@ public class BiblioEntriesSearchService implements WorkSearchService
             logger.info("No handler registered for [" + type + "]");
             return;
          }
-   
+
          try
          {
             handler.apply(event);
@@ -298,5 +303,4 @@ public class BiblioEntriesSearchService implements WorkSearchService
          }
       }
    }
-
 }
