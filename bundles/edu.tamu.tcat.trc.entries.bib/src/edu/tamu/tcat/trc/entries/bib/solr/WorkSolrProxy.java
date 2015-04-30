@@ -26,28 +26,29 @@ import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
 
 public class WorkSolrProxy
 {
+   // is this a proxy, mutator or builder
    private final static Logger logger = Logger.getLogger(WorkSolrProxy.class.getName());
 
    private final static String id = "id";
    private final static String authorIds = "authorIds";
    private final static String authorNames = "authorNames";
-   private final static String authorRoles = "authorRole";
-   private final static String titleTypes = "titleTypes";
-   private final static String language = "lang";
+   private final static String authorRoles = "authorRole";           // not needed
+   private final static String titleTypes = "titleTypes";            // not needed
+   private final static String language = "lang";                    // not needed
    private final static String titles = "titles";
-   private final static String subtitles = "subtitles";
+   private final static String subtitles = "subtitles";              // needed? could be joined with titles unless we want to boost separately
    private final static String publisher = "publisher";
    private final static String pubLocation = "publisherLocation";
-   private final static String pubDateString = "publishDateString";
+   private final static String pubDateString = "publishDateString";  // simply date, expressed as a YYYY-MM-DD
    private final static String pubDateValue = "publishDateValue";
    private final static String docSeries = "series";
-   private final static String docSummary = "summary";
+   private final static String docSummary = "summary";               // NOTE - critical search field
 
    private final static String editionId = "editionId";
-   private final static String editionName = "editionName";
+   private final static String editionName = "editionName";          // not needed (store in info)
 
    private final static String volumeId = "volumeId";
-   private final static String volumeNumber = "volumeNumber";
+   private final static String volumeNumber = "volumeNumber";        // not needed (store in info)
 
    private final static String workInfo = "workInfo";
 
@@ -179,13 +180,13 @@ public class WorkSolrProxy
       return document;
    }
 
-   void addField(String fieldName, String fieldValue)
+   // this look like something that could be extracted
+   public void addField(String fieldName, String fieldValue)
    {
       document.addField(fieldName, fieldValue);
    }
 
-
-   void updateField(String fieldName, String value, String updateType)
+   public void updateField(String fieldName, String value, String updateType)
    {
       fieldModifier = new HashMap<>(1);
       fieldModifier.put(updateType, value);
@@ -201,7 +202,7 @@ public class WorkSolrProxy
          else
             document.addField(authorIds, "");
          document.addField(authorNames, author.name);
-         document.addField(authorRoles, author.role);
+         document.addField(authorRoles, author.role);    // not needed
       }
    }
 
