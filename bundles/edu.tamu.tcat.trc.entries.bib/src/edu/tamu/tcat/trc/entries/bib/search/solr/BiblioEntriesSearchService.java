@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.solr;
+package edu.tamu.tcat.trc.entries.bib.search.solr;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,11 +29,11 @@ import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkNotAvailableException;
-import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent;
 import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent.ChangeType;
+import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchService;
 
 /**
  * Provides a service to support SOLR backed searching over bibliographic entries.

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib;
+package edu.tamu.tcat.trc.entries.bib.search;
 
 import java.time.Year;
 import java.util.List;

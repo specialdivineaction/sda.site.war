@@ -27,12 +27,12 @@ import edu.tamu.tcat.catalogentries.NoSuchCatalogRecordException;
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.EditWorkCommand;
 import edu.tamu.tcat.trc.entries.bib.Work;
-import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
-import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchService;
 
 @Path("/works")
 public class WorksResource

@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.solr;
+package edu.tamu.tcat.trc.entries.bib.search.solr;
 
 import java.util.Collection;
 import java.util.HashMap;
