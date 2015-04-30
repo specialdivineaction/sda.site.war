@@ -92,5 +92,5 @@ public interface WorkQueryCommand
     */
    void setMaxResults(int ct);
 
-   List<WorkInfo> getResults();
+   List<WorkSearchProxy> getResults();
 }

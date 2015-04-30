@@ -22,7 +22,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
 import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.search.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 
 public class WorkSolrProxy
 {
@@ -74,11 +74,11 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkInfo.create(work)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(work)));
       }
       catch (JsonProcessingException e)
       {
-         throw new IllegalStateException("Failed to serialize WorkInfo data", e);
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
       }
       return proxy;
    }

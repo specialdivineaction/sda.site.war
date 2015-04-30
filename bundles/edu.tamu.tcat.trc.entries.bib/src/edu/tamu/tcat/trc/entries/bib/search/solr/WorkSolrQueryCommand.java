@@ -15,7 +15,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
-import edu.tamu.tcat.trc.entries.bib.search.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
 
 public class WorkSolrQueryCommand implements WorkQueryCommand
@@ -43,11 +43,11 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    }
 
    @Override
-   public List<WorkInfo> getResults()
+   public List<WorkSearchProxy> getResults()
    {
-      List<WorkInfo> works = new ArrayList<>();
+      List<WorkSearchProxy> works = new ArrayList<>();
       String workInfo = null;
-      WorkInfo wi = new WorkInfo();
+      WorkSearchProxy wi = new WorkSearchProxy();
       QueryResponse response;
 
       try
@@ -60,7 +60,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
             try
             {
                workInfo = doc.getFieldValue("workInfo").toString();
-               wi = BiblioEntriesSearchService.mapper.readValue(workInfo, WorkInfo.class);
+               wi = BiblioEntriesSearchService.mapper.readValue(workInfo, WorkSearchProxy.class);
                works.add(wi);
             }
             catch (IOException ioe)

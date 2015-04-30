@@ -19,8 +19,10 @@ import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
  * data transfer and parsing resources.
  *
  */
-public class WorkInfo
+public class WorkSearchProxy
 {
+   // FIXME this mixes works, editions and volume information
+
    public String id;
    public String uri;
    public List<AuthorRefDV> authors = new ArrayList<>();
@@ -29,9 +31,9 @@ public class WorkInfo
    public String summary;
    public String pubYear = null;
 
-   public static WorkInfo create(Work w)
+   public static WorkSearchProxy create(Work w)
    {
-      WorkInfo result = new WorkInfo();
+      WorkSearchProxy result = new WorkSearchProxy();
       result.id = w.getId();
       result.uri = "works/" + w.getId();        // TODO make a more flexible tool for creating work URIs
 
@@ -140,7 +142,7 @@ public class WorkInfo
       return (value == null || value.trim().isEmpty()) ? null : value.trim();
    }
 
-   public WorkInfo()
+   public WorkSearchProxy()
    {
    }
 
