@@ -3,7 +3,6 @@ package edu.tamu.tcat.trc.entries.bib.solr;
 import java.io.IOException;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,8 +23,6 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    private final static Logger logger = Logger.getLogger(WorkSolrQueryCommand.class.getName());
 
    // Solr field name values for works
-
-   private Collection<String> criteria = new ArrayList<>();
 
    private SolrServer solr;
 
@@ -95,66 +92,57 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    }
 
    @Override
-   public WorkQueryCommand setQuery(String q)
+   public void setQuery(String q)
    {
       this.q = q;
       // NOTE query against all fields, boosted appropriately, free text
       //      I think that means *:(q)
       // NOTE in general, if this is applied, the other query params are unlikely to be applied
-      return null;
    }
 
    @Override
-   public WorkQueryCommand setTitleQuery(String q)
+   public void setTitleQuery(String q)
    {
       this.titleQuery = q;
-      return null;
    }
 
    @Override
-   public WorkQueryCommand setAuthorName(String authorName)
+   public void setAuthorName(String authorName)
    {
       this.authorName = authorName;
 //      criteria.add("authorNames\"" + authorName + "\"");
-      return this;
    }
 
    @Override
-   public WorkQueryCommand filterByAuthor(String... ids)
+   public void filterByAuthor(String... ids)
    {
       // NOTE these should be joined by OR's
       this.authorIds = ids;
-      return null;
    }
 
    @SuppressWarnings("hiding")
    @Override
-   public WorkQueryCommand filterByDate(Year after, Year before)
+   public void filterByDate(Year after, Year before)
    {
       this.after = after;
       this.before = before;
-
-      return null;
    }
 
    @Override
-   public WorkQueryCommand setStartIndex(int start)
+   public void setStartIndex(int start)
    {
       this.start = start;
-      return null;
    }
 
    @Override
-   public WorkQueryCommand filterByLocation(String location)
+   public void filterByLocation(String location)
    {
       this.location = location;
-      return this;
    }
 
    @Override
-   public WorkQueryCommand setMaxResults(int max)
+   public void setMaxResults(int max)
    {
       this.maxResults = max;
-      return this;
    }
 }

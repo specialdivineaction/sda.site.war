@@ -25,13 +25,13 @@ public interface WorkQueryCommand
     * @param q
     * @return
     */
-   WorkQueryCommand setQuery(String q);
+   void setQuery(String q);
 
    /**
     * @param q The value to search for in the title.
     * @return
     */
-   WorkQueryCommand setTitleQuery(String q);
+   void setTitleQuery(String q);
 
    /**
     * Set the name of the author to search for. A best effort will be made to match books whose
@@ -41,7 +41,7 @@ public interface WorkQueryCommand
     * @param authorName
     * @return
     */
-   WorkQueryCommand setAuthorName(String authorName);
+   void setAuthorName(String authorName);
 
    /**
     * Filter results based on the supplied list of author ids. Only entries that
@@ -50,7 +50,7 @@ public interface WorkQueryCommand
     * @param ids
     * @return
     */
-   WorkQueryCommand filterByAuthor(String... ids);
+   void filterByAuthor(String... ids);
 
    /**
     * Filter results to return only those entries that are published between the supplied dates.
@@ -61,7 +61,7 @@ public interface WorkQueryCommand
     *       bound should be enforced.
     * @return
     */
-   WorkQueryCommand filterByDate(Year after, Year before);
+   void filterByDate(Year after, Year before);
 
    /**
     * Filter results to a specific geographical location.
@@ -69,7 +69,7 @@ public interface WorkQueryCommand
     * @param location
     * @return
     */
-   WorkQueryCommand filterByLocation(String location);
+   void filterByLocation(String location);
 
    /**
     * Sets the index of the first result to be returned. Useful in conjunction with
@@ -83,7 +83,7 @@ public interface WorkQueryCommand
     * @param start
     * @return
     */
-   WorkQueryCommand setStartIndex(int start);
+   void setStartIndex(int start);
 
    /**
     * Specify the maximum number of results to be returned. Implementations may return fewer
@@ -92,7 +92,7 @@ public interface WorkQueryCommand
     * @param ct
     * @return
     */
-   WorkQueryCommand setMaxResults(int ct);
+   void setMaxResults(int ct);
 
    List<WorkInfo> getResults();
 }
