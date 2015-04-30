@@ -76,7 +76,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, WorksIndexingService.mapper.writeValueAsString(WorkInfo.create(work)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkInfo.create(work)));
       }
       catch (JsonProcessingException e)
       {

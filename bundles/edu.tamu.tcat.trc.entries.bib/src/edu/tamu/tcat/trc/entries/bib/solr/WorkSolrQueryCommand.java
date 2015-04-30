@@ -54,7 +54,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
             try
             {
                workInfo = doc.getFieldValue("workInfo").toString();
-               wi = WorksIndexingService.mapper.readValue(workInfo, WorkInfo.class);
+               wi = BiblioEntriesSearchService.mapper.readValue(workInfo, WorkInfo.class);
                works.add(wi);
             }
             catch (IOException ioe)

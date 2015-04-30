@@ -25,15 +25,18 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
-import edu.tamu.tcat.trc.entries.bib.WorkIndexServiceManager;
 import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent;
 
-public class WorksIndexingService implements WorkIndexServiceManager, WorkSearchService
+/**
+ * Provides a service to support SOLR backed searching over bibliographic entries.
+ *
+ */
+public class BiblioEntriesSearchService implements WorkSearchService
 {
-   private final static Logger logger = Logger.getLogger(WorksIndexingService.class.getName());
+   private final static Logger logger = Logger.getLogger(BiblioEntriesSearchService.class.getName());
 
    /** Configuration property key that defines the URI for the Solr server. */
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
@@ -55,7 +58,7 @@ public class WorksIndexingService implements WorkIndexServiceManager, WorkSearch
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    }
 
-   public WorksIndexingService()
+   public BiblioEntriesSearchService()
    {
    }
 
@@ -88,7 +91,7 @@ public class WorksIndexingService implements WorkIndexServiceManager, WorkSearch
 
    public void deactivate()
    {
-      logger.info("Deactivating WorksIndexingService");
+      logger.info("Deactivating BiblioEntriesSearchService");
 
       unregisterRepoListener();
       releaseSolrConnection();
