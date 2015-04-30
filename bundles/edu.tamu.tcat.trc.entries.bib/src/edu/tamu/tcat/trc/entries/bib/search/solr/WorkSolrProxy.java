@@ -22,7 +22,7 @@ import edu.tamu.tcat.trc.entries.bib.dto.PublicationInfoDV;
 import edu.tamu.tcat.trc.entries.bib.dto.TitleDV;
 import edu.tamu.tcat.trc.entries.bib.dto.VolumeDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkInfo;
 
 public class WorkSolrProxy
 {

@@ -15,7 +15,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
-import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkInfo;
 import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
 
 public class WorkSolrQueryCommand implements WorkQueryCommand

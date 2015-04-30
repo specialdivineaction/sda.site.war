@@ -1,4 +1,4 @@
-package edu.tamu.tcat.trc.entries.bib.dto;
+package edu.tamu.tcat.trc.entries.bib.search;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -30,7 +30,7 @@ import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.dto.WorkInfo;
+import edu.tamu.tcat.trc.entries.bib.search.WorkInfo;
 import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.search.WorkSearchService;
 
