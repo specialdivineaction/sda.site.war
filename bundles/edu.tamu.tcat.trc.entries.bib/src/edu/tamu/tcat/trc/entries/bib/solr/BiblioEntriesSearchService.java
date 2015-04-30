@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,10 +28,12 @@ import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
+import edu.tamu.tcat.trc.entries.bib.WorkNotAvailableException;
 import edu.tamu.tcat.trc.entries.bib.WorkQueryCommand;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.WorkSearchService;
 import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent;
+import edu.tamu.tcat.trc.entries.bib.WorksChangeEvent.ChangeType;
 
 /**
  * Provides a service to support SOLR backed searching over bibliographic entries.
@@ -62,13 +67,20 @@ public class BiblioEntriesSearchService implements WorkSearchService
    {
    }
 
+   /**
+    * @param repo The repository that is used to manage persistence of bibliographic entries.
+    */
    public void setWorksRepo(WorkRepository repo)
    {
       this.repo = repo;
    }
 
+   /**
+    * @param cp configuration properties. These are required at initialization.
+    */
    public void setConfiguration(ConfigurationProperties cp)
    {
+      // TODO allow the config props to come and go. If reset, may need to restart this service.
       this.config = cp;
    }
 
@@ -76,7 +88,13 @@ public class BiblioEntriesSearchService implements WorkSearchService
    {
       logger.fine("Activating SolrRelationshipSearchService");
       Objects.requireNonNull(repo, "No work repository supplied.");
-      registration = repo.addAfterUpdateListener(this::onUpdate);
+
+      // configure handlers
+      EntryChangeHandlers<WorksChangeEvent> updateHandlers = new EntryChangeHandlers<WorksChangeEvent>();
+      updateHandlers.register(WorksChangeEvent.ChangeType.CREATED, this::onCreate);
+      updateHandlers.register(WorksChangeEvent.ChangeType.MODIFIED, this::onWorkUpdate);
+      updateHandlers.register(WorksChangeEvent.ChangeType.DELETED, this::onDelete);
+      registration = repo.addAfterUpdateListener(updateHandlers::handle);
 
       // construct Solr core
       URI solrBaseUri = config.getPropertyValue(SOLR_API_ENDPOINT, URI.class);
@@ -86,6 +104,7 @@ public class BiblioEntriesSearchService implements WorkSearchService
       logger.info("Connecting to Solr Service [" + coreUri + "]");
 
       solr = new HttpSolrServer(coreUri.toString());
+
 
    }
 
@@ -99,80 +118,65 @@ public class BiblioEntriesSearchService implements WorkSearchService
 
    private void unregisterRepoListener()
    {
-      if (registration != null)
+      if (registration == null)
+         return;
+
+      try
       {
-         try
-         {
-            registration.close();
-         }
-         catch (Exception e)
-         {
-            logger.log(Level.WARNING, "Failed to unregister update listener on works repository.", e);
-         }
-         finally {
-            registration = null;
-         }
+         registration.close();
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.WARNING, "Failed to unregister update listener on works repository.", e);
+      }
+      finally {
+         registration = null;
       }
    }
 
    private void releaseSolrConnection()
    {
       logger.fine("Releasing connection to Solr server");
-      if (solr != null)
-      {
-         try
-         {
-            solr.shutdown();
-         }
-         catch (Exception e)
-         {
-            logger.log(Level.WARNING, "Failed to cleanly shut down connection to Solr server.", e);
-         }
-      }
-   }
+      if (solr == null)
+         return;
 
-
-   private void onUpdate(WorksChangeEvent evt)
-   {
       try
       {
-         switch(evt.getChangeType())
-         {
-            case CREATED:
-               onCreate(evt.getWorkEvt());
-               break;
-            case MODIFIED:
-               onUpdate(evt.getWorkEvt());
-               break;
-            case DELETED:
-               onDelete(evt.getWorkEvt());
-               break;
-            default:
-               logger.log(Level.INFO, "Unexpected work change event [" + evt.getWorkId() +"]: " + evt.getChangeType());
-         }
-
+         solr.shutdown();
       }
-      catch(Exception e)
+      catch (Exception e)
       {
-         logger.log(Level.WARNING, "Failed to update search indices following a change to work [" + evt.getWorkId() +"]: " + evt, e);
+         logger.log(Level.WARNING, "Failed to cleanly shut down connection to Solr server.", e);
       }
    }
 
-   private void onCreate(Work workEvt)
+   private Void onCreate(WorksChangeEvent evt)
    {
-      isIndexed(workEvt.getId());
+      Work work;
+      try
+      {
+         work = evt.getWorkEvt();
+      }
+      catch (WorkNotAvailableException ex)
+      {
+
+         return null;
+      }
+
+      removeIfPresent(work.getId());
+
       Collection<SolrInputDocument> solrDocs = new ArrayList<>();
-      WorkSolrProxy workProxy = WorkSolrProxy.createWork(workEvt);
+      WorkSolrProxy workProxy = WorkSolrProxy.createWork(work);
       solrDocs.add(workProxy.getDocument());
 
-      for(Edition edition : workEvt.getEditions())
+      for(Edition edition : work.getEditions())
       {
-         WorkSolrProxy editionProxy = WorkSolrProxy.createEdition(workEvt.getId(), edition);
+         WorkSolrProxy editionProxy = WorkSolrProxy.createEdition(work.getId(), edition);
          solrDocs.add(editionProxy.getDocument());
 
          for(Volume volume : edition.getVolumes())
          {
-            WorkSolrProxy volumeProxy = WorkSolrProxy.createVolume(workEvt.getId(), edition, volume);
+            WorkSolrProxy volumeProxy = WorkSolrProxy.createVolume(work.getId(), edition, volume);
             solrDocs.add(volumeProxy.getDocument());
          }
       }
@@ -184,21 +188,23 @@ public class BiblioEntriesSearchService implements WorkSearchService
       }
       catch (SolrServerException | IOException e)
       {
-         logger.log(Level.SEVERE, "Failed to commit the work id: [" + workEvt.getId() + "] to the SOLR server. " + e);
+         logger.log(Level.SEVERE, "Failed to commit the work id: [" + work.getId() + "] to the SOLR server. " + e);
       }
 
+      return null;
+
    }
 
-   private void onUpdate(Work workEvt)
+   private Void onWorkUpdate(WorksChangeEvent workEvt)
    {
-      //HACK: Until Change notifications are implemented we will remove all works and corresponding editions / volumes.
+      //HACK: Until granular Change notifications are implemented we will remove all works and corresponding editions / volumes.
       //      Once removed we will re-add all entities from the work.
-      onCreate(workEvt);
+      return onCreate(workEvt);
    }
 
-   private void onDelete(Work workEvt)
+   private Void onDelete(WorksChangeEvent workEvt)
    {
-      String id = workEvt.getId();
+      String id = workEvt.getWorkId();
       try
       {
          solr.deleteById(id);
@@ -209,9 +215,10 @@ public class BiblioEntriesSearchService implements WorkSearchService
          logger.log(Level.SEVERE, "Failed to delete the work id: [" + id + "] from the SOLR server. " + e);
       }
 
+      return null;
    }
 
-   private void isIndexed(String id)
+   private void removeIfPresent(String id)
    {
       SolrQuery query = new SolrQuery();
       query.setQuery("id:" + id);
@@ -259,6 +266,37 @@ public class BiblioEntriesSearchService implements WorkSearchService
    public WorkQueryCommand createQueryCommand()
    {
       return new WorkSolrQueryCommand(solr);
+   }
+
+   private static class EntryChangeHandlers<EVENT extends WorksChangeEvent>
+   {
+      // TODO to make this more general purpose, change to ChangeEvent.
+      Map<WorksChangeEvent.ChangeType, Function<EVENT, Void>> changeHandlers = new HashMap<>();
+   
+      public void register(WorksChangeEvent.ChangeType type, Function<EVENT, Void> handler)
+      {
+         changeHandlers.put(type, handler);
+      }
+   
+      private void handle(EVENT event)
+      {
+         ChangeType type = event.getChangeType();
+         Function<EVENT, Void> handler = changeHandlers.get(type);
+         if (handler == null)
+         {
+            logger.info("No handler registered for [" + type + "]");
+            return;
+         }
+   
+         try
+         {
+            handler.apply(event);
+         }
+         catch (Exception ex)
+         {
+            logger.log(Level.SEVERE, "Failed to handle " + type + " event for [" + event.getWorkId() + "] ", ex);
+         }
+      }
    }
 
 }
