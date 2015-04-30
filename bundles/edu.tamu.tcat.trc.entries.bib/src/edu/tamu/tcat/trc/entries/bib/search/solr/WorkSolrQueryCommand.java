@@ -15,8 +15,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
-import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 
 public class WorkSolrQueryCommand implements WorkQueryCommand
 {
@@ -43,7 +43,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    }
 
    @Override
-   public List<WorkSearchProxy> getResults()
+   public SolrWorksResults execute()
    {
       List<WorkSearchProxy> works = new ArrayList<>();
       String workInfo = null;
@@ -74,7 +74,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
          logger.log(Level.SEVERE, "The following error occurred while querying the works core :" + e);
       }
 
-      return works;
+      return new SolrWorksResults(works);
    }
 
    private SolrParams getQuery()

@@ -1,7 +1,6 @@
 package edu.tamu.tcat.trc.entries.bib.search;
 
 import java.time.Year;
-import java.util.List;
 
 
 /**
@@ -92,5 +91,5 @@ public interface WorkQueryCommand
     */
    void setMaxResults(int ct);
 
-   List<WorkSearchProxy> getResults();
+   SearchWorksResult execute();
 }

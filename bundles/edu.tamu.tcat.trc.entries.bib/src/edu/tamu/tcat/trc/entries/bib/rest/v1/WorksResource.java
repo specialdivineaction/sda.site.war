@@ -30,8 +30,8 @@ import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.WorkRepository;
 import edu.tamu.tcat.trc.entries.bib.dto.CustomResultsDV;
 import edu.tamu.tcat.trc.entries.bib.dto.WorkDV;
-import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 import edu.tamu.tcat.trc.entries.bib.search.WorkQueryCommand;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 import edu.tamu.tcat.trc.entries.bib.search.WorkSearchService;
 
 @Path("/works")
@@ -83,7 +83,7 @@ public class WorksResource
       WorkQueryCommand workCommand = workSearchService.createQueryCommand();
       workCommand.setTitleQuery(title);
       workCommand.setMaxResults(numResults);
-      return workCommand.getResults();
+      return workCommand.execute().listItems();
    }
 
 //   @GET
