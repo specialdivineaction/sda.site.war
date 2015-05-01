@@ -98,6 +98,15 @@ public class WorkSolrProxy
       proxy.addPublication(editionDV.publicationInfo);
       proxy.addField(docSeries, editionDV.series);
       proxy.addField(docSummary, editionDV.summary);
+
+      try
+      {
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
+      }
       return proxy;
    }
 
@@ -106,7 +115,7 @@ public class WorkSolrProxy
       VolumeDV volumeDV = VolumeDV.create(volume);
       StringBuilder volumeId = new StringBuilder(workId)
                               .append(":")
-                              .append(editionId)
+                              .append(edition.getId())
                               .append(":")
                               .append(volumeDV.id);
 
@@ -119,6 +128,15 @@ public class WorkSolrProxy
       proxy.addPublication(volumeDV.publicationInfo);
       proxy.addField(docSeries, volumeDV.series);
       proxy.addField(docSummary, volumeDV.summary);
+
+      try
+      {
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
+      }
       return proxy;
    }
 
@@ -132,6 +150,15 @@ public class WorkSolrProxy
       proxy.addTitle(workDV.titles);
       proxy.updateField(docSeries, workDV.series, SET);
       proxy.updateField(docSummary, workDV.summary, SET);
+
+      try
+      {
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(work)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
+      }
       return proxy;
    }
 
@@ -150,6 +177,15 @@ public class WorkSolrProxy
       proxy.addPublication(editionDV.publicationInfo);
       proxy.updateField(docSeries, editionDV.series, SET);
       proxy.updateField(docSummary, editionDV.summary, SET);
+
+      try
+      {
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
+      }
       return proxy;
    }
 
@@ -158,7 +194,7 @@ public class WorkSolrProxy
       VolumeDV volumeDV = VolumeDV.create(volume);
       StringBuilder volumeId = new StringBuilder(workId)
                               .append(":")
-                              .append(editionId)
+                              .append(edition.getId())
                               .append(":")
                               .append(volumeDV.id);
 
@@ -171,6 +207,15 @@ public class WorkSolrProxy
       proxy.addPublication(volumeDV.publicationInfo);
       proxy.updateField(docSeries, volumeDV.series, SET);
       proxy.updateField(docSummary, volumeDV.summary, SET);
+
+      try
+      {
+         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new IllegalStateException("Failed to serialize WorkSearchProxy data", e);
+      }
       return proxy;
    }
 
