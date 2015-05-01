@@ -80,13 +80,21 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    private SolrParams getQuery()
    {
       SolrQuery query = new SolrQuery();
+      StringBuilder qString = new StringBuilder();
 
       query.setStart(Integer.valueOf(start));
       query.setRows(Integer.valueOf(this.maxResults));
       // NOTE this looks like a bad idea. probably set internal state and build based on that state
 //      String queryString = Joiner.on(" AND ").join(criteria);
 //      query.setQuery(queryString);
-
+      if (q != null)
+         query.setQuery("*:(" + q + ")");
+      else
+      {
+         qString.append("titles:(" + titleQuery + ")")
+                .append("authorNames:(" + authorName + ")");
+         query.setQuery(qString.toString());
+      }
 
       return query;
    }
