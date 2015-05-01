@@ -2,13 +2,16 @@ package edu.tamu.tcat.trc.entries.bib.search;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import edu.tamu.tcat.trc.entries.bib.AuthorList;
 import edu.tamu.tcat.trc.entries.bib.AuthorReference;
+import edu.tamu.tcat.trc.entries.bib.Edition;
 import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
+import edu.tamu.tcat.trc.entries.bib.Volume;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
 
@@ -34,31 +37,95 @@ public class WorkSearchProxy
    public static WorkSearchProxy create(Work w)
    {
       WorkSearchProxy result = new WorkSearchProxy();
-      result.id = w.getId();
-      result.uri = "works/" + w.getId();        // TODO make a more flexible tool for creating work URIs
 
       TitleDefinition titleDefn = w.getTitle();
       Set<Title> titles = titleDefn.getAlternateTitles();
-      result.title = getWorkTitle(titles);
+      LocalDate d = w.getEditions().stream()
+            .map(ed ->
+            ed.getPublicationInfo().getPublicationDate().getCalendar())
+            .filter(pubDate ->
+            pubDate != null)
+            .min(LocalDate::compareTo)
+            .orElse(null);
 
-      result.label = constructLabel(w);
-      result.pubYear = getNormalizedYear(w);
+      String pubYear = getNormalizedYear(d);
+      AuthorList authors = w.getAuthors();
+      List<AuthorReference> authRef = new ArrayList<>();
+      authors.forEach(author -> authRef.add(author));
+
+      String name = getAuthorName(authRef);
+
+      result.id = w.getId();
+      result.uri = "works/" + w.getId();        // TODO make a more flexible tool for creating work URIs
+      result.title = getEntityTitle(titles);
+
+      result.label = constructLabel(titles, name, pubYear);
+      result.pubYear = pubYear;
 
       result.summary = w.getSummary();
 
-      AuthorList authors = w.getAuthors();
       authors.forEach(author -> result.authors.add(AuthorRefDV.create(author)));
 
       return result;
    }
 
-   private static String constructLabel(Work w)
+   public static WorkSearchProxy create(String workId, Edition e)
    {
-      TitleDefinition titleDefn = w.getTitle();
-      Set<Title> titles = titleDefn.getAlternateTitles();
-      String name = getAuthorName(w);
-      String pubDate = getNormalizedYear(w);
+      WorkSearchProxy result = new WorkSearchProxy();
 
+      Set<Title> titleSet = new HashSet<>(e.getTitles());
+      LocalDate d = e.getVolumes().stream()
+            .map(ed ->
+            ed.getPublicationInfo().getPublicationDate().getCalendar())
+            .filter(pubDate ->
+            pubDate != null)
+            .min(LocalDate::compareTo)
+            .orElse(null);
+
+      String pubYear = getNormalizedYear(d);
+      String name = getAuthorName(e.getAuthors());
+
+      result.id = e.getId();
+      result.uri = "works/" + workId + "/" + e.getId();
+      result.title = getEntityTitle(titleSet);
+
+      result.label = constructLabel(titleSet, name, pubYear);
+      result.pubYear = pubYear;
+
+      result.summary = e.getSummary();
+
+      List<AuthorReference> authors = e.getAuthors();
+      authors.forEach(author -> result.authors.add(AuthorRefDV.create(author)));
+
+      return result;
+
+   }
+
+   public static WorkSearchProxy create(String workId, String editionId, Volume v)
+   {
+      WorkSearchProxy result = new WorkSearchProxy();
+      Set<Title> titleSet = new HashSet<>(v.getTitles());
+      LocalDate localDate = v.getPublicationInfo().getPublicationDate().getCalendar();
+      String pubYear = getNormalizedYear(localDate);
+      List<AuthorReference> authors = v.getAuthors();
+      String name = getAuthorName(authors);
+
+
+      result.id = v.getId();
+      result.uri = "works/" + workId + "/" + v.getId();
+      result.title = getEntityTitle(titleSet);
+      result.label = constructLabel(titleSet, name, pubYear);
+      result.pubYear = pubYear;
+      result.summary = v.getSummary();
+
+      authors.forEach(author -> result.authors.add(AuthorRefDV.create(author)));
+
+      return result;
+
+   }
+
+   private static String constructLabel(Set<Title> titles, String name, String pubDate)
+   {
       StringBuilder sb = new StringBuilder();
       if (name != null)
          sb.append(name).append(pubDate == null ? ", " : " ");
@@ -66,16 +133,16 @@ public class WorkSearchProxy
       if (pubDate != null)
          sb.append("(").append(pubDate).append("): ");
 
-      sb.append(getWorkTitle(titles));
+      sb.append(getEntityTitle(titles));
       return sb.toString();
+
    }
 
    /** @return the author's last name (or best approximate) */
-   private static String getAuthorName(Work w)
+   private static String getAuthorName(List<AuthorReference> authors)
    {
-      AuthorList authors = w.getAuthors();
       String name = null;
-      if (authors.size() >= 0)
+      if (authors.size() > 0)
       {
          AuthorReference ref = authors.get(0);
          name = trimToNull(ref.getLastName());
@@ -88,7 +155,7 @@ public class WorkSearchProxy
       return name;
    }
 
-   private static String getWorkTitle(Set<Title> titles)
+   private static String getEntityTitle(Set<Title> titles)
    {
       String result = "no title available";
       if (!titles.isEmpty())
@@ -111,16 +178,8 @@ public class WorkSearchProxy
    }
 
    /** @return the year this work was published. May be null */
-   private static String getNormalizedYear(Work w)
+   private static String getNormalizedYear(LocalDate d)
    {
-      LocalDate d = w.getEditions().stream()
-            .map(ed ->
-               ed.getPublicationInfo().getPublicationDate().getCalendar())
-            .filter(pubDate ->
-               pubDate != null)
-            .min(LocalDate::compareTo)
-            .orElse(null);
-
       if (d == null)
          return null;
 
