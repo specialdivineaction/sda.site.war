@@ -49,22 +49,20 @@ public class BiblioEntriesSearchService implements WorkSearchService
    /** Configuration property key that defines Solr core to be used for relationships. */
    public static final String SOLR_CORE = "catalogentries.works.solr.core";      // TODO rename to trc.biblio.works.solr.core
 
-   // configured here for use by other classes in this package - these classes are effectively
-   // delegates of this service's responsibilities
-   static final ObjectMapper mapper;
-
    private WorkRepository repo;
    private ConfigurationProperties config;
    private SolrServer solr;
    private AutoCloseable registration;
-
-   static {
-      mapper = new ObjectMapper();
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-   }
-
-   public BiblioEntriesSearchService()
+   
+   /** configured here for use by other classes in this package - these classes are effectively
+    * delegates of this service's responsibilities. This is a method to create a new one and not
+    * a field to force thread-safety, deduplication, and other concerns on the caller.
+    */
+   /*package*/ static ObjectMapper getMapper()
    {
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      return mapper;
    }
 
    /**

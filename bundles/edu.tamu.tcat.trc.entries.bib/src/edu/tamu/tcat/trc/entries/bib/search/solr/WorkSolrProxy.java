@@ -74,7 +74,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(work)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(work)));
       }
       catch (JsonProcessingException e)
       {
@@ -101,7 +101,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(workId, edition)));
       }
       catch (JsonProcessingException e)
       {
@@ -131,7 +131,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
       }
       catch (JsonProcessingException e)
       {
@@ -153,7 +153,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(work)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(work)));
       }
       catch (JsonProcessingException e)
       {
@@ -180,7 +180,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(workId, edition)));
       }
       catch (JsonProcessingException e)
       {
@@ -210,7 +210,7 @@ public class WorkSolrProxy
 
       try
       {
-         proxy.addField(workInfo, BiblioEntriesSearchService.mapper.writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
+         proxy.addField(workInfo, BiblioEntriesSearchService.getMapper().writeValueAsString(WorkSearchProxy.create(workId, edition.getId(), volume)));
       }
       catch (JsonProcessingException e)
       {

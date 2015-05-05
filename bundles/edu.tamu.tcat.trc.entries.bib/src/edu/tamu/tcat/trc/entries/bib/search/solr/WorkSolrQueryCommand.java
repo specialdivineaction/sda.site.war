@@ -46,21 +46,19 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    public SolrWorksResults execute()
    {
       List<WorkSearchProxy> works = new ArrayList<>();
-      String workInfo = null;
-      WorkSearchProxy wi = new WorkSearchProxy();
-      QueryResponse response;
 
       try
       {
-         response = solr.query(getQuery());
+         QueryResponse response = solr.query(getQuery());
          SolrDocumentList results = response.getResults();
 
          for (SolrDocument doc : results)
          {
+            String workInfo = null;
             try
             {
                workInfo = doc.getFieldValue("workInfo").toString();
-               wi = BiblioEntriesSearchService.mapper.readValue(workInfo, WorkSearchProxy.class);
+               WorkSearchProxy wi = BiblioEntriesSearchService.getMapper().readValue(workInfo, WorkSearchProxy.class);
                works.add(wi);
             }
             catch (IOException ioe)
@@ -82,7 +80,6 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    private SolrParams getQuery()
    {
       SolrQuery query = new SolrQuery();
-      StringBuilder qString = new StringBuilder();
 
       query.setStart(Integer.valueOf(start));
       query.setRows(Integer.valueOf(this.maxResults));
@@ -93,6 +90,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
          query.setQuery("*:(" + q + ")");
       else
       {
+         StringBuilder qString = new StringBuilder();
          qString.append("titles:(" + titleQuery + ")")
                 .append("authorNames:(" + authorName + ")");
          query.setQuery(qString.toString());

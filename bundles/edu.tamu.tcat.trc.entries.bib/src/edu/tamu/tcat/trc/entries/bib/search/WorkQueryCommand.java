@@ -91,6 +91,8 @@ public interface WorkQueryCommand
    /**
     * Specify the maximum number of results to be returned. Implementations may return fewer
     * results but must not return more.
+    * <p>
+    * If not specified, the default is 25.
     *
     * @param ct
     * @return
