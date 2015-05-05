@@ -6,10 +6,13 @@ import java.time.Year;
 /**
  * Command for use in querying the underlying search service
  */
+//TODO: might need to clarify between "set" methods and "filter" methods which do similar things --pb
+//TODO: this API must be altered if facets or new fields are added. Could use a more flexible API,
+//      perhaps by using a factory pattern here, e.g. "getFacetBuilder(Class<T extends FacetQueryBuilder>)"
 public interface WorkQueryCommand
 {
 
-   // TODO probably should use a builder pattern.
+   // TODO probably should use a builder pattern; this seems like a builder already --pb
    // TODO should be able to serialize a query
 
    /**
@@ -47,6 +50,7 @@ public interface WorkQueryCommand
     * @param ids
     * @return
     */
+   //TODO: what is an "author id"? likely not their name --pb
    void filterByAuthor(String... ids);
 
    /**
@@ -80,6 +84,8 @@ public interface WorkQueryCommand
     * @param start
     * @return
     */
+   //TODO: why is this in the query and not the result? "set max" makes sense here, but could
+   //      also be moved to the result set --pb
    void setStartIndex(int start);
 
    /**
@@ -89,7 +95,11 @@ public interface WorkQueryCommand
     * @param ct
     * @return
     */
+   //TODO: note what implementations may do with limited results; e.g. blind truncate, sort
+   //      by relevance or some other field
    void setMaxResults(int ct);
 
+   //TODO: javadoc; especially note thread safety, whether this is blocking, how to cancel,
+   //      how long it may take, whether the same result may be accessed multiple times, etc. --pb
    SearchWorksResult execute();
 }

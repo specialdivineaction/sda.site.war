@@ -11,6 +11,7 @@ import edu.tamu.tcat.trc.entries.bib.Title;
 import edu.tamu.tcat.trc.entries.bib.TitleDefinition;
 import edu.tamu.tcat.trc.entries.bib.Work;
 import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
+import edu.tamu.tcat.trc.entries.bib.search.WorkSearchProxy;
 
 
 /**
@@ -18,7 +19,9 @@ import edu.tamu.tcat.trc.entries.bib.dto.AuthorRefDV;
  * returned when only a brief summary of the work is required to save
  * data transfer and parsing resources.
  *
+ * @deprecated Seems to be replaced by {@link WorkSearchProxy}
  */
+@Deprecated
 public class WorkInfo
 {
    public String id;

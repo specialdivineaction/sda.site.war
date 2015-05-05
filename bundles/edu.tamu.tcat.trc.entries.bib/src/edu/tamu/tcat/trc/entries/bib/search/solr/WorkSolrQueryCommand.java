@@ -69,8 +69,10 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
             }
          }
       }
-      catch(SolrServerException e)
+      catch (SolrServerException e)
       {
+         //TODO: this should throw instead of log a failure and return incomplete results; let
+         //      the caller handle that there was an exception
          logger.log(Level.SEVERE, "The following error occurred while querying the works core :" + e);
       }
 

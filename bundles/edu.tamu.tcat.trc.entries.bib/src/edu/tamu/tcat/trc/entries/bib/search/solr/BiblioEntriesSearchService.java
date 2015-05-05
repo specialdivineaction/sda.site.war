@@ -87,6 +87,7 @@ public class BiblioEntriesSearchService implements WorkSearchService
    public void activate()
    {
       logger.fine("Activating SolrRelationshipSearchService");
+      //TODO: the check is helpful, but if required it should be statically bound in the DS configuration
       Objects.requireNonNull(repo, "No work repository supplied.");
 
       // configure handlers
