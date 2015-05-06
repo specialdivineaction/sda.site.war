@@ -63,12 +63,12 @@ public class PeopleSolrProxy
       }
 
       proxy.document.addField(personId, personDV.id);
-      proxy.document.addField(syntheticName, constructSyntheticName(personDV.names));
-      for(PersonNameDV name : personDV.names)
-      {
-         proxy.document.addField(familyName, guardNull(name.familyName));
-         proxy.document.addField(displayName, guardNull(name.displayName));
-      }
+
+      proxy.document.addField(syntheticName, constructSyntheticName(personDV.getAllNames()));
+
+      PersonNameDV name = personDV.displayName;
+      proxy.document.addField(familyName, guardNull(name.familyName));
+      proxy.document.addField(displayName, guardNull(name.displayName));
 
       HistoricalEventDV birth = personDV.birth;
       proxy.document.addField(birthLocation, guardNull(birth.location));

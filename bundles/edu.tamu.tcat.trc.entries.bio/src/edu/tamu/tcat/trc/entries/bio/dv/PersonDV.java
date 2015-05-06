@@ -1,8 +1,11 @@
 package edu.tamu.tcat.trc.entries.bio.dv;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import edu.tamu.tcat.catalogentries.events.HistoricalEvent;
 import edu.tamu.tcat.catalogentries.events.dv.HistoricalEventDV;
@@ -120,6 +123,14 @@ public class PersonDV
       }
 
       return sb.toString();
+   }
+
+   @JsonIgnore
+   public Set<PersonNameDV> getAllNames()
+   {
+      Set<PersonNameDV> allNames = new HashSet<>(this.names);
+      allNames.add(this.displayName);
+      return allNames;
    }
 
    public static class PersonImpl implements Person
