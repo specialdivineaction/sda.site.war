@@ -3,7 +3,6 @@ package edu.tamu.tcat.trc.entries.bio.solr;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +17,6 @@ import org.apache.solr.common.SolrDocumentList;
 import com.google.common.base.Joiner;
 
 import edu.tamu.tcat.trc.entries.bio.PeopleQueryCommand;
-import edu.tamu.tcat.trc.entries.bio.dv.SimplePersonDV;
 import edu.tamu.tcat.trc.entries.bio.rest.v1.SimplePersonResultDV;
 
 public class PeopleSolrQueryCommand implements PeopleQueryCommand
