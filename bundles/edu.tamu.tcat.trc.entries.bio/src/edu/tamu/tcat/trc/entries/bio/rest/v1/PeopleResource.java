@@ -71,9 +71,9 @@ public class PeopleResource
    {
 
       PeopleQueryCommand peopleQuery = peopleSearchService.createQueryCommand();
-      peopleQuery.byFamilyName(prefix);
+      peopleQuery.search(prefix);
       peopleQuery.setRowLimit(numResults);
-      return peopleQuery.getResults();
+      return Collections.unmodifiableList(peopleQuery.getResults());
 //      try {
 //         List<SimplePersonResultDV> results = new ArrayList<>();
 //
