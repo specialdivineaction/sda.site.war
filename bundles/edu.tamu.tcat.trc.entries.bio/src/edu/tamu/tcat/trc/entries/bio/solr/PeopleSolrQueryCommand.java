@@ -74,7 +74,7 @@ public class PeopleSolrQueryCommand implements PeopleQueryCommand
    @Override
    public PeopleQueryCommand search(String syntheticName)
    {
-      criteria.add("syntheticName:\"" + syntheticName + "\"");
+      criteria.add("syntheticName:(" + syntheticName + ")");
       return this;
    }
 
