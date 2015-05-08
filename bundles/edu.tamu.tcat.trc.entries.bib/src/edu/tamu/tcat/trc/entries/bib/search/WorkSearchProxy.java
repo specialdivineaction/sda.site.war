@@ -86,7 +86,7 @@ public class WorkSearchProxy
       String name = getAuthorName(e.getAuthors());
 
       result.id = e.getId();
-      result.uri = "works/" + workId + "/" + e.getId();
+      result.uri = "works/" + workId + "/editions/" + e.getId();
       result.title = getEntityTitle(titleSet);
 
       result.label = constructLabel(titleSet, name, pubYear);
@@ -112,7 +112,7 @@ public class WorkSearchProxy
 
 
       result.id = v.getId();
-      result.uri = "works/" + workId + "/" + v.getId();
+      result.uri = "works/" + workId + "/editions/" + editionId + "/volumes/" + v.getId();
       result.title = getEntityTitle(titleSet);
       result.label = constructLabel(titleSet, name, pubYear);
       result.pubYear = pubYear;
