@@ -76,12 +76,12 @@ public class WorksResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<WorkSearchProxy> findByTitle(@QueryParam(value = "title") String title,
-                                     @DefaultValue("100") @QueryParam(value = "numResults") int numResults)
+   public List<WorkSearchProxy> findByTitle(@QueryParam(value = "q") String q,
+                                            @DefaultValue("100") @QueryParam(value = "numResults") int numResults)
    {
 
       WorkQueryCommand workCommand = workSearchService.createQueryCommand();
-      workCommand.setTitleQuery(title);
+      workCommand.setQuery(q);
       workCommand.setMaxResults(numResults);
       return workCommand.execute().listItems();
    }

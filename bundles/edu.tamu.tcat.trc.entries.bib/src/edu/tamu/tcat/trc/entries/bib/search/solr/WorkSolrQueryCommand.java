@@ -80,6 +80,7 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
    private SolrParams getQuery()
    {
       SolrQuery query = new SolrQuery();
+      StringBuilder qString = new StringBuilder();
 
       query.setStart(Integer.valueOf(start));
       query.setRows(Integer.valueOf(this.maxResults));
@@ -87,15 +88,17 @@ public class WorkSolrQueryCommand implements WorkQueryCommand
 //      String queryString = Joiner.on(" AND ").join(criteria);
 //      query.setQuery(queryString);
       if (q != null)
-         query.setQuery("*:(" + q + ")");
+      {
+         qString.append("titles:(" + q + ")")
+                .append(" OR authorNames:(" + q + ")");
+      }
       else
       {
-         StringBuilder qString = new StringBuilder();
          qString.append("titles:(" + titleQuery + ")")
-                .append("authorNames:(" + authorName + ")");
-         query.setQuery(qString.toString());
+                .append("OR authorNames:(" + authorName + ")");
       }
 
+      query.setQuery(qString.toString());
       return query;
    }
 
