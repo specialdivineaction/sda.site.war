@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="131">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="132">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="jackson.feature.feature.group" version="2.3.1"/>
@@ -59,10 +59,11 @@
 <repository location="https://build.citd.tamu.edu/hudson/job/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.9.201504280848"/>
+<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.10.201504301402"/>
 <repository location="https://build.citd.tamu.edu/hudson/job/mirror.dependencies/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="edu.tamu.tcat.account.sdk.feature.feature.group" version="1.0.0.20150127-1603"/>
 <unit id="edu.tamu.tcat.osgi.sdk.feature.feature.group" version="1.1.4.20140620-1612"/>
 <unit id="edu.tamu.tcat.crypto.sdk.feature.feature.group" version="2.0.1.20141008-2152"/>
 <unit id="edu.tamu.tcat.db.sdk.feature.feature.group" version="1.1.0.20140818-1724"/>
@@ -122,15 +123,15 @@
 <plugin id="edu.tamu.tcat.osgi.services.util.source"/>
 <plugin id="javax.annotation"/>
 <plugin id="javax.annotation.source"/>
-<plugin id="javax.el"/>
-<plugin id="javax.el.source"/>
+<plugin id="javax.el" version="2.2.0.v201303151357"/>
+<plugin id="javax.el.source" version="2.2.0.v201303151357"/>
 <plugin id="javax.inject"/>
 <plugin id="javax.inject.source"/>
 <plugin id="javax.servlet"/>
 <plugin id="javax.servlet-api"/>
 <plugin id="javax.servlet-api.source"/>
-<plugin id="javax.servlet.jsp"/>
-<plugin id="javax.servlet.jsp.source"/>
+<plugin id="javax.servlet.jsp" version="2.2.0.v201112011158"/>
+<plugin id="javax.servlet.jsp.source" version="2.2.0.v201112011158"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="javax.wsdl"/>
 <plugin id="javax.xml"/>
@@ -163,8 +164,9 @@
 <plugin id="org.apache.batik.xml.source"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
 <plugin id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<plugin id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
 <plugin id="org.apache.commons.codec.source" version="1.7"/>
+<plugin id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbcp"/>
 <plugin id="org.apache.commons.dbcp.source"/>
 <plugin id="org.apache.commons.discovery" version="0.2.0.v201004190315"/>
@@ -607,8 +609,8 @@
 <plugin id="org.mozilla.javascript"/>
 <plugin id="org.mozilla.javascript.source"/>
 <plugin id="org.postgis" version="2.1.0"/>
-<plugin id="org.postgresql" version="9.3.1102"/>
 <plugin id="org.postgresql" version="9.2.1002"/>
+<plugin id="org.postgresql" version="9.3.1102"/>
 <plugin id="org.sat4j.core"/>
 <plugin id="org.sat4j.pb"/>
 <plugin id="org.slf4j.api"/>
