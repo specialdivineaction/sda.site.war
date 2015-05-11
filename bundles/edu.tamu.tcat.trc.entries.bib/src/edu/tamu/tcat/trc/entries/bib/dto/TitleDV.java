@@ -14,11 +14,13 @@ public class TitleDV
    public static TitleDV create(Title title)
    {
       TitleDV dto = new TitleDV();
-      dto.type = title.getType();
-      dto.lg = title.getLanguage();
-      dto.title = title.getTitle();
-      dto.subtitle = title.getSubTitle();
-
+      if (title != null)
+      {
+         dto.type = title.getType();
+         dto.lg = title.getLanguage();
+         dto.title = title.getTitle();
+         dto.subtitle = title.getSubTitle();
+      }
       return dto;
    }
 
