@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="132">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="133">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="jackson.feature.feature.group" version="2.3.1"/>
@@ -59,7 +59,7 @@
 <repository location="https://build.citd.tamu.edu/hudson/job/JAX-RS.Mirror/lastSuccessfulBuild/artifact/target/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.10.201504301402"/>
+<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.11.201505121810"/>
 <repository location="https://build.citd.tamu.edu/hudson/job/mirror.dependencies/lastSuccessfulBuild/artifact/targetPlatform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -73,8 +73,8 @@
 <includeBundles>
 <plugin id="com.eclipsesource.jaxrs.consumer"/>
 <plugin id="com.eclipsesource.jaxrs.consumer.source"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all" version="2.10.1.SR1"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.10.1.SR1"/>
 <plugin id="com.eclipsesource.jaxrs.provider.gson"/>
 <plugin id="com.eclipsesource.jaxrs.provider.gson.source"/>
 <plugin id="com.eclipsesource.jaxrs.provider.moxy"/>
@@ -121,6 +121,7 @@
 <plugin id="edu.tamu.tcat.osgi.config.source"/>
 <plugin id="edu.tamu.tcat.osgi.services.util"/>
 <plugin id="edu.tamu.tcat.osgi.services.util.source"/>
+<plugin id="edu.tamu.tcat.osgi.solr"/>
 <plugin id="javax.annotation"/>
 <plugin id="javax.annotation.source"/>
 <plugin id="javax.el" version="2.2.0.v201303151357"/>
