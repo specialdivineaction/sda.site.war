@@ -100,6 +100,11 @@
       <layout>p2</layout>
       <url>${repo-base-url}/oss.hathitrust-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
+    <repository>
+      <id>TRC</id>
+      <layout>p2</layout>
+      <url>${repo-base-url}/oss.trc-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
+    </repository>
     
     <repository>
       <id>CITD Releases</id>
