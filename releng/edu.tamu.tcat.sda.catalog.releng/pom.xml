@@ -58,16 +58,8 @@
     <module>${repo-ed-releng-path}/edu.tamu.tcat.sda.catalog.war.product</module>
     <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.war.feature</module>
     
-    
-    <module>${repo-ed-path}/${pqns}</module>
     <module>${repo-ed-path}/${pqns}.psql</module>
     <module>${repo-ed-path}/${pqns}.rest</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.bib</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.bio</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.entries.reln</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.books.hathitrust</module>
-    <module>${repo-ed-path}/edu.tamu.tcat.trc.resources.rest</module>
     
     <module>${repo-ed-path}/edu.tamu.tcat.osgi.solr</module>
   </modules>
