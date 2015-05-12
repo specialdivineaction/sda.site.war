@@ -75,8 +75,8 @@
         <configuration>
           <ignoreMissingFile>false</ignoreMissingFile>
           <includes>
-            <include>target/products/${project.artifactId}/linux/gtk/x86/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info</include>
-            <include>target/products/${project.artifactId}/linux/gtk/x86/configuration/config.ini</include>
+            <include>target/products/${project.artifactId}/linux/gtk/x86_64/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info</include>
+            <include>target/products/${project.artifactId}/linux/gtk/x86_64/configuration/config.ini</include>
           </includes>
           <replacements>
             <replacement>

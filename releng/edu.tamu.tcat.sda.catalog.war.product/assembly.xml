@@ -6,7 +6,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${basedir}/target/products/${artifactId}/linux/gtk/x86</directory>
+      <directory>${basedir}/target/products/${artifactId}/linux/gtk/x86_64</directory>
       <outputDirectory>/WEB-INF</outputDirectory>
       <excludes>
         <exclude>plugins/javax.servlet_*.jar</exclude>
