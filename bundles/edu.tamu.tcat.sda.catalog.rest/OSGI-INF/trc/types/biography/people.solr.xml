@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="edu.tamu.tcat.sda.people.search.solr">
-   <implementation class="edu.tamu.tcat.trc.entries.bio.solr.PeopleIndexingService"/>
-   <reference bind="setRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.bio.PeopleRepository" name="PeopleRepository" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.entries.types.bio.solr.PeopleIndexingService"/>
+   <reference bind="setRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.PeopleRepository" name="PeopleRepository" policy="static"/>
    <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.bio.PeopleIndexServiceManager"/>
-      <provide interface="edu.tamu.tcat.trc.entries.bio.PeopleSearchService"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.bio.PeopleIndexServiceManager"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.bio.PeopleSearchService"/>
    </service>
 </scr:component>

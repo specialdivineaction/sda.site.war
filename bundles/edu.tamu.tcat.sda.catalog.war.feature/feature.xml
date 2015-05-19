@@ -368,28 +368,28 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.reln"
+         id="edu.tamu.tcat.trc.entries.types.reln"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.bib"
+         id="edu.tamu.tcat.trc.entries.types.bib"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.bio"
+         id="edu.tamu.tcat.trc.entries.types.bio"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.catalogentries"
+         id="edu.tamu.tcat.trc.entries.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
