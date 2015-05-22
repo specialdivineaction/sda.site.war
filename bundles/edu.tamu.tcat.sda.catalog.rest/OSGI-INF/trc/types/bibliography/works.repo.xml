@@ -6,5 +6,5 @@
       <provide interface="edu.tamu.tcat.trc.entries.bib.WorkRepository"/>
    </service>
    <reference bind="setPeopleRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.PeopleRepository" name="PeopleRepository" policy="static"/>
-   <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.catalogentries.IdFactory" name="IdFactory" policy="static"/>
+   <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.IdFactory" name="IdFactory" policy="static"/>
 </scr:component>

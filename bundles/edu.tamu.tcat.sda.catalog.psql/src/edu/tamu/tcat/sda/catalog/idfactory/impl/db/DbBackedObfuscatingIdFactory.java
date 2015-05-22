@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import edu.tamu.tcat.catalogentries.IdFactory;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
+import edu.tamu.tcat.trc.entries.core.IdFactory;
 
 public class DbBackedObfuscatingIdFactory implements IdFactory
 {
