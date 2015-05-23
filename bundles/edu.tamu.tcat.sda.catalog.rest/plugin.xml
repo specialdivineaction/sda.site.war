@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="edu.tamu.tcat.catalogentries.relationships.types">
+         point="edu.tamu.tcat.trc.entries.types.reln.reltypes">
       <relationship_type
             identifier="uk.ac.ox.bodleian.sda.relationships.influence"
             is_directed="true"
