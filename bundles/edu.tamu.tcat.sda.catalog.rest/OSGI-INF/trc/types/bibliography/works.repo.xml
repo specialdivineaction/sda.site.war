@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="edu.tamu.tcat.sda.entries.biblio.works.repo">
-   <implementation class="edu.tamu.tcat.trc.entries.bib.postgres.PsqlWorkRepo"/>
+   <implementation class="edu.tamu.tcat.trc.entries.types.bib.postgres.PsqlWorkRepo"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.bib.WorkRepository"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.bib.repo.WorkRepository"/>
    </service>
    <reference bind="setPeopleRepo" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.PeopleRepository" name="PeopleRepository" policy="static"/>
    <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.IdFactory" name="IdFactory" policy="static"/>
