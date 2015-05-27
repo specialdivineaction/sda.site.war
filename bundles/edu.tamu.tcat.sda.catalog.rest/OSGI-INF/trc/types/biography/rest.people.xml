@@ -4,6 +4,6 @@
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.bio.rest.v1.PeopleResource"/>
    </service>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.PeopleRepository" name="PeopleRepository" policy="static"/>
-   <reference bind="setPeopleService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.PeopleSearchService" name="PeopleSearchService" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository" name="PeopleRepository" policy="static"/>
+   <reference bind="setPeopleService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bio.search.PeopleSearchService" name="PeopleSearchService" policy="static"/>
 </scr:component>

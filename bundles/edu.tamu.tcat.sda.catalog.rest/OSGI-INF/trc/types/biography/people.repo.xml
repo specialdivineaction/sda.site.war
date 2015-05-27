@@ -3,7 +3,7 @@
    <implementation class="edu.tamu.tcat.trc.entries.types.bio.postgres.PsqlPeopleRepo"/>
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.types.bio.PeopleRepository"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository"/>
    </service>
    <reference bind="setIdFactory" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.IdFactory" name="IdFactory" policy="static"/>
 </scr:component>
