@@ -98,6 +98,7 @@ Service-Component:
  OSGI-INF/trc/types/biography/rest.people.xml,
  OSGI-INF/trc/types/biography/people.solr.xml,
  OSGI-INF/trc/types/notes/notes.repo.xml,
+ OSGI-INF/trc/types/notes/notes.solr.xml,
  OSGI-INF/trc/types/notes/rest.notes.xml,
  OSGI-INF/trc/types/relationships/rest.relationships.xml,
  OSGI-INF/trc/types/relationships/rest.relationship.xml,
