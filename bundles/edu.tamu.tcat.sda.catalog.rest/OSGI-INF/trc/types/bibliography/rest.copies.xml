@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.sda.entries.biblio.copies.rest_api">
    <implementation class="edu.tamu.tcat.trc.entries.types.bib.copies.rest.v1.CopiesReferenceResource"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bib.repo.WorkRepository" name="WorkRepository" policy="static"/>
-   <reference bind="setCopyRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.bib.copies.repo.CopyReferenceRepository" name="CopyReferenceRepository" policy="static"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setCopyRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.biblio.copies.repo.CopyReferenceRepository" name="CopyReferenceRepository" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.bib.copies.rest.v1.CopiesReferenceResource"/>
    </service>

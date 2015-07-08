@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.trc.digital_resources.copy_search.rest">
-   <implementation class="edu.tamu.tcat.trc.resources.rest.books.v1.CopySearchServiceResource"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.resources.books.discovery.CopySearchService" name="CopySearchService" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.digires.rest.books.v1.CopySearchServiceResource"/>
+   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.digires.books.discovery.CopySearchService" name="CopySearchService" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.resources.rest.books.v1.CopySearchServiceResource"/>
+      <provide interface="edu.tamu.tcat.trc.digires.rest.books.v1.CopySearchServiceResource"/>
    </service>
 </scr:component>

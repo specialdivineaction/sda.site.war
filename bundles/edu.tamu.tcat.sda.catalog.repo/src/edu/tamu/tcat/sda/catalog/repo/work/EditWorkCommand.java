@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import edu.tamu.tcat.sda.catalog.repo.Command;
-import edu.tamu.tcat.trc.entries.types.bib.AuthorReference;
-import edu.tamu.tcat.trc.entries.types.bib.Title;
+import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
+import edu.tamu.tcat.trc.entries.types.biblio.Title;
 
 public interface EditWorkCommand extends Command
 {
