@@ -23,5 +23,4 @@ Import-Package: edu.tamu.tcat.db.core;version="1.0.1",
  org.apache.solr.common.params;version="4.9.0",
  org.slf4j;version="1.7.2"
 Export-Package: edu.tamu.tcat.sda.catalog.idfactory.impl.db,
- edu.tamu.tcat.sda.catalog.psql.provider,
- edu.tamu.tcat.sda.catalog.relationships.search.solr
+ edu.tamu.tcat.sda.catalog.psql.provider
