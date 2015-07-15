@@ -116,7 +116,7 @@ Service-Component:
  OSGI-INF/trc/types/bibliography/works.solr.indexer.xml,
  OSGI-INF/trc/types/biography/people.repo.xml,
  OSGI-INF/trc/types/biography/rest.people.xml,
- OSGI-INF/trc/types/biography/people.solr.xml
+ OSGI-INF/trc/types/biography/people.solr.xml,
  OSGI-INF/trc/types/relationships/rest.relationships.xml,
  OSGI-INF/trc/types/relationships/rest.relationship.xml,
  OSGI-INF/trc/types/relationships/rest.relationship.types.xml,
