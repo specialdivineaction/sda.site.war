@@ -10,6 +10,7 @@
       <outputDirectory>/WEB-INF</outputDirectory>
       <excludes>
         <exclude>plugins/javax.servlet_*.jar</exclude>
+        <exclude>plugins/javax.servlet-api*.jar</exclude>
         <!--
         <exclude>plugins/org.hamcrest*.jar</exclude>
         <exclude>plugins/**junit*/</exclude>
