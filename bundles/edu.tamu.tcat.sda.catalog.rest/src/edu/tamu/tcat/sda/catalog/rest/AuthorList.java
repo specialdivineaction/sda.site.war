@@ -10,6 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,58 +74,85 @@ public class AuthorList
 
    }
 
+   private void doWrite(Writer writer) throws WebApplicationException
+   {
+      try
+      {
+         CsvExporter<Person, PersonCsvRecord> exporter =
+               new CsvExporter<>(PersonCsvRecord::create, PersonCsvRecord.class);
+
+         writer.write(String.join(", ", csvHeaders));
+         writer.write(System.lineSeparator());
+         Iterator<Person> iterator = repo.listAll();
+         exporter.export(iterator, writer);
+         writer.flush();
+      }
+      catch (IOException ex)
+      {
+         // NOTE: various clients may abort a connection before the file download completes
+         //       resulting in this error.
+         logger.log(Level.FINE, "Failed to export author list. Unable to read data from repository.", ex);
+         Response resp = Response.serverError()
+               .entity("Cannot complete author list export. Likely caused by closed connection.")
+               .build();
+         throw new WebApplicationException(resp);
+      }
+      catch (CatalogRepoException ex)
+      {
+         logger.log(Level.SEVERE, "Failed to export author list. Unable to read data from repository.", ex);
+         Response resp = Response.serverError()
+               .entity("Cannot export author list. See server logs for details.")
+               .build();
+         throw new WebApplicationException(resp);
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.SEVERE, "Failed to export author list. Unexpected error.", ex);
+         Response resp = Response.serverError()
+               .entity("Cannot export author list. See server logs for details.")
+               .build();
+         throw new WebApplicationException(resp);
+      }
+   }
+
 
    @GET
    @Produces("text/csv; charset=UTF-8")
    public Response getBasicAuthorListCSV() throws CatalogRepoException
    {
-      CsvExporter<Person, PersonCsvRecord> exporter =
-            new CsvExporter<>(PersonCsvRecord::create, PersonCsvRecord.class);
-
       StreamingOutput stream = new StreamingOutput() {
          @Override
          public void write(OutputStream os) throws WebApplicationException {
-             Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-             try
-             {
-                writer.write(String.join(", ", csvHeaders));
-                writer.write(System.lineSeparator());
-                Iterator<Person> iterator = repo.listAll();
-                exporter.export(iterator, writer);
-                writer.flush();
-             }
-             catch (IOException ex)
-             {
-                // NOTE: various clients may abort a connection before the file download completes
-                //       resulting in this error.
-                logger.log(Level.FINE, "Failed to export author list. Unable to read data from repository.", ex);
-                Response resp = Response.serverError()
-                      .entity("Cannot complete author list export. Likely caused by closed connection.")
-                      .build();
-                throw new WebApplicationException(resp);
-             }
-             catch (CatalogRepoException ex)
-             {
-                logger.log(Level.SEVERE, "Failed to export author list. Unable to read data from repository.", ex);
-                Response resp = Response.serverError()
-                                        .entity("Cannot export author list. See server logs for details.")
-                                        .build();
-                throw new WebApplicationException(resp);
-             }
-             catch (Exception ex)
-             {
-                logger.log(Level.SEVERE, "Failed to export author list. Unexpected error.", ex);
-                Response resp = Response.serverError()
-                                        .entity("Cannot export author list. See server logs for details.")
-                                        .build();
-                throw new WebApplicationException(resp);
-             }
-         }
-     };
+            Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
-     Response response = Response.ok(stream).build();
-     response.getHeaders().add("Content-Disposition", "inline; filename=\"authors.csv\"");
-     return response;
+            //HACK: fork a background thread to do the CSV export using Jackson because
+            //      if it is done in the jersey/REST call stack, it will get the wrong
+            //      version of jackson via different OSGI classloaders. The fork forces the
+            //      jackson classes to be loaded from this class's classloader instead of
+            //      Jersey's.
+            ExecutorService svc = Executors.newSingleThreadExecutor();
+            Future<?> future = svc.submit(() -> {
+               doWrite(writer);
+               return null;
+            });
+            try {
+               // wait on some rediculous amount, because it's better than infinity
+               future.get(5, TimeUnit.MINUTES);
+            }
+            catch (Exception e)
+            {
+               throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            }
+            finally
+            {
+               svc.shutdown();
+            }
+         }
+      };
+
+      Response response = Response.ok(stream).build();
+      response.getHeaders().add("Content-Disposition", "inline; filename=\"authors.csv\"");
+      return response;
    }
 
    @JsonPropertyOrder
