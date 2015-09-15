@@ -5,5 +5,6 @@
    <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.article.search.solr.ArticleIndexManagerService"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.article.search.ArticleSearchService"/>
    </service>
 </scr:component>
