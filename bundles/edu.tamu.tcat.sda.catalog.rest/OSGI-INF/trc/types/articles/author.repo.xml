@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.entries.type.article.author.repo">
+   <implementation class="edu.tamu.tcat.trc.entries.types.article.postgres.ArticleAuthorManager"/>
+   <reference bind="setSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <reference bind="setConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+   <service>
+      <provide interface="edu.tamu.tcat.trc.entries.types.article.postgres.ArticleAuthorManager"/>
+   </service>
+</scr:component>
