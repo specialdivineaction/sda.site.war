@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.entries.types.article.rest">
    <implementation class="edu.tamu.tcat.trc.entries.types.article.rest.v1.ArticleResource"/>
-   <reference bind="setAuthorRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.AuthorManager" name="AuthorManager" policy="static"/>
    <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.repo.ArticleRepository" name="ArticleRepository" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.article.rest.v1.ArticleResource"/>
    </service>
    <reference bind="setArticleService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.search.ArticleSearchService" name="ArticleSearchService" policy="static"/>
+   <reference bind="setAuthorRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.AuthorManager" name="AuthorManager" policy="static"/>
 </scr:component>

@@ -4,6 +4,6 @@
    <reference bind="setSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <reference bind="setConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.types.article.postgres.ArticleAuthorManager"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.article.AuthorManager"/>
    </service>
 </scr:component>

@@ -112,6 +112,7 @@ Service-Component:
  OSGI-INF/trc/types/articles/article.repo.xml,
  OSGI-INF/trc/types/articles/article.solr.xml,
  OSGI-INF/trc/types/articles/rest.article.xml,
+ OSGI-INF/trc/types/articles/author.repo.xml,
  OSGI-INF/trc/types/bibliography/rest.copy_resolver.xml,
  OSGI-INF/trc/types/bibliography/works.repo.xml,
  OSGI-INF/trc/types/bibliography/rest.editions.xml,
