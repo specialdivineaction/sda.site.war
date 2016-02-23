@@ -361,6 +361,13 @@
          unpack="false"/>
 
    <plugin
+         id="edu.tamu.tcat.trc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="edu.tamu.tcat.trc.entries.types.reln"
          download-size="0"
          install-size="0"
@@ -547,6 +554,20 @@
          download-size="0"
          install-size="0"
          version="1.9.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.io"
+         download-size="0"
+         install-size="0"
+         version="2.2.0.v201405211200"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.opennlp.tools"
+         download-size="0"
+         install-size="0"
+         version="1.6.0"
          unpack="false"/>
 
 </feature>
