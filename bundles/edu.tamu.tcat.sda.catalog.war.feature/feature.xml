@@ -473,21 +473,7 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.types.bio.postgres"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="edu.tamu.tcat.trc.entries.types.bio.rest"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="edu.tamu.tcat.trc.entries.types.bio.search.solr"
+         id="edu.tamu.tcat.trc.entries.types.bio.impl"
          download-size="0"
          install-size="0"
          version="0.0.0"
