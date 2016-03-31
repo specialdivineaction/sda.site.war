@@ -56,6 +56,8 @@ public class WorkList
          "workId",
          "editionId",
          "volumeId",
+         "editionName",
+         "volumeNumber",
          "shortTitle",
          "canonicalTitle",
          "bibliographicTitle",
@@ -214,6 +216,7 @@ public class WorkList
       record.type = "edition";
       record.workId = workId;
       record.editionId = edition.getId();
+      record.editionName = edition.getEditionName();
 
       PublicationInfo publicationInfo = edition.getPublicationInfo();
       if (publicationInfo != null)
@@ -268,6 +271,7 @@ public class WorkList
       record.workId = workId;
       record.editionId = editionId;
       record.volumeId = volume.getId();
+      record.volumeNumber = volume.getVolumeNumber();
 
       PublicationInfo publicationInfo = volume.getPublicationInfo();
       if (publicationInfo != null)
@@ -349,6 +353,8 @@ public class WorkList
       public String workId;
       public String editionId;
       public String volumeId;
+      public String editionName;
+      public String volumeNumber;
       public String shortTitle;
       public String canonicalTitle;
       public String bibliographicTitle;
