@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,7 @@ import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.DateDescription;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.PublicationInfo;
+import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
@@ -166,9 +168,23 @@ public class WorkList
       record.type = "work";
       record.workId = work.getId();
 
+      // HACK: user has entered bibliographic title in place of canonical title
+      //       and canonical title in place of short title.
       TitleDefinition workTitle = work.getTitle();
-      record.canonicalTitle = workTitle.getShortTitle().getFullTitle();
-      record.bibliographicTitle = workTitle.getCanonicalTitle().getFullTitle();
+      if (workTitle != null)
+      {
+         Title shortTitle = workTitle.getShortTitle();
+         if (shortTitle != null)
+         {
+            record.canonicalTitle = shortTitle.getFullTitle();
+         }
+
+         Title canonicalTitle = workTitle.getCanonicalTitle();
+         if (canonicalTitle != null)
+         {
+            record.bibliographicTitle = canonicalTitle.getFullTitle();
+         }
+      }
 
       record.summary = work.getSummary();
 
@@ -192,12 +208,23 @@ public class WorkList
       record.editionId = edition.getId();
 
       PublicationInfo publicationInfo = edition.getPublicationInfo();
-      record.publisher = publicationInfo.getPublisher();
-      record.place = publicationInfo.getLocation();
+      if (publicationInfo != null)
+      {
+         record.publisher = publicationInfo.getPublisher();
+         record.place = publicationInfo.getLocation();
 
-      DateDescription publicationDate = publicationInfo.getPublicationDate();
-      record.dateDisplay = publicationDate.getDescription();
-      record.dateIso = publicationDate.getCalendar().toString();
+         DateDescription publicationDate = publicationInfo.getPublicationDate();
+         if (publicationDate != null)
+         {
+            record.dateDisplay = publicationDate.getDescription();
+
+            LocalDate calendarDate = publicationDate.getCalendar();
+            if (calendarDate != null)
+            {
+               record.dateIso = calendarDate.toString();
+            }
+         }
+      }
 
       record.canonicalTitle = edition.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("short"))
@@ -234,12 +261,23 @@ public class WorkList
       record.volumeId = volume.getId();
 
       PublicationInfo publicationInfo = volume.getPublicationInfo();
-      record.publisher = publicationInfo.getPublisher();
-      record.place = publicationInfo.getLocation();
+      if (publicationInfo != null)
+      {
+         record.publisher = publicationInfo.getPublisher();
+         record.place = publicationInfo.getLocation();
 
-      DateDescription publicationDate = publicationInfo.getPublicationDate();
-      record.dateDisplay = publicationDate.getDescription();
-      record.dateIso = publicationDate.getCalendar().toString();
+         DateDescription publicationDate = publicationInfo.getPublicationDate();
+         if (publicationDate != null)
+         {
+            record.dateDisplay = publicationDate.getDescription();
+
+            LocalDate calendarDate = publicationDate.getCalendar();
+            if (calendarDate != null)
+            {
+               record.dateIso = calendarDate.toString();
+            }
+         }
+      }
 
       record.canonicalTitle = volume.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("short"))
