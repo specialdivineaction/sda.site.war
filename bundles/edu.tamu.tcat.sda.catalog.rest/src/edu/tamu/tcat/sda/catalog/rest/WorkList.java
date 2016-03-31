@@ -66,9 +66,14 @@ public class WorkList
          "hasDigitalCopy",
          "authors");
 
-   public void setRepository(WorkRepository repo)
+   public void setWorkRepository(WorkRepository repo)
    {
       this.workRepo = repo;
+   }
+
+   public void setCopyReferenceRepository(CopyReferenceRepository repo)
+   {
+      this.copyRepo = repo;
    }
 
    public void activate()
