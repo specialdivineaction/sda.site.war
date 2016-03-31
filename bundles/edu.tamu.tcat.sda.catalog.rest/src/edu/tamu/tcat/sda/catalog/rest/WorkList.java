@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -192,10 +193,11 @@ public class WorkList
       List<CopyReference> copies = copyRepo.getCopies(workUri, false);
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
-      String[] authors = (String[])StreamSupport.stream(work.getAuthors().spliterator(), false)
+      StringJoiner sj = new StringJoiner(";");
+      StreamSupport.stream(work.getAuthors().spliterator(), false)
             .map(ref -> ref.getFirstName() + " " + ref.getLastName())
-            .toArray();
-      record.authors = String.join(";", authors);
+            .forEach(sj::add);
+      record.authors = sj.toString();
 
       return record;
    }
@@ -244,10 +246,11 @@ public class WorkList
       List<CopyReference> copies = copyRepo.getCopies(editionUri, false);
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
-      String[] authors = (String[])edition.getAuthors().stream()
+      StringJoiner sj = new StringJoiner(";");
+      StreamSupport.stream(edition.getAuthors().spliterator(), false)
             .map(ref -> ref.getFirstName() + " " + ref.getLastName())
-            .toArray();
-      record.authors = String.join(";", authors);
+            .forEach(sj::add);
+      record.authors = sj.toString();
 
       return record;
    }
@@ -297,10 +300,11 @@ public class WorkList
       List<CopyReference> copies = copyRepo.getCopies(editionUri, false);
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
-      String[] authors = (String[])volume.getAuthors().stream()
+      StringJoiner sj = new StringJoiner(";");
+      StreamSupport.stream(volume.getAuthors().spliterator(), false)
             .map(ref -> ref.getFirstName() + " " + ref.getLastName())
-            .toArray();
-      record.authors = String.join(";", authors);
+            .forEach(sj::add);
+      record.authors = sj.toString();
 
       return record;
    }
