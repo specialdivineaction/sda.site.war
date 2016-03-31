@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.DateDescription;
+import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.PublicationInfo;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
@@ -200,7 +201,7 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(work.getAuthors().spliterator(), false)
-            .map(ref -> ref.getFirstName() + " " + ref.getLastName())
+            .map(WorkList::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
@@ -253,7 +254,7 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(edition.getAuthors().spliterator(), false)
-            .map(ref -> ref.getFirstName() + " " + ref.getLastName())
+            .map(WorkList::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
@@ -307,13 +308,39 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(volume.getAuthors().spliterator(), false)
-            .map(ref -> ref.getFirstName() + " " + ref.getLastName())
+            .map(WorkList::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
       return record;
    }
 
+   /**
+    * Utility to format the name of an author reference
+    *
+    * @param ref
+    * @return formatted first and last names
+    */
+   private static String formatName(AuthorReference ref)
+   {
+      String firstName = ref.getFirstName();
+      String lastName = ref.getLastName();
+
+      StringJoiner joiner = new StringJoiner(" ");
+
+      if (firstName != null)
+      {
+         joiner.add(firstName.trim());
+      }
+
+      if (lastName != null)
+      {
+         joiner.add(lastName.trim());
+      }
+
+      String result = joiner.toString().trim();
+      return result.isEmpty() ? "[unnamed]" : result;
+   }
 
    @JsonPropertyOrder
    public class WorkCsvRecord
