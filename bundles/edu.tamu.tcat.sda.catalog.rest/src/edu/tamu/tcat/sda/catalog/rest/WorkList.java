@@ -230,14 +230,14 @@ public class WorkList
 
       record.canonicalTitle = edition.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("short"))
-            .map(title -> title.getFullTitle())
             .findFirst()
+            .map(title -> title.getFullTitle())
             .orElse(null);
 
       record.bibliographicTitle = edition.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("canonical"))
-            .map(title -> title.getFullTitle())
             .findFirst()
+            .map(title -> title.getFullTitle())
             .orElse(null);
 
       record.summary = edition.getSummary();
@@ -284,14 +284,14 @@ public class WorkList
 
       record.canonicalTitle = volume.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("short"))
-            .map(title -> title.getFullTitle())
             .findFirst()
+            .map(title -> title.getFullTitle())
             .orElse(null);
 
       record.bibliographicTitle = volume.getTitles().stream()
             .filter(title -> title.getType().equalsIgnoreCase("canonical"))
-            .map(title -> title.getFullTitle())
             .findFirst()
+            .map(title -> title.getFullTitle())
             .orElse(null);
 
       record.summary = volume.getSummary();
