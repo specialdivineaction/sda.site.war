@@ -330,19 +330,19 @@ public class WorkList
       String firstName = ref.getFirstName();
       String lastName = ref.getLastName();
 
-      StringJoiner joiner = new StringJoiner(" ");
+      StringJoiner joiner = new StringJoiner(", ");
 
-      if (firstName != null)
-      {
-         joiner.add(firstName.trim());
-      }
-
-      if (lastName != null)
+      if (lastName != null && !lastName.trim().isEmpty())
       {
          joiner.add(lastName.trim());
       }
 
-      String result = joiner.toString().trim();
+      if (firstName != null && !firstName.trim().isEmpty())
+      {
+         joiner.add(firstName.trim());
+      }
+
+      String result = joiner.toString();
       return result.isEmpty() ? "[unnamed]" : result;
    }
 
