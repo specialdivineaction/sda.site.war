@@ -4,12 +4,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,14 +33,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.DateDescription;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
+import edu.tamu.tcat.trc.entries.types.biblio.CopyReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.PublicationInfo;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.copies.CopyReference;
-import edu.tamu.tcat.trc.entries.types.biblio.copies.repo.CopyReferenceRepository;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 
 @Path("/export/works")
@@ -49,7 +48,6 @@ public class WorkList
    private static final Logger logger = Logger.getLogger(WorkList.class.getName());
 
    private WorkRepository workRepo;
-   protected CopyReferenceRepository copyRepo;
 
    private static final List<String> csvHeaders = Arrays.asList(
          "type",
@@ -74,15 +72,9 @@ public class WorkList
       this.workRepo = repo;
    }
 
-   public void setCopyReferenceRepository(CopyReferenceRepository repo)
-   {
-      this.copyRepo = repo;
-   }
-
    public void activate()
    {
       Objects.requireNonNull(workRepo, "No work repository provided.");
-      Objects.requireNonNull(copyRepo, "no copy ref repository provided.");
    }
 
    private void doWrite(Writer writer) throws WebApplicationException
@@ -94,7 +86,8 @@ public class WorkList
          writer.write(String.join(", ", csvHeaders));
          writer.write(System.lineSeparator());
 
-         Iterator<WorkCsvRecord> iterator = StreamSupport.stream(workRepo.listWorks().spliterator(), false)
+         Iterable<Work> iterable = () -> workRepo.getAllWorks();
+         Iterator<WorkCsvRecord> iterator = StreamSupport.stream(iterable.spliterator(), false)
             .flatMap(this::stream)
             .iterator();
 
@@ -182,13 +175,13 @@ public class WorkList
       TitleDefinition workTitle = work.getTitle();
       if (workTitle != null)
       {
-         Title shortTitle = workTitle.getShortTitle();
+         Title shortTitle = workTitle.get("short");
          if (shortTitle != null)
          {
             record.canonicalTitle = shortTitle.getFullTitle();
          }
 
-         Title canonicalTitle = workTitle.getCanonicalTitle();
+         Title canonicalTitle = workTitle.get("canonical");
          if (canonicalTitle != null)
          {
             record.bibliographicTitle = canonicalTitle.getFullTitle();
@@ -197,8 +190,7 @@ public class WorkList
 
       record.summary = work.getSummary();
 
-      URI workUri = URI.create("works/" + work.getId());
-      List<CopyReference> copies = copyRepo.getCopies(workUri, false);
+      Set<CopyReference> copies = work.getCopyReferences();
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
       StringJoiner sj = new StringJoiner(";");
@@ -251,8 +243,7 @@ public class WorkList
 
       record.summary = edition.getSummary();
 
-      URI editionUri = URI.create("works/" + workId + "/editions/" + edition.getId());
-      List<CopyReference> copies = copyRepo.getCopies(editionUri, false);
+      Set<CopyReference> copies = edition.getCopyReferences();
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
       StringJoiner sj = new StringJoiner(";");
@@ -306,8 +297,7 @@ public class WorkList
 
       record.summary = volume.getSummary();
 
-      URI editionUri = URI.create("works/" + workId + "/editions/" + editionId + "/volumes/" + volume.getId());
-      List<CopyReference> copies = copyRepo.getCopies(editionUri, false);
+      Set<CopyReference> copies = volume.getCopyReferences();
       record.hasDigitalCopy = copies.isEmpty() ? "false" : "true";
 
       StringJoiner sj = new StringJoiner(";");
