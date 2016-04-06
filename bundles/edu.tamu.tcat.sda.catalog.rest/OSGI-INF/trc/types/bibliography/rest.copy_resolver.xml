@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.digital_resources.copy_resolver.rest">
-   <implementation class="edu.tamu.tcat.trc.digires.rest.books.v1.CopyResolverServiceResource"/>
-   <service>
-      <provide interface="edu.tamu.tcat.trc.digires.rest.books.v1.CopyResolverServiceResource"/>
-   </service>
-   <reference bind="setResolverRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.digires.books.resolve.CopyResolverRegistry" name="CopyResolverRegistry" policy="static"/>
-</scr:component>
