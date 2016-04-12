@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.EditorialTask;
+import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
@@ -95,9 +96,10 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    }
 
    @Override
-   public void addItem(Work entity) throws IllegalArgumentException
+   public WorkItem addItem(Work entity) throws IllegalArgumentException
    {
       // TODO Auto-generated method stub
+      throw new UnsupportedOperationException();
 
    }
 
@@ -105,6 +107,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    public void addItems(Supplier<Work> entities, TaskSubmissionMonitor monitor)
    {
       // TODO Auto-generated method stub
+      throw new UnsupportedOperationException();
 
    }
 

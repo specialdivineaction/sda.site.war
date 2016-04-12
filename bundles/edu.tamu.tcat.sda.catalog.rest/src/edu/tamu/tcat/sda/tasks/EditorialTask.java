@@ -2,7 +2,6 @@ package edu.tamu.tcat.sda.tasks;
 
 import java.util.function.Supplier;
 
-import edu.tamu.tcat.sda.tasks.rest.v1.RestApiV1.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 
 /**
@@ -41,52 +40,29 @@ public interface EditorialTask<EntityType>
     */
    Workflow getWorkflow();
 
-   void addItem(EntityType entity) throws IllegalArgumentException;
+   /**
+    * Adds a {@link WorkItem} for the supplied entity.
+    *
+    * @param entity The entity to be added.
+    * @return The created work.
+    * @throws IllegalArgumentException If the supplied entity is not valid for this task.
+    */
+   WorkItem addItem(EntityType entity) throws IllegalArgumentException;
 
    /**
-    * Adds work items for all entities provided by a supplier as new tasks.
+    * Adds work items for all entities provided by a supplier as new tasks. This returns
+    * immediately and processes the items to be added asynchronously. All supplied items
+    * will be consumed. Callers will be notified of any items that cannot be added to the
+    * worklist via the {@link TaskSubmissionMonitor} API.
     *
     * @param entitySupplier An entity supplier. May supply many entities. Should return
-    *       <code>null</code> when no more entities are available.
-    * @param monitor
+    *       <code>null</code> when no more entities are available. When a <code>null</code>
+    *       value is encountered, processing will stop, no more entities will be added
+    *       and {@link TaskSubmissionMonitor#finished()} will be called.
+    * @param monitor A monitor to be notified as items are added to the task or errors are
+    *       encountered.
     */
    void addItems(Supplier<EntityType> entitySupplier, TaskSubmissionMonitor monitor);
 
    // TODO entity reference
-
-   public interface TaskSubmissionMonitor
-   {
-      /**
-       * Called when the creation of an item succeeds.
-       *
-       * @param item
-       * @param workItemId
-       */
-      <X> void created(WorkItemCreationRecord<X> record);
-
-      /**
-       * Called when the creation of a work item fails.
-       * @param error
-       */
-      <X> void failed(WorkItemCreationError<X> error);
-
-      void finished();
-   }
-
-   public interface WorkItemCreationRecord<E>
-   {
-      E getItem();
-
-      String getWorkItemId();
-   }
-
-   public interface WorkItemCreationError<E>
-   {
-      E getItem();
-
-      String getMessage();
-
-      Exception getException();
-   }
-
 }
