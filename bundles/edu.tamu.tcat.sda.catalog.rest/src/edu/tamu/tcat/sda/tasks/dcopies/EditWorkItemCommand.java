@@ -1,12 +1,16 @@
 package edu.tamu.tcat.sda.tasks.dcopies;
 
-public interface EditWorkItemCommand
-{
-   void setLabel();
+import edu.tamu.tcat.trc.repo.RecordEditCommand;
 
-   void setDescription();
+public interface EditWorkItemCommand extends RecordEditCommand
+{
+   void setLabel(String label);
+
+   void setDescription(String description);
 
    void setProperty(String key, String value);
 
    void clearProperty(String key);
+
+   void setEntityRef(String type, String id);
 }
