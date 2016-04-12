@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.tasks.dcopies;
+package edu.tamu.tcat.sda.tasks.workflow;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,17 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.tamu.tcat.sda.tasks.workflow.Workflow;
-import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.sda.tasks.workflow.WorkflowStateTransition;
-
-public class CopyAssignmentWorkflow implements Workflow
+/**
+ * Defines a simple workflow for tasks that require editorial approval prior to completion.
+ *
+ * <p>This is used as a stopgap measure pending a more flexible implementation of
+ * workflow support.
+ */
+public class BasicReviewedTaskWorkflow implements Workflow
 {
 
    private List<WorkflowStageImpl> stages;
-   private Map<String, List<WorkflowStageTransitionImpl>> transitions = new HashMap<>();
+   private Map<String, List<BasicWorkflowStageTransition>> transitions = new HashMap<>();
 
-   public CopyAssignmentWorkflow()
+   public BasicReviewedTaskWorkflow()
    {
       initialize();
    }
@@ -25,20 +27,20 @@ public class CopyAssignmentWorkflow implements Workflow
    @Override
    public String getId()
    {
-      return "copies";
+      return "reviewed";
    }
 
    @Override
    public String getName()
    {
-      return "Associate Digital Copies";
+      return "Basic Reviewed Tasks";
    }
 
    @Override
    public String getDescription()
    {
-      return "Review all bibliographic entries in the collection and associate digital "
-            + "copies with each entry.";
+      return "A simple workflow for tasks that require editorial approval prior to completion. "
+            + "Work items may also be pinned for priority attention or deferred.";
    }
 
    @Override
@@ -97,7 +99,7 @@ public class CopyAssignmentWorkflow implements Workflow
 
    private void addTransition(WorkflowStageImpl from, WorkflowStageImpl dest, String label)
    {
-      WorkflowStageTransitionImpl transition = new WorkflowStageTransitionImpl(label, label, from, dest);
+      BasicWorkflowStageTransition transition = new BasicWorkflowStageTransition(label, label, from, dest);
       transitions.computeIfAbsent(from.getId(), (key) -> new ArrayList<>()).add(transition);
    }
 
@@ -143,56 +145,8 @@ public class CopyAssignmentWorkflow implements Workflow
       @Override
       public List<WorkflowStateTransition> getTransitions()
       {
-         List<WorkflowStageTransitionImpl> list = transitions.get(id);
+         List<BasicWorkflowStageTransition> list = transitions.get(id);
          return list != null ? Collections.unmodifiableList(list) : Collections.emptyList();
       }
-   }
-
-   private static class WorkflowStageTransitionImpl implements WorkflowStateTransition
-   {
-      private final String id;
-      private final String label;
-      private final String description;
-      private final WorkflowStage source;
-      private final WorkflowStage dest;
-
-      public WorkflowStageTransitionImpl(String label, String description, WorkflowStage source, WorkflowStage dest)
-      {
-         this.label = label;
-         this.description = description;
-         this.source = source;
-         this.dest = dest;
-         this.id = source.getId() + ":" + label;
-      }
-      @Override
-      public String getId()
-      {
-         return id;
-      }
-
-      @Override
-      public String getLabel()
-      {
-         return label;
-      }
-
-      @Override
-      public String getDescription()
-      {
-         return description;
-      }
-
-      @Override
-      public WorkflowStage getSource()
-      {
-         return source;
-      }
-
-      @Override
-      public WorkflowStage getTarget()
-      {
-         return dest;
-      }
-
    }
 }
