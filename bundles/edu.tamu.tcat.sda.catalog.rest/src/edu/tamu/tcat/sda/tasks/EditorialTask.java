@@ -16,8 +16,10 @@ import edu.tamu.tcat.sda.tasks.workflow.Workflow;
  *  <p>To simplify the API, individual {@code EditorialTask} instances are intended to be scoped
  *  to the authorized user who intantiated them. All operations will operate within the scope
  *  of the permissions and access controls of that individual user.
+ *
+ * @param <EntityType>
  */
-public interface EditorialTask
+public interface EditorialTask<EntityType>
 {
    /**
     * @return The unique identifier for this task.
@@ -39,16 +41,16 @@ public interface EditorialTask
     */
    Workflow getWorkflow();
 
-   <X> void addItem(X item) throws IllegalArgumentException;
+   void addItem(EntityType entity) throws IllegalArgumentException;
 
    /**
-    * Adds all items provided by a supplier as new tasks.
+    * Adds work items for all entities provided by a supplier as new tasks.
     *
-    * @param itemSupplier An item supplier. May supply many items. Should return <code>null</code>
-    *       when no more items are available.
+    * @param entitySupplier An entity supplier. May supply many entities. Should return
+    *       <code>null</code> when no more entities are available.
     * @param monitor
     */
-   <X> void addItems(Supplier<X> itemSupplier, TaskSubmissionMonitor monitor);
+   void addItems(Supplier<EntityType> entitySupplier, TaskSubmissionMonitor monitor);
 
    // TODO entity reference
 
@@ -71,16 +73,16 @@ public interface EditorialTask
       void finished();
    }
 
-   public interface WorkItemCreationRecord<X>
+   public interface WorkItemCreationRecord<E>
    {
-      X getItem();
+      E getItem();
 
       String getWorkItemId();
    }
 
-   public interface WorkItemCreationError<X>
+   public interface WorkItemCreationError<E>
    {
-      X getItem();
+      E getItem();
 
       String getMessage();
 
