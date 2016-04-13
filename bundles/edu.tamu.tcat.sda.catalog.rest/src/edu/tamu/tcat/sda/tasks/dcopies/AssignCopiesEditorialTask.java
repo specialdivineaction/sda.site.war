@@ -1,5 +1,7 @@
 package edu.tamu.tcat.sda.tasks.dcopies;
 
+import java.text.MessageFormat;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
@@ -17,6 +19,7 @@ import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.repo.BasicSchemaBuilder;
 import edu.tamu.tcat.trc.repo.DocumentRepository;
 import edu.tamu.tcat.trc.repo.IdFactory;
@@ -43,16 +46,19 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
 
    private final SqlExecutor sqlExecutor;
    private final IdFactory idFactory;
-   private final DocumentRepository<WorkItem, EditWorkItemCommand> documentRepository;
+   private final DocumentRepository<WorkItem, EditWorkItemCommand> itemDocumentRepository;
+
+   private final WorkRepository workRepository;
 
    private final Executor executor;
 
-   public AssignCopiesEditorialTask(SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
+   public AssignCopiesEditorialTask(SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor, WorkRepository workRepository)
    {
       this.sqlExecutor = sqlExecutor;
       this.idFactory = idFactory;
       this.executor = executor;
-      this.documentRepository = buildDocumentRepository();
+      this.itemDocumentRepository = buildDocumentRepository();
+      this.workRepository = workRepository;
    }
 
    /**
@@ -114,13 +120,29 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       return workflow;
    }
 
-   public WorkItem getItem()
+   /**
+    * Retrieves a work item by ID.
+    *
+    * @param id
+    * @return
+    */
+   public WorkItem getItem(String id)
    {
-      throw new UnsupportedOperationException();
+      try
+      {
+         return itemDocumentRepository.get(id);
+      }
+      catch (RepositoryException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         throw new IllegalStateException(e);
+      }
    }
 
    public WorkItem getItem(Work entity)
    {
+      // TODO: how do we query the documentRepository for something like this?
       throw new UnsupportedOperationException();
    }
 
@@ -128,7 +150,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    public WorkItem addItem(Work entity) throws IllegalArgumentException
    {
       String id = idFactory.get();
-      EditWorkItemCommand command = documentRepository.create(id);
+      EditWorkItemCommand command = itemDocumentRepository.create(id);
 
       command.setEntityRef("work", entity.getId());
       command.setLabel(getLabel(entity));
@@ -139,7 +161,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          //       execution is used here just to ensure consistency and to block on
          //       Future<String>#get().
          String createdId = command.execute().get();
-         return documentRepository.get(createdId);
+         return itemDocumentRepository.get(createdId);
       }
       catch (InterruptedException | ExecutionException e)
       {
@@ -149,8 +171,6 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       {
          throw new IllegalStateException("Work item supposedly created, but unable to retrieve it", e);
       }
-
-
    }
 
    @Override
@@ -161,7 +181,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          while (entity != null)
          {
             String id = idFactory.get();
-            EditWorkItemCommand command = documentRepository.create(id);
+            EditWorkItemCommand command = itemDocumentRepository.create(id);
 
             command.setEntityRef("work", entity.getId());
             command.setLabel(getLabel(entity));
@@ -172,7 +192,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
                //       execution is used here just to ensure consistency and to block on
                //       Future<String>#get().
                String createdItemId = command.execute().get();
-               WorkItem workItem = documentRepository.get(createdItemId);
+               WorkItem workItem = itemDocumentRepository.get(createdItemId);
                monitor.created(new BasicWorkItemCreationRecord<>(workItem, createdItemId));
             }
             catch (ExecutionException | InterruptedException e)
@@ -193,56 +213,125 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       });
    }
 
-   private String getLabel(Work entity)
+   /**
+    * Formats an HTML label for a work to be used as the work item label.
+    *
+    * If an author cannot be found, the placeholder "[Author Unavailable]" will be used instead.
+    * If a title cannot be found, the placeholder "[Title Unavailable]" will be used instead.
+    *
+    * @param entity
+    * @return
+    */
+   private static String getLabel(Work entity)
    {
-      StringBuilder sb = new StringBuilder();
+      String authorLabel = getAuthorLabel(entity);
+      String titleLabel = getTitleLabel(entity);
 
-      AuthorList authors = entity.getAuthors();
-      if (authors != null && authors.size() > 0)
+      return MessageFormat.format(
+            "<span class=\"author\">{0}</span>, <span class=\"title\">{1}</span>",
+            authorLabel == null ? "[Author Unavailable]" : authorLabel,
+            titleLabel == null ? "[Title Unavailable]" : titleLabel
+      );
+   }
+
+   /**
+    * Finds the first available author with a last name and returns that author's last name.
+    *
+    * @param entity
+    * @return The first non-empty author's last name or <code>null</code> if one cannot be found.
+    */
+   private static String getAuthorLabel(Work entity)
+   {
+      if (entity != null)
       {
-         AuthorReference author = authors.get(0);
-         if (author != null)
+         AuthorList authors = entity.getAuthors();
+         if (authors != null && authors.size() > 0)
          {
-            String authorLastName = author.getLastName();
-
-            if (authorLastName != null && !authorLastName.trim().isEmpty())
+            // find first available author's last name
+            for (AuthorReference author : authors)
             {
-               sb.append("<span class=\"author\">").append(authorLastName).append("</span>, ");
+               if (author == null)
+               {
+                  continue;
+               }
+
+               String authorLastName = author.getLastName();
+               if (authorLastName == null || authorLastName.trim().isEmpty())
+               {
+                  continue;
+               }
+
+               return authorLastName.trim();
             }
          }
       }
 
-      String formattedTitle = null;
+      return null;
+   }
 
-      TitleDefinition titleDefinition = entity.getTitle();
-      if (titleDefinition != null)
+   /**
+    * Finds the first available title in preference order (see TITLE_PREFERENCE_ORDER constant).
+    *
+    * @param entity
+    * @return The first non-empty full title or <code>null</code> if one cannot be found.
+    */
+   private static String getTitleLabel(Work entity)
+   {
+      if (entity != null)
       {
-         // find the first available title in preferred type order
-         for (String type : TITLE_PREFERENCE_ORDER)
+         TitleDefinition titleDefinition = entity.getTitle();
+         if (titleDefinition != null)
          {
-            Title title = titleDefinition.get(type);
-
-            if (title != null)
+            // find the first available title in preferred type order
+            for (String type : TITLE_PREFERENCE_ORDER)
             {
-               formattedTitle = title.getFullTitle();
-
-               if (formattedTitle != null && !formattedTitle.trim().isEmpty())
+               Title title = titleDefinition.get(type);
+               String fullTitle = extractFullTitle(title);
+               if (fullTitle != null)
                {
-                  break;
+                  return fullTitle;
+               }
+            }
+
+            // no preferred titles available; just get any title
+            Set<Title> titles = titleDefinition.get();
+            if (titles != null)
+            {
+               for (Title title : titles)
+               {
+                  String fullTitle = extractFullTitle(title);
+                  if (fullTitle != null)
+                  {
+                     return fullTitle;
+                  }
                }
             }
          }
-
-         if (formattedTitle == null || formattedTitle.trim().isEmpty())
-         {
-            // TODO: This is a placeholder for works that have no (preferred) title. Should this be a default string or an empty string?
-            formattedTitle = "[untitled]";
-         }
       }
 
-      sb.append("<span class=\"title\">").append(formattedTitle).append("</span>");
+      return null;
+   }
 
-      return sb.toString();
+   /**
+    * Extracts and formats the full title of a given Title object.
+    *
+    * @param title
+    * @return A string representing the full title or <code>null</code> if one cannot be extracted.
+    */
+   private static String extractFullTitle(Title title)
+   {
+      if (title == null)
+      {
+         return null;
+      }
+
+      String fullTitle = title.getFullTitle();
+      if (fullTitle == null || fullTitle.trim().isEmpty())
+      {
+         return null;
+      }
+
+      return fullTitle.trim();
    }
 
    private static class BasicWorkItemCreationError<X> implements TaskSubmissionMonitor.WorkItemCreationError<X>
@@ -259,7 +348,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       }
 
       @Override
-      public X getItem()
+      public X getEntity()
       {
          return item;
       }
@@ -289,7 +378,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       }
 
       @Override
-      public X getItem()
+      public X getEntity()
       {
          return item;
       }

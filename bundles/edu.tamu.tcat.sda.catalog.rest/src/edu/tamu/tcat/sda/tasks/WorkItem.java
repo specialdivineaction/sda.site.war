@@ -2,6 +2,8 @@ package edu.tamu.tcat.sda.tasks;
 
 import java.util.Set;
 
+import edu.tamu.tcat.trc.repo.EntityReference;
+
 /**
  * Represents a unit of work within an {@link EditorialTask}. For example, this might represent
  * a single bibliographic item to which digital copies should be assigned, or a book for which
@@ -18,6 +20,8 @@ public interface WorkItem
    Set<String> getProperties();
 
    String getProperty(String key);
+
+   EntityReference getEntityReference();
 
    // TODO add assignee, due date, reporter, etc.
    // TODO track transition history

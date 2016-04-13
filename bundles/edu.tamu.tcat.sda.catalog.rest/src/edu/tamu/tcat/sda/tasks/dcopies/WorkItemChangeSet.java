@@ -3,6 +3,9 @@ package edu.tamu.tcat.sda.tasks.dcopies;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Records the updates to an original version of a WorkItem.
+ */
 public class WorkItemChangeSet
 {
    public final String id;

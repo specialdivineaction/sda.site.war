@@ -8,26 +8,26 @@ public interface TaskSubmissionMonitor
     * @param item
     * @param workItemId
     */
-   <X> void created(TaskSubmissionMonitor.WorkItemCreationRecord<X> record);
+   <EntityType> void created(TaskSubmissionMonitor.WorkItemCreationRecord<EntityType> record);
 
    /**
     * Called when the creation of a work item fails.
     * @param error
     */
-   <X> void failed(TaskSubmissionMonitor.WorkItemCreationError<X> error);
+   <EntityType> void failed(TaskSubmissionMonitor.WorkItemCreationError<EntityType> error);
 
    void finished();
 
-   public interface WorkItemCreationRecord<E>
+   public interface WorkItemCreationRecord<EntityType>
    {
-      E getItem();
+      EntityType getEntity();
 
       String getWorkItemId();
    }
 
-   public interface WorkItemCreationError<E>
+   public interface WorkItemCreationError<EntityType>
    {
-      E getItem();
+      EntityType getEntity();
 
       String getMessage();
 
