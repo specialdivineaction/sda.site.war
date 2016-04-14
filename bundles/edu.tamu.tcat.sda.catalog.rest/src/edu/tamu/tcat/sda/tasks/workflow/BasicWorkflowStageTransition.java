@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.tasks.workflow;
 
-class BasicWorkflowStageTransition implements WorkflowStateTransition
+class BasicWorkflowStageTransition implements WorkflowStageTransition
 {
    private final String id;
    private final String label;

@@ -143,7 +143,7 @@ public class BasicReviewedTaskWorkflow implements Workflow
       }
 
       @Override
-      public List<WorkflowStateTransition> getTransitions()
+      public List<WorkflowStageTransition> getTransitions()
       {
          List<BasicWorkflowStageTransition> list = transitions.get(id);
          return list != null ? Collections.unmodifiableList(list) : Collections.emptyList();

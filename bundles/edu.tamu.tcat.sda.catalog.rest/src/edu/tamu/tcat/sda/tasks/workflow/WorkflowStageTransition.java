@@ -1,6 +1,6 @@
 package edu.tamu.tcat.sda.tasks.workflow;
 
-public interface WorkflowStateTransition
+public interface WorkflowStageTransition
 {
    /**
     * @return The unique identifier for this transition.

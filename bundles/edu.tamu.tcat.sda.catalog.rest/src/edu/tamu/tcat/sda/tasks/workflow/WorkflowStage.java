@@ -32,5 +32,5 @@ public interface WorkflowStage
        *    workflow. This will be in the order in which available transitions will be
        *    displayed in user interfaces.
        */
-      List<WorkflowStateTransition> getTransitions();
+      List<WorkflowStageTransition> getTransitions();
 }
