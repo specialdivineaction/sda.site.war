@@ -14,6 +14,7 @@ import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
+import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorList;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
@@ -68,10 +69,12 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    {
       PsqlJacksonRepoBuilder<WorkItem, EditWorkItemCommand, PersistenceDtoV1.WorkItem> repoBuilder = new PsqlJacksonRepoBuilder<>();
 
+      ModelAdapter modelAdapter = new ModelAdapter(workflow::getStage);
+
       repoBuilder.setDbExecutor(sqlExecutor);
       repoBuilder.setTableName(TABLE_NAME);
       repoBuilder.setEditCommandFactory(new EditItemCommandFactoryImpl());
-      repoBuilder.setDataAdapter(ModelAdapter::adapt);
+      repoBuilder.setDataAdapter(modelAdapter::adapt);
       repoBuilder.setSchema(buildSchema());
       repoBuilder.setStorageType(PersistenceDtoV1.WorkItem.class);
       repoBuilder.setEnableCreation(true);

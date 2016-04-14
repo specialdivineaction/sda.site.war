@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.repo.CommitHook;
 import edu.tamu.tcat.trc.repo.EditCommandFactory;
 
@@ -42,6 +43,7 @@ public class EditItemCommandFactoryImpl implements EditCommandFactory<Persistenc
                changeSet.description = changeSet.original.description;
                changeSet.properties = new HashMap<>(changeSet.original.properties);
                changeSet.entityRef = changeSet.original.entityRef;
+               changeSet.stageId = changeSet.original.stageId;
             }
          }
       }
@@ -78,6 +80,12 @@ public class EditItemCommandFactoryImpl implements EditCommandFactory<Persistenc
       }
 
       @Override
+      public void setStage(WorkflowStage stage)
+      {
+         changeSet.stageId = stage.getId();
+      }
+
+      @Override
       public Future<String> execute()
       {
          PersistenceDtoV1.WorkItem dto = new PersistenceDtoV1.WorkItem();
@@ -87,6 +95,7 @@ public class EditItemCommandFactoryImpl implements EditCommandFactory<Persistenc
          dto.description = changeSet.description;
          dto.properties = changeSet.properties;
          dto.entityRef = changeSet.entityRef;
+         dto.stageId = changeSet.stageId;
 
          return commitHook.submit(dto);
       }

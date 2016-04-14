@@ -2,6 +2,7 @@ package edu.tamu.tcat.sda.tasks;
 
 import java.util.Set;
 
+import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.repo.EntityReference;
 
 /**
@@ -20,6 +21,8 @@ public interface WorkItem
    Set<String> getProperties();
 
    String getProperty(String key);
+
+   WorkflowStage getStage();
 
    EntityReference getEntityReference();
 

@@ -13,6 +13,7 @@ public class WorkItemChangeSet
    public String description;
    public Map<String, String> properties = new HashMap<>();
    public PersistenceDtoV1.EntityId entityRef = new PersistenceDtoV1.EntityId();
+   public String stageId;
 
    public PersistenceDtoV1.WorkItem original;
 
