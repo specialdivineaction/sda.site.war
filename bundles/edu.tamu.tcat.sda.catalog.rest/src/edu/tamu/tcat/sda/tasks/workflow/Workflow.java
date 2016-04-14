@@ -12,5 +12,7 @@ public interface Workflow
 
    List<WorkflowStage> getStages();
 
+   WorkflowStage getStage(String stageId) throws IllegalArgumentException;
+
    WorkflowStage getInitialStage();
 }

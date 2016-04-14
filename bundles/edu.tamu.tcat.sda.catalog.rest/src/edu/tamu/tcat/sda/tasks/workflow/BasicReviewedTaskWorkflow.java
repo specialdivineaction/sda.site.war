@@ -1,11 +1,11 @@
 package edu.tamu.tcat.sda.tasks.workflow;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Defines a simple workflow for tasks that require editorial approval prior to completion.
@@ -16,8 +16,8 @@ import java.util.Map;
 public class BasicReviewedTaskWorkflow implements Workflow
 {
 
-   private List<WorkflowStageImpl> stages;
-   private Map<String, List<BasicWorkflowStageTransition>> transitions = new HashMap<>();
+   private final Map<String, WorkflowStageImpl> stages = new HashMap<>();
+   private final Map<String, List<BasicWorkflowStageTransition>> transitions = new HashMap<>();
 
    public BasicReviewedTaskWorkflow()
    {
@@ -46,7 +46,19 @@ public class BasicReviewedTaskWorkflow implements Workflow
    @Override
    public List<WorkflowStage> getStages()
    {
-      return Collections.unmodifiableList(stages);
+      List<WorkflowStage> stageList = new ArrayList<>(stages.values());
+      return Collections.unmodifiableList(stageList);
+   }
+
+   @Override
+   public WorkflowStage getStage(String stageId) throws IllegalArgumentException
+   {
+      if (!stages.containsKey(stageId))
+      {
+         throw new IllegalArgumentException();
+      }
+
+      return stages.get(stageId);
    }
 
    @Override
@@ -94,7 +106,8 @@ public class BasicReviewedTaskWorkflow implements Workflow
       addTransition(deferred, review, "Mark Completed");
       addTransition(deferred, complete, "Approved");
 
-      stages = Arrays.asList(pending, pinned, inprogress, review, complete, deferred);
+      Stream.of(pending, pinned, inprogress, review, complete, deferred)
+         .forEach(stage -> stages.put(stage.getId(), stage));
    }
 
    private void addTransition(WorkflowStageImpl from, WorkflowStageImpl dest, String label)
