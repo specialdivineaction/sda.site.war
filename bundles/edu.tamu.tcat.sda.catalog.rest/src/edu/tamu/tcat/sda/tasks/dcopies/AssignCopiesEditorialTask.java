@@ -20,7 +20,6 @@ import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.repo.BasicSchemaBuilder;
 import edu.tamu.tcat.trc.repo.DocumentRepository;
 import edu.tamu.tcat.trc.repo.IdFactory;
@@ -49,17 +48,14 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    private final IdFactory idFactory;
    private final DocumentRepository<WorkItem, EditWorkItemCommand> itemDocumentRepository;
 
-   private final WorkRepository workRepository;
-
    private final Executor executor;
 
-   public AssignCopiesEditorialTask(SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor, WorkRepository workRepository)
+   public AssignCopiesEditorialTask(SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
    {
       this.sqlExecutor = sqlExecutor;
       this.idFactory = idFactory;
       this.executor = executor;
       this.itemDocumentRepository = buildDocumentRepository();
-      this.workRepository = workRepository;
    }
 
    /**
