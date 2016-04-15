@@ -5,21 +5,34 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.tasks.EditorialTask;
+import edu.tamu.tcat.sda.tasks.workflow.Workflow;
+import edu.tamu.tcat.trc.entries.types.biblio.Work;
+
 /**
  * Implements the REST API for an editorial task.
  */
 public class TaskResource
 {
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public RestApiV1.EditorialTask getDetails()
+   private final EditorialTask<Work> task;
+
+   public TaskResource(EditorialTask<Work> task)
    {
-      throw new UnsupportedOperationException();
+      this.task = task;
    }
 
-   @Path("worklist")
-   public WorklistResource getWorklist()
+   @GET
+   @Path("workflow")
+   @Produces(MediaType.APPLICATION_JSON)
+   public WorkflowResource getWorkflowResource()
    {
-      throw new UnsupportedOperationException();
+      Workflow workflow = task.getWorkflow();
+      return new WorkflowResource(workflow);
+   }
+
+   @Path("items")
+   public WorklistResource getWorklistResource()
+   {
+      return new WorklistResource(task);
    }
 }
