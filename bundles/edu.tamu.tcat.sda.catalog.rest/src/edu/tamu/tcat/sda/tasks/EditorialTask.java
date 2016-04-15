@@ -1,6 +1,5 @@
 package edu.tamu.tcat.sda.tasks;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
@@ -46,9 +45,13 @@ public interface EditorialTask<EntityType>
     * Retrieve items in a given stage.
     *
     * @param stage The desired stage of items to retrieve
+    * @param start The index of the first item to retrieve
+    * @param ct The number of items to be returned. Implementations are expected to impose
+    *       and document an upper bound on this value.
     * @return
+    * @apiNote This is provided as a convenience method to return items from a stage
     */
-   List<WorkItem> getItems(WorkflowStage stage);
+   PartialWorkItemSet getItems(WorkflowStage stage, int start, int ct);
 
    /**
     * Adds a {@link WorkItem} for the supplied entity.

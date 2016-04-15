@@ -22,6 +22,9 @@ public interface WorkItem
 
    String getProperty(String key);
 
+   /**
+    * @return The workflow stage of this item. Will not be <code>null</code>.
+    */
    WorkflowStage getStage();
 
    EntityReference getEntityReference();

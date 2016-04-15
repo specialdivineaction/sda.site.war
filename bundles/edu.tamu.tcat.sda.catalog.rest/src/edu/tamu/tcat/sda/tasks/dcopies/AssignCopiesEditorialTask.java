@@ -1,8 +1,9 @@
 package edu.tamu.tcat.sda.tasks.dcopies;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -14,6 +15,7 @@ import java.util.stream.StreamSupport;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.EditorialTask;
+import edu.tamu.tcat.sda.tasks.PartialWorkItemSet;
 import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
@@ -50,7 +52,8 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
 
    private final SqlExecutor sqlExecutor;
    private final IdFactory idFactory;
-   private final DocumentRepository<WorkItem, EditWorkItemCommand> itemDocumentRepository;
+
+   private final DocumentRepository<WorkItem, EditWorkItemCommand> repo;
 
    private final Executor executor;
 
@@ -59,7 +62,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       this.sqlExecutor = sqlExecutor;
       this.idFactory = idFactory;
       this.executor = executor;
-      this.itemDocumentRepository = buildDocumentRepository();
+      this.repo = buildDocumentRepository();
    }
 
    /**
@@ -123,23 +126,73 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       return workflow;
    }
 
-   @Override
-   public List<WorkItem> getItems(WorkflowStage stage)
+   private Iterator<WorkItem> getAllItems()
    {
-      Iterable<WorkItem> iterable = () -> {
-         try
-         {
-            return itemDocumentRepository.listAll();
-         }
-         catch (RepositoryException e)
-         {
-            throw new IllegalStateException("Unable to list items", e);
-         }
-      };
+      try
+      {
+         return repo.listAll();
+      }
+      catch (RepositoryException e)
+      {
+         throw new IllegalStateException("Unable to list items", e);
+      }
+   }
 
-      return StreamSupport.stream(iterable.spliterator(), false)
-            .filter(workItem -> Objects.equals(workItem.getStage(), stage))
-            .collect(Collectors.toList());
+   @Override
+   public PartialWorkItemSet getItems(WorkflowStage stage, int start, int ct)
+   {
+      Iterable<WorkItem> iterable = () -> getAllItems();
+
+      // HACK: highly inefficient. Need better support from backing repo for paged data queries
+      // TODO refactor
+      String id = stage.getId();
+      List<WorkItem> items = StreamSupport.stream(iterable.spliterator(), false)
+                                    .filter(workItem -> id.equals(workItem.getStage().getId()))
+                                    .collect(Collectors.toList());
+
+      return new PwisImpl(stage, items, start, ct);
+   }
+
+   private static class PwisImpl implements PartialWorkItemSet
+   {
+      private WorkflowStage stage;
+      private List<WorkItem> items;
+      private int start;
+      private int size;
+
+      public PwisImpl(WorkflowStage stage, List<WorkItem> items, int start, int sz)
+      {
+         this.stage = stage;
+         this.items = items;
+         this.start = start;
+         this.size  = sz;
+      }
+
+      @Override
+      public int getTotalMatched()
+      {
+         return items.size();
+      }
+
+
+      @Override
+      public int getStart()
+      {
+         return start;
+      }
+
+      @Override
+      public List<WorkItem> getItems()
+      {
+         int end = Math.min(items.size(), start + size);
+         return Collections.unmodifiableList(items.subList(start, end));
+      }
+
+      @Override
+      public PartialWorkItemSet getNext()
+      {
+         return new PwisImpl(stage, items, start + size, size);
+      }
    }
 
 
@@ -153,7 +206,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    {
       try
       {
-         return itemDocumentRepository.get(id);
+         return repo.get(id);
       }
       catch (RepositoryException e)
       {
@@ -173,10 +226,13 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    public WorkItem addItem(Work entity) throws IllegalArgumentException
    {
       String id = idFactory.get();
-      EditWorkItemCommand command = itemDocumentRepository.create(id);
+      EditWorkItemCommand command = repo.create(id);
+      WorkflowStage initial = workflow.getInitialStage();
 
       command.setEntityRef("work", entity.getId());
       command.setLabel(getLabel(entity));
+      command.setDescription("");
+      command.setStage(initial);
 
       try
       {
@@ -184,7 +240,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          //       execution is used here just to ensure consistency and to block on
          //       Future<String>#get().
          String createdId = command.execute().get();
-         return itemDocumentRepository.get(createdId);
+         return repo.get(createdId);
       }
       catch (InterruptedException | ExecutionException e)
       {
@@ -204,7 +260,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          while (entity != null)
          {
             String id = idFactory.get();
-            EditWorkItemCommand command = itemDocumentRepository.create(id);
+            EditWorkItemCommand command = repo.create(id);
 
             command.setEntityRef("work", entity.getId());
             command.setLabel(getLabel(entity));
@@ -215,7 +271,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
                //       execution is used here just to ensure consistency and to block on
                //       Future<String>#get().
                String createdItemId = command.execute().get();
-               WorkItem workItem = itemDocumentRepository.get(createdItemId);
+               WorkItem workItem = repo.get(createdItemId);
                monitor.created(new BasicWorkItemCreationRecord<>(workItem, createdItemId));
             }
             catch (ExecutionException | InterruptedException e)

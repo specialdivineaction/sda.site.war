@@ -1,42 +1,60 @@
 package edu.tamu.tcat.sda.tasks.rest.v1;
 
-import java.util.Arrays;
+import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.tasks.EditorialTask;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
+import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 
 public class TaskCollectionResource
 {
-   private final EditorialTask<Work> task;
+   private final Map<String, EditorialTask<?>> tasks;
 
-   public TaskCollectionResource(EditorialTask<Work> task)
+   public TaskCollectionResource(Map<String, EditorialTask<?>> tasks)
    {
-      this.task = task;
+      this.tasks = tasks;
    }
 
    @GET
    public List<RestApiV1.EditorialTask> getTasks()
    {
-      RestApiV1.EditorialTask dto = RepoAdapter.toDTO(task);
-      return Arrays.asList(dto);
+      return tasks.values().stream()
+            .map(RepoAdapter::toDTO)
+            .collect(Collectors.toList());
+   }
+
+   public EditorialTask<?> getTask(String taskId)
+   {
+      if (!tasks.containsKey(taskId))
+         throw new NotFoundException(MessageFormat.format("No task found for {0}", taskId));
+
+      return tasks.get(taskId);
    }
 
    @GET
-   @Path("{id}")
-   public TaskResource getTaskResource(@PathParam("id") String taskId)
+   @Path("{id}/workflow")
+   @Produces(MediaType.APPLICATION_JSON)
+   public RestApiV1.Workflow getWorkflowResource(@PathParam("id") String taskId)
    {
-      if (!Objects.equals(taskId, task.getId()))
-      {
-         throw new NotFoundException();
-      }
+      EditorialTask<?> task = getTask(taskId);
 
-      return new TaskResource(task);
+      Workflow workflow = task.getWorkflow();
+      return RepoAdapter.toDTO(workflow);
+   }
+
+   @Path("{id}/items")
+   public WorklistResource getWorklistResource(@PathParam("id") String taskId)
+   {
+      EditorialTask<?> task = getTask(taskId);
+      return new WorklistResource(task);
    }
 }

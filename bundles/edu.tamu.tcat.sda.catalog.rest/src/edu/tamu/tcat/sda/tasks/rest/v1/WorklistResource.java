@@ -16,10 +16,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.tasks.EditorialTask;
-import edu.tamu.tcat.sda.tasks.WorkItem;
+import edu.tamu.tcat.sda.tasks.PartialWorkItemSet;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
 
 /**
  *  Implements the REST API for the list of work items associated with a particular
@@ -28,9 +27,9 @@ import edu.tamu.tcat.trc.entries.types.biblio.Work;
  */
 public class WorklistResource
 {
-   private final EditorialTask<Work> task;
+   private final EditorialTask<?> task;
 
-   public WorklistResource(EditorialTask<Work> task)
+   public WorklistResource(EditorialTask<?> task)
    {
       this.task = task;
    }
@@ -58,17 +57,15 @@ public class WorklistResource
       }
 
       WorkflowStage stage = stages.get(stageId);
-      List<WorkItem> items = task.getItems(stage);
+      PartialWorkItemSet itemSet = task.getItems(stage, start, max);
 
-      List<RestApiV1.WorkItem> results = items.stream()
-            .skip(start - 1)
-            .limit(max)
+      List<RestApiV1.WorkItem> results = itemSet.getItems().stream()
             .map(RepoAdapter::toDTO).collect(Collectors.toList());
 
       RestApiV1.WorklistGroup dto = new RestApiV1.WorklistGroup();
 
       dto.groupId = stageId;
-      dto.itemCount = items.size();
+      dto.itemCount = itemSet.getTotalMatched();
       dto.items = results;
       dto.label = stage.getLabel();
       dto.start = start;

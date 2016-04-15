@@ -6,7 +6,6 @@ import edu.tamu.tcat.sda.tasks.EditorialTask;
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.repo.EntityReference;
 
 public class RepoAdapter
@@ -50,7 +49,7 @@ public class RepoAdapter
       return dto;
    }
 
-   public static RestApiV1.EditorialTask toDTO(EditorialTask<Work> task)
+   public static RestApiV1.EditorialTask toDTO(EditorialTask<?> task)
    {
       RestApiV1.EditorialTask dto = new RestApiV1.EditorialTask();
 
