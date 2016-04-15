@@ -45,7 +45,7 @@ public class RestApiV1
 
       public int activeItems;
 
-      public RevisionStatus status;
+      public RevisionStatus status = RevisionStatus.Active;
    }
 
    /**
@@ -77,11 +77,11 @@ public class RestApiV1
        */
       public Map<String, String> properties;
 
-      /** The current workflow stage for this item. */
-      public WorkflowStage stage;
+      /** The ID of the current workflow stage for this item. */
+      public String stage;
 
-      /** The editorial task this item is associated with. */
-      public EditorialTask task;
+      /** The ID of the editorial task this item is associated with. */
+      public String task;
 
       // TODO add assignee, due date, start date, work estimate, priority, notes...
    }
@@ -128,10 +128,24 @@ public class RestApiV1
    {
       public String groupId;
 
+      /**
+       * Group label for display in the UI
+       */
       public String label;
 
+      /**
+       * Total number of items in the group
+       */
       public int itemCount;
 
+      /**
+       * Starting index offset of this subsequence of items;
+       */
+      public int start;
+
+      /**
+       * A subsequence of all items in the group, limited by offset and max count query parameters.
+       */
       public List<WorkItem> items;
 
       // TODO add links, sort-by, etc
@@ -158,6 +172,11 @@ public class RestApiV1
 
       /** Brief description of the purpose and intent for this workflow. */
       public String description;
+
+      /**
+       * Lookup table for stages within this workflow.
+       */
+      public Map<String, WorkflowStage> stages;
 
       /** Defines the current status of this workflow. Workflows are initially created in the
        *  pending state and can be freely edited until activated. Once activated, only
