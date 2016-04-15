@@ -1,8 +1,10 @@
 package edu.tamu.tcat.sda.tasks;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
+import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 
 /**
  *  Defines a general editorial task such as adding an article or updating digital copies.
@@ -39,6 +41,14 @@ public interface EditorialTask<EntityType>
     * @return The workflow used to transition items through this task.
     */
    Workflow getWorkflow();
+
+   /**
+    * Retrieve items in a given stage.
+    *
+    * @param stage The desired stage of items to retrieve
+    * @return
+    */
+   List<WorkItem> getItems(WorkflowStage stage);
 
    /**
     * Adds a {@link WorkItem} for the supplied entity.

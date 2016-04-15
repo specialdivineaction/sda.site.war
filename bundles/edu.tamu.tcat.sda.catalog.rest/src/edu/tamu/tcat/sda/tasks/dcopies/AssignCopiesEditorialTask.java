@@ -1,12 +1,16 @@
 package edu.tamu.tcat.sda.tasks.dcopies;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.EditorialTask;
@@ -118,6 +122,26 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    {
       return workflow;
    }
+
+   @Override
+   public List<WorkItem> getItems(WorkflowStage stage)
+   {
+      Iterable<WorkItem> iterable = () -> {
+         try
+         {
+            return itemDocumentRepository.listAll();
+         }
+         catch (RepositoryException e)
+         {
+            throw new IllegalStateException("Unable to list items", e);
+         }
+      };
+
+      return StreamSupport.stream(iterable.spliterator(), false)
+            .filter(workItem -> Objects.equals(workItem.getStage(), stage))
+            .collect(Collectors.toList());
+   }
+
 
    /**
     * Retrieves a work item by ID.
