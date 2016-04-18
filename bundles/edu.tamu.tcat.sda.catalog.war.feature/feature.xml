@@ -25,7 +25,14 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.core"
+         id="edu.tamu.tcat.trc.entries.types.reln"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.entries.types.biblio"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -39,7 +46,42 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.entries.types.bio.ds"
+         id="edu.tamu.tcat.trc.entries.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.sda.catalog.rest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.digires"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.digires.books.hathitrust"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.digires.rest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.entries.types.article"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -53,14 +95,28 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.trc.search.solr"
+         id="org.apache.opennlp.tools"
+         download-size="0"
+         install-size="0"
+         version="1.6.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.entries.types.biblio.impl"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.apache.opennlp.tools"
+         id="edu.tamu.tcat.trc.entries.types.article.impl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.trc.entries.types.reln.impl"
          download-size="0"
          install-size="0"
          version="0.0.0"
