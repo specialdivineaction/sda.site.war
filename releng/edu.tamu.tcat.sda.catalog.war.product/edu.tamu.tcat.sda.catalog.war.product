@@ -24,6 +24,8 @@
 
    <features>
       <feature id="edu.tamu.tcat.sda.catalog.war.feature"/>
+      <feature id="edu.tamu.tcat.trc.base.feature"/>
+      <feature id="edu.tamu.tcat.jersey.feature"/>
    </features>
 
    <configurations>
