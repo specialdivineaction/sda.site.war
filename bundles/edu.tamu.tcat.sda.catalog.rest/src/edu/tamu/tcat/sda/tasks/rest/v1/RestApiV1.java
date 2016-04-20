@@ -144,7 +144,13 @@ public class RestApiV1
       public int start;
 
       /**
+       * The maximum number of items that will appear in items.
+       */
+      public int max;
+
+      /**
        * A subsequence of all items in the group, limited by offset and max count query parameters.
+       * The number of items must be less than or equal to max.
        */
       public List<WorkItem> items;
 

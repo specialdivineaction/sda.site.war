@@ -182,6 +182,12 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       }
 
       @Override
+      public int getLimit()
+      {
+         return size;
+      }
+
+      @Override
       public List<WorkItem> getItems()
       {
          int end = Math.min(items.size(), start + size);

@@ -13,6 +13,8 @@ public interface PartialWorkItemSet
 
    int getStart();
 
+   int getLimit();
+
    List<WorkItem> getItems();
 
    PartialWorkItemSet getNext();
