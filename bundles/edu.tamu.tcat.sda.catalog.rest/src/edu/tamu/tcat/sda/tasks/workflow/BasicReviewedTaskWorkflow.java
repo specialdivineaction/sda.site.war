@@ -64,7 +64,7 @@ public class BasicReviewedTaskWorkflow implements Workflow
    @Override
    public WorkflowStage getInitialStage()
    {
-      return stages.get(0);
+      return stages.get("pending");
    }
 
    private void initialize()
