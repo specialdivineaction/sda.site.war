@@ -218,9 +218,8 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       }
       catch (RepositoryException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new IllegalStateException(e);
+         String message = MessageFormat.format("Unable to fetch item {0}.", id);
+         throw new IllegalArgumentException(message, e);
       }
    }
 
