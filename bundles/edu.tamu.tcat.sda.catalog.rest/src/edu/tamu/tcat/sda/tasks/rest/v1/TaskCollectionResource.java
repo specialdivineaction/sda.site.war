@@ -32,21 +32,12 @@ public class TaskCollectionResource
             .collect(Collectors.toList());
    }
 
-   public EditorialTask<?> getTask(String taskId)
-   {
-      if (!tasks.containsKey(taskId))
-         throw new NotFoundException(MessageFormat.format("No task found for {0}", taskId));
-
-      return tasks.get(taskId);
-   }
-
    @GET
    @Path("{id}/workflow")
    @Produces(MediaType.APPLICATION_JSON)
    public RestApiV1.Workflow getWorkflowResource(@PathParam("id") String taskId)
    {
       EditorialTask<?> task = getTask(taskId);
-
       Workflow workflow = task.getWorkflow();
       return RepoAdapter.toDTO(workflow);
    }
@@ -56,5 +47,15 @@ public class TaskCollectionResource
    {
       EditorialTask<?> task = getTask(taskId);
       return new WorklistResource(task);
+   }
+
+   private EditorialTask<?> getTask(@PathParam("id") String taskId)
+   {
+      if (!tasks.containsKey(taskId))
+      {
+         throw new NotFoundException(MessageFormat.format("No task found for {0}", taskId));
+      }
+
+      return tasks.get(taskId);
    }
 }
