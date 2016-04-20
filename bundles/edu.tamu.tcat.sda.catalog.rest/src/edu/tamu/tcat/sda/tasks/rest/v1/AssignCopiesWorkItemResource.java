@@ -36,7 +36,18 @@ public class AssignCopiesWorkItemResource
    @Produces(MediaType.APPLICATION_JSON)
    public RestApiV1.WorkItem transitionItem(RestApiV1.ItemStageTransition transition)
    {
-      throw new UnsupportedOperationException();
+      String targetStageId = transition.stage;
+      WorkItem updatedItem;
+      try
+      {
+         updatedItem = task.transition(item, targetStageId);
+      }
+      catch (IllegalArgumentException e)
+      {
+         String message = MessageFormat.format("Unable to transition item {0} to stage {1}", item.getId(), targetStageId);
+         throw new BadRequestException(message, e);
+      }
+      return RepoAdapter.toDTO(updatedItem, task);
    }
 
 }
