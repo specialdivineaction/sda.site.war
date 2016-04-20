@@ -233,12 +233,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    {
       String id = idFactory.get();
       EditWorkItemCommand command = repo.create(id);
-      WorkflowStage initial = workflow.getInitialStage();
-
-      command.setEntityRef("work", entity.getId());
-      command.setLabel(getLabel(entity));
-      command.setDescription("");
-      command.setStage(initial);
+      applyCreate(command, entity);
 
       try
       {
@@ -267,9 +262,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          {
             String id = idFactory.get();
             EditWorkItemCommand command = repo.create(id);
-
-            command.setEntityRef("work", entity.getId());
-            command.setLabel(getLabel(entity));
+            applyCreate(command, entity);
 
             try
             {
@@ -417,6 +410,25 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       }
 
       return fullTitle.trim();
+   }
+
+   /**
+    * Copies the necessary data to create a new WorkItem
+    *
+    * @param command
+    * @param entity
+    * @return The command
+    */
+   private static EditWorkItemCommand applyCreate(EditWorkItemCommand command, Work entity)
+   {
+      command.setEntityRef("work", entity.getId());
+      command.setLabel(getLabel(entity));
+      command.setDescription("");
+
+      WorkflowStage initial = workflow.getInitialStage();
+      command.setStage(initial);
+
+      return command;
    }
 
    private static class BasicWorkItemCreationError<X> implements TaskSubmissionMonitor.WorkItemCreationError<X>
