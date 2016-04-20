@@ -1,9 +1,11 @@
 package edu.tamu.tcat.sda.tasks;
 
+import java.text.MessageFormat;
 import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
+import edu.tamu.tcat.sda.tasks.workflow.WorkflowStageTransition;
 
 /**
  *  Defines a general editorial task such as adding an article or updating digital copies.
@@ -76,6 +78,33 @@ public interface EditorialTask<EntityType>
     *       encountered.
     */
    void addItems(Supplier<EntityType> entitySupplier, TaskSubmissionMonitor monitor);
+
+   /**
+    * Transition an item from its current stage to another via a specific
+    * {@link WorkflowStageTransition} instance.
+    *
+    * @param item
+    * @param transition
+    * @return Item reflecting updated stage info.
+    */
+   WorkItem transition(WorkItem item, WorkflowStageTransition transition);
+
+   /**
+    * Transition an item from its current stage to another via the target {@link WorkflowStage} ID.
+    * @param item
+    * @param stageId
+    * @return Item reflecting updated stage info.
+    */
+   default WorkItem transition(WorkItem item, String stageId) {
+      String msg = "Invalid target stage {0}.";
+      WorkflowStage stage = item.getStage();
+      WorkflowStageTransition transition = stage.getTransitions().stream()
+            .filter(t -> t.getTarget().getId().equals(stageId))
+            .findFirst().orElseThrow(() ->
+               new IllegalArgumentException(MessageFormat.format(msg, stageId)));
+
+      return transition(item, transition);
+   };
 
    // TODO entity reference
 }

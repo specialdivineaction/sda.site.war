@@ -228,6 +228,23 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
       throw new UnsupportedOperationException();
    }
 
+   /**
+    * @param id The id of the item to edit.
+    * @return A command for editing the item.
+    */
+   public EditWorkItemCommand editItem(String id)
+   {
+      try
+      {
+         return repo.edit(id);
+      }
+      catch (RepositoryException e)
+      {
+         String message = MessageFormat.format("Unable to find item with ID {0}.", id);
+         throw new IllegalArgumentException(message, e);
+      }
+   }
+
    @Override
    public WorkItem addItem(Work entity) throws IllegalArgumentException
    {
@@ -289,6 +306,59 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
          }
          monitor.finished();
       });
+   }
+
+   /**
+    * @param item
+    * @param transition
+    * @throws IllegalArgumentException if the transition is not valid for the given item
+    */
+   private void checkValidity(WorkItem item, WorkflowStageTransition transition)
+   {
+      // extract info about transition and target stage to prevent redundancy.
+      String transitionId = transition.getId();
+      WorkflowStage targetStage = transition.getTarget();
+      String targetStageId = targetStage.getId();
+
+      // verify that transition is valid from current stage
+      WorkflowStage currentStage = item.getStage();
+      List<WorkflowStageTransition> validTransitions = currentStage.getTransitions();
+      boolean isValidTransition = validTransitions.stream()
+            .anyMatch(t -> t.getId().equals(transitionId) && t.getTarget().getId().equals(targetStageId));
+
+      if (!isValidTransition) {
+         String message = MessageFormat.format("Invalid transition {0}.", transition.getId());
+         throw new IllegalArgumentException(message);
+      }
+   }
+
+   @Override
+   public WorkItem transition(WorkItem item, WorkflowStageTransition transition)
+   {
+      checkValidity(item, transition);
+
+      // update item stage in repository
+      String itemId = item.getId();
+      EditWorkItemCommand command = editItem(itemId);
+
+      command.setStage(transition.getTarget());
+
+      // updatedId should equal itemId, but the code below mainly serves to synchronize the update process and as a sanity check.
+      try
+      {
+         String updatedId = command.execute().get();
+         return repo.get(updatedId);
+      }
+      catch (InterruptedException | ExecutionException e)
+      {
+         String message = MessageFormat.format("Unable to transition item {0} to stage {1}.", itemId, transition.getTarget().getId());
+         throw new IllegalStateException(message, e);
+      }
+      catch (RepositoryException e)
+      {
+         String message = MessageFormat.format("Unable to fetch updated item {0} from repo.", itemId);
+         throw new IllegalStateException(message, e);
+      }
    }
 
    /**
