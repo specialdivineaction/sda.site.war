@@ -20,10 +20,12 @@ import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 public class AssignCopiesTaskCollectionResource
 {
    private final Map<String, AssignCopiesEditorialTask> tasks;
+   private WorkRepository workRepository;
 
-   public AssignCopiesTaskCollectionResource(Map<String, AssignCopiesEditorialTask> tasks)
+   public AssignCopiesTaskCollectionResource(Map<String, AssignCopiesEditorialTask> tasks, WorkRepository workRepository)
    {
       this.tasks = tasks;
+      this.workRepository = workRepository;
    }
 
    @GET
@@ -48,7 +50,7 @@ public class AssignCopiesTaskCollectionResource
    public AssignCopiesWorklistResource getWorklistResource(@PathParam("id") String taskId)
    {
       AssignCopiesEditorialTask task = getTask(taskId);
-      return new AssignCopiesWorklistResource(task);
+      return new AssignCopiesWorklistResource(task, workRepository);
    }
 
    private AssignCopiesEditorialTask getTask(@PathParam("id") String taskId)

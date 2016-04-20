@@ -47,9 +47,10 @@ public class AssignCopiesWorklistResource
    private final AssignCopiesEditorialTask task;
    private WorkRepository workRepository;
 
-   public AssignCopiesWorklistResource(AssignCopiesEditorialTask task)
+   public AssignCopiesWorklistResource(AssignCopiesEditorialTask task, WorkRepository workRepository)
    {
       this.task = task;
+      this.workRepository = workRepository;
    }
 
    @Path("{id}")
@@ -81,10 +82,107 @@ public class AssignCopiesWorklistResource
    }
 
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   public RestApiV1.WorkItem addWorkItem(RestApiV1.WorkItem item)
+//   @Consumes(MediaType.APPLICATION_JSON)
+//   @Produces(MediaType.APPLICATION_JSON)
+//   public RestApiV1.WorkItem addWorkItem(RestApiV1.WorkItem item)
+   @Produces(MediaType.TEXT_PLAIN)
+   public StreamingOutput addWorkItem()
    {
-      throw new UnsupportedOperationException();
+      // HACK no better place to put this...
+      return (os) -> {
+         Writer out = new BufferedWriter(new OutputStreamWriter(os));
+         Iterator<Work> workIterator = workRepository.getAllWorks();
+         Supplier<Work> workSupplier = () -> workIterator.hasNext() ? workIterator.next() : null;
+         WorkTaskSubmissionMonitor monitor = new WorkTaskSubmissionMonitor(out, task.getName());
+         task.addItems(workSupplier, monitor);
+         try
+         {
+            monitor.awaitFinished(5, TimeUnit.MINUTES);
+         }
+         catch (InterruptedException e)
+         {
+            logger.log(Level.WARNING, "Monitor interrupted while waiting for 'finished'.", e);
+         }
+      };
+   }
+
+   private static class WorkTaskSubmissionMonitor implements TaskSubmissionMonitor
+   {
+      private static final Logger logger = Logger.getLogger(WorkTaskSubmissionMonitor.class.getName());
+
+      private final Writer output;
+      private final String taskName;
+
+      private final AtomicInteger successCount = new AtomicInteger(0);
+      private final AtomicInteger failureCount = new AtomicInteger(0);
+
+      private final CountDownLatch finished = new CountDownLatch(1);
+
+      public WorkTaskSubmissionMonitor(Writer output, String taskName)
+      {
+         this.output = output;
+         this.taskName = taskName;
+      }
+
+      @Override
+      public void finished()
+      {
+         int numSuccesses = successCount.get();
+         int numFailures = failureCount.get();
+
+         String message = MessageFormat.format("Finished! Added {0} item{1} to the \"{2}\" task. {3} error{4} reported.",
+               numSuccesses,
+               numSuccesses == 1 ? "" : "s",
+               taskName,
+               numFailures,
+               numFailures == 1 ? "" : "s");
+
+         synchronized (output) {
+            try
+            {
+               output.write(message);
+               output.flush();
+               output.close();
+            }
+            catch (IOException e)
+            {
+               logger.log(Level.WARNING, "Failed to send message: " + message, e);
+            }
+         }
+
+         finished.countDown();
+      }
+
+      @Override
+      public <EntityType> void failed(WorkItemCreationError<EntityType> error)
+      {
+         failureCount.incrementAndGet();
+         EntityType entity = error.getEntity();
+         String message = MessageFormat.format("Failed to add entity '{0}'.", entity.toString());
+
+         logger.log(Level.WARNING, message, error.getException());
+
+         synchronized (output) {
+            try
+            {
+               output.write(message);
+            }
+            catch (IOException e)
+            {
+               logger.log(Level.WARNING, "Failed to send message: " + message, e);
+            }
+         }
+      }
+
+      @Override
+      public <EntityType> void created(WorkItemCreationRecord<EntityType> record)
+      {
+         successCount.incrementAndGet();
+      }
+
+      public void awaitFinished(long timeout, TimeUnit unit) throws InterruptedException
+      {
+         finished.await(timeout, unit);
+      }
    }
 }

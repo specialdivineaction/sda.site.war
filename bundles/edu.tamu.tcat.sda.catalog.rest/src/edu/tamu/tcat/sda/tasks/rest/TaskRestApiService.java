@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.dcopies.AssignCopiesEditorialTask;
 import edu.tamu.tcat.sda.tasks.rest.v1.AssignCopiesTaskCollectionResource;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.repo.postgres.id.UuidProvider;
 
 @Path("/")
@@ -22,6 +23,7 @@ public class TaskRestApiService
    private static final Logger logger = Logger.getLogger(TaskRestApiService.class.getName());
 
    private SqlExecutor sqlExecutor;
+   private WorkRepository workRepository;
    private ExecutorService executorService;
 
    // TODO need to provide a configurable way to look up tasks.
@@ -30,6 +32,11 @@ public class TaskRestApiService
    public void setSqlExecutor(SqlExecutor sqlExecutor)
    {
       this.sqlExecutor = sqlExecutor;
+   }
+
+   public void setWorkRepository(WorkRepository workRepository)
+   {
+      this.workRepository = workRepository;
    }
 
    public void activate()

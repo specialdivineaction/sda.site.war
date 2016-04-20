@@ -5,4 +5,5 @@
       <provide interface="edu.tamu.tcat.sda.tasks.rest.TaskRestApiService"/>
    </service>
    <reference bind="setSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <reference bind="setWorkRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository" name="WorkRepository" policy="static"/>
 </scr:component>
