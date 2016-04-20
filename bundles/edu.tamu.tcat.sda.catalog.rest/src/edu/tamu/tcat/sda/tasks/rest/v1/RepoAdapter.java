@@ -61,7 +61,7 @@ public class RepoAdapter
       return dto;
    }
 
-   public static RestApiV1.WorkItem toDTO(WorkItem workItem)
+   public static RestApiV1.WorkItem toDTO(WorkItem workItem, EditorialTask<?> task)
    {
       RestApiV1.WorkItem dto = new RestApiV1.WorkItem();
 
@@ -84,7 +84,7 @@ public class RepoAdapter
          dto.stage = stage.getId();
       }
 
-      // TODO dto.task
+      dto.task = task.getId();
 
       return dto;
    }
@@ -100,7 +100,7 @@ public class RepoAdapter
       return dto;
    }
 
-   public static RestApiV1.WorklistGroup makeWorklistGroup(WorkflowStage stage, PartialWorkItemSet itemSet)
+   public static RestApiV1.WorklistGroup makeWorklistGroup(EditorialTask<?> task, WorkflowStage stage, PartialWorkItemSet itemSet)
    {
       RestApiV1.WorklistGroup dto = new RestApiV1.WorklistGroup();
 
@@ -110,7 +110,7 @@ public class RepoAdapter
       dto.start = itemSet.getStart();
       dto.max = itemSet.getLimit();
       dto.items = itemSet.getItems().stream()
-            .map(RepoAdapter::toDTO)
+            .map(item -> RepoAdapter.toDTO(item, task))
             .collect(Collectors.toList());
 
       return dto;
