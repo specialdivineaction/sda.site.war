@@ -1,7 +1,6 @@
 package edu.tamu.tcat.sda.tasks.rest.v1;
 
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -58,19 +57,7 @@ public class WorklistResource
 
       WorkflowStage stage = stages.get(stageId);
       PartialWorkItemSet itemSet = task.getItems(stage, start, max);
-
-      List<RestApiV1.WorkItem> results = itemSet.getItems().stream()
-            .map(RepoAdapter::toDTO).collect(Collectors.toList());
-
-      RestApiV1.WorklistGroup dto = new RestApiV1.WorklistGroup();
-
-      dto.groupId = stageId;
-      dto.itemCount = itemSet.getTotalMatched();
-      dto.items = results;
-      dto.label = stage.getLabel();
-      dto.start = start;
-
-      return dto;
+      return RepoAdapter.makeWorklistGroup(stage, itemSet);
    }
 
    @POST

@@ -45,6 +45,7 @@ public class RestApiV1
 
       public int activeItems;
 
+      // HACK all tasks default to active for now
       public RevisionStatus status = RevisionStatus.Active;
    }
 
@@ -190,7 +191,8 @@ public class RestApiV1
        *  but not defined stages or stage transitions). Workflows can be deactivated which will
        *  prevent their use in new context but allow existing uses to continue to function.
        */
-      public RevisionStatus status;
+      // HACK all workflows default to active
+      public RevisionStatus status = RevisionStatus.Active;
    }
 
    public static class WorkflowStage

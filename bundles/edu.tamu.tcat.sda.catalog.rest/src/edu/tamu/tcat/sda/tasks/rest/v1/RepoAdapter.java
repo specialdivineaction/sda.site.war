@@ -99,4 +99,20 @@ public class RepoAdapter
 
       return dto;
    }
+
+   public static RestApiV1.WorklistGroup makeWorklistGroup(WorkflowStage stage, PartialWorkItemSet itemSet)
+   {
+      RestApiV1.WorklistGroup dto = new RestApiV1.WorklistGroup();
+
+      dto.groupId = stage.getId();
+      dto.label = stage.getLabel();
+      dto.itemCount = itemSet.getTotalMatched();
+      dto.start = itemSet.getStart();
+      dto.max = itemSet.getLimit();
+      dto.items = itemSet.getItems().stream()
+            .map(RepoAdapter::toDTO)
+            .collect(Collectors.toList());
+
+      return dto;
+   }
 }
