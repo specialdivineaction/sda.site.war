@@ -1,9 +1,10 @@
-package edu.tamu.tcat.sda.tasks.dcopies;
+package edu.tamu.tcat.sda.tasks;
+
+import java.util.concurrent.Future;
 
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.repo.RecordEditCommand;
 
-public interface EditWorkItemCommand extends RecordEditCommand
+public interface EditWorkItemCommand
 {
    void setLabel(String label);
 
@@ -16,4 +17,6 @@ public interface EditWorkItemCommand extends RecordEditCommand
    void setEntityRef(String type, String id);
 
    void setStage(WorkflowStage stage);
+
+   Future<String> execute();
 }

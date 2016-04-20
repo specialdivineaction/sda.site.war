@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+import edu.tamu.tcat.sda.tasks.EditWorkItemCommand;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.repo.CommitHook;
 import edu.tamu.tcat.trc.repo.EditCommandFactory;
