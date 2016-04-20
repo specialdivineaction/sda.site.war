@@ -1,7 +1,18 @@
 package edu.tamu.tcat.sda.tasks.rest.v1;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
@@ -13,30 +24,39 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
-import edu.tamu.tcat.sda.tasks.EditorialTask;
 import edu.tamu.tcat.sda.tasks.PartialWorkItemSet;
+import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
+import edu.tamu.tcat.sda.tasks.WorkItem;
+import edu.tamu.tcat.sda.tasks.dcopies.AssignCopiesEditorialTask;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
+import edu.tamu.tcat.trc.entries.types.biblio.Work;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 
 /**
  *  Implements the REST API for the list of work items associated with a particular
  *  taks. This API is scoped to a particular user account so that the returned items reflect
  *  that account's view of the work to be performed within a task.
  */
-public class WorklistResource
+public class AssignCopiesWorklistResource
 {
-   private final EditorialTask<?> task;
+   private static final Logger logger = Logger.getLogger(AssignCopiesWorklistResource.class.getName());
 
-   public WorklistResource(EditorialTask<?> task)
+   private final AssignCopiesEditorialTask task;
+   private WorkRepository workRepository;
+
+   public AssignCopiesWorklistResource(AssignCopiesEditorialTask task)
    {
       this.task = task;
    }
 
    @Path("{id}")
-   public WorkItemResource getItem(@PathParam("id") String id)
+   public AssignCopiesWorkItemResource getItem(@PathParam("id") String id)
    {
-      return new WorkItemResource();
+      WorkItem item = task.getItem(id);
+      return new AssignCopiesWorkItemResource(task, item);
    }
 
    @GET
@@ -57,14 +77,14 @@ public class WorklistResource
 
       WorkflowStage stage = stages.get(stageId);
       PartialWorkItemSet itemSet = task.getItems(stage, start, max);
-      return RepoAdapter.makeWorklistGroup(stage, itemSet);
+      return RepoAdapter.makeWorklistGroup(task, stage, itemSet);
    }
 
    @POST
-   public void addWorkItem(RestApiV1.WorkItem item)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public RestApiV1.WorkItem addWorkItem(RestApiV1.WorkItem item)
    {
       throw new UnsupportedOperationException();
    }
-
-
 }
