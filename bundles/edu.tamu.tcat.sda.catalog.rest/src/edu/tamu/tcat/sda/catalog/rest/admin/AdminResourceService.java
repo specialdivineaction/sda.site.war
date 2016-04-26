@@ -1,6 +1,9 @@
 package edu.tamu.tcat.sda.catalog.rest.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Objects;
@@ -31,14 +34,19 @@ import edu.tamu.tcat.trc.entries.types.bio.Person;
 import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
 import edu.tamu.tcat.trc.entries.types.bio.search.solr.BioDocument;
 import edu.tamu.tcat.trc.search.SearchException;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
 
 @Path("/admin")
 public class AdminResourceService
 {
    private static final Logger logger = Logger.getLogger(AdminResourceService.class.getName());
 
-   // HACK we are creating a new SolrClient here instead of using WorkIndexService because
+   // TODO we are creating a new SolrClient here instead of using WorkIndexService because
    //      WorkIndexService does not allow for batch indexing and purging.
+
+   public static final String OPENNLP_MODELS_SENTENCE_PATH = "opennlp.models.sentence.path";
+
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
    public static final String SOLR_CORE_PEOPLE = "catalogentries.authors.solr.core";
    public static final String SOLR_CORE_WORKS = "catalogentries.works.solr.core";
@@ -141,7 +149,7 @@ public class AdminResourceService
       };
 
       Collection<SolrInputDocument> solrDocs = StreamSupport.stream(people.spliterator(), false)
-            .map(AdminResourceService::adapt)
+            .map(this::adapt)
             .filter(Objects::nonNull)
             .map(BioDocument::getDocument)
             .collect(Collectors.toList());
@@ -189,11 +197,11 @@ public class AdminResourceService
       }
    }
 
-   private static BioDocument adapt(Person person)
+   private BioDocument adapt(Person person)
    {
       try
       {
-         return BioDocument.create(person);
+         return BioDocument.create(person, this::extractFirstSentence);
       }
       catch (SearchException e)
       {
@@ -250,5 +258,39 @@ public class AdminResourceService
          logger.log(Level.WARNING, message, e);
          return null;
       }
+   }
+
+   private String extractFirstSentence(String text)
+   {
+      if (text == null || text.trim().isEmpty())
+         return "";
+
+      java.nio.file.Path sentenceModelPath = null;
+      try {
+         sentenceModelPath = config.getPropertyValue(OPENNLP_MODELS_SENTENCE_PATH, java.nio.file.Path.class);
+      } catch (Exception ex) {
+         // do nothing
+      }
+
+      if (sentenceModelPath != null)
+      {
+         try (InputStream modelInput = Files.newInputStream(sentenceModelPath))
+         {
+            SentenceModel sentenceModel = new SentenceModel(modelInput);
+            SentenceDetectorME detector = new SentenceDetectorME(sentenceModel);
+            String[] summarySentences = detector.sentDetect(text);
+            return (summarySentences.length == 0) ? null : summarySentences[0];
+         }
+         catch (IOException e)
+         {
+            logger.log(Level.SEVERE, "Unable to open sentence detect model input file", e);
+         }
+      }
+
+      int ix = text.indexOf(".");
+      if (ix < 0)
+         ix = text.length();
+
+      return text.substring(0, Math.min(ix, 140));
    }
 }
