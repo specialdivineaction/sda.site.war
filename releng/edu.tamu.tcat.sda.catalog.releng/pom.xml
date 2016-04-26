@@ -56,6 +56,7 @@
   <modules>
     <module>${repo-ed-releng-path}/edu.tamu.tcat.sda.catalog.war.product</module>
     <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.war.feature</module>
+    <module>${repo-ed-releng-path}/edu.tamu.tcat.sda.trc.base.feature</module>
     
     <module>${repo-ed-path}/edu.tamu.tcat.sda.catalog.rest</module>
   </modules>

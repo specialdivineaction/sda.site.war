@@ -150,4 +150,32 @@
          version="2.3.1"
          unpack="false"/>
 
+   <plugin
+         id="com.eclipsesource.jaxrs.jersey-all"
+         download-size="0"
+         install-size="0"
+         version="2.10.1.SR1"
+         unpack="false"/>
+
+   <plugin
+         id="com.eclipsesource.jaxrs.publisher"
+         download-size="0"
+         install-size="0"
+         version="5.3.1.201602281253"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-base"
+         download-size="0"
+         install-size="0"
+         version="2.3.1"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"
+         download-size="0"
+         install-size="0"
+         version="2.3.1"
+         unpack="false"/>
+
 </feature>
