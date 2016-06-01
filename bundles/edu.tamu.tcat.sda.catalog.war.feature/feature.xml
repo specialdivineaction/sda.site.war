@@ -56,7 +56,7 @@
          id="edu.tamu.tcat.sda.catalog.rest"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -176,6 +176,13 @@
          download-size="0"
          install-size="0"
          version="2.3.1"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.account"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.20150127-1603"
          unpack="false"/>
 
 </feature>
