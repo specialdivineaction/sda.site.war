@@ -7,4 +7,5 @@
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.rest.admin.AdminResourceService"/>
    </service>
+   <reference bind="setRelationshipRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository" name="RelationshipRepository" policy="static"/>
 </scr:component>

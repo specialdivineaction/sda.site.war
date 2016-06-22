@@ -33,6 +33,9 @@ import edu.tamu.tcat.trc.entries.types.biblio.search.solr.BiblioDocument;
 import edu.tamu.tcat.trc.entries.types.bio.Person;
 import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
 import edu.tamu.tcat.trc.entries.types.bio.search.solr.BioDocument;
+import edu.tamu.tcat.trc.entries.types.reln.Relationship;
+import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
+import edu.tamu.tcat.trc.entries.types.reln.search.solr.RelnDocument;
 import edu.tamu.tcat.trc.search.SearchException;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
@@ -50,12 +53,15 @@ public class AdminResourceService
    public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
    public static final String SOLR_CORE_PEOPLE = "catalogentries.authors.solr.core";
    public static final String SOLR_CORE_WORKS = "catalogentries.works.solr.core";
+   public static final String SOLR_CORE_RELATIONSHIPS = "catalogentries.relationships.solr.core";
 
    private ConfigurationProperties config;
    private SolrClient workSolrClient;
    private SolrClient peopleSolrClient;
+   private SolrClient relnSolrClient;
    private WorkRepository workRepository;
    private PeopleRepository peopleRepository;
+   private RelationshipRepository relnRepository;
 
    public void setWorkRepository(WorkRepository workRepository)
    {
@@ -65,6 +71,11 @@ public class AdminResourceService
    public void setPeopleRepository(PeopleRepository peopleRepository)
    {
       this.peopleRepository = peopleRepository;
+   }
+
+   public void setRelationshipRepository(RelationshipRepository relnRepository)
+   {
+      this.relnRepository = relnRepository;
    }
 
    public void setConfiguration(ConfigurationProperties config)
@@ -77,6 +88,7 @@ public class AdminResourceService
       Objects.requireNonNull(config, "No Configuration supplied.");
       Objects.requireNonNull(workRepository, "No work repository supplied.");
       Objects.requireNonNull(peopleRepository, "No people repository supplied.");
+      Objects.requireNonNull(relnRepository, "No relationships repository supplied.");
 
       // TODO remove dependency on solrj from MANIFEST.MF once HttpSolrClient is removed
 
@@ -90,6 +102,9 @@ public class AdminResourceService
       URI peopleCoreUri = solrBaseUri.resolve(peopleSolrCore);
       peopleSolrClient = new HttpSolrClient(peopleCoreUri.toString());
 
+      String relnSolrCore = config.getPropertyValue(SOLR_CORE_RELATIONSHIPS, String.class);
+      URI relnCoreUri = solrBaseUri.resolve(relnSolrCore);
+      relnSolrClient = new HttpSolrClient(relnCoreUri.toString());
    }
 
    public void deactivate()
@@ -194,6 +209,38 @@ public class AdminResourceService
       catch (Exception e)
       {
          logger.log(Level.SEVERE, "Failed to commit works to the Solr server.", e);
+      }
+   }
+
+   @POST
+   @Path("/reindex/relationships")
+   public void reindexRelationships()
+   {
+      try
+      {
+         // purge all existing records
+         relnSolrClient.deleteByQuery("*:*");
+         relnSolrClient.commit();
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, "Failed to remove data from the relationships core.", e);
+      }
+
+      Iterable<Relationship> relationships = () -> relnRepository.getAllRelationships();
+      Collection<SolrInputDocument> solrDocs = StreamSupport.stream(relationships.spliterator(), false)
+            .map(RelnDocument::create)
+            .map(RelnDocument::getDocument)
+            .collect(Collectors.toList());
+
+      try
+      {
+         relnSolrClient.add(solrDocs);
+         relnSolrClient.commit();
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, "Failed to commit relationships to the Solr server.", e);
       }
    }
 
