@@ -100,6 +100,7 @@ Service-Component:
  OSGI-INF/trc/export/exportAuthorsCsv.xml,
  OSGI-INF/trc/export/exportWorksCsv.xml,
  OSGI-INF/rest.tasks.xml,
- OSGI-INF/rest.admin.xml
+ OSGI-INF/rest.admin.xml,
+ OSGI-INF/rest.graph.xml
 Export-Package: edu.tamu.tcat.sda.catalog.rest,
  edu.tamu.tcat.sda.catalog.rest.internal;x-internal:=true
