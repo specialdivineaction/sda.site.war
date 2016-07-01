@@ -4,4 +4,7 @@
    <service>
       <provide interface="edu.tamu.tcat.sda.catalog.rest.graph.GraphResourceService"/>
    </service>
+   <reference bind="setWorkRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository" name="WorkRepository" policy="static"/>
+   <reference bind="setRelationshipSearchService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.reln.search.RelationshipSearchService" name="RelationshipSearchService" policy="static"/>
+   <reference bind="setRelationshipRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository" name="RelationshipRepository" policy="static"/>
 </scr:component>
