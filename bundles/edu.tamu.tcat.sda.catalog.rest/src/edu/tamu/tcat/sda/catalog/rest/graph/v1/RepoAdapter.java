@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,8 @@ import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
+import edu.tamu.tcat.trc.entries.types.bio.Person;
+import edu.tamu.tcat.trc.entries.types.bio.PersonName;
 import edu.tamu.tcat.trc.entries.types.reln.Anchor;
 import edu.tamu.tcat.trc.entries.types.reln.AnchorSet;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
@@ -21,6 +24,21 @@ public class RepoAdapter
 {
    private static final Pattern workIdPattern = Pattern.compile("^works/([^/]+)");
 
+   public static GraphDTO.Node toDTO(Person person)
+   {
+      GraphDTO.Node dto = new GraphDTO.Node();
+
+      dto.id = person.getId();
+      dto.label = extractName(person.getCanonicalName());
+
+      return dto;
+   }
+
+   /**
+    * Converts the given work object into a graph node identified by the work id.
+    * @param work
+    * @return
+    */
    public static GraphDTO.Node toDTO(Work work)
    {
       GraphDTO.Node dto = new GraphDTO.Node();
@@ -135,6 +153,51 @@ public class RepoAdapter
       dto.metadata.put("description", reln.getDescription());
 
       return dto;
+   }
+
+   /**
+    * Attempts to pull a display name from the given name object or {@code null} if no name can be found.
+    * @param name
+    * @return
+    */
+   private static String extractName(PersonName name)
+   {
+      if (name == null)
+      {
+         return null;
+      }
+
+      // look for existing display name
+
+      String displayName = name.getDisplayName();
+      if (displayName != null)
+      {
+         return displayName.trim();
+      }
+
+      // fall back to constructing a display name from given and family names
+
+      StringJoiner sj = new StringJoiner(" ");
+
+      String firstName = name.getGivenName();
+      if (firstName != null && !firstName.trim().isEmpty())
+      {
+         sj.add(firstName.trim());
+      }
+
+      String lastName = name.getFamilyName();
+      if (lastName != null && !lastName.trim().isEmpty())
+      {
+         sj.add(lastName.trim());
+      }
+
+      String constructedName = sj.toString();
+      if (!constructedName.trim().isEmpty())
+      {
+         return constructedName;
+      }
+
+      return null;
    }
 
    /**

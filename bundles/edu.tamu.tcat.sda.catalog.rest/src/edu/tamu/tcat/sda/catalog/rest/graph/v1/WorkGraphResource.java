@@ -41,12 +41,14 @@ public class WorkGraphResource
    @Produces(MediaType.APPLICATION_JSON)
    public GraphDTO.SingleGraph getGraph()
    {
+      // TODO allow filtering by work, relationship type, relationship direction, etc.
+
       Iterable<Work> works = () -> workRepo.getAllWorks();
 
       GraphDTO.Graph graph = new GraphDTO.Graph();
 
       graph.type = "work-reln";
-      graph.nodes = StreamSupport.stream(works.spliterator(), false)
+      graph.nodes = StreamSupport.stream(works.spliterator(), true)
          .map(RepoAdapter::toDTO)
          .collect(Collectors.toList());
 
