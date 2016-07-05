@@ -28,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.HistoricalEvent;
-import edu.tamu.tcat.trc.entries.repo.CatalogRepoException;
 import edu.tamu.tcat.trc.entries.types.bio.Person;
 import edu.tamu.tcat.trc.entries.types.bio.PersonName;
 import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
+import edu.tamu.tcat.trc.repo.RepositoryException;
 
 @Path("/export/authors")
 public class AuthorList
@@ -97,7 +97,7 @@ public class AuthorList
                .build();
          throw new WebApplicationException(resp);
       }
-      catch (CatalogRepoException ex)
+      catch (RepositoryException ex)
       {
          logger.log(Level.SEVERE, "Failed to export author list. Unable to read data from repository.", ex);
          Response resp = Response.serverError()
@@ -118,7 +118,7 @@ public class AuthorList
 
    @GET
    @Produces("text/csv; charset=UTF-8")
-   public Response getBasicAuthorListCSV() throws CatalogRepoException
+   public Response getBasicAuthorListCSV() throws RepositoryException
    {
       StreamingOutput stream = new StreamingOutput() {
          @Override

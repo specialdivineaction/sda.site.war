@@ -24,7 +24,6 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
-import edu.tamu.tcat.trc.entries.repo.CatalogRepoException;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
@@ -154,14 +153,7 @@ public class AdminResourceService
          logger.log(Level.SEVERE, "Failed to remove data from the people core.", e);
       }
 
-      Iterable<Person> people = () -> {
-         try {
-            return peopleRepository.listAll();
-         }
-         catch (CatalogRepoException e) {
-            throw new IllegalStateException("Unable to query people repository", e);
-         }
-      };
+      Iterable<Person> people = () -> peopleRepository.listAll();
 
       Collection<SolrInputDocument> solrDocs = StreamSupport.stream(people.spliterator(), false)
             .map(this::adapt)
