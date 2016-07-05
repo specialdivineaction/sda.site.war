@@ -55,7 +55,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    private final SqlExecutor sqlExecutor;
    private final IdFactory idFactory;
 
-   private final DocumentRepository<WorkItem, EditWorkItemCommand> repo;
+   private final DocumentRepository<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> repo;
 
    private final Executor executor;
 
@@ -70,9 +70,9 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    /**
     * @return A new document repository instance for persisting and retrieving works
     */
-   private DocumentRepository<WorkItem, EditWorkItemCommand> buildDocumentRepository()
+   private DocumentRepository<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> buildDocumentRepository()
    {
-      PsqlJacksonRepoBuilder<WorkItem, EditWorkItemCommand, PersistenceDtoV1.WorkItem> repoBuilder = new PsqlJacksonRepoBuilder<>();
+      PsqlJacksonRepoBuilder<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> repoBuilder = new PsqlJacksonRepoBuilder<>();
 
       ModelAdapter modelAdapter = new ModelAdapter(workflow::getStage);
 

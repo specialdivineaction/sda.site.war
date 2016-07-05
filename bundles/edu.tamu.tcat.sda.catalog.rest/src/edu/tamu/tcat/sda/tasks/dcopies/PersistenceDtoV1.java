@@ -20,5 +20,20 @@ public class PersistenceDtoV1
 
       public Map<String, String> properties = new HashMap<>();
       public String stageId;
+
+      public static WorkItem copy(WorkItem orig)
+      {
+         WorkItem result = new WorkItem();
+         result.id = orig.id;
+         result.label = orig.label;
+         result.description = orig.description;
+         result.entityRef = new EntityId();
+         result.entityRef.type = orig.entityRef.type;
+         result.entityRef.id = orig.entityRef.id;
+         result.stageId = orig.stageId;
+         result.properties = new HashMap<>(orig.properties);
+
+         return result;
+      }
    }
 }

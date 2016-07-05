@@ -1,106 +1,103 @@
 package edu.tamu.tcat.sda.tasks.dcopies;
 
-import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.tasks.EditWorkItemCommand;
+import edu.tamu.tcat.sda.tasks.dcopies.PersistenceDtoV1.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.repo.CommitHook;
+import edu.tamu.tcat.trc.repo.BasicChangeSet;
+import edu.tamu.tcat.trc.repo.ChangeSet.ApplicableChangeSet;
 import edu.tamu.tcat.trc.repo.EditCommandFactory;
+import edu.tamu.tcat.trc.repo.UpdateContext;
 
 public class EditItemCommandFactoryImpl implements EditCommandFactory<PersistenceDtoV1.WorkItem, EditWorkItemCommand>
 {
    @Override
-   public EditWorkItemCommand create(String id, CommitHook<PersistenceDtoV1.WorkItem> commitHook)
+   public EditWorkItemCommand create(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
    {
-      return new EditWorkItemCmdImpl(id, null, commitHook);
+      return new EditWorkItemCmdImpl(id, strategy);
    }
 
    @Override
-   public EditWorkItemCommand edit(String id, Supplier<PersistenceDtoV1.WorkItem> currentState, CommitHook<PersistenceDtoV1.WorkItem> commitHook)
+   public EditWorkItemCommand edit(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
    {
-      return new EditWorkItemCmdImpl(id, currentState, commitHook);
+      return new EditWorkItemCmdImpl(id, strategy);
    }
 
 
    public static class EditWorkItemCmdImpl implements EditWorkItemCommand
    {
-      private final CommitHook<PersistenceDtoV1.WorkItem> commitHook;
+      private final String id;
+      private final EditCommandFactory.UpdateStrategy<WorkItem> strategy;
+      private final ApplicableChangeSet<PersistenceDtoV1.WorkItem> changes = new BasicChangeSet<>();
 
-      // properties that are set by the command
-      private final WorkItemChangeSet changeSet;
-
-      public EditWorkItemCmdImpl(String id, Supplier<PersistenceDtoV1.WorkItem> currentState, CommitHook<PersistenceDtoV1.WorkItem> commitHook)
+      public EditWorkItemCmdImpl(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
       {
-         this.commitHook = commitHook;
-
-         this.changeSet = new WorkItemChangeSet(id);
-
-         if (currentState != null) {
-            changeSet.original = currentState.get();
-            if (changeSet.original != null) {
-               changeSet.label = changeSet.original.label;
-               changeSet.description = changeSet.original.description;
-               changeSet.properties = new HashMap<>(changeSet.original.properties);
-               changeSet.entityRef = changeSet.original.entityRef;
-               changeSet.stageId = changeSet.original.stageId;
-            }
-         }
+         this.id = id;
+         this.strategy = strategy;
       }
 
       @Override
       public void setLabel(String label)
       {
-         changeSet.label = label;
+         changes.add("", dto -> dto.label = label);
       }
 
       @Override
       public void setDescription(String description)
       {
-         changeSet.description = description;
+         changes.add("", dto -> dto.description = description);
       }
 
       @Override
       public void setProperty(String key, String value)
       {
-         changeSet.properties.put(key, value);
+         changes.add("", dto -> dto.properties.put(key, value));
       }
 
       @Override
       public void clearProperty(String key)
       {
-         changeSet.properties.remove(key);
+         changes.add("", dto -> dto.properties.remove(key));
       }
 
       @Override
       public void setEntityRef(String type, String id)
       {
-         changeSet.entityRef.type = type;
-         changeSet.entityRef.id = id;
+         changes.add("", dto -> {
+            dto.entityRef.type = type;
+            dto.entityRef.id = id;
+         });
       }
 
       @Override
       public void setStage(WorkflowStage stage)
       {
-         changeSet.stageId = stage.getId();
+         changes.add("", dto -> dto.stageId = stage.getId());
       }
 
       @Override
       public Future<String> execute()
       {
-         PersistenceDtoV1.WorkItem dto = new PersistenceDtoV1.WorkItem();
+         CompletableFuture<PersistenceDtoV1.WorkItem> result = strategy.update(ctx -> {
+            return changes.apply(prepareDto(ctx));
+         });
 
-         dto.id = changeSet.id;
-         dto.label = changeSet.label;
-         dto.description = changeSet.description;
-         dto.properties = changeSet.properties;
-         dto.entityRef = changeSet.entityRef;
-         dto.stageId = changeSet.stageId;
-
-         return commitHook.submit(dto);
+         return result.thenApply(dto -> dto.id);
       }
 
+      private PersistenceDtoV1.WorkItem prepareDto(UpdateContext<PersistenceDtoV1.WorkItem> ctx)
+      {
+         WorkItem original = ctx.getOriginal();
+         PersistenceDtoV1.WorkItem dto = original != null
+                     ? PersistenceDtoV1.WorkItem.copy(original)
+                     : new PersistenceDtoV1.WorkItem();
+         if (dto.id == null)
+            dto.id = id;
+
+         return dto;
+      }
    }
 
 }
