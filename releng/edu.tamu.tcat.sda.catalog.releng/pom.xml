@@ -87,6 +87,18 @@
       <layout>p2</layout>
       <url>${repo-base-url}/oss.trc-dev/lastSuccessfulBuild/artifact/targetPlatform/</url>
     </repository>
+    
+     <!-- HACK Temporary until these can be released and pushed to GitHub -->
+    <repository>
+      <id>oss.auth dev</id>
+      <layout>p2</layout>
+      <url>https://build.citd.tamu.edu/jenkins/job/oss.auth-dev/lastSuccessfulBuild/artifact/releng/edu.tamu.tcat.account.releng/repo/target/repository/</url>
+    </repository>
+    <repository>
+      <id>CITD SDK</id>
+      <layout>p2</layout>
+      <url>https://download.citd.tamu.edu/sdk</url>
+    </repository>
   </repositories>
   
   <build>
