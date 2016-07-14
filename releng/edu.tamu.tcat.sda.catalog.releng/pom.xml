@@ -92,7 +92,7 @@
     <repository>
       <id>oss.auth dev</id>
       <layout>p2</layout>
-      <url>https://build.citd.tamu.edu/jenkins/job/oss.auth-dev/lastSuccessfulBuild/artifact/releng/edu.tamu.tcat.account.releng/repo/target/repository/</url>
+      <url>https://build.citd.tamu.edu/jenkins/job/oss.auth-dev/lastSuccessfulBuild/artifact/releng/edu.tamu.tcat.account.repo.product/target/repository/</url>
     </repository>
     <repository>
       <id>CITD SDK</id>
