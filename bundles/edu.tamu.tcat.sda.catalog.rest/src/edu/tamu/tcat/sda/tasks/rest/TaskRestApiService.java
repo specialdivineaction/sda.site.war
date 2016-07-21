@@ -44,7 +44,8 @@ public class TaskRestApiService
       Objects.requireNonNull(sqlExecutor, "No SQL Executor provided");
 
       executorService = Executors.newCachedThreadPool();
-      AssignCopiesEditorialTask task = new AssignCopiesEditorialTask(sqlExecutor, new UuidProvider(), executorService);
+
+      AssignCopiesEditorialTask task = new AssignCopiesEditorialTask("copies", sqlExecutor, new UuidProvider(), executorService);
       tasks.put(task.getId(), task);
    }
 

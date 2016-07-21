@@ -48,10 +48,11 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    private static final Logger logger = Logger.getLogger(AssignCopiesEditorialTask.class.getName());
    private static final Workflow workflow = new BasicReviewedTaskWorkflow();
 
-   private final static String TABLE_NAME = "task_work_items";
+   private static final String TABLE_NAME = "task_work_items";
    private static final String SCHEMA_ID = "sdaTaskWorkItem";
    private static final String SCHEMA_DATA_FIELD = "item";
 
+   private final String id;
    private final SqlExecutor sqlExecutor;
    private final IdFactory idFactory;
 
@@ -59,8 +60,9 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
 
    private final Executor executor;
 
-   public AssignCopiesEditorialTask(SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
+   public AssignCopiesEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
    {
+      this.id = id;
       this.sqlExecutor = sqlExecutor;
       this.idFactory = idFactory;
       this.executor = executor;
@@ -106,7 +108,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
    @Override
    public String getId()
    {
-      return "copies";
+      return id;
    }
 
    @Override
