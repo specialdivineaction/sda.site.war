@@ -25,6 +25,7 @@ public class TaskCollectionResource
    }
 
    @GET
+   @Produces(MediaType.APPLICATION_JSON)
    public List<RestApiV1.EditorialTask> getTasks()
    {
       return tasks.values().stream()

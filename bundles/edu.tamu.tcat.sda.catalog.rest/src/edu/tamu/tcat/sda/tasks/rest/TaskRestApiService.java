@@ -1,19 +1,38 @@
 package edu.tamu.tcat.sda.tasks.rest;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
-import edu.tamu.tcat.sda.tasks.dcopies.AssignCopiesEditorialTask;
-import edu.tamu.tcat.sda.tasks.rest.v1.AssignCopiesTaskCollectionResource;
+import edu.tamu.tcat.sda.tasks.EditorialTask;
+import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
+import edu.tamu.tcat.sda.tasks.impl.AssignCopiesEditorialTask;
+import edu.tamu.tcat.sda.tasks.impl.AssignRelationshipsEditorialTask;
+import edu.tamu.tcat.sda.tasks.rest.v1.TaskCollectionResource;
+import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.repo.postgres.id.UuidProvider;
 
@@ -26,8 +45,7 @@ public class TaskRestApiService
    private WorkRepository workRepository;
    private ExecutorService executorService;
 
-   // TODO need to provide a configurable way to look up tasks.
-   private final Map<String, AssignCopiesEditorialTask> tasks = new HashMap<>();
+   private final Map<String, EditorialTask<?>> tasks = new HashMap<>();
 
    public void setSqlExecutor(SqlExecutor sqlExecutor)
    {
@@ -45,8 +63,11 @@ public class TaskRestApiService
 
       executorService = Executors.newCachedThreadPool();
 
-      AssignCopiesEditorialTask task = new AssignCopiesEditorialTask("copies", sqlExecutor, new UuidProvider(), executorService);
-      tasks.put(task.getId(), task);
+      // HACK: hard-coded tasks
+      Stream.of(
+            new AssignCopiesEditorialTask("copies", sqlExecutor, new UuidProvider(), executorService),
+            new AssignRelationshipsEditorialTask("relns", sqlExecutor, new UuidProvider(), executorService)
+         ).forEach(t -> tasks.put(t.getId(), t));
    }
 
    public void dispose()
@@ -71,9 +92,115 @@ public class TaskRestApiService
    }
 
    @Path("/v1/tasks")
-   public AssignCopiesTaskCollectionResource getTaskCollectionResource()
+   public TaskCollectionResource getTaskCollectionResource()
    {
-      return new AssignCopiesTaskCollectionResource(tasks, workRepository);
+      return new TaskCollectionResource(tasks);
+   }
+
+   @POST
+   @Path("/v1/tasks/{id}/init")
+   @Produces(MediaType.TEXT_PLAIN)
+   public StreamingOutput addWorkItem(@PathParam("id") String taskId)
+   {
+      // HACK Not sure how to safely convert from EditorialTask<?> to EditorialTask<Work>
+      //      This entire method is just a hack to prepopulate a task anyway.
+      EditorialTask<Work> task = (EditorialTask<Work>)tasks.get(taskId);
+
+      return (os) -> {
+         Writer out = new BufferedWriter(new OutputStreamWriter(os));
+         Iterator<Work> workIterator = workRepository.getAllWorks();
+         Supplier<Work> workSupplier = () -> workIterator.hasNext() ? workIterator.next() : null;
+         WorkTaskSubmissionMonitor monitor = new WorkTaskSubmissionMonitor(out, task.getName());
+         task.addItems(workSupplier, monitor);
+         try
+         {
+            monitor.awaitFinished(5, TimeUnit.MINUTES);
+         }
+         catch (InterruptedException e)
+         {
+            logger.log(Level.WARNING, "Monitor interrupted while waiting for 'finished'.", e);
+         }
+      };
+   }
+
+   private static class WorkTaskSubmissionMonitor implements TaskSubmissionMonitor
+   {
+      private static final Logger logger = Logger.getLogger(WorkTaskSubmissionMonitor.class.getName());
+
+      private final Writer output;
+      private final String taskName;
+
+      private final AtomicInteger successCount = new AtomicInteger(0);
+      private final AtomicInteger failureCount = new AtomicInteger(0);
+
+      private final CountDownLatch finished = new CountDownLatch(1);
+
+      public WorkTaskSubmissionMonitor(Writer output, String taskName)
+      {
+         this.output = output;
+         this.taskName = taskName;
+      }
+
+      @Override
+      public void finished()
+      {
+         int numSuccesses = successCount.get();
+         int numFailures = failureCount.get();
+
+         String message = MessageFormat.format("Finished! Added {0} item{1} to the \"{2}\" task. {3} error{4} reported.",
+               numSuccesses,
+               numSuccesses == 1 ? "" : "s",
+               taskName,
+               numFailures,
+               numFailures == 1 ? "" : "s");
+
+         synchronized (output) {
+            try
+            {
+               output.write(message);
+               output.flush();
+               output.close();
+            }
+            catch (IOException e)
+            {
+               logger.log(Level.WARNING, "Failed to send message: " + message, e);
+            }
+         }
+
+         finished.countDown();
+      }
+
+      @Override
+      public <EntityType> void failed(WorkItemCreationError<EntityType> error)
+      {
+         failureCount.incrementAndGet();
+         EntityType entity = error.getEntity();
+         String message = MessageFormat.format("Failed to add entity '{0}'.", entity.toString());
+
+         logger.log(Level.WARNING, message, error.getException());
+
+         synchronized (output) {
+            try
+            {
+               output.write(message);
+            }
+            catch (IOException e)
+            {
+               logger.log(Level.WARNING, "Failed to send message: " + message, e);
+            }
+         }
+      }
+
+      @Override
+      public <EntityType> void created(WorkItemCreationRecord<EntityType> record)
+      {
+         successCount.incrementAndGet();
+      }
+
+      public void awaitFinished(long timeout, TimeUnit unit) throws InterruptedException
+      {
+         finished.await(timeout, unit);
+      }
    }
 
 }
