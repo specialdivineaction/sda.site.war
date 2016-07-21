@@ -16,7 +16,7 @@ public class PersistenceDtoV1
       public String id;
       public String label;
       public String description;
-      public EntityId entityRef;
+      public EntityId entityRef = new EntityId();
 
       public Map<String, String> properties = new HashMap<>();
       public String stageId;
