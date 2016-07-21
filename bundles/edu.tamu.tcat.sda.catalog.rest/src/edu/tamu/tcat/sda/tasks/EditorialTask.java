@@ -59,10 +59,19 @@ public interface EditorialTask<EntityType>
     * Adds a {@link WorkItem} for the supplied entity.
     *
     * @param entity The entity to be added.
-    * @return The created work.
+    * @return The created work item.
     * @throws IllegalArgumentException If the supplied entity is not valid for this task.
     */
    WorkItem addItem(EntityType entity) throws IllegalArgumentException;
+
+   /**
+    * Retrieves a {@link WorkItem} by its identifier.
+    *
+    * @param id The id of the work item to retrieve
+    * @return The identified work item.
+    * @throws IllegalArgumentException If no work item with the given id exists.
+    */
+   WorkItem getItem(String id) throws IllegalArgumentException;
 
    /**
     * Adds work items for all entities provided by a supplier as new tasks. This returns

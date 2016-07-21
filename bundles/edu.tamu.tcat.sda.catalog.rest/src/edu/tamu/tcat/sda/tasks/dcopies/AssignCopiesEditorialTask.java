@@ -210,6 +210,7 @@ public class AssignCopiesEditorialTask implements EditorialTask<Work>
     * @param id
     * @return
     */
+   @Override
    public WorkItem getItem(String id)
    {
       try
