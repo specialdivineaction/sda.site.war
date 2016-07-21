@@ -9,16 +9,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import edu.tamu.tcat.sda.tasks.EditorialTask;
 import edu.tamu.tcat.sda.tasks.WorkItem;
-import edu.tamu.tcat.sda.tasks.dcopies.AssignCopiesEditorialTask;
 
-public class AssignCopiesWorkItemResource
+public class WorkItemResource
 {
 
-   private final AssignCopiesEditorialTask task;
+   private final EditorialTask<?> task;
    private final WorkItem item;
 
-   public AssignCopiesWorkItemResource(AssignCopiesEditorialTask task, WorkItem item)
+   public WorkItemResource(EditorialTask<?> task, WorkItem item)
    {
       this.task = task;
       this.item = item;

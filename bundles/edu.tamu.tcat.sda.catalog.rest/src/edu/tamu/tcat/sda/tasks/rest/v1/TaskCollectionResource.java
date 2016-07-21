@@ -13,19 +13,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.tasks.EditorialTask;
-import edu.tamu.tcat.sda.tasks.dcopies.AssignCopiesEditorialTask;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 
-public class AssignCopiesTaskCollectionResource
+public class TaskCollectionResource
 {
-   private final Map<String, AssignCopiesEditorialTask> tasks;
-   private WorkRepository workRepository;
+   private final Map<String, EditorialTask<?>> tasks;
 
-   public AssignCopiesTaskCollectionResource(Map<String, AssignCopiesEditorialTask> tasks, WorkRepository workRepository)
+   public TaskCollectionResource(Map<String, EditorialTask<?>> tasks)
    {
       this.tasks = tasks;
-      this.workRepository = workRepository;
    }
 
    @GET
@@ -47,13 +43,13 @@ public class AssignCopiesTaskCollectionResource
    }
 
    @Path("{id}/items")
-   public AssignCopiesWorklistResource getWorklistResource(@PathParam("id") String taskId)
+   public WorklistResource getWorklistResource(@PathParam("id") String taskId)
    {
-      AssignCopiesEditorialTask task = getTask(taskId);
-      return new AssignCopiesWorklistResource(task, workRepository);
+      EditorialTask<?> task = getTask(taskId);
+      return new WorklistResource(task);
    }
 
-   private AssignCopiesEditorialTask getTask(@PathParam("id") String taskId)
+   private EditorialTask<?> getTask(@PathParam("id") String taskId)
    {
       if (!tasks.containsKey(taskId))
       {
