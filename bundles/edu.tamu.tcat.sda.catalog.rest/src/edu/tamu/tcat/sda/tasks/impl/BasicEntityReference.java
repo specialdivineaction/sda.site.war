@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.tasks.dcopies;
+package edu.tamu.tcat.sda.tasks.impl;
 
 import edu.tamu.tcat.trc.repo.EntityReference;
 

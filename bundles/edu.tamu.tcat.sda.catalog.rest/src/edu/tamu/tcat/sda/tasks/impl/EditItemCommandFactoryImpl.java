@@ -1,10 +1,10 @@
-package edu.tamu.tcat.sda.tasks.dcopies;
+package edu.tamu.tcat.sda.tasks.impl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.sda.tasks.EditWorkItemCommand;
-import edu.tamu.tcat.sda.tasks.dcopies.PersistenceDtoV1.WorkItem;
+import edu.tamu.tcat.sda.tasks.impl.PersistenceDtoV1.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.repo.BasicChangeSet;
 import edu.tamu.tcat.trc.repo.ChangeSet.ApplicableChangeSet;
