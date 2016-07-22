@@ -34,11 +34,20 @@ public class TaskCollectionResource
    }
 
    @GET
+   @Path("{id}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public RestApiV1.EditorialTask getTask(@PathParam("id") String taskId)
+   {
+      EditorialTask<?> task = lookup(taskId);
+      return RepoAdapter.toDTO(task);
+   }
+
+   @GET
    @Path("{id}/workflow")
    @Produces(MediaType.APPLICATION_JSON)
    public RestApiV1.Workflow getWorkflowResource(@PathParam("id") String taskId)
    {
-      EditorialTask<?> task = getTask(taskId);
+      EditorialTask<?> task = lookup(taskId);
       Workflow workflow = task.getWorkflow();
       return RepoAdapter.toDTO(workflow);
    }
@@ -46,11 +55,11 @@ public class TaskCollectionResource
    @Path("{id}/items")
    public WorklistResource getWorklistResource(@PathParam("id") String taskId)
    {
-      EditorialTask<?> task = getTask(taskId);
+      EditorialTask<?> task = lookup(taskId);
       return new WorklistResource(task);
    }
 
-   private EditorialTask<?> getTask(@PathParam("id") String taskId)
+   private EditorialTask<?> lookup(@PathParam("id") String taskId)
    {
       if (!tasks.containsKey(taskId))
       {
