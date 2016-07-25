@@ -140,6 +140,7 @@ public class RepoAdapter
       }
 
       GraphDTO.Edge dto = new GraphDTO.Edge();
+      dto.id = reln.getId();
       dto.source = sourceWorkIdMatcher.group(1);
       dto.target = targetWorkIdMatcher.group(1);
 
@@ -149,7 +150,6 @@ public class RepoAdapter
       dto.label = type.getTitle();
 
       dto.metadata = new HashMap<>();
-      dto.metadata.put("relationshipId", reln.getId());
       dto.metadata.put("description", reln.getDescription());
 
       return dto;
