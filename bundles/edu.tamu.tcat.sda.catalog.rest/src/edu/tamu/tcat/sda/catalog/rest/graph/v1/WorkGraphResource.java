@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
-import edu.tamu.tcat.trc.entries.repo.CatalogRepoException;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
@@ -70,24 +69,12 @@ public class WorkGraphResource
          List<RelnSearchProxy> relationships = result.get();
          return relationships.stream()
             .map(proxy -> proxy.id)
-            .map(this::lookupRelationship)
+            .map(relnRepo::get)
             .filter(Objects::nonNull);
       }
       catch (SearchException e)
       {
          return Stream.empty();
-      }
-   }
-
-   private Relationship lookupRelationship(String relnId)
-   {
-      try
-      {
-         return relnRepo.get(relnId);
-      }
-      catch (CatalogRepoException e)
-      {
-         return null;
       }
    }
 }
