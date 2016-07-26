@@ -1,5 +1,6 @@
 package edu.tamu.tcat.sda.catalog.rest.graph;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +122,7 @@ public class GraphDTO
       /**
        * Additional properties and custom data about this node.
        */
-      public Map<String, Object> metadata;
+      public final Map<String, Object> metadata = new HashMap<>();
    }
 
    /**
