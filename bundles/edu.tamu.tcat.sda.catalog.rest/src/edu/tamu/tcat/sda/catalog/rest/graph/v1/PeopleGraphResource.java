@@ -15,6 +15,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
+import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRank;
+import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRankIterative;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.entries.types.bio.Person;
@@ -61,6 +63,9 @@ public class PeopleGraphResource
             .collect(Collectors.toList());
 
       graph.edges = combineEdges(edges);
+
+      PageRank pageRank = new PageRankIterative(graph);
+      pageRank.execute();
 
       return GraphDTO.SingleGraph.create(graph);
    }
