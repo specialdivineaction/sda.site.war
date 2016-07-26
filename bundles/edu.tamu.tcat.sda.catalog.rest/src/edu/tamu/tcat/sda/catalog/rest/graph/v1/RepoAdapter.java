@@ -72,6 +72,7 @@ public class RepoAdapter
       if (!type.isDirected() && relateds != null && relateds.size() > 1 && (targets == null || targets.isEmpty()))
       {
          // for every related entity, create an edge to every other entity (excluding self)
+         // this creates two complementary directed edges between each pair of nodes
          for (Anchor source : relateds)
          {
             for (Anchor target : relateds)
@@ -96,7 +97,10 @@ public class RepoAdapter
          {
             for (Anchor target : targets)
             {
-               GraphDTO.Edge dto = createEdge(source, target, reln);
+               // HACK: reverse role of source and target for analysis and display.
+               //       We need to rethink the how SDA relationship types are semantically interpreted.
+               //       See https://issues.citd.tamu.edu/browse/SDA-39 for more info
+               GraphDTO.Edge dto = createEdge(target, source, reln);
                if (dto != null)
                {
                   edges.add(dto);
@@ -127,7 +131,6 @@ public class RepoAdapter
          return null;
       }
 
-
       // HACK use first anchor entry URI
       String sourceUri = sourceUris.iterator().next().toString();
       String targetUri = targetUris.iterator().next().toString();
@@ -145,7 +148,7 @@ public class RepoAdapter
       dto.target = targetWorkIdMatcher.group(1);
 
       RelationshipType type = reln.getType();
-      dto.directed = type.isDirected(); // obviously undirected at this point due to conditional
+      dto.directed = Boolean.valueOf(type.isDirected());
       dto.relation = type.getIdentifier();
       dto.label = type.getTitle();
 
