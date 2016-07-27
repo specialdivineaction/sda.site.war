@@ -95,21 +95,17 @@ public class PageRankIterative implements PageRank
       Map<String, Double> prevPagerank = new HashMap<>(numNodes);
 
       // initialize pagerank values uniformly
-      nodes.forEach(node -> pagerank.put(node.id, Double.valueOf(1.0d)));
+      nodes.forEach(node -> prevPagerank.put(node.id, Double.valueOf(1.0d / numNodes)));
 
       double dampingTerm = (1.0d - credibilityLendingWeight) / numNodes;
 
       boolean converged = false;
       int numIter = 0;
+
       while (!converged && numIter < MAX_ITERATIONS)
       {
          converged = true;
          numIter++;
-
-         // snapshot normalized values of current iteration for computing next iteration
-         double sqSum = pagerank.values().stream().mapToDouble(pr -> pr.doubleValue() * pr.doubleValue()).sum();
-         double norm = Math.sqrt(sqSum);
-         pagerank.forEach((id, val) -> prevPagerank.put(id, Double.valueOf(val.doubleValue() / norm)));
 
          // compute new pagerank values for each node
          for (GraphDTO.Node node : nodes)
@@ -133,7 +129,14 @@ public class PageRankIterative implements PageRank
 
             pagerank.put(node.id, Double.valueOf(newPagerank));
          }
+
+         // snapshot values of current iteration for computing next iteration
+         pagerank.forEach((id, val) -> prevPagerank.put(id, Double.valueOf(val.doubleValue())));
       }
+
+      // normalize result
+      double sum = prevPagerank.values().stream().mapToDouble(pr -> pr.doubleValue()).sum();
+      prevPagerank.forEach((id, val) -> pagerank.put(id, Double.valueOf(val.doubleValue() / sum)));
 
       return pagerank;
    }
