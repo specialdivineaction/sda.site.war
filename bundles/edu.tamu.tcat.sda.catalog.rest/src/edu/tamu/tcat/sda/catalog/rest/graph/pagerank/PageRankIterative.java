@@ -2,11 +2,14 @@ package edu.tamu.tcat.sda.catalog.rest.graph.pagerank;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
@@ -19,13 +22,18 @@ import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
  */
 public class PageRankIterative implements PageRank
 {
+   private static final Logger logger = Logger.getLogger(PageRankIterative.class.getName());
    private static final double EPSILON = 1e-15;
    private static final int MAX_ITERATIONS = 10000;
 
    private final double credibilityLendingWeight;
    private final List<GraphDTO.Node> nodes;
-   private final Map<String, Integer> outDegree;
-   private final Map<String, Set<String>> incidentList;
+   private final ConcurrentMap<String, Integer> outDegree;
+   private final ConcurrentMap<String, Set<String>> incidentList;
+
+   // precomputed values to improve performance
+   private final int numNodes;
+   private final double dampingTerm;
 
    private String targetMetadataField = "pagerank";
 
@@ -61,17 +69,16 @@ public class PageRankIterative implements PageRank
       this.credibilityLendingWeight = credibilityLendingWeight;
 
       nodes = new ArrayList<>(graph.nodes);
+      numNodes = nodes.size();
+      dampingTerm = (1.0d - credibilityLendingWeight) / numNodes;
 
       // mapping of nodes available by traversing out-edges
-      outDegree = graph.edges.stream()
-            .collect(Collectors.groupingBy(e -> e.source, Collectors.summingInt(e -> {
-               Integer multiplicity = (Integer)e.metadata.getOrDefault("multiplicity", Integer.valueOf(1));
-               return multiplicity.intValue();
-            })));
+      outDegree = graph.edges.parallelStream()
+            .collect(Collectors.groupingByConcurrent(e -> e.source, Collectors.summingInt(this::getMultiplicity)));
 
       // mapping of nodes available by reverse-traversing in-edges
-      incidentList = graph.edges.stream()
-            .collect(Collectors.groupingBy(e -> e.target, Collectors.mapping(e -> e.source, Collectors.toSet())));
+      incidentList = graph.edges.parallelStream()
+            .collect(Collectors.groupingByConcurrent(e -> e.target, Collectors.mapping(e -> e.source, Collectors.toSet())));
    }
 
    @Override
@@ -88,56 +95,83 @@ public class PageRankIterative implements PageRank
       nodes.forEach(node -> node.metadata.put(targetMetadataField, pagerank.get(node.id)));
    }
 
+   /**
+    * Extracts the "multiplicity" metadata field from the given edge or a default multiplicity of 1.
+    * @param edge
+    * @return
+    */
+   private int getMultiplicity(GraphDTO.Edge edge)
+   {
+      try
+      {
+         Integer multiplicity = (Integer)edge.metadata.getOrDefault("multiplicity", Integer.valueOf(1));
+         return multiplicity.intValue();
+      }
+      catch (ClassCastException e)
+      {
+         logger.log(Level.WARNING, "Edge contains non-integer 'multiplicity' field.", e);
+         return 1;
+      }
+   }
+
+   /**
+    * Computes PageRank values for all nodes.
+    * @return A map from each node's id to its PageRank
+    */
    private Map<String, Double> computePagerank()
    {
-      int numNodes = nodes.size();
-      Map<String, Double> pagerank = new HashMap<>(numNodes);
-      Map<String, Double> prevPagerank = new HashMap<>(numNodes);
+      ConcurrentMap<String, Double> next = new ConcurrentHashMap<>(numNodes);
 
       // initialize pagerank values uniformly
-      nodes.forEach(node -> prevPagerank.put(node.id, Double.valueOf(1.0d / numNodes)));
-
-      double dampingTerm = (1.0d - credibilityLendingWeight) / numNodes;
+      ConcurrentMap<String, Double> prev = nodes.parallelStream()
+            .collect(Collectors.toConcurrentMap(n -> n.id, n -> Double.valueOf(1.0d / numNodes)));
 
       boolean converged = false;
-      int numIter = 0;
-
-      while (!converged && numIter < MAX_ITERATIONS)
+      for (int i = 0; !converged && i < MAX_ITERATIONS; i++)
       {
-         converged = true;
-         numIter++;
-
          // compute new pagerank values for each node
-         for (GraphDTO.Node node : nodes)
-         {
-            Set<String> incidentIds = incidentList.getOrDefault(node.id, Collections.emptySet());
-            double incidentCredibility = incidentIds.stream()
-                  .mapToDouble(id -> {
-                     Integer sourceOutDegree = outDegree.get(id);
-                     assert sourceOutDegree != null;
-                     return prevPagerank.get(id).doubleValue() / sourceOutDegree.doubleValue();
-                  })
-                  .sum();
-
-            double oldPagerank = prevPagerank.get(node.id).doubleValue();
-            double newPagerank = dampingTerm + credibilityLendingWeight * incidentCredibility;
-
-            if (Math.abs(newPagerank - oldPagerank) > EPSILON)
-            {
-               converged = false;
-            }
-
-            pagerank.put(node.id, Double.valueOf(newPagerank));
-         }
+         converged = nodes.parallelStream().allMatch(node -> computeNodePagerank(node, prev, next));
 
          // snapshot values of current iteration for computing next iteration
-         pagerank.forEach((id, val) -> prevPagerank.put(id, Double.valueOf(val.doubleValue())));
+         prev.putAll(next);
       }
 
       // normalize result
-      double sum = prevPagerank.values().stream().mapToDouble(pr -> pr.doubleValue()).sum();
-      prevPagerank.forEach((id, val) -> pagerank.put(id, Double.valueOf(val.doubleValue() / sum)));
+      double sum = prev.values().parallelStream().mapToDouble(Double::doubleValue).sum();
+      prev.replaceAll((id, val) -> Double.valueOf(val.doubleValue() / sum));
 
-      return pagerank;
+      return prev;
+   }
+
+   /**
+    * Computes a new PageRank value for the given node, updating that node's entry in the given {@code nextPagerank} map
+    * @param node
+    * @param prev PageRank values of the previous time index
+    * @param next Receives the calculated PageRank value
+    * @return {@code true} if this node's PageRank has converged
+    */
+   private boolean computeNodePagerank(GraphDTO.Node node, ConcurrentMap<String, Double> prev, ConcurrentMap<String, Double> next)
+   {
+      Set<String> incidentIds = incidentList.getOrDefault(node.id, Collections.emptySet());
+      double incidentCredibility = incidentIds.parallelStream()
+            .mapToDouble(id -> {
+               Integer sourceOutDegree = outDegree.get(id);
+               assert sourceOutDegree != null;
+
+               Double sourcePagerank = prev.get(id);
+               assert sourcePagerank != null;
+
+               return sourcePagerank.doubleValue() / sourceOutDegree.doubleValue();
+            })
+            .sum();
+
+      Double oldPagerank = prev.get(node.id);
+      assert oldPagerank != null;
+
+      double newPagerank = dampingTerm + credibilityLendingWeight * incidentCredibility;
+
+      next.put(node.id, Double.valueOf(newPagerank));
+
+      return Math.abs(newPagerank - oldPagerank.doubleValue()) < EPSILON;
    }
 }
