@@ -46,6 +46,8 @@ public class PeopleGraphResource
 
       GraphDTO.Graph graph = new GraphDTO.Graph();
 
+      graph.type = "people-reln";
+
       graph.nodes = StreamSupport.stream(people.spliterator(), true)
             .map(RepoAdapter::toDTO)
             .collect(Collectors.toList());
@@ -64,7 +66,7 @@ public class PeopleGraphResource
 
       graph.edges = combineEdges(edges);
 
-      PageRank pageRank = new PageRankIterative(graph);
+      PageRank pageRank = new PageRankIterative(graph, 0.75);
       pageRank.execute();
 
       return GraphDTO.SingleGraph.create(graph);
@@ -101,7 +103,7 @@ public class PeopleGraphResource
 
                edge.metadata.clear();
                edge.metadata.put("relationshipIds", relationshipIds);
-               edge.metadata.put("multiplicity", bucket.size());
+               edge.metadata.put("multiplicity", Integer.valueOf(bucket.size()));
                edge.id = null;
 
                return edge;

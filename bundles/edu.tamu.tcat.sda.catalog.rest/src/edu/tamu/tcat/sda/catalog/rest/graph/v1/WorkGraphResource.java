@@ -9,6 +9,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
+import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRank;
+import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRankIterative;
 import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
@@ -50,6 +52,9 @@ public class WorkGraphResource
          .flatMap(reln -> RepoAdapter.toDTO(reln).stream())
          .filter(edge -> nodeIds.contains(edge.source) && nodeIds.contains(edge.target))
          .collect(Collectors.toList());
+
+      PageRank pageRank = new PageRankIterative(graph, 0.75);
+      pageRank.execute();
 
       return GraphDTO.SingleGraph.create(graph);
    }

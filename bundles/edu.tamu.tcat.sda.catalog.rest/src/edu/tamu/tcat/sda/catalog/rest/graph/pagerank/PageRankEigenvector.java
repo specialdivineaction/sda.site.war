@@ -106,7 +106,7 @@ public class PageRankEigenvector implements PageRank
       {
          GraphDTO.Node node = nodes.get(i);
          double pagerank = pageranks.getEntry(i);
-         node.metadata.put(targetMetadataField, pagerank);
+         node.metadata.put(targetMetadataField, Double.valueOf(pagerank));
       }
    }
 
