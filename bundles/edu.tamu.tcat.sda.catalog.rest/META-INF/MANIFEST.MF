@@ -84,7 +84,6 @@ Import-Package: com.fasterxml.jackson.annotation;version="2.3.1",
  org.apache.solr.common;version="5.5.0"
 Service-Component: 
  OSGI-INF/props.xml,
- OSGI-INF/auth/accounts.xml,
  OSGI-INF/auth/accountstore.xml,
  OSGI-INF/auth/crypto.xml,
  OSGI-INF/auth/feature.token.xml,
