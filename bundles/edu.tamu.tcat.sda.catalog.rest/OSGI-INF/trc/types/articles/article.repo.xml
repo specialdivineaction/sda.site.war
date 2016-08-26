@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.entries.type.article.repo">
-   <implementation class="edu.tamu.tcat.trc.entries.types.article.postgres.PsqlArticleRepo"/>
-   <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.entries.types.article.docrepo.ArticleRepoService"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.types.article.repo.ArticleRepository"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.article.ArticleRepoFacade"/>
    </service>
+   <reference bind="setIndexService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.search.solr.ArticleIndexManagerService" name="ArticleIndexManagerService" policy="static"/>
+   <reference bind="setRepoContext" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.db.DbEntryRepositoryRegistry" name="DbEntryRepositoryRegistry" policy="static"/>
 </scr:component>

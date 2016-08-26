@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.entries.types.article.rest">
-   <implementation class="edu.tamu.tcat.trc.entries.types.article.rest.v1.ArticleResource"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.repo.ArticleRepository" name="ArticleRepository" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.entries.types.article.rest.RestApiService"/>
+   <reference bind="bindArticleRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.ArticleRepoFacade" name="ArticleRepoFacade" policy="static"/>
+   <reference bind="bindRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.trc.entries.types.article.rest.v1.ArticleResource"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.article.rest.RestApiService"/>
    </service>
-   <reference bind="setArticleService" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.search.ArticleSearchService" name="ArticleSearchService" policy="static"/>
-   <reference bind="setAuthorRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.types.article.AuthorManager" name="AuthorManager" policy="static"/>
 </scr:component>
