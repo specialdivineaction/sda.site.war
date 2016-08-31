@@ -1,11 +1,14 @@
 package edu.tamu.tcat.sda.catalog.rest.graph.v1;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -26,6 +29,8 @@ import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
 public class PeopleGraphResource
 {
+   private static final Logger logger = Logger.getLogger(PeopleGraphResource.class.getName());
+
    private final PeopleRepository peopleRepo;
    private final WorkRepository workRepo;
    private final RelationshipRepository relnRepo;
@@ -59,7 +64,7 @@ public class PeopleGraphResource
       Iterable<Relationship> relationships = () -> relnRepo.getAllRelationships();
 
       List<GraphDTO.Edge> edges = StreamSupport.stream(relationships.spliterator(), true)
-            .flatMap(reln -> RepoAdapter.toDTO(reln).stream())
+            .flatMap(this::relnToEdges)
             .flatMap(this::expandByAuthor)
             .filter(edge -> nodeIds.contains(edge.source) && nodeIds.contains(edge.target))
             .collect(Collectors.toList());
@@ -70,6 +75,46 @@ public class PeopleGraphResource
       pageRank.execute();
 
       return GraphDTO.SingleGraph.create(graph);
+   }
+
+   private Stream<GraphDTO.Edge> relnToEdges(Relationship reln)
+   {
+      try
+      {
+         return RepoAdapter.toDTO(reln).stream();
+      }
+      catch (Exception e)
+      {
+         // skip any problematic relationships
+         String msg = MessageFormat.format("Skipping conversion of relationship {0}: encountered an error during adaptation", reln.getId());
+         logger.log(Level.WARNING, msg, e);
+         return Stream.empty();
+      }
+   }
+
+   /**
+    * Spread a work-referencing edge into a stream of author-referencing edges.
+    * @param workEdge
+    * @return
+    */
+   private Stream<GraphDTO.Edge> expandByAuthor(GraphDTO.Edge workEdge)
+   {
+      Work sourceWork = workRepo.getWork(workEdge.source);
+      Work targetWork = workRepo.getWork(workEdge.target);
+
+      Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
+
+      sourceWork.getAuthors().forEach(sourceRef -> {
+         targetWork.getAuthors().forEach(targetRef -> {
+            GraphDTO.Edge authorEdge = cloneEdge(workEdge);
+            authorEdge.source = sourceRef.getId();
+            authorEdge.target = targetRef.getId();
+
+            authorEdges.add(authorEdge);
+         });
+      });
+
+      return authorEdges.stream();
    }
 
    /**
@@ -109,31 +154,6 @@ public class PeopleGraphResource
                return edge;
             })
             .collect(Collectors.toList());
-   }
-
-   /**
-    * Spread a work-referencing edge into a stream of author-referencing edges.
-    * @param workEdge
-    * @return
-    */
-   private Stream<GraphDTO.Edge> expandByAuthor(GraphDTO.Edge workEdge)
-   {
-      Work sourceWork = workRepo.getWork(workEdge.source);
-      Work targetWork = workRepo.getWork(workEdge.target);
-
-      Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
-
-      sourceWork.getAuthors().forEach(sourceRef -> {
-         targetWork.getAuthors().forEach(targetRef -> {
-            GraphDTO.Edge authorEdge = cloneEdge(workEdge);
-            authorEdge.source = sourceRef.getId();
-            authorEdge.target = targetRef.getId();
-
-            authorEdges.add(authorEdge);
-         });
-      });
-
-      return authorEdges.stream();
    }
 
    private static GraphDTO.Edge cloneEdge(GraphDTO.Edge orig)
