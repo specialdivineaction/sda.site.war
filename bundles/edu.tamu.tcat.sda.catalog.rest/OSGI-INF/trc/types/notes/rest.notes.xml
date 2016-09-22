@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.tru.notes.rest">
-   <implementation class="edu.tamu.tcat.trc.notes.rest.v1.NotesResource"/>
-   <reference bind="setRepository" cardinality="1..1" interface="edu.tamu.tcat.trc.notes.repo.NotesRepository" name="NotesRepository" policy="static"/>
-   <service>
-      <provide interface="edu.tamu.tcat.trc.notes.rest.v1.NotesResource"/>
-   </service>
-</scr:component>
