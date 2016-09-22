@@ -46,13 +46,6 @@
          unpack="false"/>
 
    <plugin
-         id="edu.tamu.tcat.sda.catalog.rest"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="edu.tamu.tcat.trc.digires"
          download-size="0"
          install-size="0"
@@ -180,6 +173,13 @@
 
    <plugin
          id="edu.tamu.tcat.trc.categorization"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.tamu.tcat.sda.ds"
          download-size="0"
          install-size="0"
          version="0.0.0"
