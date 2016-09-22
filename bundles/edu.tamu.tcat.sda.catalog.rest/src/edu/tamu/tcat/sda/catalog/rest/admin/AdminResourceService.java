@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -28,14 +29,18 @@ import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
+import edu.tamu.tcat.trc.entries.types.biblio.impl.search.BibliographicSearchStrategy;
 import edu.tamu.tcat.trc.entries.types.biblio.impl.search.IndexAdapter;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
+import edu.tamu.tcat.trc.entries.types.bio.impl.search.BioSearchStrategy;
 import edu.tamu.tcat.trc.entries.types.bio.impl.search.SolrDocAdapter;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.impl.search.RelnDocument;
+import edu.tamu.tcat.trc.entries.types.reln.impl.search.RelnSearchStrategy;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
+import edu.tamu.tcat.trc.search.solr.BasicSearchSvcMgr;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 
@@ -44,29 +49,16 @@ public class AdminResourceService
 {
    private static final Logger logger = Logger.getLogger(AdminResourceService.class.getName());
 
-   // TODO we are creating a new SolrClient here instead of using WorkIndexService because
-   //      WorkIndexService does not allow for batch indexing and purging.
-
-   public static final String OPENNLP_MODELS_SENTENCE_PATH = "opennlp.models.sentence.path";
-
-   public static final String SOLR_API_ENDPOINT = "solr.api.endpoint";
-   public static final String SOLR_CORE_PEOPLE = "catalogentries.authors.solr.core";
-   public static final String SOLR_CORE_WORKS = "catalogentries.works.solr.core";
-   public static final String SOLR_CORE_RELATIONSHIPS = "catalogentries.relationships.solr.core";
+   // TODO we are creating a new SolrClients here instead of using existing index services because
+   //      they do not allow for batch indexing and purging.
+   // TODO remove dependency on solrj from MANIFEST.MF once HttpSolrClient is removed
 
    private ConfigurationProperties config;
-   private SolrClient workSolrClient;
-   private SolrClient peopleSolrClient;
-   private SolrClient relnSolrClient;
-   private BibliographicEntryRepository workRepository;
-   private BiographicalEntryRepository peopleRepository;
-   private RelationshipRepository relnRepository;
+   private EntryRepositoryRegistry repoRegistry;
 
-   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
+   public void setRepoRegistry(EntryRepositoryRegistry repoRegistry)
    {
-      workRepository = repoReg.getRepository(null, BibliographicEntryRepository.class);
-      peopleRepository = repoReg.getRepository(null, BiographicalEntryRepository.class);
-      relnRepository = repoReg.getRepository(null, RelationshipRepository.class);
+      this.repoRegistry = repoRegistry;
    }
 
    public void setConfiguration(ConfigurationProperties config)
@@ -76,50 +68,39 @@ public class AdminResourceService
 
    public void activate()
    {
-      Objects.requireNonNull(config, "No Configuration supplied.");
-      Objects.requireNonNull(workRepository, "No work repository supplied.");
-      Objects.requireNonNull(peopleRepository, "No people repository supplied.");
-      Objects.requireNonNull(relnRepository, "No relationships repository supplied.");
+      try
+      {
+         logger.info(() -> "Activating " + getClass().getSimpleName());
 
-      // TODO remove dependency on solrj from MANIFEST.MF once HttpSolrClient is removed
-
-      URI solrBaseUri = config.getPropertyValue(SOLR_API_ENDPOINT, URI.class);
-
-      String workSolrCore = config.getPropertyValue(SOLR_CORE_WORKS, String.class);
-      URI workCoreUri = solrBaseUri.resolve(workSolrCore);
-      workSolrClient = new HttpSolrClient(workCoreUri.toString());
-
-      String peopleSolrCore = config.getPropertyValue(SOLR_CORE_PEOPLE, String.class);
-      URI peopleCoreUri = solrBaseUri.resolve(peopleSolrCore);
-      peopleSolrClient = new HttpSolrClient(peopleCoreUri.toString());
-
-      String relnSolrCore = config.getPropertyValue(SOLR_CORE_RELATIONSHIPS, String.class);
-      URI relnCoreUri = solrBaseUri.resolve(relnSolrCore);
-      relnSolrClient = new HttpSolrClient(relnCoreUri.toString());
+         Objects.requireNonNull(config, "No Configuration supplied.");
+         Objects.requireNonNull(repoRegistry, "No work repository supplied.");
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, "Failed to activate admin REST resource service.", e);
+         throw e;
+      }
    }
 
    public void deactivate()
    {
-      if (workSolrClient != null) {
-         try
-         {
-            workSolrClient.close();
-         }
-         catch (Exception e)
-         {
-            logger.log(Level.SEVERE, "Encountered an error while closing work Solr client.", e);
-         }
-      }
+      repoRegistry = null;
+      config = null;
+   }
 
-      if (peopleSolrClient != null) {
-         try
-         {
-            peopleSolrClient.close();
-         }
-         catch (Exception e)
-         {
-            logger.log(Level.SEVERE, "Encountered an error while closing people Solr client.", e);
-         }
+   private void withSolrClient(String coreId, Consumer<SolrClient> consumer)
+   {
+      URI solrBaseUri = config.getPropertyValue(BasicSearchSvcMgr.SOLR_API_ENDPOINT, URI.class);
+      String solrCoreProperty = MessageFormat.format(BasicSearchSvcMgr.SOLR_CORE_ID, coreId);
+      String solrCore = config.getPropertyValue(solrCoreProperty, String.class);
+      URI solrCoreUri = solrBaseUri.resolve(solrCore);
+      try (SolrClient client = new HttpSolrClient(solrCoreUri.toString()))
+      {
+         consumer.accept(client);
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, MessageFormat.format("Encountered problem while attempting to access {0} solr core.", coreId), e);
       }
    }
 
@@ -135,97 +116,109 @@ public class AdminResourceService
    public void reindexPeople()
    {
       // purge all existing records
-      try
-      {
-         peopleSolrClient.deleteByQuery("*:*");
-         peopleSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to remove data from the people core.", e);
-      }
+      withSolrClient(BioSearchStrategy.SOLR_CORE, solr -> {
+         try
+         {
+            solr.deleteByQuery("*:*");
+            solr.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to remove data from the people core.", e);
+         }
 
-      Iterable<BiographicalEntry> people = () -> peopleRepository.listAll();
+         BiographicalEntryRepository peopleRepository = repoRegistry.getRepository(null, BiographicalEntryRepository.class);
 
-      SolrDocAdapter adapter = new SolrDocAdapter(this::extractFirstSentence);
+         Iterable<BiographicalEntry> people = () -> peopleRepository.listAll();
 
-      Collection<SolrInputDocument> solrDocs = StreamSupport.stream(people.spliterator(), false)
-            .map(adapter::apply)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+         SolrDocAdapter adapter = new SolrDocAdapter(this::extractFirstSentence);
 
-      try
-      {
-         peopleSolrClient.add(solrDocs);
-         peopleSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to commit people to the Solr server.", e);
-      }
+         Collection<SolrInputDocument> solrDocs = StreamSupport.stream(people.spliterator(), false)
+               .map(adapter::apply)
+               .filter(Objects::nonNull)
+               .collect(Collectors.toList());
+
+         try
+         {
+            solr.add(solrDocs);
+            solr.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to commit people to the Solr server.", e);
+         }
+      });
    }
 
    @POST
    @Path("/reindex/works")
    public void reindexWorks()
    {
-      // purge all existing records
-      try
-      {
-         workSolrClient.deleteByQuery("*:*");
-         workSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to remove data from the works core.", e);
-      }
+      withSolrClient(BibliographicSearchStrategy.SOLR_CORE, solr -> {
+         // purge all existing records
+         try
+         {
+            solr.deleteByQuery("*:*");
+            solr.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to remove data from the works core.", e);
+         }
 
-      Iterable<BibliographicEntry> works = () -> workRepository.listAll();
+         BibliographicEntryRepository workRepository = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
 
-      Collection<SolrInputDocument> solrDocs = StreamSupport.stream(works.spliterator(), false)
-            .flatMap(AdminResourceService::adapt)
-            .collect(Collectors.toList());
+         Iterable<BibliographicEntry> works = () -> workRepository.listAll();
 
-      try
-      {
-         workSolrClient.add(solrDocs);
-         workSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to commit works to the Solr server.", e);
-      }
+         Collection<SolrInputDocument> solrDocs = StreamSupport.stream(works.spliterator(), false)
+               .flatMap(AdminResourceService::adapt)
+               .collect(Collectors.toList());
+
+         try
+         {
+            solr.add(solrDocs);
+            solr.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to commit works to the Solr server.", e);
+         }
+      });
    }
 
    @POST
    @Path("/reindex/relationships")
    public void reindexRelationships()
    {
-      try
-      {
-         // purge all existing records
-         relnSolrClient.deleteByQuery("*:*");
-         relnSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to remove data from the relationships core.", e);
-      }
+      withSolrClient(RelnSearchStrategy.SOLR_CORE, relnSolrClient -> {
+         try
+         {
+            // purge all existing records
+            relnSolrClient.deleteByQuery("*:*");
+            relnSolrClient.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to remove data from the relationships core.", e);
+         }
 
-      Iterable<Relationship> relationships = () -> relnRepository.getAllRelationships();
-      Collection<SolrInputDocument> solrDocs = StreamSupport.stream(relationships.spliterator(), false)
-            .map(RelnDocument::create)
-            .collect(Collectors.toList());
+         RelationshipRepository relnRepository = repoRegistry.getRepository(null, RelationshipRepository.class);
 
-      try
-      {
-         relnSolrClient.add(solrDocs);
-         relnSolrClient.commit();
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Failed to commit relationships to the Solr server.", e);
-      }
+         Iterable<Relationship> relationships = () -> relnRepository.getAllRelationships();
+         Collection<SolrInputDocument> solrDocs = StreamSupport.stream(relationships.spliterator(), false)
+               .map(RelnDocument::create)
+               .collect(Collectors.toList());
+
+         try
+         {
+            relnSolrClient.add(solrDocs);
+            relnSolrClient.commit();
+         }
+         catch (Exception e)
+         {
+            logger.log(Level.SEVERE, "Failed to commit relationships to the Solr server.", e);
+         }
+      });
    }
 
    private static Stream<SolrInputDocument> adapt(BibliographicEntry work)
@@ -284,7 +277,7 @@ public class AdminResourceService
 
       java.nio.file.Path sentenceModelPath = null;
       try {
-         sentenceModelPath = config.getPropertyValue(OPENNLP_MODELS_SENTENCE_PATH, java.nio.file.Path.class);
+         sentenceModelPath = config.getPropertyValue(BioSearchStrategy.OPENNLP_MODELS_SENTENCE_PATH, java.nio.file.Path.class);
       } catch (Exception ex) {
          // do nothing
       }

@@ -18,41 +18,46 @@ public class GraphResourceService
 {
    private static final Logger logger = Logger.getLogger(GraphResourceService.class.getName());
 
-   private BiographicalEntryRepository peopleRepo;
-   private BibliographicEntryRepository workRepo;
-   private RelationshipRepository relnRepo;
+   private EntryRepositoryRegistry repoRegistry;
 
-   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
+   public void setRepoRegistry(EntryRepositoryRegistry repoRegistry)
    {
-      peopleRepo = repoReg.getRepository(null, BiographicalEntryRepository.class);
-      workRepo = repoReg.getRepository(null, BibliographicEntryRepository.class);
-      relnRepo = repoReg.getRepository(null, RelationshipRepository.class);
+      this.repoRegistry = repoRegistry;
    }
 
    public void activate()
    {
-      Objects.requireNonNull(peopleRepo, "People repository not provided");
-      Objects.requireNonNull(workRepo, "Work repository not provided");
-      Objects.requireNonNull(relnRepo, "Relationship repository not provided");
-      logger.log(Level.INFO, "starting graph REST resource service");
+      try
+      {
+         logger.info(() -> "Activating " + getClass().getSimpleName());
+         Objects.requireNonNull(repoRegistry, "repository registry not provided");
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, "Failed to start graph REST API service", e);
+         throw e;
+      }
    }
 
    public void dispose()
    {
-      peopleRepo = null;
-      workRepo = null;
-      relnRepo = null;
+      repoRegistry = null;
    }
 
    @Path("works")
    public WorkGraphResource rollupWorks()
    {
+      BibliographicEntryRepository workRepo = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
+      RelationshipRepository relnRepo = repoRegistry.getRepository(null, RelationshipRepository.class);
       return new WorkGraphResource(workRepo, relnRepo);
    }
 
    @Path("people")
    public PeopleGraphResource rollupPeople()
    {
+      BiographicalEntryRepository peopleRepo = repoRegistry.getRepository(null, BiographicalEntryRepository.class);
+      BibliographicEntryRepository workRepo = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
+      RelationshipRepository relnRepo = repoRegistry.getRepository(null, RelationshipRepository.class);
       return new PeopleGraphResource(peopleRepo, workRepo, relnRepo);
    }
 }
