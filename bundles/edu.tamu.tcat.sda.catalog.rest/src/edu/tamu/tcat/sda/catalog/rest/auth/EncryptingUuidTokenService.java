@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.rest.internal;
+package edu.tamu.tcat.sda.catalog.rest.auth;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
