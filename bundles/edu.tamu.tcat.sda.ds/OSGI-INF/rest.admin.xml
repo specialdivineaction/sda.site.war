@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.catalog.rest.admin">
-   <implementation class="edu.tamu.tcat.sda.catalog.rest.admin.AdminResourceService"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.rest.admin">
+   <implementation class="edu.tamu.tcat.sda.rest.admin.AdminResourceService"/>
    <reference bind="setConfiguration" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.sda.catalog.rest.admin.AdminResourceService"/>
+      <provide interface="edu.tamu.tcat.sda.rest.admin.AdminResourceService"/>
    </service>
 </scr:component>
