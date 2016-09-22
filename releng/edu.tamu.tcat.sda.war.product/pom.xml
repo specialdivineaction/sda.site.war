@@ -23,7 +23,7 @@
   <parent>
     <relativePath>../../../pom.xml</relativePath>
     <groupId>edu.tamu.tcat</groupId>
-    <artifactId>sda.catalog</artifactId>
+    <artifactId>sda</artifactId>
     <version>1</version>
   </parent>
 
@@ -33,7 +33,7 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <properties>
-    <war-filename>catalog</war-filename>
+    <war-filename>sda</war-filename>
   </properties>
 
   <build>
