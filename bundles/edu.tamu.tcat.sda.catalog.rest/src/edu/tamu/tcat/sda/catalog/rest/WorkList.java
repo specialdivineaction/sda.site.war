@@ -32,22 +32,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.DateDescription;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.CopyReference;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.PublicationInfo;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 
 @Path("/export/works")
 public class WorkList
 {
    private static final Logger logger = Logger.getLogger(WorkList.class.getName());
 
-   private WorkRepository workRepo;
+   private BibliographicEntryRepository workRepo;
 
    private static final List<String> csvHeaders = Arrays.asList(
          "type",
@@ -67,9 +68,9 @@ public class WorkList
          "hasDigitalCopy",
          "authors");
 
-   public void setWorkRepository(WorkRepository repo)
+   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
    {
-      this.workRepo = repo;
+      this.workRepo = repoReg.getRepository(null, BibliographicEntryRepository.class);
    }
 
    public void activate()
@@ -86,7 +87,7 @@ public class WorkList
          writer.write(String.join(", ", csvHeaders));
          writer.write(System.lineSeparator());
 
-         Iterable<Work> iterable = () -> workRepo.getAllWorks();
+         Iterable<BibliographicEntry> iterable = () -> workRepo.listAll();
          Iterator<WorkCsvRecord> iterator = StreamSupport.stream(iterable.spliterator(), false)
             .flatMap(this::stream)
             .iterator();
@@ -146,7 +147,7 @@ public class WorkList
    }
 
 
-   private Stream<WorkCsvRecord> stream(Work work)
+   private Stream<WorkCsvRecord> stream(BibliographicEntry work)
    {
       WorkCsvRecord workRecord = createRecord(work);
       Stream<WorkCsvRecord> editionRecords = work.getEditions().stream()
@@ -164,7 +165,7 @@ public class WorkList
       return Stream.concat(Stream.of(editionRecord), volumeRecords);
    }
 
-   private WorkCsvRecord createRecord(Work work)
+   private WorkCsvRecord createRecord(BibliographicEntry work)
    {
       WorkCsvRecord record = new WorkCsvRecord();
       record.type = "work";

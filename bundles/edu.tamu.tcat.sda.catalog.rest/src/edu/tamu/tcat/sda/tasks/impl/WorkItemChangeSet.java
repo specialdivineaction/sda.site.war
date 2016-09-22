@@ -3,6 +3,8 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.tamu.tcat.trc.entries.core.resolver.EntryReference;
+
 /**
  * Records the updates to an original version of a WorkItem.
  */
@@ -12,7 +14,7 @@ public class WorkItemChangeSet
    public String label;
    public String description;
    public Map<String, String> properties = new HashMap<>();
-   public PersistenceDtoV1.EntityId entityRef = new PersistenceDtoV1.EntityId();
+   public EntryReference entityRef = new EntryReference();
    public String stageId;
 
    public PersistenceDtoV1.WorkItem original;

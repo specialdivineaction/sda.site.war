@@ -8,8 +8,9 @@ import javax.ws.rs.Path;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.v1.PeopleGraphResource;
 import edu.tamu.tcat.sda.catalog.rest.graph.v1.WorkGraphResource;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
-import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
+import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
 @Path("graph")
@@ -17,23 +18,15 @@ public class GraphResourceService
 {
    private static final Logger logger = Logger.getLogger(GraphResourceService.class.getName());
 
-   private PeopleRepository peopleRepo;
-   private WorkRepository workRepo;
+   private BiographicalEntryRepository peopleRepo;
+   private BibliographicEntryRepository workRepo;
    private RelationshipRepository relnRepo;
 
-   public void setPeopleRepository(PeopleRepository peopleRepo)
+   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
    {
-      this.peopleRepo = peopleRepo;
-   }
-
-   public void setWorkRepository(WorkRepository workRepo)
-   {
-      this.workRepo = workRepo;
-   }
-
-   public void setRelationshipRepository(RelationshipRepository relnRepo)
-   {
-      this.relnRepo = relnRepo;
+      peopleRepo = repoReg.getRepository(null, BiographicalEntryRepository.class);
+      workRepo = repoReg.getRepository(null, BibliographicEntryRepository.class);
+      relnRepo = repoReg.getRepository(null, RelationshipRepository.class);
    }
 
    public void activate()

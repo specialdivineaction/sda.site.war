@@ -10,10 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.bio.Person;
+import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.PersonName;
 import edu.tamu.tcat.trc.entries.types.reln.Anchor;
 import edu.tamu.tcat.trc.entries.types.reln.AnchorSet;
@@ -24,7 +24,7 @@ public class RepoAdapter
 {
    private static final Pattern workIdPattern = Pattern.compile("^works/([^/]+)");
 
-   public static GraphDTO.Node toDTO(Person person)
+   public static GraphDTO.Node toDTO(BiographicalEntry person)
    {
       GraphDTO.Node dto = new GraphDTO.Node();
 
@@ -39,7 +39,7 @@ public class RepoAdapter
     * @param work
     * @return
     */
-   public static GraphDTO.Node toDTO(Work work)
+   public static GraphDTO.Node toDTO(BibliographicEntry work)
    {
       GraphDTO.Node dto = new GraphDTO.Node();
 

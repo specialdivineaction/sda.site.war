@@ -1,18 +1,5 @@
 package edu.tamu.tcat.sda.catalog.rest.graph.pagerank;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.EigenDecomposition;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
-
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
 
 /**
@@ -28,13 +15,13 @@ import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
 @Deprecated
 public class PageRankEigenvector implements PageRank
 {
-   private static final double epsilon = 1e-15;
-
-   private final double credibilityLendingWeight;
-   private final List<GraphDTO.Node> nodes;
-   private final Map<String, Set<String>> adjacencyList;
-
-   private String targetMetadataField = "pagerank";
+//   private static final double epsilon = 1e-15;
+//
+//   private final double credibilityLendingWeight;
+//   private final List<GraphDTO.Node> nodes;
+//   private final Map<String, Set<String>> adjacencyList;
+//
+//   private String targetMetadataField = "pagerank";
 
    /**
     * Creates a new PageRank computation instance over the given graph using a sensible default
@@ -60,95 +47,96 @@ public class PageRankEigenvector implements PageRank
     */
    public PageRankEigenvector(GraphDTO.Graph graph, double credibilityLendingWeight)
    {
-      if (credibilityLendingWeight <= 0 || credibilityLendingWeight >= 1)
-      {
-         throw new IllegalArgumentException("Invalid credibility lending weight {" + credibilityLendingWeight + "}: must be in range (0, 1).");
-      }
-
-      this.credibilityLendingWeight = credibilityLendingWeight;
-
-      nodes = new ArrayList<>(graph.nodes);
-
-      // mapping of nodes available by traversing out-edges
-      adjacencyList = graph.edges.stream()
-            .collect(Collectors.groupingBy(e -> e.source, Collectors.mapping(e -> e.target, Collectors.toSet())));
+//      if (credibilityLendingWeight <= 0 || credibilityLendingWeight >= 1)
+//      {
+//         throw new IllegalArgumentException("Invalid credibility lending weight {" + credibilityLendingWeight + "}: must be in range (0, 1).");
+//      }
+//
+//      this.credibilityLendingWeight = credibilityLendingWeight;
+//
+//      nodes = new ArrayList<>(graph.nodes);
+//
+//      // mapping of nodes available by traversing out-edges
+//      adjacencyList = graph.edges.stream()
+//            .collect(Collectors.groupingBy(e -> e.source, Collectors.mapping(e -> e.target, Collectors.toSet())));
    }
 
    @Override
    public void setTargetField(String field)
    {
-      Objects.requireNonNull(field);
-      targetMetadataField = field;
+//      Objects.requireNonNull(field);
+//      targetMetadataField = field;
    }
 
    @Override
    public void execute()
    {
-      RealMatrix transitionMatrix = computeTransitionMatrix();
-      EigenDecomposition decomposition = new EigenDecomposition(transitionMatrix);
-
-      RealVector pageranks = null;
-
-      double[] eigenvalues = decomposition.getRealEigenvalues();
-      for (int i = 0; i < eigenvalues.length; i++) {
-         if (Math.abs(eigenvalues[i] - 1.0) < epsilon)
-         {
-            pageranks = decomposition.getEigenvector(i);
-         }
-      }
-
-      if (pageranks == null)
-      {
-         throw new IllegalStateException("unable to find principal eigenvector solution for transition matrix");
-      }
-
-      for (int i = 0; i < nodes.size(); i++)
-      {
-         GraphDTO.Node node = nodes.get(i);
-         double pagerank = pageranks.getEntry(i);
-         node.metadata.put(targetMetadataField, Double.valueOf(pagerank));
-      }
+      throw new UnsupportedOperationException("not implemented");
+//      RealMatrix transitionMatrix = computeTransitionMatrix();
+//      EigenDecomposition decomposition = new EigenDecomposition(transitionMatrix);
+//
+//      RealVector pageranks = null;
+//
+//      double[] eigenvalues = decomposition.getRealEigenvalues();
+//      for (int i = 0; i < eigenvalues.length; i++) {
+//         if (Math.abs(eigenvalues[i] - 1.0) < epsilon)
+//         {
+//            pageranks = decomposition.getEigenvector(i);
+//         }
+//      }
+//
+//      if (pageranks == null)
+//      {
+//         throw new IllegalStateException("unable to find principal eigenvector solution for transition matrix");
+//      }
+//
+//      for (int i = 0; i < nodes.size(); i++)
+//      {
+//         GraphDTO.Node node = nodes.get(i);
+//         double pagerank = pageranks.getEntry(i);
+//         node.metadata.put(targetMetadataField, Double.valueOf(pagerank));
+//      }
    }
 
-   private RealMatrix computeTransitionMatrix()
-   {
-      int numNodes = nodes.size();
-      double teleportProbability = 1.0 / numNodes;
-
-      // weighted teleporting probability added to all entries
-      double adjustedTeleportProbability = teleportProbability * (1 - credibilityLendingWeight);
-
-      RealMatrix transitionMatrix = new Array2DRowRealMatrix(numNodes, numNodes);
-
-      // each column node index j of the matrix represents the probability of landing on row node index i after one traversal step
-      // hence the sum of the entries in each and every column is 1
-      for (int j = 0; j < numNodes; j++)
-      {
-         GraphDTO.Node source = nodes.get(j);
-         Set<String> adjacentIds = adjacencyList.getOrDefault(source.id, Collections.emptySet());
-
-         if (adjacentIds.isEmpty())
-         {
-            // all entries in column get uniform teleport probability since the only way to reach other nodes is to teleport to them
-            for (int i = 0; i < numNodes; i++)
-            {
-               transitionMatrix.setEntry(i, j, teleportProbability);
-            }
-         }
-         else
-         {
-            double traversalProbability = credibilityLendingWeight / adjacentIds.size();
-
-            for (int i = 0; i < numNodes; i++)
-            {
-               GraphDTO.Node target = nodes.get(i);
-
-               double entryProbability = adjacentIds.contains(target.id) ? traversalProbability : 0;
-               transitionMatrix.setEntry(i, j, entryProbability + adjustedTeleportProbability);
-            }
-         }
-      }
-
-      return transitionMatrix;
-   }
+//   private RealMatrix computeTransitionMatrix()
+//   {
+//      int numNodes = nodes.size();
+//      double teleportProbability = 1.0 / numNodes;
+//
+//      // weighted teleporting probability added to all entries
+//      double adjustedTeleportProbability = teleportProbability * (1 - credibilityLendingWeight);
+//
+//      RealMatrix transitionMatrix = new Array2DRowRealMatrix(numNodes, numNodes);
+//
+//      // each column node index j of the matrix represents the probability of landing on row node index i after one traversal step
+//      // hence the sum of the entries in each and every column is 1
+//      for (int j = 0; j < numNodes; j++)
+//      {
+//         GraphDTO.Node source = nodes.get(j);
+//         Set<String> adjacentIds = adjacencyList.getOrDefault(source.id, Collections.emptySet());
+//
+//         if (adjacentIds.isEmpty())
+//         {
+//            // all entries in column get uniform teleport probability since the only way to reach other nodes is to teleport to them
+//            for (int i = 0; i < numNodes; i++)
+//            {
+//               transitionMatrix.setEntry(i, j, teleportProbability);
+//            }
+//         }
+//         else
+//         {
+//            double traversalProbability = credibilityLendingWeight / adjacentIds.size();
+//
+//            for (int i = 0; i < numNodes; i++)
+//            {
+//               GraphDTO.Node target = nodes.get(i);
+//
+//               double entryProbability = adjacentIds.contains(target.id) ? traversalProbability : 0;
+//               transitionMatrix.setEntry(i, j, entryProbability + adjustedTeleportProbability);
+//            }
+//         }
+//      }
+//
+//      return transitionMatrix;
+//   }
 }

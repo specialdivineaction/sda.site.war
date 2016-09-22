@@ -22,14 +22,14 @@ import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStageTransition;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorList;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
 import edu.tamu.tcat.trc.repo.IdFactory;
 import edu.tamu.tcat.trc.repo.RepositoryException;
 import edu.tamu.tcat.trc.repo.RepositorySchema;
 
-public abstract class BiblioEditorialTask implements EditorialTask<Work>
+public abstract class BiblioEditorialTask implements EditorialTask<BibliographicEntry>
 {
    private static final String[] TITLE_PREFERENCE_ORDER = {"short", "canonical", "bibliographic"};
 
@@ -85,7 +85,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
    }
 
    @Override
-   public WorkItem addItem(Work entity) throws IllegalArgumentException
+   public WorkItem addItem(BibliographicEntry entity) throws IllegalArgumentException
    {
       WorkItemRepository repo = getRepository();
       EditWorkItemCommand command = repo.createItem();
@@ -107,12 +107,12 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
    }
 
    @Override
-   public void addItems(Supplier<Work> entities, TaskSubmissionMonitor monitor)
+   public void addItems(Supplier<BibliographicEntry> entities, TaskSubmissionMonitor monitor)
    {
       WorkItemRepository repo = getRepository();
 
       executor.execute(() -> {
-         Work entity = entities.get();
+         BibliographicEntry entity = entities.get();
          while (entity != null)
          {
             EditWorkItemCommand command = repo.createItem();
@@ -225,7 +225,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
     * @param entity
     * @return The command
     */
-   private EditWorkItemCommand applyCreate(EditWorkItemCommand command, Work entity)
+   private EditWorkItemCommand applyCreate(EditWorkItemCommand command, BibliographicEntry entity)
    {
       command.setEntityRef("work", entity.getId());
       command.setLabel(getLabel(entity));
@@ -247,7 +247,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
     * @param entity
     * @return
     */
-   private static String getLabel(Work entity)
+   private static String getLabel(BibliographicEntry entity)
    {
       String authorLabel = getAuthorLabel(entity);
       String titleLabel = getTitleLabel(entity);
@@ -265,7 +265,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
     * @param entity
     * @return The first non-empty author's last name or <code>null</code> if one cannot be found.
     */
-   private static String getAuthorLabel(Work entity)
+   private static String getAuthorLabel(BibliographicEntry entity)
    {
       if (entity != null)
       {
@@ -300,7 +300,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Work>
     * @param entity
     * @return The first non-empty full title or <code>null</code> if one cannot be found.
     */
-   private static String getTitleLabel(Work entity)
+   private static String getTitleLabel(BibliographicEntry entity)
    {
       if (entity != null)
       {

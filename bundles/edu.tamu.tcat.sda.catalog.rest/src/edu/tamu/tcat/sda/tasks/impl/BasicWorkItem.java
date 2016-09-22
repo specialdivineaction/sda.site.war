@@ -6,7 +6,7 @@ import java.util.Set;
 
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.repo.EntityReference;
+import edu.tamu.tcat.trc.entries.core.resolver.EntryReference;
 
 public class BasicWorkItem implements WorkItem
 {
@@ -14,21 +14,21 @@ public class BasicWorkItem implements WorkItem
    private final String label;
    private final String description;
    private final Map<String, String> properties;
-   private final EntityReference entityReference;
+   private final EntryReference entryReference;
    private final WorkflowStage stage;
 
    public BasicWorkItem(String id,
                         String label,
                         String description,
                         Map<String, String> properties,
-                        EntityReference entityReference,
+                        EntryReference entryReference,
                         WorkflowStage stage)
    {
       this.id = id;
       this.label = label;
       this.description = description;
       this.properties = properties;
-      this.entityReference = entityReference;
+      this.entryReference = entryReference;
       this.stage = stage;
    }
 
@@ -67,9 +67,9 @@ public class BasicWorkItem implements WorkItem
    }
 
    @Override
-   public EntityReference getEntityReference()
+   public EntryReference getEntryReference()
    {
-      return entityReference;
+      return entryReference;
    }
 
    @Override

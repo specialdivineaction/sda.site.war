@@ -11,17 +11,17 @@ import javax.ws.rs.core.MediaType;
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
 import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRankIterative;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
 public class WorkGraphResource
 {
-   private final WorkRepository workRepo;
+   private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
 
-   public WorkGraphResource(WorkRepository workRepo, RelationshipRepository relnRepo)
+   public WorkGraphResource(BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
    {
       this.workRepo = workRepo;
       this.relnRepo = relnRepo;
@@ -33,7 +33,7 @@ public class WorkGraphResource
    {
       // TODO allow filtering by work, relationship type, relationship direction, etc.
 
-      Iterable<Work> works = () -> workRepo.getAllWorks();
+      Iterable<BibliographicEntry> works = () -> workRepo.listAll();
 
       GraphDTO.Graph graph = new GraphDTO.Graph();
 

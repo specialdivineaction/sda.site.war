@@ -2,7 +2,6 @@ package edu.tamu.tcat.sda.catalog.rest;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.time.LocalDate;
@@ -28,24 +27,24 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.HistoricalEvent;
-import edu.tamu.tcat.trc.entries.types.bio.Person;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
+import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.PersonName;
-import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
-import edu.tamu.tcat.trc.repo.RepositoryException;
+import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 
 @Path("/export/authors")
 public class AuthorList
 {
    private static final Logger logger = Logger.getLogger(AuthorList.class.getName());
 
-   private PeopleRepository repo;
+   private BiographicalEntryRepository repo;
 
    private List<String> csvHeaders;
 
    // called by DS
-   public void setRepository(PeopleRepository repo)
+   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
    {
-      this.repo = repo;
+      this.repo = repoReg.getRepository(null, BiographicalEntryRepository.class);
    }
 
    // called by DS
@@ -74,16 +73,16 @@ public class AuthorList
 
    }
 
-   private void doWrite(Writer writer) throws WebApplicationException
+   private void doWrite(Writer writer)
    {
       try
       {
-         CsvExporter<Person, PersonCsvRecord> exporter =
+         CsvExporter<BiographicalEntry, PersonCsvRecord> exporter =
                new CsvExporter<>(PersonCsvRecord::create, PersonCsvRecord.class);
 
          writer.write(String.join(", ", csvHeaders));
          writer.write(System.lineSeparator());
-         Iterator<Person> iterator = repo.listAll();
+         Iterator<BiographicalEntry> iterator = repo.listAll();
          exporter.export(iterator, writer);
          writer.flush();
       }
@@ -94,14 +93,6 @@ public class AuthorList
          logger.log(Level.FINE, "Failed to export author list. Unable to read data from repository.", ex);
          Response resp = Response.serverError()
                .entity("Cannot complete author list export. Likely caused by closed connection.")
-               .build();
-         throw new WebApplicationException(resp);
-      }
-      catch (RepositoryException ex)
-      {
-         logger.log(Level.SEVERE, "Failed to export author list. Unable to read data from repository.", ex);
-         Response resp = Response.serverError()
-               .entity("Cannot export author list. See server logs for details.")
                .build();
          throw new WebApplicationException(resp);
       }
@@ -118,35 +109,32 @@ public class AuthorList
 
    @GET
    @Produces("text/csv; charset=UTF-8")
-   public Response getBasicAuthorListCSV() throws RepositoryException
+   public Response getBasicAuthorListCSV()
    {
-      StreamingOutput stream = new StreamingOutput() {
-         @Override
-         public void write(OutputStream os) throws WebApplicationException {
-            Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+      StreamingOutput stream = os -> {
+         Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
-            //HACK: fork a background thread to do the CSV export using Jackson because
-            //      if it is done in the jersey/REST call stack, it will get the wrong
-            //      version of jackson via different OSGI classloaders. The fork forces the
-            //      jackson classes to be loaded from this class's classloader instead of
-            //      Jersey's.
-            ExecutorService svc = Executors.newSingleThreadExecutor();
-            Future<?> future = svc.submit(() -> {
-               doWrite(writer);
-               return null;
-            });
-            try {
-               // wait on some rediculous amount, because it's better than infinity
-               future.get(5, TimeUnit.MINUTES);
-            }
-            catch (Exception e)
-            {
-               throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            }
-            finally
-            {
-               svc.shutdown();
-            }
+         //HACK: fork a background thread to do the CSV export using Jackson because
+         //      if it is done in the jersey/REST call stack, it will get the wrong
+         //      version of jackson via different OSGI classloaders. The fork forces the
+         //      jackson classes to be loaded from this class's classloader instead of
+         //      Jersey's.
+         ExecutorService svc = Executors.newSingleThreadExecutor();
+         Future<?> future = svc.submit(() -> {
+            doWrite(writer);
+            return null;
+         });
+         try {
+            // wait on some rediculous amount, because it's better than infinity
+            future.get(5, TimeUnit.MINUTES);
+         }
+         catch (Exception e)
+         {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         }
+         finally
+         {
+            svc.shutdown();
          }
       };
 
@@ -158,7 +146,7 @@ public class AuthorList
    @JsonPropertyOrder
    public static class PersonCsvRecord
    {
-      private static PersonCsvRecord create(Person person)
+      private static PersonCsvRecord create(BiographicalEntry person)
       {
          PersonCsvRecord record = new PersonCsvRecord();
          record.id = person.getId();

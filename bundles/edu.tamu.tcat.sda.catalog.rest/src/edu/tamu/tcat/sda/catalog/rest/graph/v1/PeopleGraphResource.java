@@ -20,10 +20,10 @@ import javax.ws.rs.core.MediaType;
 import edu.tamu.tcat.sda.catalog.rest.graph.GraphDTO;
 import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.catalog.rest.graph.pagerank.PageRankIterative;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
-import edu.tamu.tcat.trc.entries.types.bio.Person;
-import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
+import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
+import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
@@ -31,12 +31,12 @@ public class PeopleGraphResource
 {
    private static final Logger logger = Logger.getLogger(PeopleGraphResource.class.getName());
 
-   private final PeopleRepository peopleRepo;
-   private final WorkRepository workRepo;
+   private final BiographicalEntryRepository peopleRepo;
+   private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
 
 
-   public PeopleGraphResource(PeopleRepository peopleRepo, WorkRepository workRepo, RelationshipRepository relnRepo)
+   public PeopleGraphResource(BiographicalEntryRepository peopleRepo, BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
    {
       this.peopleRepo = peopleRepo;
       this.workRepo = workRepo;
@@ -47,7 +47,7 @@ public class PeopleGraphResource
    @Produces(MediaType.APPLICATION_JSON)
    public GraphDTO.SingleGraph getGraph()
    {
-      Iterable<Person> people = () -> peopleRepo.listAll();
+      Iterable<BiographicalEntry> people = () -> peopleRepo.listAll();
 
       GraphDTO.Graph graph = new GraphDTO.Graph();
 
@@ -99,8 +99,8 @@ public class PeopleGraphResource
     */
    private Stream<GraphDTO.Edge> expandByAuthor(GraphDTO.Edge workEdge)
    {
-      Work sourceWork = workRepo.getWork(workEdge.source);
-      Work targetWork = workRepo.getWork(workEdge.target);
+      BibliographicEntry sourceWork = workRepo.get(workEdge.source);
+      BibliographicEntry targetWork = workRepo.get(workEdge.target);
 
       Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
 

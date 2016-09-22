@@ -24,18 +24,18 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Edition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
-import edu.tamu.tcat.trc.entries.types.biblio.search.solr.BiblioDocument;
-import edu.tamu.tcat.trc.entries.types.bio.Person;
-import edu.tamu.tcat.trc.entries.types.bio.repo.PeopleRepository;
-import edu.tamu.tcat.trc.entries.types.bio.search.solr.BioDocument;
+import edu.tamu.tcat.trc.entries.types.biblio.impl.search.IndexAdapter;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
+import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
+import edu.tamu.tcat.trc.entries.types.bio.impl.search.SolrDocAdapter;
+import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
+import edu.tamu.tcat.trc.entries.types.reln.impl.search.RelnDocument;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
-import edu.tamu.tcat.trc.entries.types.reln.search.solr.RelnDocument;
-import edu.tamu.tcat.trc.search.SearchException;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 
@@ -58,23 +58,15 @@ public class AdminResourceService
    private SolrClient workSolrClient;
    private SolrClient peopleSolrClient;
    private SolrClient relnSolrClient;
-   private WorkRepository workRepository;
-   private PeopleRepository peopleRepository;
+   private BibliographicEntryRepository workRepository;
+   private BiographicalEntryRepository peopleRepository;
    private RelationshipRepository relnRepository;
 
-   public void setWorkRepository(WorkRepository workRepository)
+   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
    {
-      this.workRepository = workRepository;
-   }
-
-   public void setPeopleRepository(PeopleRepository peopleRepository)
-   {
-      this.peopleRepository = peopleRepository;
-   }
-
-   public void setRelationshipRepository(RelationshipRepository relnRepository)
-   {
-      this.relnRepository = relnRepository;
+      workRepository = repoReg.getRepository(null, BibliographicEntryRepository.class);
+      peopleRepository = repoReg.getRepository(null, BiographicalEntryRepository.class);
+      relnRepository = repoReg.getRepository(null, RelationshipRepository.class);
    }
 
    public void setConfiguration(ConfigurationProperties config)
@@ -153,12 +145,13 @@ public class AdminResourceService
          logger.log(Level.SEVERE, "Failed to remove data from the people core.", e);
       }
 
-      Iterable<Person> people = () -> peopleRepository.listAll();
+      Iterable<BiographicalEntry> people = () -> peopleRepository.listAll();
+
+      SolrDocAdapter adapter = new SolrDocAdapter(this::extractFirstSentence);
 
       Collection<SolrInputDocument> solrDocs = StreamSupport.stream(people.spliterator(), false)
-            .map(this::adapt)
+            .map(adapter::apply)
             .filter(Objects::nonNull)
-            .map(BioDocument::getDocument)
             .collect(Collectors.toList());
 
       try
@@ -187,10 +180,10 @@ public class AdminResourceService
          logger.log(Level.SEVERE, "Failed to remove data from the works core.", e);
       }
 
-      Iterable<Work> works = () -> workRepository.getAllWorks();
+      Iterable<BibliographicEntry> works = () -> workRepository.listAll();
+
       Collection<SolrInputDocument> solrDocs = StreamSupport.stream(works.spliterator(), false)
             .flatMap(AdminResourceService::adapt)
-            .map(BiblioDocument::getDocument)
             .collect(Collectors.toList());
 
       try
@@ -222,7 +215,6 @@ public class AdminResourceService
       Iterable<Relationship> relationships = () -> relnRepository.getAllRelationships();
       Collection<SolrInputDocument> solrDocs = StreamSupport.stream(relationships.spliterator(), false)
             .map(RelnDocument::create)
-            .map(RelnDocument::getDocument)
             .collect(Collectors.toList());
 
       try
@@ -236,30 +228,16 @@ public class AdminResourceService
       }
    }
 
-   private BioDocument adapt(Person person)
+   private static Stream<SolrInputDocument> adapt(BibliographicEntry work)
    {
       try
       {
-         return BioDocument.create(person, this::extractFirstSentence);
-      }
-      catch (SearchException e)
-      {
-         String message = MessageFormat.format("Unable to adapt person {0}.", person.getId());
-         logger.log(Level.WARNING, message, e);
-         return null;
-      }
-   }
-
-   private static Stream<BiblioDocument> adapt(Work work)
-   {
-      try
-      {
-         BiblioDocument workProxy = BiblioDocument.createWork(work);
-         Stream<BiblioDocument> editions = work.getEditions().stream()
+         SolrInputDocument workDoc = IndexAdapter.createWork(work);
+         Stream<SolrInputDocument> editions = work.getEditions().stream()
                .flatMap(edition -> adapt(work.getId(), edition));
-         return Stream.concat(Stream.of(workProxy), editions);
+         return Stream.concat(Stream.of(workDoc), editions);
       }
-      catch (SearchException e)
+      catch (Exception e)
       {
          String message = MessageFormat.format("Unable to adapt work {0}.", work.getId());
          logger.log(Level.WARNING, message, e);
@@ -267,17 +245,17 @@ public class AdminResourceService
       }
    }
 
-   private static Stream<BiblioDocument> adapt(String workId, Edition edition)
+   private static Stream<SolrInputDocument> adapt(String workId, Edition edition)
    {
       try
       {
-         BiblioDocument editionProxy = BiblioDocument.createEdition(workId, edition);
-         Stream<BiblioDocument> volumes = edition.getVolumes().stream()
+         SolrInputDocument editionDoc = IndexAdapter.createEdition(workId, edition);
+         Stream<SolrInputDocument> volumes = edition.getVolumes().stream()
                .map(volume -> adapt(workId, edition, volume))
                .filter(Objects::nonNull);
-         return Stream.concat(Stream.of(editionProxy), volumes);
+         return Stream.concat(Stream.of(editionDoc), volumes);
       }
-      catch (SearchException e)
+      catch (Exception e)
       {
          String message = MessageFormat.format("Unable to adapt edition {0}/{1}.", workId, edition.getId());
          logger.log(Level.WARNING, message, e);
@@ -285,13 +263,13 @@ public class AdminResourceService
       }
    }
 
-   private static BiblioDocument adapt(String workId, Edition edition, Volume volume)
+   private static SolrInputDocument adapt(String workId, Edition edition, Volume volume)
    {
       try
       {
-         return BiblioDocument.createVolume(workId, edition, volume);
+         return IndexAdapter.createVolume(workId, edition, volume);
       }
-      catch (SearchException e)
+      catch (Exception e)
       {
          String message = MessageFormat.format("Unable to adapt volume {0}/{1}/{2}.", workId, edition.getId(), volume.getId());
          logger.log(Level.WARNING, message, e);

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,9 +33,9 @@ import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
 import edu.tamu.tcat.sda.tasks.impl.AssignCopiesEditorialTask;
 import edu.tamu.tcat.sda.tasks.impl.AssignRelationshipsEditorialTask;
 import edu.tamu.tcat.sda.tasks.rest.v1.TaskCollectionResource;
-import edu.tamu.tcat.trc.entries.types.biblio.Work;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.WorkRepository;
-import edu.tamu.tcat.trc.repo.postgres.id.UuidProvider;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
+import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
+import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 
 @Path("/")
 public class TaskRestApiService
@@ -42,7 +43,7 @@ public class TaskRestApiService
    private static final Logger logger = Logger.getLogger(TaskRestApiService.class.getName());
 
    private SqlExecutor sqlExecutor;
-   private WorkRepository workRepository;
+   private BibliographicEntryRepository workRepository;
    private ExecutorService executorService;
 
    private final Map<String, EditorialTask<?>> tasks = new HashMap<>();
@@ -52,9 +53,9 @@ public class TaskRestApiService
       this.sqlExecutor = sqlExecutor;
    }
 
-   public void setWorkRepository(WorkRepository workRepository)
+   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
    {
-      this.workRepository = workRepository;
+      workRepository = repoReg.getRepository(null, BibliographicEntryRepository.class);
    }
 
    public void activate()
@@ -65,8 +66,8 @@ public class TaskRestApiService
 
       // HACK: hard-coded tasks
       Stream.of(
-            new AssignCopiesEditorialTask("copies", sqlExecutor, new UuidProvider(), executorService),
-            new AssignRelationshipsEditorialTask("relns", sqlExecutor, new UuidProvider(), executorService)
+            new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
+            new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
          ).forEach(t -> tasks.put(t.getId(), t));
    }
 
@@ -104,12 +105,12 @@ public class TaskRestApiService
    {
       // HACK Not sure how to safely convert from EditorialTask<?> to EditorialTask<Work>
       //      This entire method is just a hack to prepopulate a task anyway.
-      EditorialTask<Work> task = (EditorialTask<Work>)tasks.get(taskId);
+      EditorialTask<BibliographicEntry> task = (EditorialTask<BibliographicEntry>)tasks.get(taskId);
 
       return (os) -> {
          Writer out = new BufferedWriter(new OutputStreamWriter(os));
-         Iterator<Work> workIterator = workRepository.getAllWorks();
-         Supplier<Work> workSupplier = () -> workIterator.hasNext() ? workIterator.next() : null;
+         Iterator<BibliographicEntry> workIterator = workRepository.listAll();
+         Supplier<BibliographicEntry> workSupplier = () -> workIterator.hasNext() ? workIterator.next() : null;
          WorkTaskSubmissionMonitor monitor = new WorkTaskSubmissionMonitor(out, task.getName());
          task.addItems(workSupplier, monitor);
          try
