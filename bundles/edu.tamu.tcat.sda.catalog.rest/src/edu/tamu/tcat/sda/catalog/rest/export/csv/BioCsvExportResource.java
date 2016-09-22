@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.rest;
+package edu.tamu.tcat.sda.catalog.rest.export.csv;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,52 +25,37 @@ import javax.ws.rs.core.StreamingOutput;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.HistoricalEvent;
-import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.PersonName;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 
 @Path("/export/authors")
-public class AuthorList
+public class BioCsvExportResource
 {
-   private static final Logger logger = Logger.getLogger(AuthorList.class.getName());
+   private static final Logger logger = Logger.getLogger(BioCsvExportResource.class.getName());
 
-   private BiographicalEntryRepository repo;
+   private static final List<String> csvHeaders = Arrays.asList(
+         "id",
+         "Display Name",
+         "Family Name",
+         "Given Name",
+         "Middle Name",
+         "Title",
+         "Suffix",
+         "Birth Place",
+         "Birth Date",
+         "Birth Date Label",
+         "Death Place",
+         "Death Date",
+         "Death Date Lable",
+         "remove");
 
-   private List<String> csvHeaders;
+   private final BiographicalEntryRepository repo;
 
-   // called by DS
-   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
+   public BioCsvExportResource(BiographicalEntryRepository peopleRepository)
    {
-      this.repo = repoReg.getRepository(null, BiographicalEntryRepository.class);
-   }
-
-   // called by DS
-   public void activate()
-   {
-      csvHeaders = Arrays.asList(
-                        "id",
-                        "Display Name",
-                        "Family Name",
-                        "Given Name",
-                        "Middle Name",
-                        "Title",
-                        "Suffix",
-                        "Birth Place",
-                        "Birth Date",
-                        "Birth Date Label",
-                        "Death Place",
-                        "Death Date",
-                        "Death Date Lable",
-                        "remove");
-   }
-
-   // called by DS
-   public void dispose()
-   {
-
+      repo = peopleRepository;
    }
 
    private void doWrite(Writer writer)

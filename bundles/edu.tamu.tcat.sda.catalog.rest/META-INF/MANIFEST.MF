@@ -41,7 +41,5 @@ Import-Package: com.fasterxml.jackson.annotation;version="2.3.1",
  org.apache.solr.common;version="5.5.0"
 Export-Package: edu.tamu.tcat.sda.catalog.rest.admin,
  edu.tamu.tcat.sda.catalog.rest.auth,
+ edu.tamu.tcat.sda.catalog.rest.export.csv,
  edu.tamu.tcat.sda.catalog.rest.graph
-Service-Component: 
- OSGI-INF/trc/export/exportAuthorsCsv.xml,
- OSGI-INF/trc/export/exportWorksCsv.xml

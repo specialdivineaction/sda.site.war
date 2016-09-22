@@ -1,4 +1,4 @@
-package edu.tamu.tcat.sda.catalog.rest;
+package edu.tamu.tcat.sda.catalog.rest.export.csv;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +20,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -30,9 +28,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import edu.tamu.tcat.sda.catalog.rest.export.csv.CsvExporter;
 import edu.tamu.tcat.trc.entries.common.DateDescription;
-import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.CopyReference;
@@ -43,12 +39,9 @@ import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.biblio.Volume;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 
-@Path("/export/works")
-public class WorkList
+public class BiblioCsvExportResource
 {
-   private static final Logger logger = Logger.getLogger(WorkList.class.getName());
-
-   private BibliographicEntryRepository workRepo;
+   private static final Logger logger = Logger.getLogger(BiblioCsvExportResource.class.getName());
 
    private static final List<String> csvHeaders = Arrays.asList(
          "type",
@@ -68,14 +61,11 @@ public class WorkList
          "hasDigitalCopy",
          "authors");
 
-   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
-   {
-      this.workRepo = repoReg.getRepository(null, BibliographicEntryRepository.class);
-   }
+   private final BibliographicEntryRepository workRepo;
 
-   public void activate()
+   public BiblioCsvExportResource(BibliographicEntryRepository workRepo)
    {
-      Objects.requireNonNull(workRepo, "No work repository provided.");
+      this.workRepo = workRepo;
    }
 
    private void doWrite(Writer writer) throws WebApplicationException
@@ -196,7 +186,7 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(work.getAuthors().spliterator(), false)
-            .map(WorkList::formatName)
+            .map(BiblioCsvExportResource::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
@@ -249,7 +239,7 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(edition.getAuthors().spliterator(), false)
-            .map(WorkList::formatName)
+            .map(BiblioCsvExportResource::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
@@ -303,7 +293,7 @@ public class WorkList
 
       StringJoiner sj = new StringJoiner(";");
       StreamSupport.stream(volume.getAuthors().spliterator(), false)
-            .map(WorkList::formatName)
+            .map(BiblioCsvExportResource::formatName)
             .forEach(sj::add);
       record.authors = sj.toString();
 
