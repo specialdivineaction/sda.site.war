@@ -114,6 +114,7 @@ public class TaskRestApiService
    {
       // HACK Not sure how to safely convert from EditorialTask<?> to EditorialTask<Work>
       //      This entire method is just a hack to prepopulate a task anyway.
+      @SuppressWarnings("unchecked")
       EditorialTask<BibliographicEntry> task = (EditorialTask<BibliographicEntry>)tasks.get(taskId);
 
       return (os) -> {
