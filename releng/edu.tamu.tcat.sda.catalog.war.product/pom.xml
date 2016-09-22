@@ -28,7 +28,7 @@
   </parent>
 
   <groupId>edu.tamu.tcat</groupId>
-  <artifactId>edu.tamu.tcat.sda.catalog.war</artifactId>
+  <artifactId>edu.tamu.tcat.sda.war</artifactId>
   <packaging>eclipse-repository</packaging>
   <version>1.0.0-SNAPSHOT</version>
 

@@ -1,5 +1,5 @@
 <assembly>
-  <id>edu.tamu.tcat.sda.catalog.war</id>
+  <id>edu.tamu.tcat.sda.war</id>
   <formats>
     <format>war</format>
   </formats>
