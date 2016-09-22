@@ -27,16 +27,16 @@ import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
-public class PeopleGraphResource
+public class BioGraphResource
 {
-   private static final Logger logger = Logger.getLogger(PeopleGraphResource.class.getName());
+   private static final Logger logger = Logger.getLogger(BioGraphResource.class.getName());
 
    private final BiographicalEntryRepository peopleRepo;
    private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
 
 
-   public PeopleGraphResource(BiographicalEntryRepository peopleRepo, BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
+   public BioGraphResource(BiographicalEntryRepository peopleRepo, BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
    {
       this.peopleRepo = peopleRepo;
       this.workRepo = workRepo;

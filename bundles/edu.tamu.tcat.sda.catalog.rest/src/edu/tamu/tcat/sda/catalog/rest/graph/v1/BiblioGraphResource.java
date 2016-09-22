@@ -16,12 +16,12 @@ import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 
-public class WorkGraphResource
+public class BiblioGraphResource
 {
    private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
 
-   public WorkGraphResource(BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
+   public BiblioGraphResource(BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
    {
       this.workRepo = workRepo;
       this.relnRepo = relnRepo;
