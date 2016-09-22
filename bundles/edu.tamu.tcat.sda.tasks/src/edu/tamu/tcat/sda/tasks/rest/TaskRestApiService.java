@@ -43,32 +43,41 @@ public class TaskRestApiService
    private static final Logger logger = Logger.getLogger(TaskRestApiService.class.getName());
 
    private SqlExecutor sqlExecutor;
-   private BibliographicEntryRepository workRepository;
    private ExecutorService executorService;
 
    private final Map<String, EditorialTask<?>> tasks = new HashMap<>();
+
+   private EntryRepositoryRegistry repoRegistry;
 
    public void setSqlExecutor(SqlExecutor sqlExecutor)
    {
       this.sqlExecutor = sqlExecutor;
    }
 
-   public void setRepoRegistry(EntryRepositoryRegistry repoReg)
+   public void setRepoRegistry(EntryRepositoryRegistry repoRegistry)
    {
-      workRepository = repoReg.getRepository(null, BibliographicEntryRepository.class);
+      this.repoRegistry = repoRegistry;
    }
 
    public void activate()
    {
-      Objects.requireNonNull(sqlExecutor, "No SQL Executor provided");
+      try
+      {
+         logger.info(() -> "Activating " + getClass().getSimpleName());
+         Objects.requireNonNull(sqlExecutor, "No SQL Executor provided");
 
-      executorService = Executors.newCachedThreadPool();
+         executorService = Executors.newCachedThreadPool();
 
-      // HACK: hard-coded tasks
-      Stream.of(
-            new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
-            new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
-         ).forEach(t -> tasks.put(t.getId(), t));
+         // HACK: hard-coded tasks
+         Stream.of(
+               new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
+               new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
+            ).forEach(t -> tasks.put(t.getId(), t));
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.SEVERE, "Failed to start task REST API service.", e);
+      }
    }
 
    public void dispose()
@@ -109,6 +118,7 @@ public class TaskRestApiService
 
       return (os) -> {
          Writer out = new BufferedWriter(new OutputStreamWriter(os));
+         BibliographicEntryRepository workRepository = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
          Iterator<BibliographicEntry> workIterator = workRepository.listAll();
          Supplier<BibliographicEntry> workSupplier = () -> workIterator.hasNext() ? workIterator.next() : null;
          WorkTaskSubmissionMonitor monitor = new WorkTaskSubmissionMonitor(out, task.getName());

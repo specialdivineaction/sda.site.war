@@ -16,6 +16,7 @@ Import-Package: com.fasterxml.jackson.jaxrs.base;version="2.3.1",
  edu.tamu.tcat.sda.catalog.rest.admin,
  edu.tamu.tcat.sda.catalog.rest.auth,
  edu.tamu.tcat.sda.catalog.rest.graph,
+ edu.tamu.tcat.sda.tasks.rest,
  edu.tamu.tcat.trc.categorization,
  edu.tamu.tcat.trc.categorization.impl,
  edu.tamu.tcat.trc.categorization.rest,
@@ -59,4 +60,5 @@ Service-Component:
  OSGI-INF/trc/services/bibref/bibref.xml,
  OSGI-INF/trc/services/categorization/categorization.repo.xml,
  OSGI-INF/rest.admin.xml,
- OSGI-INF/rest.graph.xml
+ OSGI-INF/rest.graph.xml,
+ OSGI-INF/rest.tasks.xml

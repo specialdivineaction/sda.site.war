@@ -84,7 +84,7 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
    public EditWorkItemCommand createItem()
    {
       String id = idFactory.get();
-      return repo.create(id);
+      return repo.create(null, id);
    }
 
    /* (non-Javadoc)
@@ -95,7 +95,7 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
    {
       try
       {
-         return repo.edit(id);
+         return repo.edit(null, id);
       }
       catch (RepositoryException e)
       {
