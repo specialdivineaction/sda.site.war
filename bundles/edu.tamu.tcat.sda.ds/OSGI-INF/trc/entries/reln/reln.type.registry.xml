@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.trc.entries.types.reln.type.registry">
+   <implementation class="edu.tamu.tcat.trc.entries.types.reln.impl.model.ExtPointRelnTypeRegistry"/>
+   <service>
+      <provide interface="edu.tamu.tcat.trc.entries.types.reln.impl.model.ExtPointRelnTypeRegistry"/>
+      <provide interface="edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipTypeRegistry"/>
+   </service>
+</scr:component>
