@@ -35,6 +35,7 @@ Import-Package: com.fasterxml.jackson.jaxrs.base;version="2.3.1",
  edu.tamu.tcat.trc.repo.postgres,
  edu.tamu.tcat.trc.repo.postgres.id,
  edu.tamu.tcat.trc.search.solr,
+ edu.tamu.tcat.trc.services.types.bibref.repo,
  edu.tamu.tcat.trc.services.types.bibref.impl
 Service-Component: 
  OSGI-INF/config.xml,
