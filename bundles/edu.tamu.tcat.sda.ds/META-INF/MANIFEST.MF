@@ -72,6 +72,7 @@ Service-Component:
  OSGI-INF/trc/entries/reln/reln.rest.xml,
  OSGI-INF/trc/services/bibref/bibref.xml,
  OSGI-INF/trc/services/categorization/categorization.repo.xml,
+ OSGI-INF/trc/services/categorization/categorization.rest.xml,
  OSGI-INF/rest.admin.xml,
  OSGI-INF/rest.export.csv.xml,
  OSGI-INF/rest.graph.xml,
