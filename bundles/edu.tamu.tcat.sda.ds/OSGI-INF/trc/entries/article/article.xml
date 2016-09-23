@@ -6,4 +6,5 @@
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.article.impl.ArticleEntryService"/>
    </service>
+   <reference bind="setRefRepoFactory" cardinality="1..1" interface="edu.tamu.tcat.trc.services.types.bibref.repo.ReferenceRepositoryFactory" name="ReferenceRepositoryFactory" policy="static"/>
 </scr:component>
