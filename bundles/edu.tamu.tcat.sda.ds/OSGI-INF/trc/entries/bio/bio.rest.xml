@@ -4,6 +4,7 @@
    <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
    <reference bind="setConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <reference bind="setSearchSvcMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
+   <reference bind="setServiceMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.services.TrcServiceManager" name="TrcServiceManager" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.bio.rest.PeopleResourceService"/>
    </service>

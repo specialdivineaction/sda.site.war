@@ -3,6 +3,7 @@
    <implementation class="edu.tamu.tcat.trc.entries.types.biblio.rest.BiblioRestApiService"/>
    <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
    <reference bind="setSearchSvcMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
+   <reference bind="setServiceMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.services.TrcServiceManager" name="TrcServiceManager" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.biblio.rest.BiblioRestApiService"/>
    </service>
