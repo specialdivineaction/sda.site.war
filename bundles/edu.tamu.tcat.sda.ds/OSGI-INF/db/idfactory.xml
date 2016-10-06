@@ -4,6 +4,6 @@
    <reference bind="setDatabaseExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.repo.postgres.id.DbBackedObfuscatingIdFactoryProvider"/>
-      <provide interface="edu.tamu.tcat.trc.repo.IdFactoryProvider"/>
+      <provide interface="edu.tamu.tcat.trc.repo.id.IdFactoryProvider"/>
    </service>
 </scr:component>
