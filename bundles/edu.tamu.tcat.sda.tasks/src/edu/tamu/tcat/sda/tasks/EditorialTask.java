@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.tasks;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
@@ -68,10 +69,10 @@ public interface EditorialTask<EntityType>
     * Retrieves a {@link WorkItem} by its identifier.
     *
     * @param id The id of the work item to retrieve
-    * @return The identified work item.
+    * @return The identified work item if it exists
     * @throws IllegalArgumentException If no work item with the given id exists.
     */
-   WorkItem getItem(String id) throws IllegalArgumentException;
+   Optional<WorkItem> getItem(String id) throws IllegalArgumentException;
 
    /**
     * Adds work items for all entities provided by a supplier as new tasks. This returns

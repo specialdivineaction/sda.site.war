@@ -3,7 +3,7 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.tamu.tcat.trc.entries.core.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryReference;
 
 /**
  * Records the updates to an original version of a WorkItem.

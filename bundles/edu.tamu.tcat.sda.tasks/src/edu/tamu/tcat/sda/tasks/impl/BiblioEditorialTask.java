@@ -3,6 +3,7 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -25,9 +26,8 @@ import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
-import edu.tamu.tcat.trc.repo.IdFactory;
-import edu.tamu.tcat.trc.repo.RepositoryException;
 import edu.tamu.tcat.trc.repo.RepositorySchema;
+import edu.tamu.tcat.trc.repo.id.IdFactory;
 
 public abstract class BiblioEditorialTask implements EditorialTask<BibliographicEntry>
 {
@@ -94,15 +94,11 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
       try
       {
          String id = command.execute().get();
-         return repo.getItem(id);
+         return repo.getItem(id).orElseThrow(() -> new IllegalStateException("Work item supposedly created, but unable to retrieve it."));
       }
       catch (InterruptedException | ExecutionException e)
       {
          throw new IllegalStateException("Unable to create work item", e);
-      }
-      catch (RepositoryException e)
-      {
-         throw new IllegalStateException("Work item supposedly created, but unable to retrieve it", e);
       }
    }
 
@@ -121,18 +117,13 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
             try
             {
                String id = command.execute().get();
-               WorkItem workItem = repo.getItem(id);
-               monitor.created(new BasicWorkItemCreationRecord<>(workItem, id));
+               Optional<WorkItem> workItem = repo.getItem(id);
+               monitor.created(new BasicWorkItemCreationRecord<>(workItem.orElseThrow(IllegalStateException::new), id));
             }
-            catch (ExecutionException | InterruptedException e)
+            catch (Exception e)
             {
                // TODO: Not sure what to pass in as the first argument: Should it be the WorkItem (that was not created) or the Work?
                monitor.failed(new BasicWorkItemCreationError<>(null, "unable to fetch created work item for the given entity", e));
-            }
-            catch (RepositoryException e)
-            {
-               // TODO: Not sure what to pass in as the first argument: Should it be the WorkItem (that was not created) or the Work?
-               monitor.failed(new BasicWorkItemCreationError<>(null, "unable to fetch created work item", e));
             }
 
             // prime next loop cycle
@@ -143,7 +134,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
    }
 
    @Override
-   public WorkItem getItem(String id)
+   public Optional<WorkItem> getItem(String id)
    {
       WorkItemRepository repo = getRepository();
       return repo.getItem(id);
@@ -180,16 +171,11 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
       try
       {
          String updatedId = command.execute().get();
-         return repo.getItem(updatedId);
+         return repo.getItem(updatedId).orElseThrow(() -> new IllegalStateException(MessageFormat.format("Unable to fetch updated item {0} from repo.", itemId)));
       }
       catch (InterruptedException | ExecutionException e)
       {
          String message = MessageFormat.format("Unable to transition item {0} to stage {1}.", itemId, transition.getTarget().getId());
-         throw new IllegalStateException(message, e);
-      }
-      catch (RepositoryException e)
-      {
-         String message = MessageFormat.format("Unable to fetch updated item {0} from repo.", itemId);
          throw new IllegalStateException(message, e);
       }
    }

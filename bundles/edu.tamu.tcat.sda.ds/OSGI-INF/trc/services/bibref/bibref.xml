@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" deactivate="stop" immediate="false" name="edu.tamu.tcat.trc.services.bibref">
-   <implementation class="edu.tamu.tcat.trc.services.types.bibref.impl.BibliographicReferenceService"/>
-   <reference bind="setRepositoryContext" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.RepositoryContext" name="RepositoryContext" policy="static"/>
-   <service>
-      <provide interface="edu.tamu.tcat.trc.services.types.bibref.impl.BibliographicReferenceService"/>
-      <provide interface="edu.tamu.tcat.trc.services.types.bibref.repo.ReferenceRepositoryFactory"/>
-   </service>
-</scr:component>

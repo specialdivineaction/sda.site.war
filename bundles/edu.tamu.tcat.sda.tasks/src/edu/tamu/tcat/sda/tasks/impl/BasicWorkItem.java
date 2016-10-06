@@ -6,7 +6,7 @@ import java.util.Set;
 
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.entries.core.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryReference;
 
 public class BasicWorkItem implements WorkItem
 {

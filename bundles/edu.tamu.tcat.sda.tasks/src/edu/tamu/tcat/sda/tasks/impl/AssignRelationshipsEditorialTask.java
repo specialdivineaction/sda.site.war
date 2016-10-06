@@ -6,9 +6,9 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.trc.repo.BasicSchemaBuilder;
-import edu.tamu.tcat.trc.repo.IdFactory;
 import edu.tamu.tcat.trc.repo.RepositorySchema;
 import edu.tamu.tcat.trc.repo.SchemaBuilder;
+import edu.tamu.tcat.trc.repo.id.IdFactory;
 
 /**
  * Hard-coded implementation of the 'AssignCopies' editorial task. To be re-factored once a

@@ -1,13 +1,14 @@
 package edu.tamu.tcat.sda.tasks;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 public interface WorkItemRepository
 {
 
    Iterator<WorkItem> getAllItems();
 
-   WorkItem getItem(String id);
+   Optional<WorkItem> getItem(String id);
 
    EditWorkItemCommand createItem();
 

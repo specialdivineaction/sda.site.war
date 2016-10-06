@@ -8,7 +8,7 @@ import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStageTransition;
-import edu.tamu.tcat.trc.entries.core.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryReference;
 
 public class RepoAdapter
 {

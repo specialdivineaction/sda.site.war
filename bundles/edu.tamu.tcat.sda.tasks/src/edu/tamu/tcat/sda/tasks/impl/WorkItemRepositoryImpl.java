@@ -2,6 +2,7 @@ package edu.tamu.tcat.sda.tasks.impl;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,9 +11,9 @@ import edu.tamu.tcat.sda.tasks.EditWorkItemCommand;
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.WorkItemRepository;
 import edu.tamu.tcat.trc.repo.DocumentRepository;
-import edu.tamu.tcat.trc.repo.IdFactory;
 import edu.tamu.tcat.trc.repo.RepositoryException;
 import edu.tamu.tcat.trc.repo.RepositorySchema;
+import edu.tamu.tcat.trc.repo.id.IdFactory;
 import edu.tamu.tcat.trc.repo.postgres.PsqlJacksonRepoBuilder;
 
 public class WorkItemRepositoryImpl implements WorkItemRepository
@@ -64,17 +65,9 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
     * @see edu.tamu.tcat.sda.tasks.impl.WorkItemRepository#getItem(java.lang.String)
     */
    @Override
-   public WorkItem getItem(String id)
+   public Optional<WorkItem> getItem(String id)
    {
-      try
-      {
-         return repo.get(id);
-      }
-      catch (RepositoryException e)
-      {
-         String message = MessageFormat.format("Unable to fetch item {0}.", id);
-         throw new IllegalArgumentException(message, e);
-      }
+      return repo.get(id);
    }
 
    /* (non-Javadoc)

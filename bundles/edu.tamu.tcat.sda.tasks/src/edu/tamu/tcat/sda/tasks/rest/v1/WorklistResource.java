@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -36,7 +37,7 @@ public class WorklistResource
    @Path("{id}")
    public WorkItemResource getItem(@PathParam("id") String id)
    {
-      WorkItem item = task.getItem(id);
+      WorkItem item = task.getItem(id).orElseThrow(() -> new NotFoundException(MessageFormat.format("Unable to find task with id {0}.", id)));
       return new WorkItemResource(task, item);
    }
 
