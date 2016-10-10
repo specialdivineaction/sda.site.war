@@ -41,7 +41,8 @@ Import-Package: com.fasterxml.jackson.jaxrs.base;version="2.3.1",
 Service-Component-Disabled: 
  OSGI-INF/auth/crypto.xml,
  OSGI-INF/auth/feature.token.xml,
- OSGI-INF/auth/tokensvc.xml
+ OSGI-INF/auth/tokensvc.xml,
+ OSGI-INF/rest.admin.xml
 Service-Component: 
  OSGI-INF/auth/accountstore.xml,
  OSGI-INF/config.xml,
@@ -64,7 +65,6 @@ Service-Component:
  OSGI-INF/trc/entries/reln/reln.xml,
  OSGI-INF/trc/entries/reln/reln.rest.xml,
  OSGI-INF/trc/services/categorization/categorization.rest.xml,
- OSGI-INF/rest.admin.xml,
  OSGI-INF/rest.export.csv.xml,
  OSGI-INF/rest.graph.xml,
  OSGI-INF/rest.tasks.xml
