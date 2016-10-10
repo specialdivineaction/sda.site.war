@@ -55,6 +55,7 @@ Service-Component:
  OSGI-INF/trc/repository.registry.xml,
  OSGI-INF/trc/search.manager.xml,
  OSGI-INF/trc/service.manager.xml,
+ OSGI-INF/trc/application.xml,
  OSGI-INF/trc/entries/article/article.xml,
  OSGI-INF/trc/entries/article/article.rest.xml,
  OSGI-INF/trc/entries/biblio/biblio.xml,
