@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="edu.tamu.tcat.sda.rest.accountstore">
-   <implementation class="edu.tamu.tcat.account.db.store.DatabaseAccountStore"/>
-   <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <implementation class="edu.tamu.tcat.trc.impl.psql.account.DbAcctDataStore"/>
+   <reference bind="bindSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
+   <reference bind="bindConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
    <service>
-      <provide interface="edu.tamu.tcat.account.db.store.DatabaseAccountStore"/>
       <provide interface="edu.tamu.tcat.account.store.AccountStore"/>
+      <provide interface="edu.tamu.tcat.trc.auth.account.TrcAccountDataStore"/>
    </service>
 </scr:component>
