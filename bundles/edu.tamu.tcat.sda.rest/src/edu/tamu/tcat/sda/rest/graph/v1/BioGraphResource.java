@@ -61,7 +61,7 @@ public class BioGraphResource
             .map(node -> node.id)
             .collect(Collectors.toSet());
 
-      Iterable<Relationship> relationships = () -> relnRepo.getAllRelationships();
+      Iterable<Relationship> relationships = () -> relnRepo.listAll();
 
       List<GraphDTO.Edge> edges = StreamSupport.stream(relationships.spliterator(), true)
             .flatMap(this::relnToEdges)

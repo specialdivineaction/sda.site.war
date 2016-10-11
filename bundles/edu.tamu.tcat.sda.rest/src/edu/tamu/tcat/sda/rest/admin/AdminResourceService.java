@@ -204,7 +204,7 @@ public class AdminResourceService
 
          RelationshipRepository relnRepository = repoRegistry.getRepository(null, RelationshipRepository.class);
 
-         Iterable<Relationship> relationships = () -> relnRepository.getAllRelationships();
+         Iterable<Relationship> relationships = () -> relnRepository.listAll();
          Collection<SolrInputDocument> solrDocs = StreamSupport.stream(relationships.spliterator(), false)
                .map(RelnDocument::create)
                .collect(Collectors.toList());

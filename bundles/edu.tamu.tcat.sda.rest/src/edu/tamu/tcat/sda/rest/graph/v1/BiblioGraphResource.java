@@ -46,7 +46,7 @@ public class BiblioGraphResource
          .map(node -> node.id)
          .collect(Collectors.toSet());
 
-      Iterable<Relationship> relationships = () -> relnRepo.getAllRelationships();
+      Iterable<Relationship> relationships = () -> relnRepo.listAll();
 
       graph.edges = StreamSupport.stream(relationships.spliterator(), true)
          .flatMap(reln -> RepoAdapter.toDTO(reln).stream())
