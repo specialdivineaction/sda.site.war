@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 
 import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.rest.search.v1.UnifiedSearchResource;
+import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.search.solr.SearchServiceManager;
 
 @Path("/")
@@ -16,11 +17,17 @@ public class UnifiedSearchResourceService
    private static final Logger logger = Logger.getLogger(UnifiedSearchResourceService.class.getName());
 
    private ConfigurationProperties config;
+   private EntryRepositoryRegistry repoRegistry;
    private SearchServiceManager searchServiceMgr;
 
    public void setConfig(ConfigurationProperties config)
    {
       this.config = config;
+   }
+
+   public void setRepoRegistry(EntryRepositoryRegistry repoRegistry)
+   {
+      this.repoRegistry = repoRegistry;
    }
 
    public void setSearchServiceManager(SearchServiceManager searchServiceMgr)
@@ -35,6 +42,7 @@ public class UnifiedSearchResourceService
          logger.info(() -> "Activating " + getClass().getSimpleName());
 
          Objects.requireNonNull(config, "No configuration provided");
+         Objects.requireNonNull(repoRegistry, "No repo registry provided");
          Objects.requireNonNull(searchServiceMgr, "No search service manager provided");
       }
       catch (Exception e)
@@ -47,12 +55,12 @@ public class UnifiedSearchResourceService
    @Path("search")
    public UnifiedSearchResource getDefaultVersion()
    {
-      return new UnifiedSearchResource(searchServiceMgr, config);
+      return new UnifiedSearchResource(searchServiceMgr, repoRegistry, config);
    }
 
    @Path("v1/search")
    public UnifiedSearchResource getV1()
    {
-      return new UnifiedSearchResource(searchServiceMgr, config);
+      return new UnifiedSearchResource(searchServiceMgr, repoRegistry, config);
    }
 }

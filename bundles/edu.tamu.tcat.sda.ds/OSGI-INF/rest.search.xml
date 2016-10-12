@@ -2,6 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.sda.rest.search">
    <implementation class="edu.tamu.tcat.sda.rest.search.UnifiedSearchResourceService"/>
    <reference bind="setConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+   <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
    <reference bind="setSearchServiceManager" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.sda.rest.search.UnifiedSearchResourceService"/>
