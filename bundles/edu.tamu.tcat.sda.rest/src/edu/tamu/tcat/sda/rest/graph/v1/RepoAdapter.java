@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -166,41 +167,30 @@ public class RepoAdapter
    private static String extractName(PersonName name)
    {
       if (name == null)
-      {
-         return null;
-      }
+         return "Unknown";
 
       // look for existing display name
-
       String displayName = name.getDisplayName();
       if (displayName != null)
-      {
          return displayName.trim();
-      }
 
+      // TODO perhaps move this into the display name
       // fall back to constructing a display name from given and family names
-
       StringJoiner sj = new StringJoiner(" ");
 
       String firstName = name.getGivenName();
       if (firstName != null && !firstName.trim().isEmpty())
-      {
          sj.add(firstName.trim());
-      }
 
       String lastName = name.getFamilyName();
       if (lastName != null && !lastName.trim().isEmpty())
-      {
          sj.add(lastName.trim());
-      }
 
       String constructedName = sj.toString();
       if (!constructedName.trim().isEmpty())
-      {
          return constructedName;
-      }
 
-      return null;
+      return "Unknown";
    }
 
    /**
@@ -211,28 +201,14 @@ public class RepoAdapter
    private static String extractTitle(TitleDefinition titleDefinition)
    {
       if (titleDefinition == null)
-      {
-         return null;
-      }
+         return "Unknown";
 
-      Title shortTitle = titleDefinition.get("short");
-      if (shortTitle != null)
-      {
-         return shortTitle.getFullTitle();
-      }
+      // HACK magic strings
 
-      Title canonicalTitle = titleDefinition.get("canonical");
-      if (canonicalTitle != null)
-      {
-         return canonicalTitle.getFullTitle();
-      }
-
-      Title bibliographicTitle = titleDefinition.get("bibliographic");
-      if (bibliographicTitle != null)
-      {
-         return bibliographicTitle.getFullTitle();
-      }
-
-      return null;
+      return titleDefinition.get("short").map(Optional::of)
+            .orElseGet(() -> titleDefinition.get("canonical")).map(Optional::of)
+            .orElseGet(() -> titleDefinition.get("bibliographic"))
+            .map(Title::getFullTitle)
+            .orElse("Unknown");
    }
 }

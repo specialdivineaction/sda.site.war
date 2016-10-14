@@ -167,5 +167,7 @@ public class GraphDTO
        * Additional properties and custom data about this edge.
        */
       public Map<String, Object> metadata;
+
+      // TODO add description
    }
 }

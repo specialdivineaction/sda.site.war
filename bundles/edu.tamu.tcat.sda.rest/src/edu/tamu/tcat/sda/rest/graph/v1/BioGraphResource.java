@@ -1,6 +1,7 @@
 package edu.tamu.tcat.sda.rest.graph.v1;
 
-import java.text.MessageFormat;
+import static java.text.MessageFormat.format;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.rest.graph.GraphDTO;
+import edu.tamu.tcat.sda.rest.graph.GraphDTO.Edge;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRankIterative;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
@@ -47,17 +49,31 @@ public class BioGraphResource
    @Produces(MediaType.APPLICATION_JSON)
    public GraphDTO.SingleGraph getGraph()
    {
-      Iterable<BiographicalEntry> people = () -> peopleRepo.listAll();
 
       GraphDTO.Graph graph = new GraphDTO.Graph();
 
       graph.type = "people-reln";
+      graph.nodes = getPersonNodes();
+      graph.edges = constructEdges(graph.nodes);
 
-      graph.nodes = StreamSupport.stream(people.spliterator(), true)
-            .map(RepoAdapter::toDTO)
-            .collect(Collectors.toList());
+      // annotates all nodes
+      PageRank pageRank = new PageRankIterative(graph, 0.75);
+      pageRank.execute();
 
-      Set<String> nodeIds = graph.nodes.stream()
+      return GraphDTO.SingleGraph.create(graph);
+   }
+
+   private List<GraphDTO.Node> getPersonNodes()
+   {
+      Iterable<BiographicalEntry> people = () -> peopleRepo.listAll();
+      return StreamSupport.stream(people.spliterator(), true)
+                  .map(RepoAdapter::toDTO)
+                  .collect(Collectors.toList());
+   }
+
+   private List<GraphDTO.Edge> constructEdges(List<GraphDTO.Node> nodes)
+   {
+      Set<String> nodeIds = nodes.stream()
             .map(node -> node.id)
             .collect(Collectors.toSet());
 
@@ -69,12 +85,7 @@ public class BioGraphResource
             .filter(edge -> nodeIds.contains(edge.source) && nodeIds.contains(edge.target))
             .collect(Collectors.toList());
 
-      graph.edges = combineEdges(edges);
-
-      PageRank pageRank = new PageRankIterative(graph, 0.75);
-      pageRank.execute();
-
-      return GraphDTO.SingleGraph.create(graph);
+      return combineEdges(edges);
    }
 
    private Stream<GraphDTO.Edge> relnToEdges(Relationship reln)
@@ -86,8 +97,8 @@ public class BioGraphResource
       catch (Exception e)
       {
          // skip any problematic relationships
-         String msg = MessageFormat.format("Skipping conversion of relationship {0}: encountered an error during adaptation", reln.getId());
-         logger.log(Level.WARNING, msg, e);
+         String pattern = "Skipping conversion of relationship {0}: encountered an error during adaptation";
+         logger.log(Level.WARNING, format(pattern, reln.getId()), e);
          return Stream.empty();
       }
    }
@@ -99,22 +110,35 @@ public class BioGraphResource
     */
    private Stream<GraphDTO.Edge> expandByAuthor(GraphDTO.Edge workEdge)
    {
-      BibliographicEntry sourceWork = workRepo.get(workEdge.source);
-      BibliographicEntry targetWork = workRepo.get(workEdge.target);
+      try
+      {
+         String missingBiblio = "Missing bibliographic entry for {0} on relationships {1}";
+         BibliographicEntry sourceWork =
+               workRepo.getOptionally(workEdge.source)
+                       .orElseThrow(() -> new IllegalStateException(format(missingBiblio, workEdge.source, workEdge.id)));
+         BibliographicEntry targetWork = workRepo
+               .getOptionally(workEdge.target)
+               .orElseThrow(() -> new IllegalStateException(format(missingBiblio, workEdge.target, workEdge.id)));
 
-      Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
+         Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
 
-      sourceWork.getAuthors().forEach(sourceRef -> {
-         targetWork.getAuthors().forEach(targetRef -> {
-            GraphDTO.Edge authorEdge = cloneEdge(workEdge);
-            authorEdge.source = sourceRef.getId();
-            authorEdge.target = targetRef.getId();
+         sourceWork.getAuthors().forEach(sourceRef -> {
+            targetWork.getAuthors().forEach(targetRef -> {
+               GraphDTO.Edge authorEdge = cloneEdge(workEdge);
+               authorEdge.source = sourceRef.getId();
+               authorEdge.target = targetRef.getId();
 
-            authorEdges.add(authorEdge);
+               authorEdges.add(authorEdge);
+            });
          });
-      });
 
-      return authorEdges.stream();
+         return authorEdges.stream();
+      }
+      catch (Exception ex)
+      {
+         logger.log(Level.WARNING, "Failed to collapse edge.", ex);
+         return Stream.empty();
+      }
    }
 
    /**
@@ -132,28 +156,28 @@ public class BioGraphResource
          bucket.add(edge);
       });
 
-      return buckets.values().stream()
-            .map(bucket -> {
-               if (bucket.isEmpty())
-               {
-                  throw new IllegalStateException("buckets should contain at least one entry");
-               }
-
-               // use any random entry as template for all
-               GraphDTO.Edge edge = bucket.iterator().next();
-
-               List<String> relationshipIds = bucket.stream()
-                     .map(e -> e.id)
-                     .collect(Collectors.toList());
-
-               edge.metadata.clear();
-               edge.metadata.put("relationshipIds", relationshipIds);
-               edge.metadata.put("multiplicity", Integer.valueOf(bucket.size()));
-               edge.id = null;
-
-               return edge;
-            })
+      return buckets.values()
+            .stream()
+            .filter(bucket -> !bucket.isEmpty())
+            .map(this::combine)
             .collect(Collectors.toList());
+   }
+
+   private GraphDTO.Edge combine(Collection<Edge> bucket)
+   {
+      // use any random entry as template for all
+      GraphDTO.Edge edge = bucket.iterator().next();
+
+      List<String> relationshipIds = bucket.stream()
+            .map(e -> e.id)
+            .collect(Collectors.toList());
+
+      edge.metadata.clear();
+      edge.metadata.put("relationshipIds", relationshipIds);
+      edge.metadata.put("multiplicity", Integer.valueOf(bucket.size()));
+      edge.id = null;
+
+      return edge;
    }
 
    private static GraphDTO.Edge cloneEdge(GraphDTO.Edge orig)
