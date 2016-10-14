@@ -4,7 +4,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
@@ -253,27 +252,20 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
     */
    private static String getAuthorLabel(BibliographicEntry entity)
    {
-      if (entity != null)
+      AuthorList authors = entity.getAuthors();
+      if (authors.size() > 0)
       {
-         AuthorList authors = entity.getAuthors();
-         if (authors != null && authors.size() > 0)
+         // find first available author's last name
+         for (AuthorReference author : authors)
          {
-            // find first available author's last name
-            for (AuthorReference author : authors)
-            {
-               if (author == null)
-               {
-                  continue;
-               }
+            if (author == null)
+               continue;
 
-               String authorLastName = author.getLastName();
-               if (authorLastName == null || authorLastName.trim().isEmpty())
-               {
-                  continue;
-               }
+            String authorLastName = author.getLastName();
+            if (authorLastName == null || authorLastName.trim().isEmpty())
+               continue;
 
-               return authorLastName.trim();
-            }
+            return authorLastName.trim();
          }
       }
 
@@ -288,39 +280,24 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
     */
    private static String getTitleLabel(BibliographicEntry entity)
    {
-      if (entity != null)
+      TitleDefinition titleDefinition = entity.getTitle();
+      // find the first available title in preferred type order
+      for (String type : TITLE_PREFERENCE_ORDER)
       {
-         TitleDefinition titleDefinition = entity.getTitle();
-         if (titleDefinition != null)
-         {
-            // find the first available title in preferred type order
-            for (String type : TITLE_PREFERENCE_ORDER)
-            {
-               Title title = titleDefinition.get(type);
-               String fullTitle = extractFullTitle(title);
-               if (fullTitle != null)
-               {
-                  return fullTitle;
-               }
-            }
+         String fullTitle = titleDefinition.get(type)
+               .map(BiblioEditorialTask::extractFullTitle)
+               .orElse(null);
 
-            // no preferred titles available; just get any title
-            Set<Title> titles = titleDefinition.get();
-            if (titles != null)
-            {
-               for (Title title : titles)
-               {
-                  String fullTitle = extractFullTitle(title);
-                  if (fullTitle != null)
-                  {
-                     return fullTitle;
-                  }
-               }
-            }
-         }
+         if (fullTitle != null)
+            return fullTitle;
       }
 
-      return null;
+      // no preferred titles available; just get any title
+      return titleDefinition.get().stream()
+               .filter(t -> t != null)
+               .map(BiblioEditorialTask::extractFullTitle)
+               .findFirst()
+               .orElse(null);
    }
 
    /**
@@ -331,18 +308,8 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
     */
    private static String extractFullTitle(Title title)
    {
-      if (title == null)
-      {
-         return null;
-      }
-
       String fullTitle = title.getFullTitle();
-      if (fullTitle == null || fullTitle.trim().isEmpty())
-      {
-         return null;
-      }
-
-      return fullTitle.trim();
+      return (fullTitle == null || fullTitle.trim().isEmpty()) ? null : fullTitle.trim();
    }
 
    private static class PwisImpl implements PartialWorkItemSet
