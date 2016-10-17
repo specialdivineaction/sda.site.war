@@ -166,8 +166,13 @@ public class BiblioCsvExportResource
       TitleDefinition workTitle = work.getTitle();
       if (workTitle != null)
       {
-         record.canonicalTitle = workTitle.get("short").map(Title::getFullTitle).orElse(null);
-         record.bibliographicTitle = workTitle.get("canonical").map(Title::getFullTitle).orElse(null);
+         record.canonicalTitle = workTitle.get("short")
+               .map(Title::getFullTitle)
+               .orElse(null);
+
+         record.bibliographicTitle = workTitle.get("canonical")
+               .map(Title::getFullTitle)
+               .orElse(null);
       }
 
       record.summary = work.getSummary();

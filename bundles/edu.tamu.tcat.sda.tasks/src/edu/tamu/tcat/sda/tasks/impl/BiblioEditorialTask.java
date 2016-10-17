@@ -284,12 +284,11 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
       // find the first available title in preferred type order
       for (String type : TITLE_PREFERENCE_ORDER)
       {
-         String fullTitle = titleDefinition.get(type)
-               .map(BiblioEditorialTask::extractFullTitle)
-               .orElse(null);
+         Optional<String> fullTitle = titleDefinition.get(type)
+               .map(BiblioEditorialTask::extractFullTitle);
 
-         if (fullTitle != null)
-            return fullTitle;
+         if (fullTitle.isPresent())
+            return fullTitle.get();
       }
 
       // no preferred titles available; just get any title
@@ -297,7 +296,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
                .filter(t -> t != null)
                .map(BiblioEditorialTask::extractFullTitle)
                .findFirst()
-               .orElse(null);
+               .orElse("No Title Available");
    }
 
    /**
