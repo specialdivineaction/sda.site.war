@@ -17,20 +17,23 @@ import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.PersonName;
 import edu.tamu.tcat.trc.entries.types.reln.Anchor;
-import edu.tamu.tcat.trc.entries.types.reln.AnchorSet;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.RelationshipType;
+import edu.tamu.tcat.trc.resolver.EntryId;
+import edu.tamu.tcat.trc.resolver.EntryResolverRegistry;
 
 public class RepoAdapter
 {
-   private static final Pattern workIdPattern = Pattern.compile("^works/([^/]+)");
-
-   public static GraphDTO.Node toDTO(BiographicalEntry person)
+   public static GraphDTO.Node toDTO(BiographicalEntry person, EntryResolverRegistry resolvers)
    {
-      GraphDTO.Node dto = new GraphDTO.Node();
+      EntryId entryId = resolvers.getResolver(person).makeReference(person);
 
-      dto.id = person.getId();
+      GraphDTO.Node dto = new GraphDTO.Node();
+      dto.id = resolvers.tokenize(entryId);
       dto.label = extractName(person.getCanonicalName());
+
+      dto.metadata.put("id", entryId.getId());
+      dto.metadata.put("type", entryId.getType());
 
       return dto;
    }

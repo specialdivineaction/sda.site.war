@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,27 +23,31 @@ import edu.tamu.tcat.sda.rest.graph.GraphDTO;
 import edu.tamu.tcat.sda.rest.graph.GraphDTO.Edge;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRankIterative;
+import edu.tamu.tcat.trc.entries.types.biblio.AuthorList;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
-import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
+import edu.tamu.tcat.trc.entries.types.reln.Anchor;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
+import edu.tamu.tcat.trc.entries.types.reln.RelationshipType;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
+import edu.tamu.tcat.trc.resolver.EntryId;
+import edu.tamu.tcat.trc.resolver.EntryResolverRegistry;
 
 public class BioGraphResource
 {
    private static final Logger logger = Logger.getLogger(BioGraphResource.class.getName());
 
    private final BiographicalEntryRepository peopleRepo;
-   private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
+   private final EntryResolverRegistry resolvers;
 
 
-   public BioGraphResource(BiographicalEntryRepository peopleRepo, BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
+   public BioGraphResource(BiographicalEntryRepository peopleRepo, RelationshipRepository relnRepo, EntryResolverRegistry resolvers)
    {
       this.peopleRepo = peopleRepo;
-      this.workRepo = workRepo;
       this.relnRepo = relnRepo;
+      this.resolvers = resolvers;
    }
 
    @GET
@@ -67,7 +72,7 @@ public class BioGraphResource
    {
       Iterable<BiographicalEntry> people = () -> peopleRepo.listAll();
       return StreamSupport.stream(people.spliterator(), true)
-                  .map(RepoAdapter::toDTO)
+                  .map(person -> RepoAdapter.toDTO(person, resolvers))
                   .collect(Collectors.toList());
    }
 
@@ -81,18 +86,37 @@ public class BioGraphResource
 
       List<GraphDTO.Edge> edges = StreamSupport.stream(relationships.spliterator(), true)
             .flatMap(this::relnToEdges)
-            .flatMap(this::expandByAuthor)
             .filter(edge -> nodeIds.contains(edge.source) && nodeIds.contains(edge.target))
             .collect(Collectors.toList());
 
       return combineEdges(edges);
    }
 
+   /**
+    * Converts the given work-to-work relationship into a stream of person-to-person graph edges.
+    * @param reln
+    * @return
+    */
    private Stream<GraphDTO.Edge> relnToEdges(Relationship reln)
    {
       try
       {
-         return RepoAdapter.toDTO(reln).stream();
+         RelationshipType type = reln.getType();
+
+         Collection<String> relatedIds = expandByAuthor(reln.getRelatedEntities())
+               .map(person -> resolvers.getResolver(person).makeReference(person))
+               .map(resolvers::tokenize)
+               .collect(Collectors.toList());
+
+         Collection<String> targetIds = expandByAuthor(reln.getTargetEntities())
+               .map(person -> resolvers.getResolver(person).makeReference(person))
+               .map(resolvers::tokenize)
+               .collect(Collectors.toList());
+
+         // HACK: reverse role of source and target for analysis and display.
+         //       We need to rethink the how SDA relationship types are semantically interpreted.
+         //       See https://issues.citd.tamu.edu/browse/SDA-39 for more info
+         return RepoAdapter.pairRelated(type, relatedIds, targetIds, (from, to) -> RepoAdapter.createEdge(to, from, reln));
       }
       catch (Exception e)
       {
@@ -104,39 +128,74 @@ public class BioGraphResource
    }
 
    /**
-    * Spread a work-referencing edge into a stream of author-referencing edges.
+    * Spread a collection of anchors into a collection of authors.
     * @param workEdge
     * @return
     */
-   private Stream<GraphDTO.Edge> expandByAuthor(GraphDTO.Edge workEdge)
+   private Stream<BiographicalEntry> expandByAuthor(Collection<Anchor> anchors)
    {
       try
       {
-         String missingBiblio = "Missing bibliographic entry for {0} on relationships {1}";
-         BibliographicEntry sourceWork =
-               workRepo.getOptionally(workEdge.source)
-                       .orElseThrow(() -> new IllegalStateException(format(missingBiblio, workEdge.source, workEdge.id)));
-         BibliographicEntry targetWork = workRepo
-               .getOptionally(workEdge.target)
-               .orElseThrow(() -> new IllegalStateException(format(missingBiblio, workEdge.target, workEdge.id)));
-
-         Collection<GraphDTO.Edge> authorEdges = new ArrayList<>();
-
-         sourceWork.getAuthors().forEach(sourceRef -> {
-            targetWork.getAuthors().forEach(targetRef -> {
-               GraphDTO.Edge authorEdge = cloneEdge(workEdge);
-               authorEdge.source = sourceRef.getId();
-               authorEdge.target = targetRef.getId();
-
-               authorEdges.add(authorEdge);
-            });
-         });
-
-         return authorEdges.stream();
+         return anchors.stream()
+            .map(Anchor::getTarget)
+            .map(this::resolveWork)
+            .flatMap(this::getAuthors);
       }
-      catch (Exception ex)
+      catch (Exception e)
       {
-         logger.log(Level.WARNING, "Failed to collapse edge.", ex);
+         logger.log(Level.WARNING, format("unable to extract authors from anchors"), e);
+         return Stream.empty();
+      }
+   }
+
+   /**
+    * Looks up the work referenced by the given {@link EntryId}.
+    * @param entryId
+    * @return
+    */
+   private BibliographicEntry resolveWork(EntryId entryId)
+   {
+      try
+      {
+         return (BibliographicEntry)resolvers.getReference(entryId).getEntry(null);
+      }
+      catch (ClassCastException e)
+      {
+         logger.log(Level.WARNING, format("Unable to resolve work from entry id {0} for type {1}", entryId.getId(), entryId.getType()), e);
+         return null;
+      }
+   }
+
+   /**
+    * Looks up authors for a given work
+    * @param work
+    * @return
+    */
+   private Stream<BiographicalEntry> getAuthors(BibliographicEntry work)
+   {
+      if (work == null)
+      {
+         return Stream.empty();
+      }
+
+      try
+      {
+         AuthorList authors = work.getAuthors();
+
+         return StreamSupport.stream(authors.spliterator(), false)
+               .map(ref -> {
+                  String authorId = ref.getId();
+
+                  return peopleRepo.getOptionally(authorId).orElseGet(() -> {
+                     logger.warning(() -> format("work {0} references a non-existent author {1}", work.getId(), authorId));
+                     return null;
+                  });
+               })
+               .filter(Objects::nonNull);
+      }
+      catch (Exception e)
+      {
+         logger.log(Level.WARNING, format("unable to get authors from work {0}", work.getId()), e);
          return Stream.empty();
       }
    }
@@ -159,11 +218,17 @@ public class BioGraphResource
       return buckets.values()
             .stream()
             .filter(bucket -> !bucket.isEmpty())
-            .map(this::combine)
+            .map(this::mergeEqualEdges)
             .collect(Collectors.toList());
    }
 
-   private GraphDTO.Edge combine(Collection<Edge> bucket)
+   /**
+    * Merges a collection of (presumably equivalent) edges into a single edge containing
+    * relationshipIds and multiplicity metadata fields
+    * @param bucket
+    * @return
+    */
+   private GraphDTO.Edge mergeEqualEdges(Collection<Edge> bucket)
    {
       // use any random entry as template for all
       GraphDTO.Edge edge = bucket.iterator().next();
@@ -178,19 +243,5 @@ public class BioGraphResource
       edge.id = null;
 
       return edge;
-   }
-
-   private static GraphDTO.Edge cloneEdge(GraphDTO.Edge orig)
-   {
-      GraphDTO.Edge copy = new GraphDTO.Edge();
-      copy.id = orig.id;
-      copy.source = orig.source;
-      copy.target = orig.target;
-      copy.relation = orig.relation;
-      copy.directed = orig.directed;
-      copy.label = orig.label;
-      copy.metadata = new HashMap<>(orig.metadata);
-
-      return copy;
    }
 }

@@ -58,8 +58,8 @@ public class GraphResourceService
    public BioGraphResource rollupPeople()
    {
       BiographicalEntryRepository peopleRepo = repoRegistry.getRepository(null, BiographicalEntryRepository.class);
-      BibliographicEntryRepository workRepo = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
       RelationshipRepository relnRepo = repoRegistry.getRepository(null, RelationshipRepository.class);
-      return new BioGraphResource(peopleRepo, workRepo, relnRepo);
+      EntryResolverRegistry resolvers = repoRegistry.getResolverRegistry();
+      return new BioGraphResource(peopleRepo, relnRepo, resolvers);
    }
 }
