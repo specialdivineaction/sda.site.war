@@ -15,16 +15,19 @@ import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.Relationship;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
+import edu.tamu.tcat.trc.resolver.EntryResolverRegistry;
 
 public class BiblioGraphResource
 {
    private final BibliographicEntryRepository workRepo;
    private final RelationshipRepository relnRepo;
+   private final EntryResolverRegistry resolvers;
 
-   public BiblioGraphResource(BibliographicEntryRepository workRepo, RelationshipRepository relnRepo)
+   public BiblioGraphResource(BibliographicEntryRepository workRepo, RelationshipRepository relnRepo, EntryResolverRegistry resolvers)
    {
       this.workRepo = workRepo;
       this.relnRepo = relnRepo;
+      this.resolvers = resolvers;
    }
 
    @GET
@@ -39,7 +42,7 @@ public class BiblioGraphResource
 
       graph.type = "work-reln";
       graph.nodes = StreamSupport.stream(works.spliterator(), true)
-         .map(RepoAdapter::toDTO)
+         .map(work -> RepoAdapter.toDTO(work, resolvers))
          .collect(Collectors.toList());
 
       Set<String> nodeIds = graph.nodes.stream()
@@ -49,7 +52,7 @@ public class BiblioGraphResource
       Iterable<Relationship> relationships = () -> relnRepo.listAll();
 
       graph.edges = StreamSupport.stream(relationships.spliterator(), true)
-         .flatMap(reln -> RepoAdapter.toDTO(reln).stream())
+         .flatMap(reln -> RepoAdapter.toDTO(reln, resolvers).stream())
          .filter(edge -> nodeIds.contains(edge.source) && nodeIds.contains(edge.target))
          .collect(Collectors.toList());
 

@@ -12,6 +12,7 @@ import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
+import edu.tamu.tcat.trc.resolver.EntryResolverRegistry;
 
 @Path("graph")
 public class GraphResourceService
@@ -49,7 +50,8 @@ public class GraphResourceService
    {
       BibliographicEntryRepository workRepo = repoRegistry.getRepository(null, BibliographicEntryRepository.class);
       RelationshipRepository relnRepo = repoRegistry.getRepository(null, RelationshipRepository.class);
-      return new BiblioGraphResource(workRepo, relnRepo);
+      EntryResolverRegistry resolvers = repoRegistry.getResolverRegistry();
+      return new BiblioGraphResource(workRepo, relnRepo, resolvers);
    }
 
    @Path("people")

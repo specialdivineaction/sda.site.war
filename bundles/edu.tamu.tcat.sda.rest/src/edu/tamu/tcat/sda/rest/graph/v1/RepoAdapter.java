@@ -1,14 +1,14 @@
 package edu.tamu.tcat.sda.rest.graph.v1;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 import edu.tamu.tcat.sda.rest.graph.GraphDTO;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
@@ -40,13 +40,18 @@ public class RepoAdapter
     * @param work
     * @return
     */
-   public static GraphDTO.Node toDTO(BibliographicEntry work)
+   public static GraphDTO.Node toDTO(BibliographicEntry work, EntryResolverRegistry resolvers)
    {
+      EntryId entryId = resolvers.getResolver(work).makeReference(work);
+
       GraphDTO.Node dto = new GraphDTO.Node();
 
-      dto.id = work.getId();
+      dto.id = resolvers.tokenize(entryId);
       dto.label = extractTitle(work.getTitle());
       dto.type = "work";
+
+      dto.metadata.put("id", entryId.getId());
+      dto.metadata.put("type", entryId.getType());
 
       return dto;
    }
@@ -56,61 +61,91 @@ public class RepoAdapter
     * @param reln
     * @return
     */
-   public static List<GraphDTO.Edge> toDTO(Relationship reln)
+   public static List<GraphDTO.Edge> toDTO(Relationship reln, EntryResolverRegistry resolvers)
    {
       RelationshipType type = reln.getType();
 
-      AnchorSet relatedSet = reln.getRelatedEntities();
-      Collection<Anchor> relateds = relatedSet == null ? null : relatedSet.getAnchors();
+      Collection<String> relatedIds = reln.getRelatedEntities().stream()
+            .map(Anchor::getTarget)
+            .map(resolvers::tokenize)
+            .collect(Collectors.toList());
 
-      AnchorSet targetSet = reln.getTargetEntities();
-      Collection<Anchor> targets = targetSet == null ? null : targetSet.getAnchors();
+      Collection<String> targetIds = reln.getTargetEntities().stream()
+            .map(Anchor::getTarget)
+            .map(resolvers::tokenize)
+            .collect(Collectors.toList());
 
-      List<GraphDTO.Edge> edges = new ArrayList<>();
+      // HACK: reverse role of source and target for analysis and display.
+      //       We need to rethink the how SDA relationship types are semantically interpreted.
+      //       See https://issues.citd.tamu.edu/browse/SDA-39 for more info
+      return pairRelated(type, relatedIds, targetIds, (from, to) -> createEdge(to, from, reln))
+            .collect(Collectors.toList());
+   }
 
-      // HACK Desired structure of undirected relns lists related works within the relatedEntities anchor set
+   /**
+    * Encapsulates the logic for handling related pairs of entities depending on the relationship type:
+    *
+    *   - Undirected relationships have a collection of related entities and no target entities.
+    *     Graph edges should be formed between all distinct pairs of related entities in this case.
+    *
+    *   - Directed relationships have a collection of related entities and a collection of target entities.
+    *     Graph edges should be formed via the Cartesian product of related and target entities.
+    *
+    * @param type
+    * @param related
+    * @param targets
+    * @param handler A binary function that accepts the source and target entities and outputs the desired combined edge result.
+    * @return
+    */
+   public static <T, R> Stream<R> pairRelated(RelationshipType type, Collection<T> related, Collection<T> targets, BiFunction<T, T, R> handler)
+   {
+      if (related == null) {
+         return Stream.empty();
+      }
+
+      Builder<R> results = Stream.builder();
+
+      // HACK Desired structure of undirected relns: collection of related works in relatedEntities; empty targetEntities.
       //      Existing data does not have this structure, but follows the related -> target paradigm of directed relns.
-      if (!type.isDirected() && relateds != null && relateds.size() > 1 && (targets == null || targets.isEmpty()))
+      if (!type.isDirected() && related.size() > 1 && (targets == null || targets.isEmpty()))
       {
          // for every related entity, create an edge to every other entity (excluding self)
          // this creates two complementary directed edges between each pair of nodes
-         for (Anchor source : relateds)
+         for (T source : related)
          {
-            for (Anchor target : relateds)
+            for (T target : related)
             {
                if (source == target)
                {
                   continue;
                }
 
-               GraphDTO.Edge dto = createEdge(source, target, reln);
-               if (dto != null)
-               {
-                  edges.add(dto);
-               }
-
+               results.add(handler.apply(source, target));
             }
          }
+      }
+      else if (targets == null)
+      {
+         return Stream.empty();
       }
       else
       {
-         for (Anchor source : relateds)
+         for (T source : related)
          {
-            for (Anchor target : targets)
+            for (T target : targets)
             {
-               // HACK: reverse role of source and target for analysis and display.
-               //       We need to rethink the how SDA relationship types are semantically interpreted.
-               //       See https://issues.citd.tamu.edu/browse/SDA-39 for more info
-               GraphDTO.Edge dto = createEdge(target, source, reln);
-               if (dto != null)
+               results.add(handler.apply(source, target));
+
+               // add complementary edge if dealing with legacy undirected data
+               if (!type.isDirected())
                {
-                  edges.add(dto);
+                  results.add(handler.apply(target, source));
                }
             }
          }
       }
 
-      return edges;
+      return results.build();
    }
 
    /**
@@ -121,32 +156,17 @@ public class RepoAdapter
     * @param reln Provides edge metadata
     * @return
     */
-   private static GraphDTO.Edge createEdge(Anchor source, Anchor target, Relationship reln)
+   public static GraphDTO.Edge createEdge(String sourceId, String targetId, Relationship reln)
    {
-
-      Collection<URI> sourceUris = source.getEntryIds();
-      Collection<URI> targetUris = target.getEntryIds();
-
-      if (sourceUris == null || sourceUris.isEmpty() || targetUris == null || targetUris.isEmpty())
+      if (sourceId == null || targetId == null)
       {
-         return null;
-      }
-
-      // HACK use first anchor entry URI
-      String sourceUri = sourceUris.iterator().next().toString();
-      String targetUri = targetUris.iterator().next().toString();
-
-      // extract work ID
-      Matcher sourceWorkIdMatcher = workIdPattern.matcher(sourceUri);
-      Matcher targetWorkIdMatcher = workIdPattern.matcher(targetUri);
-      if (!sourceWorkIdMatcher.matches() || !targetWorkIdMatcher.matches()) {
          return null;
       }
 
       GraphDTO.Edge dto = new GraphDTO.Edge();
       dto.id = reln.getId();
-      dto.source = sourceWorkIdMatcher.group(1);
-      dto.target = targetWorkIdMatcher.group(1);
+      dto.source = sourceId;
+      dto.target = targetId;
 
       RelationshipType type = reln.getType();
       dto.directed = Boolean.valueOf(type.isDirected());
