@@ -233,7 +233,8 @@ public class UnifiedSearchResource
 
    private class RelationshipSearchDelegate implements SearchDelegate<Relationship, RelationshipSearchResult>
    {
-      private final RelnSearchStrategy searchStrategy = new RelnSearchStrategy();
+      EntryResolverRegistry resolvers = repoRegistry.getResolverRegistry();
+      private final RelnSearchStrategy searchStrategy = new RelnSearchStrategy(resolvers);
 
       @Override
       public IndexServiceStrategy<Relationship, ?> getSearchStrategy()
