@@ -42,6 +42,7 @@ import edu.tamu.tcat.trc.entries.types.reln.impl.search.RelnSearchStrategy;
 import edu.tamu.tcat.trc.entries.types.reln.repo.RelationshipRepository;
 import edu.tamu.tcat.trc.entries.types.reln.search.RelationshipSearchResult;
 import edu.tamu.tcat.trc.impl.psql.entries.SolrSearchSupport;
+import edu.tamu.tcat.trc.resolver.EntryResolverRegistry;
 import edu.tamu.tcat.trc.search.solr.IndexService;
 import edu.tamu.tcat.trc.search.solr.IndexServiceStrategy;
 import edu.tamu.tcat.trc.search.solr.QueryService;
