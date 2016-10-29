@@ -81,7 +81,8 @@ public class UnifiedSearchResource
    {
       SearchWorksResult works = workSearchDelegate.search(query, offset, numResults);
       PersonSearchResult people = peopleSearchDelegate.search(query, offset, numResults);
-      ArticleSearchResult articles = articleSearchDelegate.search(query, offset, numResults);
+      // TODO: article solr core needs to be updated in order for this to work
+      // ArticleSearchResult articles = articleSearchDelegate.search(query, offset, numResults);
 
       RestApiV1.UnifiedResult dto = new RestApiV1.UnifiedResult();
       dto.query = query;
@@ -91,8 +92,8 @@ public class UnifiedSearchResource
       dto.works.addAll(SearchAdapter.adapt(works));
       dto.people.clear();
       dto.people.addAll(SearchAdapter.adapt(people));
-      dto.articles.clear();
-      dto.articles.addAll(SearchAdapter.adapt(articles));
+      // dto.articles.clear();
+      // dto.articles.addAll(SearchAdapter.adapt(articles));
 
       return dto;
    }
