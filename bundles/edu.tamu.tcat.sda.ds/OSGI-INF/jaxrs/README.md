@@ -1,2 +1,3 @@
-We include component definitions for jaxrs jackson integration in order to ensure that these resources are properly loaded. Note that this 
-fixes the start order issues that are sometime encountered when loading jaxrs services.
+We include component definitions for jaxrs jackson integration in order to ensure that 
+these resources are properly loaded. Note that this fixes the start order issues that are 
+sometime encountered when loading jaxrs services.
