@@ -21,12 +21,7 @@ public class ModelAdapter
 
    public WorkItem adapt(PersistenceDtoV1.WorkItem item)
    {
-      return new BasicWorkItem(
-            item.id,
-            item.label,
-            item.description,
-            item.properties,
-            item.entityRef,
-            stageResolver.apply(item.stageId));
+
+      return new BasicWorkItem(item, stageResolver);
    }
 }

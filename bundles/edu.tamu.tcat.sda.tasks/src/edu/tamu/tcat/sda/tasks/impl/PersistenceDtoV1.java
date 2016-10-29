@@ -3,8 +3,6 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.tamu.tcat.trc.resolver.EntryReference;
-
 public class PersistenceDtoV1
 {
    public static class WorkItem
@@ -12,7 +10,7 @@ public class PersistenceDtoV1
       public String id;
       public String label;
       public String description;
-      public EntryReference entityRef = new EntryReference();
+      public Map<String, String> entityRef = new HashMap<>();
 
       public Map<String, String> properties = new HashMap<>();
       public String stageId;
@@ -23,9 +21,7 @@ public class PersistenceDtoV1
          result.id = orig.id;
          result.label = orig.label;
          result.description = orig.description;
-         result.entityRef = new EntryReference();
-         result.entityRef.type = orig.entityRef.type;
-         result.entityRef.id = orig.entityRef.id;
+         result.entityRef = new HashMap<>(orig.entityRef);
          result.stageId = orig.stageId;
          result.properties = new HashMap<>(orig.properties);
 

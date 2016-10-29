@@ -10,6 +10,7 @@ import edu.tamu.tcat.trc.repo.BasicChangeSet;
 import edu.tamu.tcat.trc.repo.ChangeSet.ApplicableChangeSet;
 import edu.tamu.tcat.trc.repo.EditCommandFactory;
 import edu.tamu.tcat.trc.repo.UpdateContext;
+import edu.tamu.tcat.trc.resolver.EntryId;
 
 public class EditItemCommandFactoryImpl implements EditCommandFactory<PersistenceDtoV1.WorkItem, EditWorkItemCommand>
 {
@@ -66,8 +67,8 @@ public class EditItemCommandFactoryImpl implements EditCommandFactory<Persistenc
       public void setEntityRef(String type, String id)
       {
          changes.add("", dto -> {
-            dto.entityRef.type = type;
-            dto.entityRef.id = id;
+            EntryId eId = new EntryId(id, type);
+            dto.entityRef = eId.toJsonForm();
          });
       }
 

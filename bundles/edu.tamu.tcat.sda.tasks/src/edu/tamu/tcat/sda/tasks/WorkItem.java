@@ -3,7 +3,7 @@ package edu.tamu.tcat.sda.tasks;
 import java.util.Set;
 
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryId;
 
 /**
  * Represents a unit of work within an {@link EditorialTask}. For example, this might represent
@@ -27,7 +27,7 @@ public interface WorkItem
     */
    WorkflowStage getStage();
 
-   EntryReference getEntryReference();
+   EntryId getEntryId();
 
    // TODO add assignee, due date, reporter, etc.
    // TODO track transition history

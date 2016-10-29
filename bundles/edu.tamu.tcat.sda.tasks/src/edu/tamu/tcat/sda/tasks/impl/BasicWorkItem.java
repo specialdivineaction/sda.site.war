@@ -3,10 +3,11 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
-import edu.tamu.tcat.trc.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryId;
 
 public class BasicWorkItem implements WorkItem
 {
@@ -14,22 +15,17 @@ public class BasicWorkItem implements WorkItem
    private final String label;
    private final String description;
    private final Map<String, String> properties;
-   private final EntryReference entryReference;
+   private final EntryId entryReference;
    private final WorkflowStage stage;
 
-   public BasicWorkItem(String id,
-                        String label,
-                        String description,
-                        Map<String, String> properties,
-                        EntryReference entryReference,
-                        WorkflowStage stage)
+   public BasicWorkItem(PersistenceDtoV1.WorkItem item, Function<String, WorkflowStage> stageResolver)
    {
-      this.id = id;
-      this.label = label;
-      this.description = description;
-      this.properties = properties;
-      this.entryReference = entryReference;
-      this.stage = stage;
+      this.id = item.id;
+      this.label = item.label;
+      this.description = item.description;
+      this.properties = item.properties;
+      this.entryReference = EntryId.fromMap(item.entityRef);
+      this.stage = stageResolver.apply(item.stageId);
    }
 
    @Override
@@ -67,7 +63,7 @@ public class BasicWorkItem implements WorkItem
    }
 
    @Override
-   public EntryReference getEntryReference()
+   public EntryId getEntryId()
    {
       return entryReference;
    }

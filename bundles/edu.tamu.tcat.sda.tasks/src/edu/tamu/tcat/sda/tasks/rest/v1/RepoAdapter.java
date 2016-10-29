@@ -8,7 +8,7 @@ import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStageTransition;
-import edu.tamu.tcat.trc.resolver.EntryReference;
+import edu.tamu.tcat.trc.resolver.EntryId;
 
 public class RepoAdapter
 {
@@ -68,11 +68,11 @@ public class RepoAdapter
       dto.itemId = workItem.getId();
       dto.label = workItem.getLabel();
 
-      EntryReference reference = workItem.getEntryReference();
+      EntryId reference = workItem.getEntryId();
       if (reference != null)
       {
-         dto.entityId = reference.id;
-         dto.type = reference.type;
+         dto.entityId = reference.getId();
+         dto.type = reference.getType();
       }
 
       dto.properties = workItem.getProperties().stream()
