@@ -84,16 +84,18 @@ public class UnifiedSearchResource
       // TODO: article solr core needs to be updated in order for this to work
       // ArticleSearchResult articles = articleSearchDelegate.search(query, offset, numResults);
 
+      EntryResolverRegistry resolvers = repoRegistry.getResolverRegistry();
+
       RestApiV1.UnifiedResult dto = new RestApiV1.UnifiedResult();
       dto.query = query;
       dto.offset = offset;
       dto.max = numResults;
       dto.works.clear();
-      dto.works.addAll(SearchAdapter.adapt(works));
+      dto.works.addAll(SearchAdapter.adapt(works, resolvers));
       dto.people.clear();
-      dto.people.addAll(SearchAdapter.adapt(people));
+      dto.people.addAll(SearchAdapter.adapt(people, resolvers));
       // dto.articles.clear();
-      // dto.articles.addAll(SearchAdapter.adapt(articles));
+      // dto.articles.addAll(SearchAdapter.adapt(articles, resolvers));
 
       return dto;
    }
@@ -149,7 +151,7 @@ public class UnifiedSearchResource
 
    private class WorkSearchDelegate implements SearchDelegate<BibliographicEntry, SearchWorksResult>
    {
-      private final BibliographicSearchStrategy searchStrategy = new BibliographicSearchStrategy();
+      private final BibliographicSearchStrategy searchStrategy = new BibliographicSearchStrategy(repoRegistry.getResolverRegistry());
 
       @Override
       public IndexServiceStrategy<BibliographicEntry, ?> getSearchStrategy()
@@ -176,7 +178,7 @@ public class UnifiedSearchResource
 
       public PeopleSearchDelegate()
       {
-         searchStrategy = new BioSearchStrategy(config);
+         searchStrategy = new BioSearchStrategy(config, repoRegistry.getResolverRegistry());
       }
 
       @Override
@@ -212,7 +214,7 @@ public class UnifiedSearchResource
 
    private class ArticleSearchDelegate implements SearchDelegate<Article, ArticleSearchResult>
    {
-      private final ArticleSearchStrategy searchStrategy = new ArticleSearchStrategy();
+      private final ArticleSearchStrategy searchStrategy = new ArticleSearchStrategy(repoRegistry.getResolverRegistry());
 
       @Override
       public IndexServiceStrategy<Article, ?> getSearchStrategy()
@@ -235,8 +237,7 @@ public class UnifiedSearchResource
 
    private class RelationshipSearchDelegate implements SearchDelegate<Relationship, RelationshipSearchResult>
    {
-      EntryResolverRegistry resolvers = repoRegistry.getResolverRegistry();
-      private final RelnSearchStrategy searchStrategy = new RelnSearchStrategy(resolvers);
+      private final RelnSearchStrategy searchStrategy = new RelnSearchStrategy(repoRegistry.getResolverRegistry());
 
       @Override
       public IndexServiceStrategy<Relationship, ?> getSearchStrategy()
