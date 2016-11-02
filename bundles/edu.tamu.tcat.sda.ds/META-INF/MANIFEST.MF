@@ -44,6 +44,7 @@ Import-Package: com.fasterxml.jackson.jaxrs.base;version="2.3.1",
  org.glassfish.jersey.media.multipart;version="2.10.0"
 Service-Component: 
  OSGI-INF/config.xml,
+ OSGI-INF/auth/accountstore.xml,
  OSGI-INF/db/dsprovider.xml,
  OSGI-INF/db/sqlexec.xml,
  OSGI-INF/db/idfactory.xml,
