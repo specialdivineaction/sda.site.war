@@ -9,4 +9,5 @@
       <provide interface="edu.tamu.tcat.trc.impl.psql.TrcApplicationImpl"/>
       <provide interface="edu.tamu.tcat.trc.TrcApplication"/>
    </service>
+   <reference bind="setSearchManager" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
 </scr:component>

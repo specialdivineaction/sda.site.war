@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="dispose" name="edu.tamu.tcat.trc.entries.types.bio.rest">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="edu.tamu.tcat.trc.entries.types.bio.rest">
    <implementation class="edu.tamu.tcat.trc.entries.types.bio.rest.PeopleResourceService"/>
-   <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
-   <reference bind="setConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
-   <reference bind="setSearchSvcMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
-   <reference bind="setServiceMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.services.TrcServiceManager" name="TrcServiceManager" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.bio.rest.PeopleResourceService"/>
    </service>
+   <reference bind="setTrcApplication" cardinality="1..1" interface="edu.tamu.tcat.trc.TrcApplication" name="TrcApplication" policy="static"/>
 </scr:component>
