@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="edu.tamu.tcat.trc.entries.types.article.rest">
    <implementation class="edu.tamu.tcat.trc.entries.types.article.rest.ArticleRestApiService"/>
-   <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
-   <reference bind="setSearchSvcMgr" cardinality="1..1" interface="edu.tamu.tcat.trc.search.solr.SearchServiceManager" name="SearchServiceManager" policy="static"/>
-   <reference bind="bind" cardinality="1..1" interface="edu.tamu.tcat.trc.services.TrcServiceManager" name="TrcServiceManager" policy="static"/>
+   <reference bind="setTrcContext" cardinality="1..1" interface="edu.tamu.tcat.trc.TrcApplication" name="TrcApplication" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.trc.entries.types.article.rest.ArticleRestApiService"/>
    </service>
