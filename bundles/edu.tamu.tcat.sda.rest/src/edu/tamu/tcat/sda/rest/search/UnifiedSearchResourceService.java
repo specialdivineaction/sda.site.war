@@ -6,33 +6,19 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
 
-import edu.tamu.tcat.osgi.config.ConfigurationProperties;
 import edu.tamu.tcat.sda.rest.search.v1.UnifiedSearchResource;
-import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
-import edu.tamu.tcat.trc.search.solr.SearchServiceManager;
+import edu.tamu.tcat.trc.TrcApplication;
 
 @Path("/")
 public class UnifiedSearchResourceService
 {
    private static final Logger logger = Logger.getLogger(UnifiedSearchResourceService.class.getName());
 
-   private ConfigurationProperties config;
-   private EntryRepositoryRegistry repoRegistry;
-   private SearchServiceManager searchServiceMgr;
+   private TrcApplication trcCtx;
 
-   public void setConfig(ConfigurationProperties config)
+   public void setAppContext(TrcApplication trcCtx)
    {
-      this.config = config;
-   }
-
-   public void setRepoRegistry(EntryRepositoryRegistry repoRegistry)
-   {
-      this.repoRegistry = repoRegistry;
-   }
-
-   public void setSearchServiceManager(SearchServiceManager searchServiceMgr)
-   {
-      this.searchServiceMgr = searchServiceMgr;
+      this.trcCtx = trcCtx;
    }
 
    public void activate()
@@ -41,9 +27,7 @@ public class UnifiedSearchResourceService
       {
          logger.info(() -> "Activating " + getClass().getSimpleName());
 
-         Objects.requireNonNull(config, "No configuration provided");
-         Objects.requireNonNull(repoRegistry, "No repo registry provided");
-         Objects.requireNonNull(searchServiceMgr, "No search service manager provided");
+         Objects.requireNonNull(trcCtx, "No TRC application context provided");
       }
       catch (Exception e)
       {
@@ -52,15 +36,18 @@ public class UnifiedSearchResourceService
       }
    }
 
+   // TODO might register a REST endpoint with the search service that can be
+   //      returned. Could be stitched into the delegate
+
    @Path("search")
    public UnifiedSearchResource getDefaultVersion()
    {
-      return new UnifiedSearchResource(searchServiceMgr, repoRegistry, config);
+      return getV1();
    }
 
    @Path("v1/search")
    public UnifiedSearchResource getV1()
    {
-      return new UnifiedSearchResource(searchServiceMgr, repoRegistry, config);
+      return new UnifiedSearchResource(trcCtx);
    }
 }
