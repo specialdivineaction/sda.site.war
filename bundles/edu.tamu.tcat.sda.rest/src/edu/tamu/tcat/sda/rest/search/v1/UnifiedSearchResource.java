@@ -118,7 +118,7 @@ public class UnifiedSearchResource
       if (!delegates.containsKey(key))
          throw ApiUtils.raise(Response.Status.NOT_FOUND, format(notFountMsg, key), Level.WARNING, null);
 
-      reindex(delegates.get(WorkSearchDelegate.DELEGATE_NAME));
+      reindex(delegates.get(key));
    }
 
    public <T> void reindex(SearchDelegate<T, ?> delegate)
