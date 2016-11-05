@@ -20,7 +20,6 @@ import edu.tamu.tcat.sda.tasks.WorkItemRepository;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStageTransition;
-import edu.tamu.tcat.trc.entries.types.biblio.AuthorList;
 import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
@@ -252,24 +251,12 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
     */
    private static String getAuthorLabel(BibliographicEntry entity)
    {
-      AuthorList authors = entity.getAuthors();
-      if (authors.size() > 0)
-      {
-         // find first available author's last name
-         for (AuthorReference author : authors)
-         {
-            if (author == null)
-               continue;
-
-            String authorLastName = author.getLastName();
-            if (authorLastName == null || authorLastName.trim().isEmpty())
-               continue;
-
-            return authorLastName.trim();
-         }
-      }
-
-      return null;
+      return entity.getAuthors().stream()
+            .filter(a -> a != null)
+            .map(AuthorReference::getLastName)
+            .filter(name -> name != null && !name.trim().isEmpty())
+            .findAny()
+            .orElse("");
    }
 
    /**

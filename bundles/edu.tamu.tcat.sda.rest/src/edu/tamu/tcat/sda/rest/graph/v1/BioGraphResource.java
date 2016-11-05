@@ -23,7 +23,6 @@ import edu.tamu.tcat.sda.rest.graph.GraphDTO;
 import edu.tamu.tcat.sda.rest.graph.GraphDTO.Edge;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRankIterative;
-import edu.tamu.tcat.trc.entries.types.biblio.AuthorList;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
@@ -174,24 +173,20 @@ public class BioGraphResource
    private Stream<BiographicalEntry> getAuthors(BibliographicEntry work)
    {
       if (work == null)
-      {
          return Stream.empty();
-      }
 
       try
       {
-         AuthorList authors = work.getAuthors();
+         return work.getAuthors().stream()
+                     .map(ref -> {
+                        String authorId = ref.getId();
 
-         return StreamSupport.stream(authors.spliterator(), false)
-               .map(ref -> {
-                  String authorId = ref.getId();
-
-                  return peopleRepo.getOptionally(authorId).orElseGet(() -> {
-                     logger.warning(() -> format("work {0} references a non-existent author {1}", work.getId(), authorId));
-                     return null;
-                  });
-               })
-               .filter(Objects::nonNull);
+                        return peopleRepo.getOptionally(authorId).orElseGet(() -> {
+                           logger.warning(() -> format("work {0} references a non-existent author {1}", work.getId(), authorId));
+                           return null;
+                        });
+                     })
+                     .filter(Objects::nonNull);
       }
       catch (Exception e)
       {
