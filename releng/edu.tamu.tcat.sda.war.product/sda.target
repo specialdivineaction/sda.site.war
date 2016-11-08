@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="220">
+<?pde version="3.8"?><target name="SDA Target Platform" sequenceNumber="224">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-  <unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.source.feature.group" version="2.22.1.201602281253"/>
-  <unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="5.3.1.201602281253"/>
-  <repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
+<unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.source.feature.group" version="2.22.1.201602281253"/>
+<unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="5.3.1.201602281253"/>
+<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-  <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
-  <unit id="org.eclipse.rcp.sdk.id" version="4.5.2.M20160212-1500"/>
-  <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
-  <repository location="http://download.eclipse.org/releases/mars/"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
+<unit id="org.eclipse.rcp.sdk.id" version="4.5.2.M20160212-1500"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
+<repository location="http://download.eclipse.org/releases/mars/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-  <unit id="org.eclipse.orbit.build.feature.set1.feature.group" version="1.0.0.v201405231430-FMlFMPFjMM9Sf0XXBvBdigZ0uiBK"/>
-  <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository"/>
+<unit id="org.eclipse.orbit.build.feature.set1.feature.group" version="1.0.0.v201405231430-FMlFMPFjMM9Sf0XXBvBdigZ0uiBK"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-  <unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
-  <unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
-  <unit id="org.apache.httpcomponents.httpclient.source" version="4.3.6.v201411290715"/>
-  <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository"/>
+<unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.3.6.v201411290715"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-  <unit id="edu.tamu.tcat.osgi.sdk.feature.feature.group" version="1.1.6.20160705-1614"/>
-  <unit id="edu.tamu.tcat.crypto.sdk.feature.feature.group" version="2.0.3.20160701-1734"/>
-  <unit id="edu.tamu.tcat.function.sdk.feature.feature.group" version="1.0.1.20150728-1639"/>
-  <unit id="edu.tamu.tcat.oss.jetty.feature.feature.group" version="1.0.0.201505191752"/>
-  <unit id="jackson.feature.feature.group" version="2.3.1"/>
-  <unit id="edu.tamu.tcat.hathitrust.sdk.feature.feature.group" version="1.1.2.20160331-2146"/>
-  <unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.22.201610171636"/>
-  <unit id="edu.tamu.tcat.db.sdk.feature.feature.group" version="1.2.3.20160701-1749"/>
-  <unit id="edu.tamu.tcat.trc.sdk.feature.feature.group" version="1.2.3.20160513-2015"/>
-  <unit id="edu.tamu.tcat.account.sdk.feature.feature.group" version="2.0.0.20160714-1936"/>
-  <repository location="http://tcat-tamu.github.io/releng/p2"/>
+<unit id="edu.tamu.tcat.osgi.sdk.feature.feature.group" version="1.1.6.20160705-1614"/>
+<unit id="edu.tamu.tcat.crypto.sdk.feature.feature.group" version="2.0.3.20160701-1734"/>
+<unit id="edu.tamu.tcat.function.sdk.feature.feature.group" version="1.0.1.20150728-1639"/>
+<unit id="edu.tamu.tcat.oss.jetty.feature.feature.group" version="1.0.0.201505191752"/>
+<unit id="jackson.feature.feature.group" version="2.3.1"/>
+<unit id="edu.tamu.tcat.hathitrust.sdk.feature.feature.group" version="1.1.2.20160331-2146"/>
+<unit id="edu.tamu.tcat.coredeps.sdk.feature.feature.group" version="1.2.22.201610171636"/>
+<unit id="edu.tamu.tcat.db.sdk.feature.feature.group" version="1.2.3.20160701-1749"/>
+<unit id="edu.tamu.tcat.trc.sdk.feature.feature.group" version="1.2.3.20160513-2015"/>
+<unit id="edu.tamu.tcat.account.sdk.feature.feature.group" version="2.0.0.20160714-1936"/>
+<repository location="http://tcat-tamu.github.io/releng/p2"/>
 </location>
 </locations>
 <includeBundles>
 <plugin id="com.eclipsesource.jaxrs.jersey-all" version="2.10.1.SR1"/>
 <plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.10.1.SR1"/>
 <plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22.2"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22.1"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.17"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.10.1"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.18"/>
 <plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.16.0"/>
-<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.16.1"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22.1"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.17"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.10.1"/>
 <plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.22.2"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.16.1"/>
 <plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.8"/>
+<plugin id="com.eclipsesource.jaxrs.jersey-all.source" version="2.18"/>
 <plugin id="com.eclipsesource.jaxrs.publisher"/>
 <plugin id="com.eclipsesource.jaxrs.publisher.source"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
@@ -61,10 +61,10 @@
 <plugin id="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
 <plugin id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"/>
 <plugin id="com.google.guava" version="11.0.2.v201303041551"/>
-<plugin id="com.google.guava.source" version="11.0.2.v201303041551"/>
 <plugin id="com.google.guava.source" version="15.0.0.v201403281430"/>
-<plugin id="com.google.guava.source" version="10.0.1.v201203051515"/>
 <plugin id="com.google.guava.source" version="12.0.0.v201212092141"/>
+<plugin id="com.google.guava.source" version="10.0.1.v201203051515"/>
+<plugin id="com.google.guava.source" version="11.0.2.v201303041551"/>
 <plugin id="com.zaxxer.HikariCP"/>
 <plugin id="edu.tamu.tcat.account"/>
 <plugin id="edu.tamu.tcat.account.db"/>
@@ -97,21 +97,21 @@
 <plugin id="edu.tamu.tcat.pairtree.source"/>
 <plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet.source" version="2.4.0.v200806031604"/>
+<plugin id="javax.servlet.source" version="3.1.0.v20140303-1611"/>
 <plugin id="javax.servlet.source" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet.source" version="3.0.0.v201112011016"/>
-<plugin id="javax.servlet.source" version="3.1.0.v20140303-1611"/>
 <plugin id="javax.servlet.source" version="2.5.0.v201103041518"/>
 <plugin id="javax.servlet.source" version="2.3.0.v200806031603"/>
 <plugin id="javax.xml" version="1.3.4.v201005080400"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
 <plugin id="org.apache.commons.codec.source" version="1.4.0.v201209201156"/>
-<plugin id="org.apache.commons.codec.source" version="1.7"/>
-<plugin id="org.apache.commons.codec.source" version="1.2.0.v20100518-1135"/>
 <plugin id="org.apache.commons.codec.source" version="1.3.0.v201101211617"/>
 <plugin id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<plugin id="org.apache.commons.codec.source" version="1.2.0.v20100518-1135"/>
+<plugin id="org.apache.commons.codec.source" version="1.7"/>
 <plugin id="org.apache.commons.compress" version="1.9.0"/>
-<plugin id="org.apache.commons.compress.source" version="1.6.0.v201310281400"/>
 <plugin id="org.apache.commons.compress.source" version="1.4.1.v201301140946"/>
+<plugin id="org.apache.commons.compress.source" version="1.6.0.v201310281400"/>
 <plugin id="org.apache.commons.compress.source" version="1.3.0.v201212111400"/>
 <plugin id="org.apache.commons.dbcp" version="1.4.0.v201204271417"/>
 <plugin id="org.apache.commons.dbcp.source" version="1.4.0.v201204271417"/>
@@ -120,14 +120,14 @@
 <plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
 <plugin id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
 <plugin id="org.apache.commons.io.source" version="2.2.0.v201405211200"/>
-<plugin id="org.apache.commons.io.source" version="1.3.2.v20080604-1500"/>
 <plugin id="org.apache.commons.io.source" version="1.4.0.v20081110-1000"/>
+<plugin id="org.apache.commons.io.source" version="1.3.2.v20080604-1500"/>
 <plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging.source" version="1.0.4.v201101211617"/>
 <plugin id="org.apache.commons.logging.source" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
-<plugin id="org.apache.commons.pool.source" version="1.4.0.v20081016-1000"/>
 <plugin id="org.apache.commons.pool.source" version="1.3.0.v20081016-1005"/>
+<plugin id="org.apache.commons.pool.source" version="1.4.0.v20081016-1000"/>
 <plugin id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
 <plugin id="org.apache.commons.pool2"/>
 <plugin id="org.apache.felix.gogo.command" version="0.10.0.v201209301215"/>
@@ -135,27 +135,27 @@
 <plugin id="org.apache.felix.gogo.command.source" version="0.10.0.v201209301215"/>
 <plugin id="org.apache.felix.gogo.command.source" version="0.8.0.v201108120515"/>
 <plugin id="org.apache.felix.gogo.runtime" version="0.10.0.v201209301036"/>
+<plugin id="org.apache.felix.gogo.runtime.source" version="0.6.1.v20110414-1850"/>
 <plugin id="org.apache.felix.gogo.runtime.source" version="0.10.0.v201209301036"/>
 <plugin id="org.apache.felix.gogo.runtime.source" version="0.8.0.v201108120515"/>
 <plugin id="org.apache.felix.gogo.runtime.source" version="0.10.0.v201209301036"/>
-<plugin id="org.apache.felix.gogo.runtime.source" version="0.6.1.v20110414-1850"/>
 <plugin id="org.apache.felix.gogo.shell" version="0.10.0.v201212101605"/>
+<plugin id="org.apache.felix.gogo.shell.source" version="0.10.0.v201212101605"/>
+<plugin id="org.apache.felix.gogo.shell.source" version="0.10.0.v201212101605"/>
 <plugin id="org.apache.felix.gogo.shell.source" version="0.8.0.v201110170705"/>
-<plugin id="org.apache.felix.gogo.shell.source" version="0.10.0.v201212101605"/>
-<plugin id="org.apache.felix.gogo.shell.source" version="0.10.0.v201212101605"/>
 <plugin id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
-<plugin id="org.apache.httpcomponents.httpclient.source" version="4.1.3.v201209201135"/>
-<plugin id="org.apache.httpcomponents.httpclient.source" version="4.2.5.v201305222326"/>
-<plugin id="org.apache.httpcomponents.httpclient.source" version="4.1.0.v201103311320"/>
 <plugin id="org.apache.httpcomponents.httpclient.source" version="4.3.6.v201411290715"/>
-<plugin id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
 <plugin id="org.apache.httpcomponents.httpclient.source" version="4.1.2.v201203221030"/>
+<plugin id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
+<plugin id="org.apache.httpcomponents.httpclient.source" version="4.2.5.v201305222326"/>
+<plugin id="org.apache.httpcomponents.httpclient.source" version="4.1.3.v201209201135"/>
+<plugin id="org.apache.httpcomponents.httpclient.source" version="4.1.0.v201103311320"/>
 <plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
-<plugin id="org.apache.httpcomponents.httpcore.source" version="4.1.4.v201203221030"/>
 <plugin id="org.apache.httpcomponents.httpcore.source" version="4.2.4.v201310231540"/>
 <plugin id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
-<plugin id="org.apache.httpcomponents.httpcore.source" version="4.3.3.v201411290715"/>
+<plugin id="org.apache.httpcomponents.httpcore.source" version="4.1.4.v201203221030"/>
 <plugin id="org.apache.httpcomponents.httpcore.source" version="4.1.0.v201101201700"/>
+<plugin id="org.apache.httpcomponents.httpcore.source" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.opennlp.tools"/>
 <plugin id="org.apache.servicemix.bundles.noggit"/>
 <plugin id="org.apache.servicemix.bundles.solr-solrj" version="6.2.0.1"/>
@@ -213,6 +213,21 @@
 <plugin id="org.eclipse.osgi.source"/>
 <plugin id="org.eclipse.update.configurator"/>
 <plugin id="org.eclipse.update.configurator.source"/>
+<plugin id="org.hamcrest"/>
+<plugin id="org.hamcrest.core" version="1.3.0.v201303031735"/>
+<plugin id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
+<plugin id="org.hamcrest.core.source" version="1.3.0.v201303031735"/>
+<plugin id="org.hamcrest.generator" version="1.3.0.v201305210900"/>
+<plugin id="org.hamcrest.generator.source" version="1.3.0.v201305210900"/>
+<plugin id="org.hamcrest.generator.source" version="1.1.0.v20090501071000"/>
+<plugin id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
+<plugin id="org.hamcrest.integration.source" version="1.3.0.v201305210900"/>
+<plugin id="org.hamcrest.integration.source" version="1.1.0.v201303031500"/>
+<plugin id="org.hamcrest.library" version="1.3.0.v201305281000"/>
+<plugin id="org.hamcrest.library.source" version="1.1.0.v20090501071000"/>
+<plugin id="org.hamcrest.library.source" version="1.3.0.v201305281000"/>
+<plugin id="org.hamcrest.text"/>
+<plugin id="org.hamcrest.text.source"/>
 <plugin id="org.junit" version="4.11.0.v201303080030"/>
 <plugin id="org.junit.source" version="3.8.2.v3_8_2_v20130308-0410"/>
 <plugin id="org.junit.source" version="4.11.0.v201303080030"/>
