@@ -18,7 +18,7 @@ import edu.tamu.tcat.trc.resolver.EntryId;
 import edu.tamu.tcat.trc.search.solr.IndexServiceStrategy;
 import edu.tamu.tcat.trc.search.solr.QueryService;
 
-public class RelationshipSearchDelegate implements SearchDelegate<Relationship, RestApiV1.RelationshipSearchResult>
+public class RelationshipSearchDelegate implements SearchDelegate<Relationship, RestApiV1.Relationship>
 {
    public static final String DELEGATE_NAME = "relationships";
 
@@ -44,7 +44,7 @@ public class RelationshipSearchDelegate implements SearchDelegate<Relationship, 
    }
 
    @Override
-   public CompletableFuture<Collection<RestApiV1.RelationshipSearchResult>> search(String query, int offset, int numResults)
+   public CompletableFuture<Collection<RestApiV1.Relationship>> search(String query, int offset, int numResults)
    {
       QueryService<RelationshipQueryCommand> queryService = trcCtx.getQueryService(strategy);
 
@@ -58,7 +58,7 @@ public class RelationshipSearchDelegate implements SearchDelegate<Relationship, 
       return queryCommand.execute().thenApply(this::adapt);
    }
 
-   public List<RestApiV1.RelationshipSearchResult> adapt(RelationshipSearchResult results)
+   public List<RestApiV1.Relationship> adapt(RelationshipSearchResult results)
    {
       return SearchAdapter.toDTO(results.get(), trcCtx.getResolverRegistry(), null);
    }
