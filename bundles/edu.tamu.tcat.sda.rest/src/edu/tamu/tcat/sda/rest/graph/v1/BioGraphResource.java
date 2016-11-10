@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,8 +22,10 @@ import javax.ws.rs.core.MediaType;
 
 import edu.tamu.tcat.sda.rest.graph.GraphDTO;
 import edu.tamu.tcat.sda.rest.graph.GraphDTO.Edge;
+import edu.tamu.tcat.sda.rest.graph.GraphDTO.SingleGraph;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRank;
 import edu.tamu.tcat.sda.rest.graph.pagerank.PageRankIterative;
+import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.bio.BiographicalEntry;
 import edu.tamu.tcat.trc.entries.types.bio.repo.BiographicalEntryRepository;
@@ -37,10 +40,11 @@ public class BioGraphResource
 {
    private static final Logger logger = Logger.getLogger(BioGraphResource.class.getName());
 
+   private static final AtomicReference<GraphDTO.SingleGraph> graph = new AtomicReference<>();
+
    private final BiographicalEntryRepository peopleRepo;
    private final RelationshipRepository relnRepo;
    private final EntryResolverRegistry resolvers;
-
 
    public BioGraphResource(BiographicalEntryRepository peopleRepo, RelationshipRepository relnRepo, EntryResolverRegistry resolvers)
    {
@@ -53,18 +57,25 @@ public class BioGraphResource
    @Produces(MediaType.APPLICATION_JSON)
    public GraphDTO.SingleGraph getGraph()
    {
+      // HACK need to listen to relationships and rebuild if required.
+      SingleGraph g = graph.get();
+      if (g != null)
+         return g;
 
-      GraphDTO.Graph graph = new GraphDTO.Graph();
+      GraphDTO.Graph dto = new GraphDTO.Graph();
 
-      graph.type = "people-reln";
-      graph.nodes = getPersonNodes();
-      graph.edges = constructEdges(graph.nodes);
+      dto.type = "people-reln";
+      dto.nodes = getPersonNodes();
+      dto.edges = constructEdges(dto.nodes);
 
       // annotates all nodes
-      PageRank pageRank = new PageRankIterative(graph, 0.75);
+      PageRank pageRank = new PageRankIterative(dto, 0.75);
       pageRank.execute();
 
-      return GraphDTO.SingleGraph.create(graph);
+      g = GraphDTO.SingleGraph.create(dto);
+
+      graph.compareAndSet(null, g);
+      return g;
    }
 
    private List<GraphDTO.Node> getPersonNodes()
@@ -178,15 +189,10 @@ public class BioGraphResource
       try
       {
          return work.getAuthors().stream()
-                     .map(ref -> {
-                        String authorId = ref.getId();
-
-                        return peopleRepo.getOptionally(authorId).orElseGet(() -> {
-                           logger.warning(() -> format("work {0} references a non-existent author {1}", work.getId(), authorId));
-                           return null;
-                        });
-                     })
-                     .filter(Objects::nonNull);
+                  .map(AuthorReference::getId)
+                  .filter(Objects::nonNull)
+                  .map(authorId -> peopleRepo.getOptionally(authorId).orElse(null))
+                  .filter(Objects::nonNull);
       }
       catch (Exception e)
       {
