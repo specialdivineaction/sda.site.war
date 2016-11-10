@@ -16,6 +16,8 @@ public class UnifiedSearchResourceService
 
    private TrcApplication trcCtx;
 
+   private UnifiedSearchResource resource;
+
    public void setAppContext(TrcApplication trcCtx)
    {
       this.trcCtx = trcCtx;
@@ -28,6 +30,7 @@ public class UnifiedSearchResourceService
          logger.info(() -> "Activating " + getClass().getSimpleName());
 
          Objects.requireNonNull(trcCtx, "No TRC application context provided");
+         resource = new UnifiedSearchResource(trcCtx);
       }
       catch (Exception e)
       {
@@ -48,6 +51,6 @@ public class UnifiedSearchResourceService
    @Path("v1/search")
    public UnifiedSearchResource getV1()
    {
-      return new UnifiedSearchResource(trcCtx);
+      return resource;
    }
 }

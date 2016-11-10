@@ -111,8 +111,15 @@ public class UnifiedSearchResource
 
 
    @POST
+   @Path("reindex/all")
+   public void reindexAll()
+   {
+      delegates.values().forEach(this::reindex);
+   }
+
+   @POST
    @Path("reindex/{delegateKey}")
-   public void reindexWorks(@PathParam("delegateKey") String key)
+   public void reindexRepo(@PathParam("delegateKey") String key)
    {
       String notFountMsg = "Search support has not been configured for {0}";
       if (!delegates.containsKey(key))
