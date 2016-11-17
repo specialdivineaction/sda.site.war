@@ -114,7 +114,7 @@ public class UnifiedSearchResource
    @Path("reindex/all")
    public void reindexAll()
    {
-      delegates.values().forEach(this::reindex);
+      delegates.values().forEach(d -> reindex(d));
    }
 
    @POST
