@@ -19,7 +19,7 @@ public class ModelAdapter
       this.stageResolver = stageResolver;
    }
 
-   public WorkItem adapt(PersistenceDtoV1.WorkItem item)
+   public WorkItem adapt(DataModelV1.WorkItem item)
    {
 
       return new BasicWorkItem(item, stageResolver);

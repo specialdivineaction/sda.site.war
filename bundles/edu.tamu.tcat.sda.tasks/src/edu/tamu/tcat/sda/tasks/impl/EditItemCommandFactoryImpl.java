@@ -1,42 +1,43 @@
 package edu.tamu.tcat.sda.tasks.impl;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import edu.tamu.tcat.sda.tasks.EditWorkItemCommand;
-import edu.tamu.tcat.sda.tasks.impl.PersistenceDtoV1.WorkItem;
 import edu.tamu.tcat.sda.tasks.workflow.WorkflowStage;
 import edu.tamu.tcat.trc.repo.BasicChangeSet;
 import edu.tamu.tcat.trc.repo.ChangeSet.ApplicableChangeSet;
 import edu.tamu.tcat.trc.repo.EditCommandFactory;
-import edu.tamu.tcat.trc.repo.UpdateContext;
+import edu.tamu.tcat.trc.repo.ExecutableUpdateContext;
 import edu.tamu.tcat.trc.resolver.EntryId;
 
-public class EditItemCommandFactoryImpl implements EditCommandFactory<PersistenceDtoV1.WorkItem, EditWorkItemCommand>
+public class EditItemCommandFactoryImpl implements EditCommandFactory<DataModelV1.WorkItem, EditWorkItemCommand>
 {
    @Override
-   public EditWorkItemCommand create(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
+   public DataModelV1.WorkItem initialize(String id, Optional<DataModelV1.WorkItem> original)
    {
-      return new EditWorkItemCmdImpl(id, strategy);
+      return original.map(DataModelV1.WorkItem::copy)
+            .orElseGet(() -> {
+               DataModelV1.WorkItem dto = new DataModelV1.WorkItem();
+               dto.id = id;
+               return dto;
+            });
    }
 
    @Override
-   public EditWorkItemCommand edit(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
+   public EditWorkItemCommand create(ExecutableUpdateContext<DataModelV1.WorkItem> ctx)
    {
-      return new EditWorkItemCmdImpl(id, strategy);
+      return new EditWorkItemCmdImpl(ctx);
    }
-
 
    public static class EditWorkItemCmdImpl implements EditWorkItemCommand
    {
-      private final String id;
-      private final EditCommandFactory.UpdateStrategy<WorkItem> strategy;
-      private final ApplicableChangeSet<PersistenceDtoV1.WorkItem> changes = new BasicChangeSet<>();
+      private final ExecutableUpdateContext<DataModelV1.WorkItem> ctx;
+      private final ApplicableChangeSet<DataModelV1.WorkItem> changes = new BasicChangeSet<>();
 
-      public EditWorkItemCmdImpl(String id, EditCommandFactory.UpdateStrategy<WorkItem> strategy)
+      public EditWorkItemCmdImpl(ExecutableUpdateContext<DataModelV1.WorkItem> ctx)
       {
-         this.id = id;
-         this.strategy = strategy;
+         this.ctx = ctx;
       }
 
       @Override
@@ -81,23 +82,7 @@ public class EditItemCommandFactoryImpl implements EditCommandFactory<Persistenc
       @Override
       public Future<String> execute()
       {
-         CompletableFuture<PersistenceDtoV1.WorkItem> result = strategy.update(ctx -> {
-            return changes.apply(prepareDto(ctx));
-         });
-
-         return result.thenApply(dto -> dto.id);
-      }
-
-      private PersistenceDtoV1.WorkItem prepareDto(UpdateContext<PersistenceDtoV1.WorkItem> ctx)
-      {
-         WorkItem original = ctx.getOriginal();
-         PersistenceDtoV1.WorkItem dto = original != null
-                     ? PersistenceDtoV1.WorkItem.copy(original)
-                     : new PersistenceDtoV1.WorkItem();
-         if (dto.id == null)
-            dto.id = id;
-
-         return dto;
+         return ctx.update(changes::apply).thenApply(dto -> dto.id);
       }
    }
 

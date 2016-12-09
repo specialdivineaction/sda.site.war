@@ -24,7 +24,6 @@ import edu.tamu.tcat.trc.entries.types.biblio.AuthorReference;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
-import edu.tamu.tcat.trc.repo.RepositorySchema;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
 
 public abstract class BiblioEditorialTask implements EditorialTask<BibliographicEntry>
@@ -60,15 +59,11 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
          Workflow workflow = getWorkflow();
          ModelAdapter modelAdapter = new ModelAdapter(workflow::getStage);
 
-         RepositorySchema schema = getRepositorySchema();
-
-         repo = new WorkItemRepositoryImpl(tableName, sqlExecutor, idFactory, modelAdapter, schema);
+         repo = new WorkItemRepositoryImpl(tableName, sqlExecutor, idFactory, modelAdapter);
       }
 
       return repo;
    }
-
-   protected abstract RepositorySchema getRepositorySchema();
 
    protected abstract String getTableName();
 

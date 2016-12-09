@@ -5,9 +5,6 @@ import java.util.concurrent.Executor;
 import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
-import edu.tamu.tcat.trc.repo.BasicSchemaBuilder;
-import edu.tamu.tcat.trc.repo.RepositorySchema;
-import edu.tamu.tcat.trc.repo.SchemaBuilder;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
 
 /**
@@ -20,8 +17,6 @@ public class AssignRelationshipsEditorialTask extends BiblioEditorialTask
    private static final Workflow workflow = new BasicReviewedTaskWorkflow();
 
    private static final String TABLE_NAME = "task_relns";
-   private static final String SCHEMA_ID = "sdaTaskRelationships";
-   private static final String SCHEMA_DATA_FIELD = "item";
 
    public AssignRelationshipsEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
    {
@@ -32,15 +27,6 @@ public class AssignRelationshipsEditorialTask extends BiblioEditorialTask
    protected String getTableName()
    {
       return TABLE_NAME;
-   }
-
-   @Override
-   protected RepositorySchema getRepositorySchema()
-   {
-      SchemaBuilder schemaBuilder = new BasicSchemaBuilder();
-      schemaBuilder.setId(SCHEMA_ID);
-      schemaBuilder.setDataField(SCHEMA_DATA_FIELD);
-      return schemaBuilder.build();
    }
 
    @Override

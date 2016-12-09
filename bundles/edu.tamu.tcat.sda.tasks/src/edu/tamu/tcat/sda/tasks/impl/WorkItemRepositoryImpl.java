@@ -12,7 +12,6 @@ import edu.tamu.tcat.sda.tasks.WorkItem;
 import edu.tamu.tcat.sda.tasks.WorkItemRepository;
 import edu.tamu.tcat.trc.repo.DocumentRepository;
 import edu.tamu.tcat.trc.repo.RepositoryException;
-import edu.tamu.tcat.trc.repo.RepositorySchema;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
 import edu.tamu.tcat.trc.repo.postgres.PsqlJacksonRepoBuilder;
 
@@ -20,25 +19,24 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
 {
    private static final Logger logger = Logger.getLogger(WorkItemRepositoryImpl.class.getName());
 
-   private final DocumentRepository<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> repo;
+   private final DocumentRepository<WorkItem, EditWorkItemCommand> repo;
    private final IdFactory idFactory;
 
-   public WorkItemRepositoryImpl(String tableName, SqlExecutor sqlExecutor, IdFactory idFactory, ModelAdapter modelAdapter, RepositorySchema schema)
+   public WorkItemRepositoryImpl(String tableName, SqlExecutor sqlExecutor, IdFactory idFactory, ModelAdapter modelAdapter)
    {
       this.idFactory = idFactory;
-      this.repo = buildDocumentRepository(sqlExecutor, tableName, modelAdapter, schema);
+      this.repo = buildDocumentRepository(sqlExecutor, tableName, modelAdapter);
    }
 
-   private static DocumentRepository<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> buildDocumentRepository(SqlExecutor sqlExecutor, String tableName, ModelAdapter modelAdapter, RepositorySchema schema)
+   private static DocumentRepository<WorkItem, EditWorkItemCommand> buildDocumentRepository(SqlExecutor sqlExecutor, String tableName, ModelAdapter modelAdapter)
    {
-      PsqlJacksonRepoBuilder<WorkItem, PersistenceDtoV1.WorkItem, EditWorkItemCommand> repoBuilder = new PsqlJacksonRepoBuilder<>();
+      PsqlJacksonRepoBuilder<WorkItem, DataModelV1.WorkItem, EditWorkItemCommand> repoBuilder = new PsqlJacksonRepoBuilder<>();
 
       repoBuilder.setDbExecutor(sqlExecutor);
-      repoBuilder.setTableName(tableName);
+      repoBuilder.setPersistenceId(tableName);
       repoBuilder.setEditCommandFactory(new EditItemCommandFactoryImpl());
       repoBuilder.setDataAdapter(modelAdapter::adapt);
-      repoBuilder.setSchema(schema);
-      repoBuilder.setStorageType(PersistenceDtoV1.WorkItem.class);
+      repoBuilder.setStorageType(DataModelV1.WorkItem.class);
       repoBuilder.setEnableCreation(true);
 
       try

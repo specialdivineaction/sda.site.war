@@ -3,7 +3,7 @@ package edu.tamu.tcat.sda.tasks.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PersistenceDtoV1
+public class DataModelV1
 {
    public static class WorkItem
    {

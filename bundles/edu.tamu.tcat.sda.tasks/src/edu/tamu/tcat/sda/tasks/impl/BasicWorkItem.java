@@ -18,7 +18,7 @@ public class BasicWorkItem implements WorkItem
    private final EntryId entryReference;
    private final WorkflowStage stage;
 
-   public BasicWorkItem(PersistenceDtoV1.WorkItem item, Function<String, WorkflowStage> stageResolver)
+   public BasicWorkItem(DataModelV1.WorkItem item, Function<String, WorkflowStage> stageResolver)
    {
       this.id = item.id;
       this.label = item.label;
