@@ -3,6 +3,7 @@
    <implementation class="edu.tamu.tcat.trc.impl.psql.account.DbAcctDataStore"/>
    <reference bind="bindSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <reference bind="bindConfig" cardinality="1..1" interface="edu.tamu.tcat.osgi.config.ConfigurationProperties" name="ConfigurationProperties" policy="static"/>
+   <reference bind="bindJaversProvider" cardinality="1..1" interface="edu.tamu.tcat.trc.repo.postgres.JaversProvider" name="JaversProvider" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.account.store.AccountStore"/>
       <provide interface="edu.tamu.tcat.trc.auth.account.TrcAccountDataStore"/>

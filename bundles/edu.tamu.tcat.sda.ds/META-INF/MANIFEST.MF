@@ -62,6 +62,7 @@ Service-Component:
  OSGI-INF/db/dsprovider.xml,
  OSGI-INF/db/sqlexec.xml,
  OSGI-INF/db/idfactory.xml,
+ OSGI-INF/db/javersprovider.xml,
  OSGI-INF/jaxrs/JacksonJsonProvider.xml,
  OSGI-INF/jaxrs/JsonMapperMapper.xml,
  OSGI-INF/jaxrs/JsonParseMapper.xml,
