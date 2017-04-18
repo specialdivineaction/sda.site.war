@@ -3,6 +3,7 @@
    <implementation class="edu.tamu.tcat.sda.tasks.rest.TaskRestApiService"/>
    <reference bind="setSqlExecutor" cardinality="1..1" interface="edu.tamu.tcat.db.exec.sql.SqlExecutor" name="SqlExecutor" policy="static"/>
    <reference bind="setRepoRegistry" cardinality="1..1" interface="edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry" name="EntryRepositoryRegistry" policy="static"/>
+   <reference bind="setJaversProvider" cardinality="1..1" interface="edu.tamu.tcat.trc.repo.postgres.JaversProvider" name="JaversProvider" policy="static"/>
    <service>
       <provide interface="edu.tamu.tcat.sda.tasks.rest.TaskRestApiService"/>
    </service>

@@ -37,6 +37,7 @@ import edu.tamu.tcat.sda.tasks.rest.v1.TaskCollectionResource;
 import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.repo.BibliographicEntryRepository;
+import edu.tamu.tcat.trc.repo.postgres.JaversProvider;
 
 @Path("/")
 public class TaskRestApiService
@@ -45,6 +46,7 @@ public class TaskRestApiService
 
    private SqlExecutor sqlExecutor;
    private ExecutorService executorService;
+   private JaversProvider javersProvider;
 
    private final Map<String, EditorialTask<?>> tasks = new HashMap<>();
 
@@ -60,20 +62,26 @@ public class TaskRestApiService
       this.repoRegistry = repoRegistry;
    }
 
+   public void setJaversProvider(JaversProvider javersProvider)
+   {
+      this.javersProvider = javersProvider;
+   }
+
    public void activate()
    {
       try
       {
          logger.info(() -> "Activating " + getClass().getSimpleName());
          Objects.requireNonNull(sqlExecutor, "No SQL Executor provided");
+         Objects.requireNonNull(javersProvider, "No Javers provider provider");
 
          executorService = Executors.newCachedThreadPool();
 
          // HACK: hard-coded tasks
          Stream.of(
-               new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
-               new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
-               new EditBiblioSummariesEditorialTask("biblio-summaries", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
+               new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService, javersProvider),
+               new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService, javersProvider),
+               new EditBiblioSummariesEditorialTask("biblio-summaries", sqlExecutor, () -> UUID.randomUUID().toString(), executorService, javersProvider)
             ).forEach(t -> tasks.put(t.getId(), t));
       }
       catch (Exception e)

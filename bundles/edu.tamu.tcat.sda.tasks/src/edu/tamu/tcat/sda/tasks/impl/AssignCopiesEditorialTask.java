@@ -6,6 +6,7 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
+import edu.tamu.tcat.trc.repo.postgres.JaversProvider;
 
 /**
  * Hard-coded implementation of the 'AssignCopies' editorial task. To be re-factored once a
@@ -18,9 +19,9 @@ public class AssignCopiesEditorialTask extends BiblioEditorialTask
 
    private static final String TABLE_NAME = "task_work_items";
 
-   public AssignCopiesEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
+   public AssignCopiesEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor, JaversProvider javersProvider)
    {
-      super(id, sqlExecutor, idFactory, executor);
+      super(id, sqlExecutor, idFactory, executor, javersProvider);
    }
 
    @Override

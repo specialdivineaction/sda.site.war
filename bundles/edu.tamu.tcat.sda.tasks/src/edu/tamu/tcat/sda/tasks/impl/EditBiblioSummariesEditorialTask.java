@@ -6,6 +6,7 @@ import edu.tamu.tcat.db.exec.sql.SqlExecutor;
 import edu.tamu.tcat.sda.tasks.workflow.BasicReviewedTaskWorkflow;
 import edu.tamu.tcat.sda.tasks.workflow.Workflow;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
+import edu.tamu.tcat.trc.repo.postgres.JaversProvider;
 
 public class EditBiblioSummariesEditorialTask extends BiblioEditorialTask
 {
@@ -13,9 +14,9 @@ public class EditBiblioSummariesEditorialTask extends BiblioEditorialTask
 
    private static final String TABLE_NAME = "task_biblio_summaries";
 
-   public EditBiblioSummariesEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
+   public EditBiblioSummariesEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor, JaversProvider javersProvider)
    {
-      super(id, sqlExecutor, idFactory, executor);
+      super(id, sqlExecutor, idFactory, executor, javersProvider);
    }
 
    @Override

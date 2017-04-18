@@ -25,6 +25,7 @@ import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
 import edu.tamu.tcat.trc.entries.types.biblio.Title;
 import edu.tamu.tcat.trc.entries.types.biblio.TitleDefinition;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
+import edu.tamu.tcat.trc.repo.postgres.JaversProvider;
 
 public abstract class BiblioEditorialTask implements EditorialTask<BibliographicEntry>
 {
@@ -34,15 +35,17 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
    private final SqlExecutor sqlExecutor;
    private final IdFactory idFactory;
    private final Executor executor;
+   private final JaversProvider javersProvider;
 
    private WorkItemRepository repo;
 
-   public BiblioEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor)
+   public BiblioEditorialTask(String id, SqlExecutor sqlExecutor, IdFactory idFactory, Executor executor, JaversProvider javersProvider)
    {
       this.id = id;
       this.sqlExecutor = sqlExecutor;
       this.idFactory = idFactory;
       this.executor = executor;
+      this.javersProvider = javersProvider;
    }
 
    @Override
@@ -59,7 +62,7 @@ public abstract class BiblioEditorialTask implements EditorialTask<Bibliographic
          Workflow workflow = getWorkflow();
          ModelAdapter modelAdapter = new ModelAdapter(workflow::getStage);
 
-         repo = new WorkItemRepositoryImpl(tableName, sqlExecutor, idFactory, modelAdapter);
+         repo = new WorkItemRepositoryImpl(tableName, sqlExecutor, idFactory, modelAdapter, javersProvider);
       }
 
       return repo;

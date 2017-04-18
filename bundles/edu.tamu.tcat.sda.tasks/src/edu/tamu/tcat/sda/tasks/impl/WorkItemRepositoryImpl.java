@@ -13,6 +13,7 @@ import edu.tamu.tcat.sda.tasks.WorkItemRepository;
 import edu.tamu.tcat.trc.repo.DocumentRepository;
 import edu.tamu.tcat.trc.repo.RepositoryException;
 import edu.tamu.tcat.trc.repo.id.IdFactory;
+import edu.tamu.tcat.trc.repo.postgres.JaversProvider;
 import edu.tamu.tcat.trc.repo.postgres.PsqlJacksonRepoBuilder;
 
 public class WorkItemRepositoryImpl implements WorkItemRepository
@@ -22,13 +23,13 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
    private final DocumentRepository<WorkItem, EditWorkItemCommand> repo;
    private final IdFactory idFactory;
 
-   public WorkItemRepositoryImpl(String tableName, SqlExecutor sqlExecutor, IdFactory idFactory, ModelAdapter modelAdapter)
+   public WorkItemRepositoryImpl(String tableName, SqlExecutor sqlExecutor, IdFactory idFactory, ModelAdapter modelAdapter, JaversProvider javersProvider)
    {
       this.idFactory = idFactory;
-      this.repo = buildDocumentRepository(sqlExecutor, tableName, modelAdapter);
+      this.repo = buildDocumentRepository(sqlExecutor, tableName, modelAdapter, javersProvider);
    }
 
-   private static DocumentRepository<WorkItem, EditWorkItemCommand> buildDocumentRepository(SqlExecutor sqlExecutor, String tableName, ModelAdapter modelAdapter)
+   private static DocumentRepository<WorkItem, EditWorkItemCommand> buildDocumentRepository(SqlExecutor sqlExecutor, String tableName, ModelAdapter modelAdapter, JaversProvider javersProvider)
    {
       PsqlJacksonRepoBuilder<WorkItem, DataModelV1.WorkItem, EditWorkItemCommand> repoBuilder = new PsqlJacksonRepoBuilder<>();
 
@@ -38,6 +39,7 @@ public class WorkItemRepositoryImpl implements WorkItemRepository
       repoBuilder.setDataAdapter(modelAdapter::adapt);
       repoBuilder.setStorageType(DataModelV1.WorkItem.class);
       repoBuilder.setEnableCreation(true);
+      repoBuilder.setJaversProvider(javersProvider);
 
       try
       {
