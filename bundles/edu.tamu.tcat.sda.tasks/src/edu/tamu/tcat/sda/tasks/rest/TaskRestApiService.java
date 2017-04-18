@@ -32,6 +32,7 @@ import edu.tamu.tcat.sda.tasks.EditorialTask;
 import edu.tamu.tcat.sda.tasks.TaskSubmissionMonitor;
 import edu.tamu.tcat.sda.tasks.impl.AssignCopiesEditorialTask;
 import edu.tamu.tcat.sda.tasks.impl.AssignRelationshipsEditorialTask;
+import edu.tamu.tcat.sda.tasks.impl.EditBiblioSummariesEditorialTask;
 import edu.tamu.tcat.sda.tasks.rest.v1.TaskCollectionResource;
 import edu.tamu.tcat.trc.entries.core.repo.EntryRepositoryRegistry;
 import edu.tamu.tcat.trc.entries.types.biblio.BibliographicEntry;
@@ -71,7 +72,8 @@ public class TaskRestApiService
          // HACK: hard-coded tasks
          Stream.of(
                new AssignCopiesEditorialTask("copies", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
-               new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
+               new AssignRelationshipsEditorialTask("relns", sqlExecutor, () -> UUID.randomUUID().toString(), executorService),
+               new EditBiblioSummariesEditorialTask("biblio-summaries", sqlExecutor, () -> UUID.randomUUID().toString(), executorService)
             ).forEach(t -> tasks.put(t.getId(), t));
       }
       catch (Exception e)
