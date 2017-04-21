@@ -47,7 +47,12 @@ Import-Package: com.fasterxml.jackson.annotation;version="2.3.1",
  org.apache.solr.client.solrj;version="5.5.0",
  org.apache.solr.client.solrj.impl;version="5.5.0",
  org.apache.solr.common;version="5.5.0"
-Export-Package: edu.tamu.tcat.sda.rest.export.csv,
+Export-Package: edu.tamu.tcat.sda.rest,
+ edu.tamu.tcat.sda.rest.export.csv,
  edu.tamu.tcat.sda.rest.graph,
- edu.tamu.tcat.sda.rest.search
+ edu.tamu.tcat.sda.rest.graph.pagerank,
+ edu.tamu.tcat.sda.rest.graph.v1,
+ edu.tamu.tcat.sda.rest.search,
+ edu.tamu.tcat.sda.rest.search.v1,
+ edu.tamu.tcat.sda.rest.search.v1.delgates
 Require-Bundle: org.apache.opennlp.tools;bundle-version="1.6.0"

@@ -26,6 +26,13 @@
             is_directed="false"
             title="Possible Pattern Match">
       </relationship_type>
+      <relationship_type
+            description="Indicates that the source work is part of a larger collection (e.g., a chapter in an anthology)."
+            identifier="uk.ac.ox.bodleian.sda.relationships.appearsIn"
+            is_directed="true"
+            reverse_title="Contains"
+            title="Appears In">
+      </relationship_type>
    </extension>
 
 </plugin>
